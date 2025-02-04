@@ -1,0 +1,30 @@
+services:
+  euromotors.api:
+    image: ${DOCKER_REGISTRY-}euromotorsapi
+    container_name: Euromotors.Api
+    build:
+      context: .
+      dockerfile: src/EuroMotors.Api/Dockerfile
+    ports:
+      - 5000:8080
+      - 5001:8081
+
+  euromotors-db:
+    image: postgres:17
+    container_name: Euromotors.Db
+    environment:
+      - POSTGRES_DB=euromotors
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./.containers/db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  euromotors-seq:
+    image: datalust/seq:latest
+    container_name: Euromotors.Seq
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - 8081:80
