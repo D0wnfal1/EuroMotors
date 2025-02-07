@@ -1,8 +1,10 @@
 ﻿using EuroMotors.Application.Abstractions.Authentication;
+using EuroMotors.Application.Abstractions.Clock;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
+using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Todos;
-using EuroMotors.SharedKernel;
+using EuroMotors.Domain.Todos.Events;
 using Microsoft.EntityFrameworkCore;
 
 namespace EuroMotors.Application.Todos.Complete;
@@ -31,7 +33,7 @@ internal sealed class CompleteTodoCommandHandler(
         todoItem.IsCompleted = true;
         todoItem.CompletedAt = dateTimeProvider.UtcNow;
 
-        todoItem.Raise(new TodoItemCompletedDomainEvent(todoItem.Id));
+        todoItem.RaiseDomainEvents(new TodoItemCompletedDomainEvent(todoItem.Id));
 
         await context.SaveChangesAsync(cancellationToken);
 

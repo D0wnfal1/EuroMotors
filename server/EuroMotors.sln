@@ -26,8 +26,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EuroMotors.ArchitectureTest
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{4C3B8C07-4026-4CF0-97FE-87E5047AEE25}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EuroMotors.SharedKernel", "src\EuroMotors.SharedKernel\EuroMotors.SharedKernel.csproj", "{D2500706-D54F-46C5-BC10-5B932310A916}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,10 +56,6 @@ Global
 		{4C3B8C07-4026-4CF0-97FE-87E5047AEE25}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C3B8C07-4026-4CF0-97FE-87E5047AEE25}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C3B8C07-4026-4CF0-97FE-87E5047AEE25}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D2500706-D54F-46C5-BC10-5B932310A916}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D2500706-D54F-46C5-BC10-5B932310A916}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D2500706-D54F-46C5-BC10-5B932310A916}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D2500706-D54F-46C5-BC10-5B932310A916}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -72,7 +66,6 @@ Global
 		{8574D3E0-89E8-4EB4-B85C-FADCE56B1AC6} = {64A28C1B-09AF-426E-8721-D002BE554B48}
 		{93873895-A287-4F55-B4CD-DBDA4A5AF326} = {64A28C1B-09AF-426E-8721-D002BE554B48}
 		{579C44BC-F46D-44B5-A27D-1F3980B35B5C} = {1EB88D85-BE1E-46DE-99A2-2F02363060AF}
-		{D2500706-D54F-46C5-BC10-5B932310A916} = {64A28C1B-09AF-426E-8721-D002BE554B48}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B948A3CC-9872-4612-ABD2-BB3D49671542}

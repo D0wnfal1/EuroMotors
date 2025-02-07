@@ -1,4 +1,4 @@
-﻿using EuroMotors.SharedKernel;
+﻿using EuroMotors.Application.Abstractions.Clock;
 
 namespace EuroMotors.Infrastructure.Time;
 

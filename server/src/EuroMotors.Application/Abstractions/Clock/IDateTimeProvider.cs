@@ -1,4 +1,4 @@
-﻿namespace EuroMotors.SharedKernel;
+﻿namespace EuroMotors.Application.Abstractions.Clock;
 
 public interface IDateTimeProvider
 {

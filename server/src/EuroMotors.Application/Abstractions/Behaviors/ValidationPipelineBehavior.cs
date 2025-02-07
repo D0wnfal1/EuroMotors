@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using EuroMotors.SharedKernel;
+using EuroMotors.Domain.Abstractions;
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;

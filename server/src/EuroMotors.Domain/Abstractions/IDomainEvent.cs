@@ -1,5 +1,5 @@
 ﻿using MediatR;
 
-namespace EuroMotors.SharedKernel;
+namespace EuroMotors.Domain.Abstractions;
 
 public interface IDomainEvent : INotification;

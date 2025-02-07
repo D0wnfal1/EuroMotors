@@ -12,7 +12,6 @@
   <ItemGroup>
     <ProjectReference Include="..\EuroMotors.Application\EuroMotors.Application.csproj" />
     <ProjectReference Include="..\EuroMotors.Domain\EuroMotors.Domain.csproj" />
-    <ProjectReference Include="..\EuroMotors.SharedKernel\EuroMotors.SharedKernel.csproj" />
   </ItemGroup>
 
   <ItemGroup>

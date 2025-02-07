@@ -1,4 +1,4 @@
-﻿using EuroMotors.SharedKernel;
+﻿using EuroMotors.Domain.Abstractions;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Serilog.Context;

@@ -1,7 +1,7 @@
 ﻿using EuroMotors.Api.Extensions;
 using EuroMotors.Api.Infrastructure;
 using EuroMotors.Application.Users.Register;
-using EuroMotors.SharedKernel;
+using EuroMotors.Domain.Abstractions;
 using MediatR;
 
 namespace EuroMotors.Api.Endpoints.Users;

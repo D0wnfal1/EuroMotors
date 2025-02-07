@@ -1,4 +1,4 @@
-﻿using EuroMotors.SharedKernel;
+﻿using EuroMotors.Domain.Abstractions;
 using MediatR;
 
 namespace EuroMotors.Application.Abstractions.Messaging;

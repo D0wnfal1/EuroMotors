@@ -1,8 +1,8 @@
 ﻿using EuroMotors.Api.Extensions;
 using EuroMotors.Api.Infrastructure;
 using EuroMotors.Application.Todos.Create;
+using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Todos;
-using EuroMotors.SharedKernel;
 using MediatR;
 
 namespace EuroMotors.Api.Endpoints.Todos;

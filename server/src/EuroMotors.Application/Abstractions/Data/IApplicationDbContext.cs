@@ -1,4 +1,5 @@
 ﻿using EuroMotors.Domain.Todos;
+using EuroMotors.Domain.Todos.Events;
 using EuroMotors.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 

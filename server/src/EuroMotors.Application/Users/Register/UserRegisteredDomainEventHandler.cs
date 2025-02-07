@@ -1,4 +1,4 @@
-﻿using EuroMotors.Domain.Users;
+﻿using EuroMotors.Domain.Users.Events;
 using MediatR;
 
 namespace EuroMotors.Application.Users.Register;

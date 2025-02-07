@@ -1,7 +1,7 @@
 ﻿using EuroMotors.Application.Abstractions.Data;
+using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Todos;
 using EuroMotors.Domain.Users;
-using EuroMotors.SharedKernel;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

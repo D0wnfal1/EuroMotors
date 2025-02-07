@@ -17,7 +17,6 @@ COPY ["Directory.Build.props", "."]
 COPY ["src/EuroMotors.Api/EuroMotors.Api.csproj", "src/EuroMotors.Api/"]
 COPY ["src/EuroMotors.Application/EuroMotors.Application.csproj", "src/EuroMotors.Application/"]
 COPY ["src/EuroMotors.Domain/EuroMotors.Domain.csproj", "src/EuroMotors.Domain/"]
-COPY ["src/SharedKernel/SharedKernel.csproj", "src/SharedKernel/"]
 COPY ["src/EuroMotors.Infrastructure/EuroMotors.Infrastructure.csproj", "src/EuroMotors.Infrastructure/"]
 RUN dotnet restore "./src/EuroMotors.Api/EuroMotors.Api.csproj"
 COPY . .

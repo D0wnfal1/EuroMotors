@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace EuroMotors.SharedKernel;
+namespace EuroMotors.Domain.Abstractions;
 
 public class Result
 {

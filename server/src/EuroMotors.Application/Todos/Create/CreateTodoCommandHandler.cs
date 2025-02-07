@@ -1,9 +1,11 @@
 ﻿using EuroMotors.Application.Abstractions.Authentication;
+using EuroMotors.Application.Abstractions.Clock;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
+using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Todos;
+using EuroMotors.Domain.Todos.Events;
 using EuroMotors.Domain.Users;
-using EuroMotors.SharedKernel;
 using Microsoft.EntityFrameworkCore;
 
 namespace EuroMotors.Application.Todos.Create;
@@ -29,18 +31,9 @@ internal sealed class CreateTodoCommandHandler(
             return Result.Failure<Guid>(UserErrors.NotFound(command.UserId));
         }
 
-        var todoItem = new TodoItem
-        {
-            UserId = user.Id,
-            Description = command.Description,
-            Priority = command.Priority,
-            DueDate = command.DueDate,
-            Labels = command.Labels,
-            IsCompleted = false,
-            CreatedAt = dateTimeProvider.UtcNow
-        };
+        var todoItem = TodoItem.Create(user.Id, command.Description, command.Labels, false, dateTimeProvider.UtcNow, command.Priority);
 
-        todoItem.Raise(new TodoItemCreatedDomainEvent(todoItem.Id));
+        todoItem.RaiseDomainEvents(new TodoItemCreatedDomainEvent(todoItem.Id));
 
         context.TodoItems.Add(todoItem);
 

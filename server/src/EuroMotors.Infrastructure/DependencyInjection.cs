@@ -1,11 +1,11 @@
 ﻿using System.Text;
 using EuroMotors.Application.Abstractions.Authentication;
+using EuroMotors.Application.Abstractions.Clock;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Infrastructure.Authentication;
 using EuroMotors.Infrastructure.Authorization;
 using EuroMotors.Infrastructure.Database;
 using EuroMotors.Infrastructure.Time;
-using EuroMotors.SharedKernel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;

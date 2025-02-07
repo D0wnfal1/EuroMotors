@@ -1,4 +1,4 @@
-﻿using EuroMotors.SharedKernel;
+﻿using EuroMotors.Domain.Abstractions;
 
 namespace EuroMotors.Api.Extensions;
 

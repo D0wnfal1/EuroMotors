@@ -1,8 +1,9 @@
 ﻿using EuroMotors.Application.Abstractions.Authentication;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
+using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Todos;
-using EuroMotors.SharedKernel;
+using EuroMotors.Domain.Todos.Events;
 using Microsoft.EntityFrameworkCore;
 
 namespace EuroMotors.Application.Todos.Delete;
@@ -22,7 +23,7 @@ internal sealed class DeleteTodoCommandHandler(IApplicationDbContext context, IU
 
         context.TodoItems.Remove(todoItem);
 
-        todoItem.Raise(new TodoItemDeletedDomainEvent(todoItem.Id));
+        todoItem.RaiseDomainEvents(new TodoItemDeletedDomainEvent(todoItem.Id));
 
         await context.SaveChangesAsync(cancellationToken);
 

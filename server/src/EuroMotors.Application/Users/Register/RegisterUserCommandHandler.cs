@@ -1,8 +1,9 @@
 ﻿using EuroMotors.Application.Abstractions.Authentication;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
+using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Users;
-using EuroMotors.SharedKernel;
+using EuroMotors.Domain.Users.Events;
 using Microsoft.EntityFrameworkCore;
 
 namespace EuroMotors.Application.Users.Register;
@@ -17,16 +18,9 @@ internal sealed class RegisterUserCommandHandler(IApplicationDbContext context, 
             return Result.Failure<Guid>(UserErrors.EmailNotUnique);
         }
 
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            Email = command.Email,
-            FirstName = command.FirstName,
-            LastName = command.LastName,
-            PasswordHash = passwordHasher.Hash(command.Password)
-        };
+        var user = User.Create( command.Email, command.FirstName, command.LastName, passwordHasher.Hash(command.Password));
 
-        user.Raise(new UserRegisteredDomainEvent(user.Id));
+        user.RaiseDomainEvents(new UserRegisteredDomainEvent(user.Id));
 
         context.Users.Add(user);
 

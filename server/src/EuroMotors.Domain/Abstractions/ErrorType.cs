@@ -1,4 +1,4 @@
-﻿namespace EuroMotors.SharedKernel;
+﻿namespace EuroMotors.Domain.Abstractions;
 
 public enum ErrorType
 {
