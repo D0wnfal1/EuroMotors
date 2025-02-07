@@ -2,8 +2,4 @@
   <ItemGroup>
     <PackageReference Include="MediatR.Contracts" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="CarModels\Events\" />
-    <Folder Include="Categories\Events\" />
-  </ItemGroup>
 </Project>

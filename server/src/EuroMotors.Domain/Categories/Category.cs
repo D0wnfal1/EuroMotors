@@ -20,10 +20,31 @@ public class Category : Entity
 
     public static Category Create(string name, bool isArchived)
     {
-        var category = new Category(Guid.NewGuid(), name, isArchived);
+        var category = new Category(Guid.NewGuid(),
+            name,
+            isArchived);
 
         category.RaiseDomainEvents(new CategoryCreatedDomainEvent(category.Id));
 
         return category;
+    }
+
+    public void Archive()
+    {
+        IsArchived = true;
+
+        RaiseDomainEvents(new CategoryArchivedDomainEvent(Id));
+    }
+
+    public void ChangeName(string name)
+    {
+        if (Name == name)
+        {
+            return;
+        }
+
+        Name = name;
+
+        RaiseDomainEvents(new CategoryNameChangedDomainEvent(Id, Name));
     }
 }

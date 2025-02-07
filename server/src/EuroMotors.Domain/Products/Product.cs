@@ -77,4 +77,16 @@ public sealed class Product : Entity
 
         return product;
     }
+
+    public void Archive()
+    {
+        if (IsAvailable)
+        {
+            return;
+        }
+
+        IsAvailable = true;
+
+        RaiseDomainEvents(new ProductIsNotAvailableDomainEvent(Id));
+    }
 }

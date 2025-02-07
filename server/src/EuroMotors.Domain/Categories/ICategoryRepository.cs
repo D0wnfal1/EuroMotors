@@ -4,5 +4,5 @@ public interface ICategoryRepository
 {
     Task<Category?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 
-    void Add(Category category);
+    void Insert(Category category);
 }
