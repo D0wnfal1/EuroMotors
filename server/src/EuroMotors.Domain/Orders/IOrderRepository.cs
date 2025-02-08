@@ -2,7 +2,9 @@
 
 public interface IOrderRepository
 {
-    Task<Order?> GetAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<Order?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+
+    Task<Order?> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
 
     void Insert(Order order);
 }

@@ -1,57 +1,55 @@
 ﻿using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Brand.Events;
-using EuroMotors.Domain.Category.Events;
 using EuroMotors.Domain.Products;
 
 namespace EuroMotors.Domain.Brand;
 
 public class CarModel : Entity
 {
-    private CarModel(Guid id,
-        string brand,
-        string model)
-        : base(id)
+    private CarModel()
     {
-        Brand = brand;
-        Model = model;
+
     }
 
     public string Brand { get; private set; }
 
     public string Model { get; private set; }
 
+    public List<Product> Products { get; private set; } = new();
 
-    public static CarModel Create(string brand, string model, string year)
+    public static CarModel Create(string brand, string model)
     {
-        var carModel = new CarModel(Guid.NewGuid(), brand, model);
+        var carModel = new CarModel()
+        {
+            Id = Guid.NewGuid(),
+            Brand = brand,
+            Model = model,
+        };
 
-        carModel.RaiseDomainEvents(new CarModelCreatedDomainEvent(carModel.Id));
+        carModel.RaiseDomainEvent(new CarModelCreatedDomainEvent(carModel.Id));
 
         return carModel;
     }
 
-    public void ChangeBrand(string brand)
+    public void Update(string brand, string model, int year)
     {
-        if (Brand == brand)
+        if (string.IsNullOrWhiteSpace(brand) || Brand == brand)
         {
             return;
         }
 
         Brand = brand;
 
-        RaiseDomainEvents(new CategoryNameChangedDomainEvent(Id, Brand));
-    }
+        RaiseDomainEvent(new CarModelBrandChangedDomainEvent(Id, Brand));
 
-    public void ChangeModel(string model)
-    {
-        if (Model == model)
+        if (string.IsNullOrWhiteSpace(model) || Model == model)
         {
             return;
         }
 
         Model = model;
 
-        RaiseDomainEvents(new CategoryNameChangedDomainEvent(Id, Model));
+        RaiseDomainEvent(new CarModelModelChangedDomainEvent(Id, Model));
     }
 }
 

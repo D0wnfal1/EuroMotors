@@ -9,14 +9,8 @@ public sealed class Order : Entity
 {
     private readonly List<OrderItem> _orderItems = [];
 
-
-    public Order(Guid id, Guid userId, OrderStatus status, decimal totalPrice, bool productsIssued, DateTime createdAtUtc) : base(id)
+    private Order()
     {
-        UserId = userId;
-        Status = status;
-        TotalPrice = totalPrice;
-        ProductsIssued = productsIssued;
-        CreatedAtUtc = createdAtUtc;
     }
 
     public Guid UserId { get; private set; }
@@ -31,23 +25,29 @@ public sealed class Order : Entity
 
     public IReadOnlyCollection<OrderItem> OrderItems => _orderItems.ToList();
 
+    public Guid? PaymentId { get; private set; }
+
+    public DateTime UpdatedAtUtc { get; private set; }
+
     public static Order Create(User user)
     {
-        var order = new Order(
-            Guid.NewGuid(),
-            user.Id,
-            OrderStatus.Pending,
-            0m,
-            false,
-            DateTime.UtcNow
-        );
+        var order = new Order()
+        {
+           Id = Guid.NewGuid(),
+           UserId = user.Id,
+           Status = OrderStatus.Pending,
+           TotalPrice = 0m,
+           ProductsIssued = false,
+           CreatedAtUtc = DateTime.UtcNow,
+           UpdatedAtUtc = DateTime.UtcNow
+        };
 
-        order.RaiseDomainEvents(new OrderCreatedDomainEvent(order.Id));
+        order.RaiseDomainEvent(new OrderCreatedDomainEvent(order.Id));
 
         return order;
     }
 
-    public void AddItem(Product product, decimal quantity, decimal price, string currency)
+    public void AddItem(Product product, decimal quantity, decimal price)
     {
         if (quantity <= 0)
         {
@@ -59,6 +59,15 @@ public sealed class Order : Entity
         _orderItems.Add(orderItem);
 
         TotalPrice = _orderItems.Sum(o => o.Price);
+
+        UpdatedAtUtc = DateTime.UtcNow;
+    }
+
+    public void RecalculateTotalPrice()
+    {
+        TotalPrice = _orderItems.Sum(o => o.Price);
+
+        UpdatedAtUtc = DateTime.UtcNow;
     }
 
     public Result IssueProducts()
@@ -69,8 +78,22 @@ public sealed class Order : Entity
         }
         ProductsIssued = true;
 
-        RaiseDomainEvents(new OrderTicketsIssuedDomainEvent(Id));
+        RaiseDomainEvent(new OrderTicketsIssuedDomainEvent(Id));
+
+        UpdatedAtUtc = DateTime.UtcNow;
 
         return Result.Success();
+    }
+
+    public void SetPaymentId(Guid paymentId)
+    {
+        PaymentId = paymentId;
+
+        UpdatedAtUtc = DateTime.UtcNow;
+    }
+
+    public void ChangeStatus(OrderStatus status)
+    {
+        Status = status;
     }
 }

@@ -1,39 +1,46 @@
 ﻿using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Category.Events;
+using EuroMotors.Domain.Products;
 
 namespace EuroMotors.Domain.Category;
 
 public class Category : Entity
 {
-    private Category(Guid id,
-        string name,
-        bool isArchived)
-        : base(id)
+    private Category()
     {
-        Name = name;
-        IsArchived = isArchived;
+
     }
 
     public string Name { get; private set; }
 
     public bool IsArchived { get; private set; }
 
+    public List<Product> Products { get; private set; } = new();
+
     public static Category Create(string name, bool isArchived)
     {
-        var category = new Category(Guid.NewGuid(),
-            name,
-            isArchived);
+        var category = new Category()
+        {
+            Id = Guid.NewGuid(),
+            Name = name,
+            IsArchived = isArchived
+        };
 
-        category.RaiseDomainEvents(new CategoryCreatedDomainEvent(category.Id));
+        category.RaiseDomainEvent(new CategoryCreatedDomainEvent(category.Id));
 
         return category;
     }
 
     public void Archive()
     {
+        if (IsArchived)
+        {
+            return;
+        }
+
         IsArchived = true;
 
-        RaiseDomainEvents(new CategoryArchivedDomainEvent(Id));
+        RaiseDomainEvent(new CategoryArchivedDomainEvent(Id));
     }
 
     public void ChangeName(string name)
@@ -45,6 +52,6 @@ public class Category : Entity
 
         Name = name;
 
-        RaiseDomainEvents(new CategoryNameChangedDomainEvent(Id, Name));
+        RaiseDomainEvent(new CategoryNameChangedDomainEvent(Id, Name));
     }
 }

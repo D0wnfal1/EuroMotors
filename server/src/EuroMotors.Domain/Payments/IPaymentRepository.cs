@@ -1,12 +1,13 @@
-﻿using EuroMotors.Domain.Products;
+﻿
+using EuroMotors.Domain.Orders;
 
 namespace EuroMotors.Domain.Payments;
 
 public interface IPaymentRepository
 {
-    Task<Payment?> GetAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<Payment?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task<IEnumerable<Payment>> GetForProductAsync(Product product, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Payment>> GetForProductAsync(Order order, CancellationToken cancellationToken = default);
 
     void Insert(Payment payment);
 }

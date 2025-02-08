@@ -1,18 +1,14 @@
 ﻿using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.Products;
 
 namespace EuroMotors.Domain.Orders;
 
 public sealed class OrderItem : Entity
 {
-    private OrderItem(Guid id, Guid orderId, Guid productId, decimal quantity, decimal unitPrice) : base(id)
+    private OrderItem()
     {
-        OrderId = orderId;
-        ProductId = productId;
-        Quantity = quantity;
-        UnitPrice = unitPrice;
-        Price = quantity * unitPrice;
-    }
 
+    }
 
     public Guid OrderId { get; private set; }
 
@@ -24,14 +20,24 @@ public sealed class OrderItem : Entity
 
     public decimal Price { get; private set; }
 
-    internal static OrderItem Create(Guid orderId, Guid ticketTypeId, decimal quantity, decimal unitPrice)
+    public Product Product { get; private set; } = null!;
+
+    internal static OrderItem Create(Guid orderId, Guid productId, decimal quantity, decimal unitPrice)
     {
-        return new OrderItem(
-            Guid.NewGuid(),
-            orderId,
-            ticketTypeId,
-            quantity,
-            unitPrice
-        );
+        return new OrderItem()
+        {
+            Id = Guid.NewGuid(),
+            OrderId = orderId,
+            ProductId = productId,
+            Quantity = quantity,
+            UnitPrice = unitPrice,
+            Price = quantity * unitPrice
+        };
+    }
+
+    public void UpdateQuantity(decimal quantity)
+    {
+        Quantity = quantity;
+        Price = Quantity * UnitPrice;
     }
 }

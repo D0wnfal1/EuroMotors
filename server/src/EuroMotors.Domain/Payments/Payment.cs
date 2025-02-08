@@ -6,15 +6,9 @@ namespace EuroMotors.Domain.Payments;
 
 public sealed class Payment : Entity
 {
-    public Payment(Guid id, Guid orderId, Guid transactionId, decimal amount, decimal? amountRefunded, DateTime createdAtUtc, DateTime? refundedAtUtc)
-        : base(id)
+    private Payment()
     {
-        OrderId = orderId;
-        TransactionId = transactionId;
-        Amount = amount;
-        AmountRefunded = amountRefunded ?? 0m;
-        CreatedAtUtc = createdAtUtc;
-        RefundedAtUtc = refundedAtUtc;
+
     }
 
     public Guid OrderId { get; private set; }
@@ -29,19 +23,23 @@ public sealed class Payment : Entity
 
     public DateTime? RefundedAtUtc { get; set; }
 
-    public static Payment Create(Order order, Guid transactionId, decimal amount, string currency)
-    {
-        var payment = new Payment(
-            Guid.NewGuid(),
-            order.Id,
-            transactionId,
-            amount,
-            0m,
-            DateTime.UtcNow,
-            null
-        );
+    public Order Order { get; private set; } = null!;
 
-        payment.RaiseDomainEvents(new PaymentCreatedDomainEvent(payment.Id));
+    public static Payment Create(Order order, Guid transactionId, decimal amount)
+    {
+        var payment = new Payment()
+        {
+            Id = Guid.NewGuid(),
+            OrderId = order.Id,
+            Order = order, 
+            TransactionId = transactionId,
+            Amount = amount,
+            AmountRefunded = 0m,
+            CreatedAtUtc = DateTime.UtcNow,
+            RefundedAtUtc = null
+        };
+
+        payment.RaiseDomainEvent(new PaymentCreatedDomainEvent(payment.Id));
 
         return payment;
     }
@@ -62,13 +60,16 @@ public sealed class Payment : Entity
 
         if (Amount == AmountRefunded)
         {
-            RaiseDomainEvents(new PaymentRefundedDomainEvent(Id, TransactionId, refundAmount));
+            RaiseDomainEvent(new PaymentRefundedDomainEvent(Id, TransactionId, refundAmount));
         }
         else
         {
-            RaiseDomainEvents(new PaymentPartiallyRefundedDomainEvent(Id, TransactionId, refundAmount));
+            RaiseDomainEvent(new PaymentPartiallyRefundedDomainEvent(Id, TransactionId, refundAmount));
         }
+        Order.ChangeStatus(OrderStatus.Refunded);
 
         return Result.Success();
     }
+
+
 }

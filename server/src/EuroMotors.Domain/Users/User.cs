@@ -5,12 +5,9 @@ namespace EuroMotors.Domain.Users;
 
 public sealed class User : Entity
 {
-    private User(Guid id, string email, string firstName, string lastName, string passwordHash) : base(id)
+    private User()
     {
-        Email = email;
-        FirstName = firstName;
-        LastName = lastName;
-        PasswordHash = passwordHash;
+
     }
 
     public string Email { get; set; }
@@ -20,10 +17,17 @@ public sealed class User : Entity
 
     public static User Create(string email, string firstName, string lastName, string passwordHash)
     {
-        var user = new User(Guid.NewGuid(), email, firstName, lastName, passwordHash);
+        var user = new User()
+        {
+            Id = Guid.NewGuid(),
+            Email = email,
+            FirstName = firstName,
+            LastName = lastName,
+            PasswordHash = passwordHash
+        };
 
-        user.RaiseDomainEvents(new UserRegisteredDomainEvent(user.Id));
+        user.RaiseDomainEvent(new UserRegisteredDomainEvent(user.Id));
 
-        return new User(Guid.NewGuid(), email, firstName, lastName, passwordHash);
+        return user;
     }
 }

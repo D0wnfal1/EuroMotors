@@ -5,15 +5,9 @@ namespace EuroMotors.Domain.Todos;
 
 public sealed class TodoItem : Entity
 {
-    private TodoItem(Guid id, Guid userId, string description, DateTime? dueDate, bool isCompleted, DateTime createdAt, DateTime? completedAt, Priority priority) : base(id)
+    private TodoItem()
     {
-        UserId = userId;
-        Description = description;
-        DueDate = dueDate;
-        IsCompleted = isCompleted;
-        CreatedAt = createdAt;
-        CompletedAt = completedAt;
-        Priority = priority;
+
     }
 
     public Guid UserId { get; set; }
@@ -27,9 +21,18 @@ public sealed class TodoItem : Entity
 
     public static TodoItem Create(Guid userId, string description, List<string> labels, bool isComplete, DateTime createdAt, Priority priority)
     {
-        var todoItem = new TodoItem(Guid.NewGuid(), userId, description, null, isComplete, createdAt, null, priority);
+        var todoItem = new TodoItem()
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            Description = description,
+            Labels = labels,
+            IsCompleted = isComplete,
+            CreatedAt = createdAt,
+            Priority = priority
+        };
 
-        todoItem.RaiseDomainEvents(new TodoItemCreatedDomainEvent(todoItem.Id));
+        todoItem.RaiseDomainEvent(new TodoItemCreatedDomainEvent(todoItem.Id));
         
         return todoItem;
     }
