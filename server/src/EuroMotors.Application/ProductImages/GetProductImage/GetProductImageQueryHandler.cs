@@ -1,0 +1,36 @@
+﻿using System.Data.Common;
+using Dapper;
+using EuroMotors.Application.Abstractions.Data;
+using EuroMotors.Application.Abstractions.Messaging;
+using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.ProductImages;
+
+namespace EuroMotors.Application.ProductImages.GetProductImage;
+
+internal sealed class GetProductImageQueryHandler(IDbConnectionFactory dbConnectionFactory)
+    : IQueryHandler<GetProductImageQuery, ProductImageResponse>
+{
+    public async Task<Result<ProductImageResponse>> Handle(GetProductImageQuery request, CancellationToken cancellationToken)
+    {
+        await using DbConnection connection = await dbConnectionFactory.OpenConnectionAsync();
+
+        const string sql =
+            $"""
+             SELECT
+                 id AS {nameof(ProductImageResponse.Id)},
+                 url AS {nameof(ProductImageResponse.Url)},
+                 product_id AS {nameof(ProductImageResponse.ProductId)}
+             FROM product_images
+             WHERE id = @ProductImageId
+             """;
+
+        ProductImageResponse? productImage = await connection.QuerySingleOrDefaultAsync<ProductImageResponse>(sql, request);
+
+        if (productImage is null)
+        {
+            return Result.Failure<ProductImageResponse>(ProductImageErrors.ProductImageNotFound(request.ProductImageId));
+        }
+
+        return productImage;
+    }
+}

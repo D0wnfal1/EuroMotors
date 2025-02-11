@@ -1,6 +1,6 @@
 ﻿using EuroMotors.Domain.Abstractions;
 
-namespace EuroMotors.Domain.Brand;
+namespace EuroMotors.Domain.CarModels;
 
 public static class CarModelErrors
 {

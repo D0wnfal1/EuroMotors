@@ -33,7 +33,7 @@ internal sealed class CompleteTodoCommandHandler(
         todoItem.IsCompleted = true;
         todoItem.CompletedAt = dateTimeProvider.UtcNow;
 
-        todoItem.RaiseDomainEvents(new TodoItemCompletedDomainEvent(todoItem.Id));
+        todoItem.RaiseDomainEvent(new TodoItemCompletedDomainEvent(todoItem.Id));
 
         await context.SaveChangesAsync(cancellationToken);
 

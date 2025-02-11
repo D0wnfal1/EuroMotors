@@ -1,6 +1,6 @@
 ﻿using EuroMotors.Domain.Abstractions;
 
-namespace EuroMotors.Domain.Category.Events;
+namespace EuroMotors.Domain.Categories.Events;
 
 public sealed class CategoryNameChangedDomainEvent(Guid categoryId, string name) : IDomainEvent
 {

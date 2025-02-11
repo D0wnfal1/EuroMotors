@@ -2,5 +2,5 @@
 
 namespace EuroMotors.Domain.Products.Events;
 
-public sealed record ProductIsNotAvailableDomainEvent(Guid productId) : IDomainEvent;
+public sealed record ProductIsNotAvailableDomainEvent(Guid ProductId) : IDomainEvent;
 

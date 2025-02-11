@@ -1,8 +1,6 @@
 ﻿using EuroMotors.Domain.Abstractions;
-using EuroMotors.Domain.Category;
-using EuroMotors.Domain.Products;
 
-namespace EuroMotors.Domain.Brand.Events;
+namespace EuroMotors.Domain.CarModels.Events;
 
 public class CarModelBrandChangedDomainEvent(Guid carModelId, string brand) : IDomainEvent
 {

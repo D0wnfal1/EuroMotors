@@ -23,7 +23,7 @@ internal sealed class DeleteTodoCommandHandler(IApplicationDbContext context, IU
 
         context.TodoItems.Remove(todoItem);
 
-        todoItem.RaiseDomainEvents(new TodoItemDeletedDomainEvent(todoItem.Id));
+        todoItem.RaiseDomainEvent(new TodoItemDeletedDomainEvent(todoItem.Id));
 
         await context.SaveChangesAsync(cancellationToken);
 

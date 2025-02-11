@@ -1,5 +1,5 @@
 ﻿using EuroMotors.Domain.Abstractions;
 
-namespace EuroMotors.Domain.Category.Events;
+namespace EuroMotors.Domain.Categories.Events;
 
-public record CategoryCreatedDomainEvent(Guid categoryId) : IDomainEvent;
+public record CategoryCreatedDomainEvent(Guid CategoryId) : IDomainEvent;

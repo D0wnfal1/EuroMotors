@@ -1,6 +1,6 @@
 ﻿using EuroMotors.Domain.Abstractions;
 
-namespace EuroMotors.Domain.Category;
+namespace EuroMotors.Domain.Categories;
 
 public static class CategoryErrors
 {

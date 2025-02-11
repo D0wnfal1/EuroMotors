@@ -1,8 +1,8 @@
 ﻿using EuroMotors.Domain.Abstractions;
-using EuroMotors.Domain.Category.Events;
+using EuroMotors.Domain.Categories.Events;
 using EuroMotors.Domain.Products;
 
-namespace EuroMotors.Domain.Category;
+namespace EuroMotors.Domain.Categories;
 
 public class Category : Entity
 {
@@ -15,15 +15,15 @@ public class Category : Entity
 
     public bool IsArchived { get; private set; }
 
-    public List<Product> Products { get; private set; } = new();
+    public List<Product> Products { get; private set; } = [];
 
-    public static Category Create(string name, bool isArchived)
+    public static Category Create(string name)
     {
         var category = new Category()
         {
             Id = Guid.NewGuid(),
             Name = name,
-            IsArchived = isArchived
+            IsArchived = false
         };
 
         category.RaiseDomainEvent(new CategoryCreatedDomainEvent(category.Id));
@@ -54,4 +54,5 @@ public class Category : Entity
 
         RaiseDomainEvent(new CategoryNameChangedDomainEvent(Id, Name));
     }
+
 }

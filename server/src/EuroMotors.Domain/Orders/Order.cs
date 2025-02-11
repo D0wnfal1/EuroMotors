@@ -23,7 +23,7 @@ public sealed class Order : Entity
 
     public DateTime CreatedAtUtc { get; private set; }
 
-    public IReadOnlyCollection<OrderItem> OrderItems => _orderItems.ToList();
+    public IReadOnlyCollection<OrderItem> OrderItems => [];
 
     public Guid? PaymentId { get; private set; }
 
@@ -78,7 +78,7 @@ public sealed class Order : Entity
         }
         ProductsIssued = true;
 
-        RaiseDomainEvent(new OrderTicketsIssuedDomainEvent(Id));
+        RaiseDomainEvent(new OrderProductsIssuedDomainEvent(Id));
 
         UpdatedAtUtc = DateTime.UtcNow;
 

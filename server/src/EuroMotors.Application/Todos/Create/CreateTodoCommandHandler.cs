@@ -33,7 +33,7 @@ internal sealed class CreateTodoCommandHandler(
 
         var todoItem = TodoItem.Create(user.Id, command.Description, command.Labels, false, dateTimeProvider.UtcNow, command.Priority);
 
-        todoItem.RaiseDomainEvents(new TodoItemCreatedDomainEvent(todoItem.Id));
+        todoItem.RaiseDomainEvent(new TodoItemCreatedDomainEvent(todoItem.Id));
 
         context.TodoItems.Add(todoItem);
 

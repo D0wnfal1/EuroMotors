@@ -2,4 +2,4 @@
 
 namespace EuroMotors.Domain.ProductImages.Events;
 
-public sealed record ProductImageCreatedDomainEvent(Guid productImageId) : IDomainEvent;
+public sealed record ProductImageCreatedDomainEvent(Guid ProductImageId) : IDomainEvent;

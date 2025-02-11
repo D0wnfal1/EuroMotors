@@ -1,0 +1,35 @@
+﻿using System.Data.Common;
+using Dapper;
+using EuroMotors.Application.Abstractions.Data;
+using EuroMotors.Application.Abstractions.Messaging;
+using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.CarModels;
+
+namespace EuroMotors.Application.CarModels.GetCarModel;
+
+internal sealed class GetCarModelQueryHandler(IDbConnectionFactory dbConnectionFactory) : IQueryHandler<GetCarModelQuery, CarModelResponse>
+{
+	public async Task<Result<CarModelResponse>> Handle(GetCarModelQuery request, CancellationToken cancellationToken)
+	{
+		await using DbConnection connection = await dbConnectionFactory.OpenConnectionAsync();
+
+		const string sql =
+		   $"""
+                SELECT
+                    id AS {nameof(CarModelResponse.Id)},
+                    brand AS {nameof(CarModelResponse.Brand)},
+                    model AS {nameof(CarModelResponse.Model)}
+                FROM car_models
+                WHERE id = @CarModelId
+                """;
+
+		CarModelResponse? carModel = await connection.QuerySingleOrDefaultAsync<CarModelResponse>(sql, request.CarModelId );
+
+		if (carModel is null)
+		{
+			return Result.Failure<CarModelResponse>(CarModelErrors.NotFound(request.CarModelId));
+		}
+
+		return carModel;
+	}
+}

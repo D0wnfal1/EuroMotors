@@ -1,5 +1,4 @@
 ﻿using EuroMotors.Domain.Abstractions;
-using EuroMotors.Domain.Category;
 using EuroMotors.Domain.ProductImages;
 using EuroMotors.Domain.Products.Events;
 
@@ -30,7 +29,7 @@ public sealed class Product : Entity
 
     public bool IsAvailable { get; private set; }
 
-    public List<ProductImage> Images { get; private set; } = new List<ProductImage>();
+    public List<ProductImage> Images { get; private set; } = [];
 
     public static Product Create(
         string name,

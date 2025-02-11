@@ -20,7 +20,7 @@ internal sealed class RegisterUserCommandHandler(IApplicationDbContext context, 
 
         var user = User.Create( command.Email, command.FirstName, command.LastName, passwordHasher.Hash(command.Password));
 
-        user.RaiseDomainEvents(new UserRegisteredDomainEvent(user.Id));
+        user.RaiseDomainEvent(new UserRegisteredDomainEvent(user.Id));
 
         context.Users.Add(user);
 

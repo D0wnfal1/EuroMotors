@@ -1,8 +1,8 @@
 ﻿using EuroMotors.Domain.Abstractions;
-using EuroMotors.Domain.Brand.Events;
+using EuroMotors.Domain.CarModels.Events;
 using EuroMotors.Domain.Products;
 
-namespace EuroMotors.Domain.Brand;
+namespace EuroMotors.Domain.CarModels;
 
 public class CarModel : Entity
 {
@@ -15,7 +15,7 @@ public class CarModel : Entity
 
     public string Model { get; private set; }
 
-    public List<Product> Products { get; private set; } = new();
+    public List<Product> Products { get; private set; } = [];
 
     public static CarModel Create(string brand, string model)
     {
@@ -31,7 +31,7 @@ public class CarModel : Entity
         return carModel;
     }
 
-    public void Update(string brand, string model, int year)
+    public void Update(string brand, string model)
     {
         if (string.IsNullOrWhiteSpace(brand) || Brand == brand)
         {

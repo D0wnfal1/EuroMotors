@@ -6,5 +6,5 @@ public interface IProductRepository
 
     void Insert(Product product);
 
-    void Update(Product product);
+    void Delete(Guid id);
 }
