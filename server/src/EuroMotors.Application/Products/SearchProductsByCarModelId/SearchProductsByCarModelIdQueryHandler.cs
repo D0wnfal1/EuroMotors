@@ -6,13 +6,13 @@ using EuroMotors.Application.Products.GetProduct;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Products;
 
-namespace EuroMotors.Application.Products.GetProductsByCarModelId;
+namespace EuroMotors.Application.Products.SearchProductsByCarModelId;
 
-internal sealed class GetProductsByCarModelIdQueryHandler(IDbConnectionFactory dbConnectionFactory)
-    : IQueryHandler<GetProductsByCarModelIdQuery, IReadOnlyCollection<ProductResponse>>
+internal sealed class SearchProductsByCarModelIdQueryHandler(IDbConnectionFactory dbConnectionFactory)
+    : IQueryHandler<SearchProductsByCarModelIdQuery, IReadOnlyCollection<ProductResponse>>
 {
     public async Task<Result<IReadOnlyCollection<ProductResponse>>> Handle(
-        GetProductsByCarModelIdQuery request,
+        SearchProductsByCarModelIdQuery request,
         CancellationToken cancellationToken)
     {
         await using DbConnection connection = await dbConnectionFactory.OpenConnectionAsync();

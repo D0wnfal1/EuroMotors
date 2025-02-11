@@ -16,19 +16,19 @@ public sealed class Cart : Entity
 
     public Guid UserId { get; private set; }
 
-    public User User { get; private set; }
+    public User User { get; set; }
 
-    public IReadOnlyCollection<CartItem> CartItems => [];
+
+    public List<CartItem> CartItems { get; init; } = [];
 
     public decimal TotalPrice => _cartItems.Sum(item => item.TotalPrice);
 
-    public static Cart Create(User user)
+    public static Cart Create(Guid userId)
     {
         var cart = new Cart()
         {
             Id = Guid.NewGuid(),
-            UserId = user.Id,
-            User = user
+            UserId = userId,
         };
 
         cart.RaiseDomainEvent(new CartCreatedDomainEvent(cart.Id));

@@ -70,6 +70,4 @@ public sealed class Payment : Entity
 
         return Result.Success();
     }
-
-
 }

@@ -26,9 +26,7 @@
 
   <ItemGroup>
     <Folder Include="ProductImages\GetProductImagesByProductId\" />
-    <Folder Include="Products\CreateProduct\" />
-    <Folder Include="Products\DeleteProduct\" />
-    <Folder Include="Products\UpdateProduct\" />
+    <Folder Include="Products\UpdateProduct\UpdateProductDiscount\" />
   </ItemGroup>
 
 </Project>
