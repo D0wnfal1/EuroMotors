@@ -6,7 +6,8 @@ public interface ICartRepository
 {
     Task<Cart?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task<Order?> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<Cart?> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
 
-    void Insert(Cart order);
+    void Insert(Cart cart);
+    void Update(Cart cart, CancellationToken cancellationToken = default);
 }

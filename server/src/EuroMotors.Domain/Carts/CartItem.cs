@@ -11,13 +11,11 @@ public class CartItem : Entity
 
     public Guid ProductId { get; private set; }
 
-    public Product Product { get; private set; }
-
     public int Quantity { get; private set; }
 
-    public decimal Price => Product.CalculateDiscountedPrice();
+    public decimal UnitPrice { get; private set; }
 
-    public decimal TotalPrice => Price * Quantity;
+    public decimal TotalPrice => UnitPrice * Quantity;
 
     public static CartItem Create(Product product, int quantity)
     {
@@ -25,8 +23,8 @@ public class CartItem : Entity
         {
             Id = Guid.NewGuid(),
             ProductId = product.Id,
-            Product = product,
-            Quantity = quantity
+            Quantity = quantity,
+            UnitPrice = product.CalculateDiscountedPrice()
         };
 
         return cartItem;

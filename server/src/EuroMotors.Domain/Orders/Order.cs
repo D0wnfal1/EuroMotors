@@ -29,12 +29,12 @@ public sealed class Order : Entity
 
     public DateTime UpdatedAtUtc { get; private set; }
 
-    public static Order Create(User user)
+    public static Order Create(Guid userId)
     {
         var order = new Order()
         {
            Id = Guid.NewGuid(),
-           UserId = user.Id,
+           UserId = userId,
            Status = OrderStatus.Pending,
            TotalPrice = 0m,
            ProductsIssued = false,
@@ -47,14 +47,14 @@ public sealed class Order : Entity
         return order;
     }
 
-    public void AddItem(Product product, decimal quantity, decimal price)
+    public void AddItem(Guid productId, decimal quantity, decimal price)
     {
         if (quantity <= 0)
         {
             throw new ArgumentException("Quantity must be greater than zero.");
         }
 
-        var orderItem = OrderItem.Create(Id, product.Id, quantity, price);
+        var orderItem = OrderItem.Create(Id, productId, quantity, price);
 
         _orderItems.Add(orderItem);
 

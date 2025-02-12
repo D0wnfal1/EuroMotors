@@ -16,9 +16,6 @@ public sealed class Cart : Entity
 
     public Guid UserId { get; private set; }
 
-    public User User { get; set; }
-
-
     public List<CartItem> CartItems { get; init; } = [];
 
     public decimal TotalPrice => _cartItems.Sum(item => item.TotalPrice);
@@ -47,7 +44,11 @@ public sealed class Cart : Entity
 
         if (existingItem != null)
         {
-            existingItem.UpdateQuantity(existingItem.Quantity + quantity);
+            Result updateResult = existingItem.UpdateQuantity(existingItem.Quantity + quantity);
+            if (updateResult.IsFailure)
+            {
+                return updateResult;
+            }
         }
         else
         {
@@ -103,11 +104,11 @@ public sealed class Cart : Entity
 
     public Order ConvertToOrder()
     {
-        var order = Order.Create(User);
+        var order = Order.Create(UserId);
 
-        foreach (CartItem? cartItem in _cartItems)
+        foreach (CartItem cartItem in _cartItems)
         {
-            order.AddItem(cartItem.Product, cartItem.Quantity, cartItem.Product.Price);
+            order.AddItem(cartItem.ProductId, cartItem.Quantity, cartItem.UnitPrice);
         }
 
         Clear();

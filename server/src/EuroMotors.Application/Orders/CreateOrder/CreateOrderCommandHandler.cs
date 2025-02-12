@@ -13,75 +13,73 @@ using EuroMotors.Domain.Users;
 namespace EuroMotors.Application.Orders.CreateOrder;
 
 internal sealed class CreateOrderCommandHandler(
-    IUserRepository userRepository,
-    IOrderRepository orderRepository,
-    IProductRepository productRepository,
-    IPaymentRepository paymentRepository,
-    IPaymentService paymentService,
-    CartService cartService,
-    IUnitOfWork unitOfWork,
-    IDbConnectionFactory dbConnectionFactory) : ICommandHandler<CreateOrderCommand>
+	IUserRepository userRepository,
+	IOrderRepository orderRepository,
+	IProductRepository productRepository,
+	IPaymentRepository paymentRepository,
+	IPaymentService paymentService,
+	ICartRepository cartRepository,
+	IUnitOfWork unitOfWork,
+	IDbConnectionFactory dbConnectionFactory) : ICommandHandler<CreateOrderCommand>
 {
-    public async Task<Result> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
-    {
-        await using DbConnection connection = await dbConnectionFactory.OpenConnectionAsync();
+	public async Task<Result> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
+	{
+		await using DbConnection connection = await dbConnectionFactory.OpenConnectionAsync();
 
+		User? user = await userRepository.GetByIdAsync(request.CustomerId, cancellationToken);
 
-        User? user = await userRepository.GetByIdAsync(request.CustomerId, cancellationToken);
+		if (user is null)
+		{
+			return Result.Failure(UserErrors.NotFound(request.CustomerId));
+		}
 
-        if (user is null)
-        {
-            return Result.Failure(UserErrors.NotFound(request.CustomerId));
-        }
+		var order = Order.Create(user.Id);
 
-        var order = Order.Create(user);
+		Cart? cart = await cartRepository.GetByUserIdAsync(user.Id, cancellationToken);
 
-        Cart cart = await cartService.GetAsync(user.Id, cancellationToken);
+		if (cart == null || !cart.CartItems.Any())
+		{
+			return Result.Failure(CartErrors.Empty);
+		}
 
-        if (!cart.CartItems.Any())
-        {
-            return Result.Failure(CartErrors.Empty);
-        }
+		foreach (CartItem cartItem in cart.CartItems)
+		{
+			// This acquires a pessimistic lock or throws an exception if already locked.
+			Product? product = await productRepository.GetByIdAsync(
+				cartItem.ProductId,
+				cancellationToken);
 
-        foreach (CartItem cartItem in cart.CartItems)
-        {
-            // This acquires a pessimistic lock or throws an exception if already locked.
-            Product? product = await productRepository.GetByIdAsync(
-                cartItem.ProductId,
-                cancellationToken);
+			if (product is null)
+			{
+				return Result.Failure(ProductErrors.NotFound(cartItem.ProductId));
+			}
 
-            if (product is null)
-            {
-                return Result.Failure(ProductErrors.NotFound(cartItem.ProductId));
-            }
+			Result result = product.UpdateStock(cartItem.Quantity);
 
-            Result result = product.UpdateStock(cartItem.Quantity);
+			if (result.IsFailure)
+			{
+				return Result.Failure(result.Error);
+			}
 
-            if (result.IsFailure)
-            {
-                return Result.Failure(result.Error);
-            }
+			order.AddItem(product.Id, cartItem.Quantity, cartItem.UnitPrice);
+		}
 
-            order.AddItem(product, cartItem.Quantity, cartItem.Price);
-        }
+		orderRepository.Insert(order);
 
-        orderRepository.Insert(order);
+		// We're faking a payment gateway request here...
+		PaymentResponse paymentResponse = await paymentService.ChargeAsync(order.TotalPrice);
 
-        // We're faking a payment gateway request here...
-        PaymentResponse paymentResponse = await paymentService.ChargeAsync(order.TotalPrice);
+		var payment = Payment.Create(
+			order,
+			paymentResponse.TransactionId,
+			paymentResponse.Amount);
 
-        var payment = Payment.Create(
-            order,
-            paymentResponse.TransactionId,
-            paymentResponse.Amount);
+		paymentRepository.Insert(payment);
 
-        paymentRepository.Insert(payment);
+		await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+		cart.Clear();
 
-
-        await cartService.ClearAsync(user.Id, cancellationToken);
-
-        return Result.Success();
-    }
+		return Result.Success();
+	}
 }

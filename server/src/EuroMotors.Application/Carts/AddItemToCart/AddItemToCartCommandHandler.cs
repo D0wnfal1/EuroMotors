@@ -9,7 +9,8 @@ namespace EuroMotors.Application.Carts.AddItemToCart;
 internal sealed class AddItemToCartCommandHandler(
     IUserRepository customerRepository,
     IProductRepository ticketTypeRepository,
-    CartService cartService)
+    ICartRepository cartRepository,
+    IUnitOfWork unitOfWork)
     : ICommandHandler<AddItemToCartCommand>
 {
     public async Task<Result> Handle(AddItemToCartCommand request, CancellationToken cancellationToken)
@@ -35,7 +36,11 @@ internal sealed class AddItemToCartCommandHandler(
 
         var cartItem = CartItem.Create(product, request.Quantity);
 
-        await cartService.AddItemAsync(request.UserId, cartItem, cancellationToken);
+        Cart cart = await cartRepository.GetByUserIdAsync(user.Id, cancellationToken) ?? Cart.Create(user.Id);
+
+        cart.AddItem(product, cartItem.Quantity);
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }
