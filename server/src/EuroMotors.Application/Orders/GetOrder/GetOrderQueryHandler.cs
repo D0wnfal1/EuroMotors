@@ -27,7 +27,7 @@ internal sealed class GetOrderQueryHandler(IDbConnectionFactory dbConnectionFact
                  oi.product_id AS {nameof(OrderItemResponse.ProductId)},
                  oi.quantity AS {nameof(OrderItemResponse.Quantity)},
                  oi.unit_price AS {nameof(OrderItemResponse.UnitPrice)},
-                 oi.price AS {nameof(OrderItemResponse.Price)},
+                 oi.price AS {nameof(OrderItemResponse.Price)}
              FROM orders o
              JOIN order_items oi ON oi.order_id = o.id
              WHERE o.id = @OrderId
@@ -51,14 +51,9 @@ internal sealed class GetOrderQueryHandler(IDbConnectionFactory dbConnectionFact
 
                 return order;
             },
-            request,
+            new { request.OrderId },
             splitOn: nameof(OrderItemResponse.OrderItemId));
 
-        if (!ordersDictionary.TryGetValue(request.OrderId, out OrderResponse orderResponse))
-        {
-            return Result.Failure<OrderResponse>(OrderErrors.NotFound(request.OrderId));
-        }
-
-        return orderResponse;
+        return !ordersDictionary.TryGetValue(request.OrderId, out OrderResponse orderResponse) ? Result.Failure<OrderResponse>(OrderErrors.NotFound(request.OrderId)) : orderResponse;
     }
 }

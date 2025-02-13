@@ -80,6 +80,8 @@ internal sealed class CreateOrderCommandHandler(
 
 		cart.Clear();
 
-		return Result.Success();
+        cartRepository.Update(cart, cancellationToken);
+
+        return Result.Success();
 	}
 }

@@ -33,11 +33,6 @@ internal sealed class GetProductQueryHandler(IDbConnectionFactory dbConnectionFa
 
         ProductResponse? product = await connection.QuerySingleOrDefaultAsync<ProductResponse>(sql, request);
 
-        if (product is null)
-        {
-            return Result.Failure<ProductResponse>(ProductErrors.NotFound(request.ProductId));
-        }
-
-        return product;
+        return product ?? Result.Failure<ProductResponse>(ProductErrors.NotFound(request.ProductId));
     }
 }

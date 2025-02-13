@@ -22,6 +22,8 @@ internal sealed class ConvertToOrderCommandHandler(ICartRepository cartRepositor
 
         orderRepository.Insert(order);
 
+        cart.Clear();
+
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();

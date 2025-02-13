@@ -3,6 +3,7 @@ using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Carts;
 using EuroMotors.Domain.Products;
 using EuroMotors.Domain.Users;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EuroMotors.Application.Carts.AddItemToCart;
 
@@ -35,6 +36,7 @@ internal sealed class AddItemToCartCommandHandler(
         }
 
         var cartItem = CartItem.Create(product, request.Quantity);
+
 
         Cart cart = await cartRepository.GetByUserIdAsync(user.Id, cancellationToken) ?? Cart.Create(user.Id);
 

@@ -29,7 +29,7 @@ internal sealed class GetProductImagesByProductIdQueryHandler(IDbConnectionFacto
 
         List<ProductImageResponse> productImages = (await connection.QueryAsync<ProductImageResponse>(sql, request)).AsList();
 
-        if (productImages.Count == 0)
+        if (productImages.Any())
         {
             return Result.Failure<IReadOnlyCollection<ProductImageResponse>>(ProductImageErrors.ProductImagesNotFound(request.ProductId));
         }

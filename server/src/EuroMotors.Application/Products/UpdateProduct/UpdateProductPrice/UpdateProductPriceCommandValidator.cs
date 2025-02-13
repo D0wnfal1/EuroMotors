@@ -6,9 +6,8 @@ internal sealed class UpdateProductPriceCommandValidator : AbstractValidator<Upd
 {
     public UpdateProductPriceCommandValidator()
     {
-        RuleFor(x => x.ProductId)
-            .NotEmpty().WithMessage("ProductId cannot be empty.");
-        RuleFor(x => x.Price)
-            .GreaterThan(0).WithMessage("Price must be greater than 0.");
+        RuleFor(x => x.ProductId).NotEmpty();
+
+        RuleFor(x => x.Price).GreaterThan(0);
     }
 }

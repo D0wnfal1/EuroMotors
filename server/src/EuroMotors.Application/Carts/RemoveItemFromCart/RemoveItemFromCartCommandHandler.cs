@@ -44,7 +44,7 @@ internal sealed class RemoveItemFromCartCommandHandler(
 
 		cart.RemoveItem(cartItem.ProductId);
 
-		await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
 		return Result.Success();
 	}

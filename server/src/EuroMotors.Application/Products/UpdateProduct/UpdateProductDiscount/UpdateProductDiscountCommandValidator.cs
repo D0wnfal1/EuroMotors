@@ -6,10 +6,8 @@ public class UpdateProductDiscountCommandValidator : AbstractValidator<UpdatePro
 {
     public UpdateProductDiscountCommandValidator()
     {
-        RuleFor(x => x.ProductId)
-            .NotEmpty().WithMessage("ProductId cannot be empty.");
-        RuleFor(x => x.Discount)
-            .GreaterThanOrEqualTo(0).WithMessage("Discount must be greater than or equal to 0.")
-            .LessThanOrEqualTo(100).WithMessage("Discount must be less than or equal to 100.");
+        RuleFor(x => x.ProductId).NotEmpty();
+
+        RuleFor(x => x.Discount).GreaterThanOrEqualTo(0).LessThanOrEqualTo(100);
     }
 }

@@ -24,7 +24,7 @@ internal sealed class GetOrdersQueryHandler(IDbConnectionFactory dbConnectionFac
                  total_price AS {nameof(OrderResponse.TotalPrice)},
                  created_at_utc AS {nameof(OrderResponse.CreatedAtUtc)}
              FROM orders
-             WHERE customer_id = @CustomerId
+             WHERE user_id = @UserId
              """;
 
         List<OrderResponse> orders = (await connection.QueryAsync<OrderResponse>(sql, request)).AsList();

@@ -6,10 +6,8 @@ internal sealed class UpdateProductStockCommandValidator : AbstractValidator<Upd
 {
     public UpdateProductStockCommandValidator()
     {
-        RuleFor(x => x.ProductId)
-            .NotEmpty().WithMessage("ProductId cannot be empty.");
+        RuleFor(x => x.ProductId).NotEmpty();
         
-        RuleFor(x => x.Quantity)
-            .GreaterThanOrEqualTo(0).WithMessage("Stock cannot be negative.");
+        RuleFor(x => x.Quantity).GreaterThanOrEqualTo(0);
     }
 }
