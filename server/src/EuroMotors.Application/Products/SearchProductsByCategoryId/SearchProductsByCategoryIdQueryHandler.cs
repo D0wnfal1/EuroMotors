@@ -1,4 +1,4 @@
-﻿using System.Data.Common;
+﻿using System.Data;
 using Dapper;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
@@ -15,7 +15,7 @@ internal sealed class SearchProductsByCategoryIdQueryHandler(IDbConnectionFactor
         SearchProductsByCategoryIdQuery request,
         CancellationToken cancellationToken)
     {
-        await using DbConnection connection = await dbConnectionFactory.OpenConnectionAsync();
+        using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
         const string sql =
             $"""
@@ -36,11 +36,6 @@ internal sealed class SearchProductsByCategoryIdQueryHandler(IDbConnectionFactor
 
         List<ProductResponse> products = (await connection.QueryAsync<ProductResponse>(sql, request)).AsList();
 
-        if (products.Count == 0)
-        {
-            return Result.Failure<IReadOnlyCollection<ProductResponse>>(ProductErrors.ProductsNotFoundForCategory(request.CategoryId));
-        }
-
-        return products;
+        return products.Count == 0 ? Result.Failure<IReadOnlyCollection<ProductResponse>>(ProductErrors.ProductsNotFoundForCategory(request.CategoryId)) : products;
     }
 }

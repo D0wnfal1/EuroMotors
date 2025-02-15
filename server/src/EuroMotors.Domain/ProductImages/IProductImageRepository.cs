@@ -10,7 +10,7 @@ public interface IProductImageRepository
 
     void Update(ProductImage image);
 
-    void Delete(Guid id);
+    void Delete(Guid productImageId);
 
     Task DeleteByProductIdAsync(Guid productId, CancellationToken cancellationToken = default);
 }

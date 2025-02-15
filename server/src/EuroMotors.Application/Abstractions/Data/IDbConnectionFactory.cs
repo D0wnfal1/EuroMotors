@@ -1,8 +1,8 @@
-﻿using System.Data.Common;
+﻿using System.Data;
 
 namespace EuroMotors.Application.Abstractions.Data;
 
 public interface IDbConnectionFactory
 {
-    ValueTask<DbConnection> OpenConnectionAsync();
+    IDbConnection CreateConnection();
 }

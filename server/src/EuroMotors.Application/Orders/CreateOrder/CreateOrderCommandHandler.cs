@@ -1,8 +1,7 @@
-﻿using System.Data.Common;
+﻿using System.Data;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Abstractions.Payments;
-using EuroMotors.Application.Carts;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Carts;
 using EuroMotors.Domain.Orders;
@@ -24,7 +23,7 @@ internal sealed class CreateOrderCommandHandler(
 {
 	public async Task<Result> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
 	{
-		await using DbConnection connection = await dbConnectionFactory.OpenConnectionAsync();
+		using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
 		User? user = await userRepository.GetByIdAsync(request.CustomerId, cancellationToken);
 
@@ -80,7 +79,7 @@ internal sealed class CreateOrderCommandHandler(
 
 		cart.Clear();
 
-        cartRepository.Update(cart, cancellationToken);
+        cartRepository.Update(cart);
 
         return Result.Success();
 	}

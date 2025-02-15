@@ -1,9 +1,8 @@
-﻿using System.Data.Common;
+﻿using System.Data;
 using Dapper;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.CarModels.GetCarModel;
-using EuroMotors.Application.Categories.GetCategories;
 using EuroMotors.Domain.Abstractions;
 
 namespace EuroMotors.Application.CarModels.GetCarModels;
@@ -12,7 +11,7 @@ public class GetCarModelQueryHandler(IDbConnectionFactory dbConnectionFactory) :
 {
     public async Task<Result<IReadOnlyCollection<CarModelResponse>>> Handle(GetCarModelQuery request, CancellationToken cancellationToken)
     {
-        await using DbConnection connection = await dbConnectionFactory.OpenConnectionAsync();
+        using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
         const string sql = 
            $"""

@@ -16,7 +16,7 @@ public sealed class Cart : Entity
 
     public Guid UserId { get; private set; }
 
-    public List<CartItem> CartItems { get; init; } = [];
+    public List<CartItem> CartItems { get; private set; } = [];
 
     public decimal TotalPrice => _cartItems.Sum(item => item.TotalPrice);
 

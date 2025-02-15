@@ -1,4 +1,4 @@
-﻿using System.Data.Common;
+﻿using System.Data;
 using Dapper;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
@@ -14,7 +14,7 @@ internal sealed class GetCategoriesQueryHandler(IDbConnectionFactory dbConnectio
         GetCategoriesQuery request,
         CancellationToken cancellationToken)
     {
-        await using DbConnection connection = await dbConnectionFactory.OpenConnectionAsync();
+        using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
         const string sql =
             $"""

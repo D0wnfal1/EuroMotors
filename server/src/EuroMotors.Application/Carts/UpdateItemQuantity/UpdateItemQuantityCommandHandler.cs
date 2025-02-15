@@ -24,7 +24,7 @@ internal sealed class UpdateItemQuantityCommandHandler(ICartRepository cartRepos
             return result;
         }
 
-        cartRepository.Update(cart, cancellationToken);
+        cartRepository.Update(cart);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

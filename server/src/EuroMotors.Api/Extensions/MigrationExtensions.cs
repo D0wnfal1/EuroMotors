@@ -1,5 +1,4 @@
 ﻿using EuroMotors.Infrastructure.Database;
-using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace EuroMotors.Api.Extensions;

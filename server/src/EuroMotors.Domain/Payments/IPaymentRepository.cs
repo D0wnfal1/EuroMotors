@@ -7,7 +7,7 @@ public interface IPaymentRepository
 {
     Task<Payment?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task<IEnumerable<Payment>> GetForProductAsync(Order order, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Payment>> GetForOrderAsync(Order order, CancellationToken cancellationToken = default);
 
     void Insert(Payment payment);
 }

@@ -8,5 +8,5 @@ public interface ICartRepository
 
     void Insert(Cart cart);
 
-    void Update(Cart cart, CancellationToken cancellationToken = default);
+    void Update(Cart cart);
 }

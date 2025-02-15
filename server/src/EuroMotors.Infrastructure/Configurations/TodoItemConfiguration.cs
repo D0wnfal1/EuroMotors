@@ -3,7 +3,7 @@ using EuroMotors.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace EuroMotors.Infrastructure.Todos;
+namespace EuroMotors.Infrastructure.Configurations;
 
 internal sealed class TodoItemConfiguration : IEntityTypeConfiguration<TodoItem>
 {
