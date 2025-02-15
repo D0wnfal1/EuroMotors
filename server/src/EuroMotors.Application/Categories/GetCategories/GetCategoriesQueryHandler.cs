@@ -2,7 +2,7 @@
 using Dapper;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
-using EuroMotors.Application.Categories.GetCategory;
+using EuroMotors.Application.Categories.GetByIdCategory;
 using EuroMotors.Domain.Abstractions;
 
 namespace EuroMotors.Application.Categories.GetCategories;

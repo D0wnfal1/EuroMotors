@@ -1,3 +1,3 @@
-﻿namespace EuroMotors.Application.Categories.GetCategory;
+﻿namespace EuroMotors.Application.Categories.GetByIdCategory;
 
 public sealed record CategoryResponse(Guid Id, string Name, bool IsArchived);

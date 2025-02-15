@@ -1,5 +1,5 @@
 ﻿using EuroMotors.Application.Abstractions.Messaging;
-using EuroMotors.Application.Categories.GetCategory;
+using EuroMotors.Application.Categories.GetByIdCategory;
 
 namespace EuroMotors.Application.Categories.GetCategories;
 

@@ -5,11 +5,11 @@ using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
 
-namespace EuroMotors.Application.CarModels.GetCarModel;
+namespace EuroMotors.Application.CarModels.GetCarModelById;
 
-internal sealed class GetCarModelQueryHandler(IDbConnectionFactory dbConnectionFactory) : IQueryHandler<GetCarModelQuery, CarModelResponse>
+internal sealed class GetCarModelByIdQueryHandler(IDbConnectionFactory dbConnectionFactory) : IQueryHandler<GetCarModelByIdQuery, CarModelResponse>
 {
-	public async Task<Result<CarModelResponse>> Handle(GetCarModelQuery request, CancellationToken cancellationToken)
+	public async Task<Result<CarModelResponse>> Handle(GetCarModelByIdQuery request, CancellationToken cancellationToken)
 	{
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 

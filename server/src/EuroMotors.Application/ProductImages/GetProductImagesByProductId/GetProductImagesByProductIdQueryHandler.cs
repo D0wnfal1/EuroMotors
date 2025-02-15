@@ -2,7 +2,7 @@
 using Dapper;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
-using EuroMotors.Application.ProductImages.GetProductImage;
+using EuroMotors.Application.ProductImages.GetProductImageById;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.ProductImages;
 

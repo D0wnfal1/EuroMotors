@@ -5,12 +5,12 @@ using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Categories;
 
-namespace EuroMotors.Application.Categories.GetCategory;
+namespace EuroMotors.Application.Categories.GetByIdCategory;
 
-internal sealed class GetCategoryQueryHandler(IDbConnectionFactory dbConnectionFactory)
-    : IQueryHandler<GetCategoryQuery, CategoryResponse>
+internal sealed class GetCategoryByIdQueryHandler(IDbConnectionFactory dbConnectionFactory)
+    : IQueryHandler<GetCategoryByIdQuery, CategoryResponse>
 {
-    public async Task<Result<CategoryResponse>> Handle(GetCategoryQuery request, CancellationToken cancellationToken)
+    public async Task<Result<CategoryResponse>> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
     {
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 

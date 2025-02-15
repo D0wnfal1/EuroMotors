@@ -1,4 +1,4 @@
-﻿namespace EuroMotors.Application.Products.GetProduct;
+﻿namespace EuroMotors.Application.Products.GetProductById;
 
 public sealed record ProductResponse(
     Guid Id,

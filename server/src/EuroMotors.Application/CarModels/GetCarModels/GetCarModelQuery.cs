@@ -1,5 +1,5 @@
 ﻿using EuroMotors.Application.Abstractions.Messaging;
-using EuroMotors.Application.CarModels.GetCarModel;
+using EuroMotors.Application.CarModels.GetCarModelById;
 
 namespace EuroMotors.Application.CarModels.GetCarModels;
 

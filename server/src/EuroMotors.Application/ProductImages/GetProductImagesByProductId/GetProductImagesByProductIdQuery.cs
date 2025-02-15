@@ -1,5 +1,5 @@
 ﻿using EuroMotors.Application.Abstractions.Messaging;
-using EuroMotors.Application.ProductImages.GetProductImage;
+using EuroMotors.Application.ProductImages.GetProductImageById;
 
 namespace EuroMotors.Application.ProductImages.GetProductImagesByProductId;
 

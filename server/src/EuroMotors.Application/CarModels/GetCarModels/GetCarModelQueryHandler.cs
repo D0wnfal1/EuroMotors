@@ -2,7 +2,7 @@
 using Dapper;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
-using EuroMotors.Application.CarModels.GetCarModel;
+using EuroMotors.Application.CarModels.GetCarModelById;
 using EuroMotors.Domain.Abstractions;
 
 namespace EuroMotors.Application.CarModels.GetCarModels;

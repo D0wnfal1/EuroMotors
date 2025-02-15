@@ -5,12 +5,12 @@ using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Orders;
 
-namespace EuroMotors.Application.Orders.GetOrder;
+namespace EuroMotors.Application.Orders.GetOrderById;
 
-internal sealed class GetOrderQueryHandler(IDbConnectionFactory dbConnectionFactory)
-    : IQueryHandler<GetOrderQuery, OrderResponse>
+internal sealed class GetOrderByIdQueryHandler(IDbConnectionFactory dbConnectionFactory)
+    : IQueryHandler<GetOrderByIdQuery, OrderResponse>
 {
-    public async Task<Result<OrderResponse>> Handle(GetOrderQuery request, CancellationToken cancellationToken)
+    public async Task<Result<OrderResponse>> Handle(GetOrderByIdQuery request, CancellationToken cancellationToken)
     {
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 

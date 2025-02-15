@@ -5,12 +5,12 @@ using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.ProductImages;
 
-namespace EuroMotors.Application.ProductImages.GetProductImage;
+namespace EuroMotors.Application.ProductImages.GetProductImageById;
 
-internal sealed class GetProductImageQueryHandler(IDbConnectionFactory dbConnectionFactory)
-    : IQueryHandler<GetProductImageQuery, ProductImageResponse>
+internal sealed class GetProductImageByIdQueryHandler(IDbConnectionFactory dbConnectionFactory)
+    : IQueryHandler<GetProductImageByIdQuery, ProductImageResponse>
 {
-    public async Task<Result<ProductImageResponse>> Handle(GetProductImageQuery request, CancellationToken cancellationToken)
+    public async Task<Result<ProductImageResponse>> Handle(GetProductImageByIdQuery request, CancellationToken cancellationToken)
     {
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 

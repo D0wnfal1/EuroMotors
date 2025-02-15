@@ -1,4 +1,4 @@
-﻿namespace EuroMotors.Application.Orders.GetOrder;
+﻿namespace EuroMotors.Application.Orders.GetOrderById;
 
 public sealed record OrderItemResponse(
     Guid OrderItemId,
