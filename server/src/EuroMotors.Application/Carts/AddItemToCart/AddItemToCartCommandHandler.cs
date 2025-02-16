@@ -3,7 +3,6 @@ using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Carts;
 using EuroMotors.Domain.Products;
 using EuroMotors.Domain.Users;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EuroMotors.Application.Carts.AddItemToCart;
 
@@ -35,12 +34,13 @@ internal sealed class AddItemToCartCommandHandler(
             return Result.Failure(ProductErrors.NotEnoughStock(product.Stock));
         }
 
-        var cartItem = CartItem.Create(product, request.Quantity);
 
 
         Cart cart = await cartRepository.GetByUserIdAsync(user.Id, cancellationToken) ?? Cart.Create(user.Id);
 
-        cart.AddItem(product, cartItem.Quantity);
+        var cartItem = CartItem.Create(product, cart.Id, request.Quantity);
+
+        cart.AddItem(cartItem);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

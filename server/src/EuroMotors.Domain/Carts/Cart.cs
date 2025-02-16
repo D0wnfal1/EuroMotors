@@ -33,18 +33,18 @@ public sealed class Cart : Entity
         return cart;
     }
 
-    public Result AddItem(Product product, int quantity)
+    public Result AddItem(CartItem cartItem)
     {
-        if (quantity <= 0)
+        if (cartItem.Quantity <= 0)
         {
             return Result.Failure(CartErrors.QuantityMustBeGreaterThanZero);
         }
 
-        CartItem? existingItem = _cartItems.FirstOrDefault(item => item.ProductId == product.Id);
+        CartItem? existingItem = _cartItems.FirstOrDefault(item => item.ProductId == cartItem.ProductId);
 
         if (existingItem != null)
         {
-            Result updateResult = existingItem.UpdateQuantity(existingItem.Quantity + quantity);
+            Result updateResult = existingItem.UpdateQuantity(existingItem.Quantity + cartItem.Quantity);
             if (updateResult.IsFailure)
             {
                 return updateResult;
@@ -52,11 +52,10 @@ public sealed class Cart : Entity
         }
         else
         {
-            var cartItem = CartItem.Create(product, quantity);
             _cartItems.Add(cartItem);
         }
 
-        RaiseDomainEvent(new CartItemAddedDomainEvent(Id, product.Id));
+        RaiseDomainEvent(new CartItemAddedDomainEvent(Id, cartItem.ProductId));
 
         return Result.Success();
     }

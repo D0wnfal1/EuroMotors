@@ -22,7 +22,7 @@ public sealed class OrderItem : Entity
 
     public Product Product { get; private set; } = null!;
 
-    internal static OrderItem Create(Guid orderId, Guid productId, decimal quantity, decimal unitPrice)
+    public static OrderItem Create(Guid orderId, Guid productId, decimal quantity, decimal unitPrice)
     {
         return new OrderItem()
         {

@@ -1,4 +1,6 @@
 ﻿using System.Text;
+using Bookify.Infrastructure.Data;
+using Dapper;
 using EuroMotors.Application.Abstractions.Authentication;
 using EuroMotors.Application.Abstractions.Clock;
 using EuroMotors.Application.Abstractions.Data;
@@ -83,6 +85,8 @@ public static class DependencyInjection
 
         services.AddSingleton<IDbConnectionFactory>(_ =>
             new DbConnectionFactory(connectionString));
+
+        SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
 
         return services;
 	}

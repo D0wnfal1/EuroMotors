@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Infrastructure.Database.Migrations
+namespace EuroMotors.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -69,8 +69,13 @@ namespace Infrastructure.Database.Migrations
             modelBuilder.Entity("EuroMotors.Domain.Carts.CartItem", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<Guid>("CartId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("cart_id");
 
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid")
@@ -85,9 +90,15 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnName("unit_price");
 
                     b.HasKey("Id")
-                        .HasName("pk_cart_item");
+                        .HasName("pk_cart_items");
 
-                    b.ToTable("cart_item", "public");
+                    b.HasIndex("CartId")
+                        .HasDatabaseName("ix_cart_items_cart_id");
+
+                    b.HasIndex("ProductId")
+                        .HasDatabaseName("ix_cart_items_product_id");
+
+                    b.ToTable("cart_items", "public");
                 });
 
             modelBuilder.Entity("EuroMotors.Domain.Categories.Category", b =>
@@ -157,6 +168,7 @@ namespace Infrastructure.Database.Migrations
             modelBuilder.Entity("EuroMotors.Domain.Orders.OrderItem", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
@@ -181,12 +193,12 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnName("unit_price");
 
                     b.HasKey("Id")
-                        .HasName("pk_order_item");
+                        .HasName("pk_order_items");
 
-                    b.HasIndex("ProductId")
-                        .HasDatabaseName("ix_order_item_product_id");
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("ix_order_items_order_id");
 
-                    b.ToTable("order_item", "public");
+                    b.ToTable("order_items", "public");
                 });
 
             modelBuilder.Entity("EuroMotors.Domain.Payments.Payment", b =>
@@ -407,29 +419,27 @@ namespace Infrastructure.Database.Migrations
                 {
                     b.HasOne("EuroMotors.Domain.Carts.Cart", null)
                         .WithMany("CartItems")
-                        .HasForeignKey("Id")
+                        .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_cart_item_carts_id");
+                        .HasConstraintName("fk_cart_items_carts_cart_id");
+
+                    b.HasOne("EuroMotors.Domain.Products.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_cart_items_products_product_id");
                 });
 
             modelBuilder.Entity("EuroMotors.Domain.Orders.OrderItem", b =>
                 {
                     b.HasOne("EuroMotors.Domain.Orders.Order", null)
                         .WithMany("OrderItems")
-                        .HasForeignKey("Id")
+                        .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_order_item_orders_id");
-
-                    b.HasOne("EuroMotors.Domain.Products.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_order_item_products_product_id");
-
-                    b.Navigation("Product");
+                        .HasConstraintName("fk_order_items_orders_order_id");
                 });
 
             modelBuilder.Entity("EuroMotors.Domain.Payments.Payment", b =>
