@@ -1,4 +1,4 @@
-﻿namespace EuroMotors.Api.Endpoints.Users;
+﻿namespace EuroMotors.Api.Controllers.Users;
 
 internal static class Permissions
 {

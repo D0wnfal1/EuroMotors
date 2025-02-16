@@ -6,13 +6,13 @@ using EuroMotors.Domain.Products;
 
 namespace EuroMotors.Application.Products.UpdateProduct;
 
-internal sealed class ProductUpdateCommandHandler(
+internal sealed class UpdateProductCommandHandler(
     IProductRepository productRepository,
     ICategoryRepository categoryRepository,
     ICarModelRepository carModelRepository,
-    IUnitOfWork unitOfWork) : ICommandHandler<ProductUpdateCommand>
+    IUnitOfWork unitOfWork) : ICommandHandler<UpdateProductCommand>
 {
-    public async Task<Result> Handle(ProductUpdateCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {
         Product? product = await productRepository.GetByIdAsync(request.ProductId, cancellationToken);
 

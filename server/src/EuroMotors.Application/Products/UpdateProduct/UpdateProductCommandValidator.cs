@@ -2,9 +2,9 @@
 
 namespace EuroMotors.Application.Products.UpdateProduct;
 
-internal sealed class ProductUpdateCommandValidator : AbstractValidator<ProductUpdateCommand>
+internal sealed class UpdateProductCommandValidator : AbstractValidator<UpdateProductCommand>
 {
-    public ProductUpdateCommandValidator()
+    public UpdateProductCommandValidator()
     {
         RuleFor(x => x.ProductId).NotEmpty();
 

@@ -8,13 +8,13 @@ using Microsoft.EntityFrameworkCore;
 namespace EuroMotors.Application.Todos.GetById;
 
 internal sealed class GetTodoByIdQueryHandler(IApplicationDbContext context, IUserContext userContext)
-    : IQueryHandler<GetTodoByIdQuery, TodoResponse>
+    : IQueryHandler<GetTodoByIdQuery, GetTodoByIdResponse>
 {
-    public async Task<Result<TodoResponse>> Handle(GetTodoByIdQuery query, CancellationToken cancellationToken)
+    public async Task<Result<GetTodoByIdResponse>> Handle(GetTodoByIdQuery query, CancellationToken cancellationToken)
     {
-        TodoResponse? todo = await context.TodoItems
+        GetTodoByIdResponse? todo = await context.TodoItems
             .Where(todoItem => todoItem.Id == query.TodoItemId && todoItem.UserId == userContext.UserId)
-            .Select(todoItem => new TodoResponse
+            .Select(todoItem => new GetTodoByIdResponse
             {
                 Id = todoItem.Id,
                 UserId = todoItem.UserId,
@@ -29,7 +29,7 @@ internal sealed class GetTodoByIdQueryHandler(IApplicationDbContext context, IUs
 
         if (todo is null)
         {
-            return Result.Failure<TodoResponse>(TodoItemErrors.NotFound(query.TodoItemId));
+            return Result.Failure<GetTodoByIdResponse>(TodoItemErrors.NotFound(query.TodoItemId));
         }
 
         return todo;

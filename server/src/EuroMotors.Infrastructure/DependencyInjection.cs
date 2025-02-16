@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using Bookify.Infrastructure.Data;
 using Dapper;
 using EuroMotors.Application.Abstractions.Authentication;
 using EuroMotors.Application.Abstractions.Clock;

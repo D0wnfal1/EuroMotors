@@ -1,6 +1,6 @@
 ﻿namespace EuroMotors.Application.Todos.GetById;
 
-public sealed class TodoResponse
+public sealed class GetTodoByIdResponse
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }

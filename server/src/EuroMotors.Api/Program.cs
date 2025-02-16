@@ -1,4 +1,3 @@
-using System.Reflection;
 using EuroMotors.Api;
 using EuroMotors.Api.Extensions;
 using EuroMotors.Application;
@@ -18,11 +17,7 @@ builder.Services
     .AddPresentation()
     .AddInfrastructure(builder.Configuration);
 
-builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
-
 WebApplication app = builder.Build();
-
-app.MapEndpoints();
 
 if (app.Environment.IsDevelopment())
 {

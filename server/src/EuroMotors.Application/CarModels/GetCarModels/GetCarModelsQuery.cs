@@ -3,4 +3,4 @@ using EuroMotors.Application.CarModels.GetCarModelById;
 
 namespace EuroMotors.Application.CarModels.GetCarModels;
 
-public sealed record GetCarModelQuery() : IQuery<IReadOnlyCollection<CarModelResponse>>;
+public sealed record GetCarModelsQuery() : IQuery<IReadOnlyCollection<CarModelResponse>>;

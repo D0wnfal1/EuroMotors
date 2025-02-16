@@ -8,18 +8,18 @@ using Microsoft.EntityFrameworkCore;
 namespace EuroMotors.Application.Todos.Get;
 
 internal sealed class GetTodosQueryHandler(IApplicationDbContext context, IUserContext userContext)
-    : IQueryHandler<GetTodosQuery, List<TodoResponse>>
+    : IQueryHandler<GetTodosQuery, List<GetTodoResponse>>
 {
-    public async Task<Result<List<TodoResponse>>> Handle(GetTodosQuery query, CancellationToken cancellationToken)
+    public async Task<Result<List<GetTodoResponse>>> Handle(GetTodosQuery query, CancellationToken cancellationToken)
     {
         if (query.UserId != userContext.UserId)
         {
-            return Result.Failure<List<TodoResponse>>(UserErrors.Unauthorized());
+            return Result.Failure<List<GetTodoResponse>>(UserErrors.Unauthorized());
         }
 
-        List<TodoResponse> todos = await context.TodoItems
+        List<GetTodoResponse> todos = await context.TodoItems
             .Where(todoItem => todoItem.UserId == query.UserId)
-            .Select(todoItem => new TodoResponse
+            .Select(todoItem => new GetTodoResponse
             {
                 Id = todoItem.Id,
                 UserId = todoItem.UserId,

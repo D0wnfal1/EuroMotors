@@ -7,9 +7,9 @@ using EuroMotors.Domain.Abstractions;
 
 namespace EuroMotors.Application.CarModels.GetCarModels;
 
-public class GetCarModelQueryHandler(IDbConnectionFactory dbConnectionFactory) : IQueryHandler<GetCarModelQuery, IReadOnlyCollection<CarModelResponse>>
+public class GetCarModelsQueryHandler(IDbConnectionFactory dbConnectionFactory) : IQueryHandler<GetCarModelsQuery, IReadOnlyCollection<CarModelResponse>>
 {
-    public async Task<Result<IReadOnlyCollection<CarModelResponse>>> Handle(GetCarModelQuery request, CancellationToken cancellationToken)
+    public async Task<Result<IReadOnlyCollection<CarModelResponse>>> Handle(GetCarModelsQuery request, CancellationToken cancellationToken)
     {
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
