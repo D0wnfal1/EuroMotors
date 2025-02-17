@@ -20,20 +20,23 @@ internal sealed class GetProductImagesByProductIdQueryHandler(IDbConnectionFacto
         const string sql =
             $"""
              SELECT
-                 id AS {nameof(ProductImageResponse.Id)},
-                 url AS {nameof(ProductImageResponse.Url)},
-                 product_id AS {nameof(ProductImageResponse.ProductId)}
+                 id AS Id,
+                 url AS Url,
+                 product_id AS ProductId
              FROM product_images
              WHERE product_id = @ProductId
              """;
 
-        List<ProductImageResponse> productImages = (await connection.QueryAsync<ProductImageResponse>(sql, request)).AsList();
+        var productImages = (await connection.QueryAsync<ProductImageRaw>(sql, new { request.ProductId }))
+            .Select(img => new ProductImageResponse(img.Id, new Uri(img.Url), img.ProductId))
+            .ToList();
 
-        if (productImages.Any())
+        if (!productImages.Any())
         {
-            return Result.Failure<IReadOnlyCollection<ProductImageResponse>>(ProductImageErrors.ProductImagesNotFound(request.ProductId));
+            return Result.Failure<IReadOnlyCollection<ProductImageResponse>>(
+                ProductImageErrors.ProductImagesNotFound(request.ProductId));
         }
 
-        return productImages;
+        return Result.Success<IReadOnlyCollection<ProductImageResponse>>(productImages);
     }
 }

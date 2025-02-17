@@ -9,7 +9,7 @@ internal sealed class CarModelRepository : Repository<CarModel>, ICarModelReposi
     {
     }
 
-    public async void Delete(Guid carModelId)
+    public async Task Delete(Guid carModelId)
     {
         CarModel? carModel = await GetByIdAsync(carModelId);
 

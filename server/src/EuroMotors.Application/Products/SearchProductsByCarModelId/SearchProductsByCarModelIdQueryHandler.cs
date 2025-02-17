@@ -39,7 +39,7 @@ internal sealed class SearchProductsByCarModelIdQueryHandler(IDbConnectionFactor
 
         if (products.Count == 0)
         {
-            return Result.Failure<IReadOnlyCollection<ProductResponse>>(ProductErrors.ProductsNotFoundForCarModel(request.CarModelId));
+            return Result.Failure<IReadOnlyCollection<ProductResponse>>(ProductErrors.ProductCarModelNotFound(request.CarModelId));
         }
 
         return products;

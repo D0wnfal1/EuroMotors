@@ -53,7 +53,7 @@ internal sealed class CreateOrderCommandHandler(
 				return Result.Failure(ProductErrors.NotFound(cartItem.ProductId));
 			}
 
-			Result result = product.UpdateStock(cartItem.Quantity);
+			Result result = product.BuyProduct(cartItem.Quantity);
 
 			if (result.IsFailure)
 			{

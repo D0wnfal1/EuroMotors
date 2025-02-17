@@ -24,13 +24,19 @@ internal sealed class GetProductImageByIdQueryHandler(IDbConnectionFactory dbCon
              WHERE id = @ProductImageId
              """;
 
-        ProductImageResponse? productImage = await connection.QuerySingleOrDefaultAsync<ProductImageResponse>(sql, request);
+        ProductImageRaw? productImageRaw = await connection.QuerySingleOrDefaultAsync<ProductImageRaw>(sql, new { request.ProductImageId });
 
-        if (productImage is null)
+        if (productImageRaw is null)
         {
             return Result.Failure<ProductImageResponse>(ProductImageErrors.ProductImageNotFound(request.ProductImageId));
         }
 
-        return productImage;
+        var productImage = new ProductImageResponse(
+            productImageRaw.Id,
+            new Uri(productImageRaw.Url),
+            productImageRaw.ProductId
+        );
+
+        return Result.Success(productImage);
     }
 }

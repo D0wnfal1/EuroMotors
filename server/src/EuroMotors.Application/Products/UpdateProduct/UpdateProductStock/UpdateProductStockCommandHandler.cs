@@ -9,16 +9,13 @@ internal sealed class UpdateProductStockCommandHandler(IProductRepository produc
     public async Task<Result> Handle(UpdateProductStockCommand request, CancellationToken cancellationToken)
     {
         Product? product = await productRepository.GetByIdAsync(request.ProductId, cancellationToken);
+
         if (product == null)
         {
             return Result.Failure(ProductErrors.NotFound(request.ProductId));
         }
 
-        Result stockUpdateResult = product.UpdateStock(request.Quantity);
-        if (stockUpdateResult.IsFailure)
-        {
-            return Result.Failure(stockUpdateResult.Error);
-        }
+        product.UpdateStock(request.Stock);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

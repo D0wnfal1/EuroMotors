@@ -17,7 +17,7 @@ public class DeleteProductImageByProductIdCommandHandler(IProductImageRepository
 
         foreach (ProductImage image in images)
         {
-            productImageRepository.Delete(image.Id); 
+           await productImageRepository.Delete(image.Id); 
         }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);

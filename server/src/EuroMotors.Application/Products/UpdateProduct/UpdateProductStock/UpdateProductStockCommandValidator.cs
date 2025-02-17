@@ -8,6 +8,6 @@ internal sealed class UpdateProductStockCommandValidator : AbstractValidator<Upd
     {
         RuleFor(x => x.ProductId).NotEmpty();
         
-        RuleFor(x => x.Quantity).GreaterThanOrEqualTo(0);
+        RuleFor(x => x.Stock).GreaterThanOrEqualTo(0);
     }
 }

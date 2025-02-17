@@ -4,8 +4,8 @@ namespace EuroMotors.Domain.ProductImages;
 
 public static class ProductImageErrors
 {
-    public static Error InvalidUrl() =>
-        Error.Failure("ProductImage.InvalidUrl", "The URL provided for the product image is invalid.");
+    public static Error InvalidUrl(Uri url) =>
+        Error.Failure("ProductImage.InvalidUrl", $"The URL '{url}' provided for the product image is invalid.");
 
     public static Error ProductNotFound(Guid productId) =>
         Error.NotFound("ProductImage.ProductNotFound", $"The product with ID {productId} was not found.");

@@ -15,7 +15,7 @@ public sealed class DeleteCategoryCommandHandler(ICategoryRepository categoryRep
             return Result.Failure(CategoryErrors.NotFound(request.CategoryId));
         }
 
-        categoryRepository.Delete(category.Id);
+        await categoryRepository.Delete(category.Id);
         
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

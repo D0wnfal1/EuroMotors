@@ -42,8 +42,10 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateCategory([FromBody] CategoryRequest request, CancellationToken cancellationToken)
     {
+        var command = new CreateCategoryCommand(request.Name);
+
         Result<Guid> result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess
@@ -52,12 +54,9 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateCategory(Guid id, [FromBody] UpdateCategoryCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateCategory(Guid id, [FromBody] CategoryRequest request, CancellationToken cancellationToken)
     {
-        if (id != command.CategoryId)
-        {
-            return BadRequest("ID mismatch");
-        }
+        var command = new UpdateCategoryCommand(id, request.Name);
 
         Result result = await _sender.Send(command, cancellationToken);
 
@@ -65,12 +64,9 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPut("{id}/archive")]
-    public async Task<IActionResult> ArchiveCategory(Guid id, [FromBody] ArchiveCategoryCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> ArchiveCategory(Guid id, CancellationToken cancellationToken)
     {
-        if (id != command.CategoryId)
-        {
-            return BadRequest("ID mismatch");
-        }
+        var command = new ArchiveCategoryCommand(id);
 
         Result result = await _sender.Send(command, cancellationToken);
 

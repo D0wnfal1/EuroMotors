@@ -41,8 +41,10 @@ public class CarModelController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateCarModel([FromBody] CreateCarModelCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateCarModel([FromBody] CarModelRequest request, CancellationToken cancellationToken)
     {
+        var command = new CreateCarModelCommand(request.Brand, request.Model);
+
         Result<Guid> result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess
@@ -51,12 +53,9 @@ public class CarModelController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateCarModel(Guid id, [FromBody] UpdateCarModelCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateCarModel(Guid id, [FromBody] CarModelRequest request, CancellationToken cancellationToken)
     {
-        if (id != command.CarModelId)
-        {
-            return BadRequest("ID mismatch");
-        }
+        var command = new UpdateCarModelCommand(id, request.Brand, request.Model);
 
         Result result = await _sender.Send(command, cancellationToken);
 

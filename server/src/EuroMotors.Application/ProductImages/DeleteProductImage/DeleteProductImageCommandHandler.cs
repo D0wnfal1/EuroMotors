@@ -15,7 +15,7 @@ public class DeleteProductImageCommandHandler(IProductImageRepository productIma
             return Result.Failure(ProductImageErrors.ProductImageNotFound(request.Id));
         }
 
-        productImageRepository.Delete(productImage.Id);
+        await productImageRepository.Delete(productImage.Id);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

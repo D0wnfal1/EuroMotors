@@ -9,7 +9,7 @@ public class ProductRepository : Repository<Product>, IProductRepository
     {
     }
 
-    public async void Delete(Guid id)
+    public async Task Delete(Guid id)
     {
         Product? product = await GetByIdAsync(id);
 

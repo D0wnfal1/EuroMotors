@@ -23,7 +23,7 @@ internal sealed class ProductImageRepository : Repository<ProductImage>, IProduc
         _dbContext.SaveChanges();
     }
 
-    public async void Delete(Guid productImageId)
+    public async Task Delete(Guid productImageId)
     {
         ProductImage? productImage = await GetByIdAsync(productImageId);
 

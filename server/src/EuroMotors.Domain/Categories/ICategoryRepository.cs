@@ -6,5 +6,5 @@ public interface ICategoryRepository
 
     void Insert(Category category);
 
-    void Delete(Guid categoryId);
+    Task Delete(Guid categoryId);
 }

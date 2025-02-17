@@ -10,7 +10,6 @@ namespace EuroMotors.Api.Controllers.Users;
 
 [ApiController]
 [Route("api/users")]
-[HasPermission(Permissions.UsersAccess)]
 public class UsersController : ControllerBase
 {
     private readonly ISender _sender;
@@ -21,6 +20,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{userId}")]
+    [HasPermission(Permissions.UsersAccess)]
     public async Task<IActionResult> GetById(Guid userId, CancellationToken cancellationToken)
     {
         var query = new GetUserByIdQuery(userId);

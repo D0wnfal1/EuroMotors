@@ -30,9 +30,9 @@ public class ProductImage : Entity
 
     public Result UpdateUrl(Uri newUrl)
     {
-        if (newUrl == null || string.IsNullOrWhiteSpace(newUrl.ToString()))
+        if (string.IsNullOrWhiteSpace(newUrl.ToString()))
         {
-            return Result.Failure(ProductImageErrors.InvalidUrl());
+            return Result.Failure(ProductImageErrors.InvalidUrl(newUrl));
         }
 
         Url = newUrl;

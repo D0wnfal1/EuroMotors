@@ -15,7 +15,7 @@ public class DeleteCarModelCommandHandler(ICarModelRepository carModelRepository
             return Result.Failure(CarModelErrors.NotFound(request.CarModelId));
         }
 
-        carModelRepository.Delete(carModel.Id);
+        await carModelRepository.Delete(carModel.Id);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

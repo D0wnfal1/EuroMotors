@@ -27,7 +27,6 @@ public class GetProductsQueryHandler(IDbConnectionFactory dbConnectionFactory) :
                  stock AS {nameof(ProductResponse.Stock)},
                  is_available AS {nameof(ProductResponse.IsAvailable)}
               FROM products 
-              WHERE id = @ProductId
              """;
 
         List<ProductResponse> products = (await connection.QueryAsync<ProductResponse>(sql, request)).AsList();

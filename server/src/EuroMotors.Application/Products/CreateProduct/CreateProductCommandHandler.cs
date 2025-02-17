@@ -17,14 +17,14 @@ internal sealed class CreateProductCommandHandler(IProductRepository productRepo
 
         if (category is null)
         {
-            return Result.Failure<Guid>(ProductErrors.NotFound(request.CategoryId));
+            return Result.Failure<Guid>(ProductErrors.ProductCategoryNotFound(request.CategoryId));
         }
 
         CarModel? carModel = await carModelRepository.GetByIdAsync(request.CarModelId, cancellationToken);
 
         if (carModel is null)
         {
-            return Result.Failure<Guid>(ProductErrors.NotFound(request.CarModelId));
+            return Result.Failure<Guid>(ProductErrors.ProductCarModelNotFound(request.CarModelId));
         }
 
         Result<Product> result = Product.Create(

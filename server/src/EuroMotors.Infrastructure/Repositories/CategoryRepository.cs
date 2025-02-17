@@ -9,7 +9,7 @@ internal sealed class CategoryRepository : Repository<Category>, ICategoryReposi
     {
     }
 
-    public async void Delete(Guid categoryId)
+    public async Task Delete(Guid categoryId)
     {
         Category? category = await GetByIdAsync(categoryId);
 

@@ -4,22 +4,13 @@ using EuroMotors.Application.Todos.Delete;
 using EuroMotors.Application.Todos.Get;
 using EuroMotors.Application.Todos.GetById;
 using EuroMotors.Domain.Abstractions;
-using EuroMotors.Domain.Todos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EuroMotors.Api.Controllers.Todos;
-public sealed class CreateTodoRequest
-{
-    public Guid UserId { get; set; }
-    public string Description { get; set; }
-    public DateTime? DueDate { get; set; }
-    public List<string> Labels { get; set; } = [];
-    public Priority Priority { get; set; }
-}
 
-[Route("api/[controller]")]
+[Route("api/todos")]
 [ApiController]
 [Authorize]
 public class TodoController : ControllerBase

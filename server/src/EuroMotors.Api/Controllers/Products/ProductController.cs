@@ -46,16 +46,6 @@ public class ProductController : ControllerBase
         return result.IsSuccess ? Ok(result) : NotFound();
     }
 
-    [HttpGet("{id}/car-model")]
-    public async Task<IActionResult> SearchProductsByCarModelId(Guid id, CancellationToken cancellationToken)
-    {
-        var query = new SearchProductsByCarModelIdQuery(id);
-
-        Result<IReadOnlyCollection<ProductResponse>> result = await _sender.Send(query, cancellationToken);
-
-        return result.IsSuccess ? Ok(result) : NotFound();
-    }
-
     [HttpGet("{id}/category")]
     public async Task<IActionResult> SearchProductsByCategoryId(Guid id, CancellationToken cancellationToken)
     {
@@ -66,9 +56,21 @@ public class ProductController : ControllerBase
         return result.IsSuccess ? Ok(result) : NotFound();
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateProduct([FromBody] CreateProductCommand command, CancellationToken cancellationToken)
+    [HttpGet("{id}/car-model")]
+    public async Task<IActionResult> SearchProductsByCarModelId(Guid id, CancellationToken cancellationToken)
     {
+        var query = new SearchProductsByCarModelIdQuery(id);
+
+        Result<IReadOnlyCollection<ProductResponse>> result = await _sender.Send(query, cancellationToken);
+
+        return result.IsSuccess ? Ok(result) : NotFound();
+    }
+
+     [HttpPost]
+    public async Task<IActionResult> CreateProduct([FromBody] ProductRequest request, CancellationToken cancellationToken)
+    {
+        var command = new CreateProductCommand(request.Name, request.Description, request.VendorCode, request.CategoryId, request.CarModelId, request.Price, request.Discount, request.Stock, request.IsAvailable);
+
         Result<Guid> result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess
@@ -77,25 +79,9 @@ public class ProductController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] UpdateProductCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductRequest request, CancellationToken cancellationToken)
     {
-        if (id != command.ProductId)
-        {
-            return BadRequest("ID mismatch");
-        }
-
-        Result result = await _sender.Send(command, cancellationToken);
-
-        return result.IsSuccess ? NoContent() : BadRequest(result.Error);
-    }
-
-    [HttpPut("{id}/discount")]
-    public async Task<IActionResult> UpdateProductDiscount(Guid id, [FromBody] UpdateProductDiscountCommand command, CancellationToken cancellationToken)
-    {
-        if (id != command.ProductId)
-        {
-            return BadRequest("ID mismatch");
-        }
+        var command = new UpdateProductCommand(id, request.Name, request.Description, request.VendorCode, request.CategoryId, request.CarModelId, request.Price, request.Discount, request.Stock, request.IsAvailable);
 
         Result result = await _sender.Send(command, cancellationToken);
 
@@ -103,12 +89,19 @@ public class ProductController : ControllerBase
     }
 
     [HttpPut("{id}/price")]
-    public async Task<IActionResult> UpdateProductPrice(Guid id, [FromBody] UpdateProductPriceCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateProductPrice(Guid id, [FromBody] decimal price, CancellationToken cancellationToken)
     {
-        if (id != command.ProductId)
-        {
-            return BadRequest("ID mismatch");
-        }
+        var command = new UpdateProductPriceCommand(id, price);
+
+        Result result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess ? NoContent() : BadRequest(result.Error);
+    }
+
+    [HttpPut("{id}/discount")]
+    public async Task<IActionResult> UpdateProductDiscount(Guid id, [FromBody] decimal discount, CancellationToken cancellationToken)
+    {
+        var command = new UpdateProductDiscountCommand(id, discount);
 
         Result result = await _sender.Send(command, cancellationToken);
 
@@ -116,12 +109,9 @@ public class ProductController : ControllerBase
     }
 
     [HttpPut("{id}/stock")]
-    public async Task<IActionResult> UpdateProductStock(Guid id, [FromBody] UpdateProductStockCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateProductStock(Guid id, [FromBody] int stock, CancellationToken cancellationToken)
     {
-        if (id != command.ProductId)
-        {
-            return BadRequest("ID mismatch");
-        }
+        var command = new UpdateProductStockCommand(id, stock);
 
         Result result = await _sender.Send(command, cancellationToken);
 
@@ -129,12 +119,9 @@ public class ProductController : ControllerBase
     }
 
     [HttpPatch("{id}")]
-    public async Task<IActionResult> MarkAsNotAvailable(Guid id, [FromBody] MarkAsNotAvailableCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> MarkAsNotAvailable(Guid id, CancellationToken cancellationToken)
     {
-        if (id != command.ProductId)
-        {
-            return BadRequest("ID mismatch");
-        }
+        var command = new MarkAsNotAvailableCommand(id);
 
         Result result = await _sender.Send(command, cancellationToken);
 

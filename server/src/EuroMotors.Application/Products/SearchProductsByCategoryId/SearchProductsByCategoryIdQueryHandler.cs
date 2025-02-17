@@ -36,6 +36,6 @@ internal sealed class SearchProductsByCategoryIdQueryHandler(IDbConnectionFactor
 
         List<ProductResponse> products = (await connection.QueryAsync<ProductResponse>(sql, request)).AsList();
 
-        return products.Count == 0 ? Result.Failure<IReadOnlyCollection<ProductResponse>>(ProductErrors.ProductsNotFoundForCategory(request.CategoryId)) : products;
+        return products.Count == 0 ? Result.Failure<IReadOnlyCollection<ProductResponse>>(ProductErrors.ProductCategoryNotFound(request.CategoryId)) : products;
     }
 }

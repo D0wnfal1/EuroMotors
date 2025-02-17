@@ -18,7 +18,7 @@ public class GetCarModelsQueryHandler(IDbConnectionFactory dbConnectionFactory) 
             SELECT
                 id AS {nameof(CarModelResponse.Id)},
                 brand AS {nameof(CarModelResponse.Brand)},
-                model AS {nameof(CarModelResponse.Model)},
+                model AS {nameof(CarModelResponse.Model)}
             FROM car_models
             """;
 

@@ -9,12 +9,12 @@ namespace EuroMotors.Application.CarModels.GetCarModelById;
 
 internal sealed class GetCarModelByIdQueryHandler(IDbConnectionFactory dbConnectionFactory) : IQueryHandler<GetCarModelByIdQuery, CarModelResponse>
 {
-	public async Task<Result<CarModelResponse>> Handle(GetCarModelByIdQuery request, CancellationToken cancellationToken)
-	{
+    public async Task<Result<CarModelResponse>> Handle(GetCarModelByIdQuery request, CancellationToken cancellationToken)
+    {
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
         const string sql =
-		   $"""
+            $"""
                 SELECT
                     id AS {nameof(CarModelResponse.Id)},
                     brand AS {nameof(CarModelResponse.Brand)},
@@ -23,13 +23,13 @@ internal sealed class GetCarModelByIdQueryHandler(IDbConnectionFactory dbConnect
                 WHERE id = @CarModelId
                 """;
 
-		CarModelResponse? carModel = await connection.QuerySingleOrDefaultAsync<CarModelResponse>(sql, request.CarModelId );
+        CarModelResponse? carModel = await connection.QuerySingleOrDefaultAsync<CarModelResponse>(sql, new { request.CarModelId });
 
-		if (carModel is null)
-		{
-			return Result.Failure<CarModelResponse>(CarModelErrors.NotFound(request.CarModelId));
-		}
+        if (carModel is null)
+        {
+            return Result.Failure<CarModelResponse>(CarModelErrors.NotFound(request.CarModelId));
+        }
 
-		return carModel;
-	}
+        return carModel;
+    }
 }

@@ -2,4 +2,4 @@
 
 namespace EuroMotors.Application.Products.UpdateProduct.UpdateProductStock;
 
-public record UpdateProductStockCommand(Guid ProductId, int Quantity) : ICommand;
+public record UpdateProductStockCommand(Guid ProductId, int Stock) : ICommand;

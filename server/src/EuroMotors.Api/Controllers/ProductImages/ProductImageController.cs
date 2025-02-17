@@ -5,6 +5,7 @@ using EuroMotors.Application.ProductImages.GetProductImageById;
 using EuroMotors.Application.ProductImages.GetProductImagesByProductId;
 using EuroMotors.Application.ProductImages.UpdateProductImage;
 using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.ProductImages;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -43,8 +44,10 @@ public class ProductImageController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateProductImage([FromBody] CreateProductImageCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateProductImage([FromBody] ProductImageRequest request, CancellationToken cancellationToken)
     {
+        var command = new CreateProductImageCommand( request.Url, request.ProductId);
+
         Result<Guid> result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess
@@ -53,12 +56,9 @@ public class ProductImageController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateProductImage(Guid id, [FromBody] UpdateProductImageCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateProductImage(Guid id, [FromBody] ProductImageRequest request, CancellationToken cancellationToken)
     {
-        if (id != command.Id)
-        {
-            return BadRequest("ID mismatch");
-        }
+        var command = new UpdateProductImageCommand(id, request.Url, request.ProductId);
 
         Result result = await _sender.Send(command, cancellationToken);
 

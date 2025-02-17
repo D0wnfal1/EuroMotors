@@ -15,7 +15,7 @@ internal sealed class DeleteProductCommandHandler(IProductRepository productRepo
             return Result.Failure(ProductErrors.NotFound(request.ProductId));
         }
 
-        productRepository.Delete(product.Id);
+        await productRepository.Delete(product.Id);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

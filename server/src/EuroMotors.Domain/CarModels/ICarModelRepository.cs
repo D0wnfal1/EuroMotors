@@ -6,5 +6,5 @@ public interface ICarModelRepository
 
     void Insert(CarModel carModel);
 
-    void Delete(Guid carModelId);
+    Task Delete(Guid carModelId);
 }
