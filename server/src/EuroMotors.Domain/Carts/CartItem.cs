@@ -1,4 +1,5 @@
 ﻿using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.Carts.Events;
 using EuroMotors.Domain.Products;
 
 namespace EuroMotors.Domain.Carts;
@@ -31,17 +32,19 @@ public class CartItem : Entity
 
         };
 
+        cartItem.RaiseDomainEvent(new CartCreatedDomainEvent(cartItem.Id));
+
         return cartItem;
     }
 
-    public Result UpdateQuantity(int quantity)
+    public Result UpdateQuantity(int newQuantity)
     {
-        if (quantity <= 0)
+        if (newQuantity <= 0)
         {
             return Result.Failure(CartErrors.QuantityMustBeGreaterThanZero);
         }
 
-        Quantity = quantity;
+        Quantity = newQuantity;
 
         return Result.Success();
     }

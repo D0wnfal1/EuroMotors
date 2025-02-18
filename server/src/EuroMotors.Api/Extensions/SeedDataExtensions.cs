@@ -169,9 +169,15 @@ public static class SeedDataExtensions
         Faker<Cart> cartFaker = new Faker<Cart>()
             .CustomInstantiator(f =>
             {
-                User user = users[f.Random.Int(0, users.Count - 1)];
+                User user;
+                do
+                {
+                    user = users[f.Random.Int(0, users.Count - 1)];
+                } while (connection.ExecuteScalar<int>("SELECT COUNT(*) FROM carts WHERE user_id = @UserId", new { UserId = user.Id }) > 0);
+
                 return Cart.Create(user.Id);
             });
+
 
         List<Cart> carts = cartFaker.Generate(10);
 

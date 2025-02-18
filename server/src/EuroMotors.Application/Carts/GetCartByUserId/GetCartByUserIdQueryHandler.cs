@@ -24,37 +24,39 @@ internal sealed class GetCartByUserIdQueryHandler(IDbConnectionFactory dbConnect
                  ci.cart_id AS {nameof(CartItemResponse.CartId)},
                  ci.product_id AS {nameof(CartItemResponse.ProductId)},
                  ci.quantity AS {nameof(CartItemResponse.Quantity)},
-                 ci.unit_price AS {nameof(CartItemResponse.UnitPrice)},
-                 ci.total_price AS {nameof(CartItemResponse.TotalPrice)}
+                 ci.unit_price AS {nameof(CartItemResponse.UnitPrice)}
              FROM carts c
              LEFT JOIN cart_items ci ON ci.cart_id = c.id
              WHERE c.user_id = @UserId
              """;
 
-        Dictionary<Guid, CartResponse> cartsDictionary = [];
+        var cartsDictionary = new Dictionary<Guid, CartResponse>();
+
         await connection.QueryAsync<CartResponse, CartItemResponse, CartResponse>(
             sql,
             (cart, cartItem) =>
             {
-                if (cartsDictionary.TryGetValue(cart.Id, out CartResponse? existingCart))
+                if (!cartsDictionary.TryGetValue(cart.UserId, out CartResponse? existingCart))
                 {
-                    cart = existingCart;
-                }
-                else
-                {
-                    cartsDictionary.Add(cart.Id, cart);
+                    existingCart = new CartResponse(cart.Id, cart.UserId);
+                    cartsDictionary[cart.UserId] = existingCart;
                 }
 
                 if (cartItem is not null)
                 {
-                    cart.CartItems.Add(cartItem);
+                    existingCart.CartItems.Add(cartItem);
                 }
 
-                return cart;
+                return existingCart;
             },
-            request,
+            new
+            {
+                request.UserId
+            },
             splitOn: nameof(CartItemResponse.CartItemId));
 
-        return !cartsDictionary.TryGetValue(request.UserId, out CartResponse cartResponse) ? Result.Failure<CartResponse>(CartErrors.NotFound(request.UserId)) : cartResponse;
+        return cartsDictionary.TryGetValue(request.UserId, out CartResponse? cartResponse)
+            ? cartResponse
+            : Result.Failure<CartResponse>(CartErrors.NotFound(request.UserId));
     }
 }

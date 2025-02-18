@@ -1,8 +1,18 @@
-﻿namespace EuroMotors.Application.Carts.GetCartById;
+﻿using EuroMotors.Domain.Carts;
 
-public sealed record CartResponse(
-    Guid Id,
-    Guid UserId)
+namespace EuroMotors.Application.Carts.GetCartById;
+
+public class CartResponse
 {
-    public List<CartItemResponse> CartItems { get; } = [];
+    public Guid Id { get; }
+    public Guid UserId { get; }
+    public List<CartItemResponse> CartItems { get; }
+
+    public CartResponse(Guid id, Guid userId)
+    {
+        Id = id;
+        UserId = userId;
+        CartItems = new List<CartItemResponse>();
+    }
 }
+

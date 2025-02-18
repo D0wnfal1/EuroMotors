@@ -24,7 +24,7 @@ internal sealed class ClearCartCommandHandler(IUserRepository userRepository, IC
             return Result.Failure(CartErrors.NotFound(request.UserId));
         }
 
-        cart.Clear();
+        await cartRepository.ClearCartAsync(cart.Id, cancellationToken);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

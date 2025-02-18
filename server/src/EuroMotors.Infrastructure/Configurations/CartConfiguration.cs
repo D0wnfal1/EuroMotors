@@ -13,11 +13,14 @@ internal sealed class CartConfiguration : IEntityTypeConfiguration<Cart>
         builder.Property(c => c.UserId)
             .IsRequired();
 
+        builder.HasIndex(c => c.UserId)
+            .IsUnique();
+
         builder.Ignore(c => c.TotalPrice);
 
         builder.HasMany(c => c.CartItems)
             .WithOne()
-            .HasForeignKey(ci => ci.Id)
+            .HasForeignKey(ci => ci.CartId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

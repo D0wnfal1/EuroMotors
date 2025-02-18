@@ -14,14 +14,14 @@ internal sealed class GetCartTotalPriceQueryHandler(IDbConnectionFactory dbConne
     {
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
-        const string sql =
-            $"""
-             SELECT COALESCE(SUM(ci.total_price), 0)
-             FROM carts c
-             LEFT JOIN cart_items ci ON ci.cart_id = c.id
-             WHERE c.id = @CartId
-             GROUP BY c.id
-             """;
+        const string sql = 
+            """
+                SELECT COALESCE(SUM(ci.quantity * ci.unit_price), 0)
+                FROM carts c
+                LEFT JOIN cart_items ci ON ci.cart_id = c.id
+                WHERE c.id = @CartId
+                GROUP BY c.id
+            """;
 
         decimal? totalPrice = await connection.ExecuteScalarAsync<decimal?>(sql, new { request.CartId });
 

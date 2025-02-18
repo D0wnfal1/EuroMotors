@@ -7,50 +7,51 @@ using EuroMotors.Domain.Carts;
 
 namespace EuroMotors.Application.Carts.GetCartById;
 
-internal sealed class GetCartByIdQueryHandler(IDbConnectionFactory dbConnectionFactory)
-    : IQueryHandler<GetCartByIdQuery, CartResponse>
+internal sealed class GetCartByIdQueryHandler(IDbConnectionFactory dbConnectionFactory) : IQueryHandler<GetCartByIdQuery, CartResponse>
 {
     public async Task<Result<CartResponse>> Handle(GetCartByIdQuery request, CancellationToken cancellationToken)
     {
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
-        const string sql =
+        const string sql = 
             $"""
              SELECT
-                 c.id AS {nameof(CartResponse.Id)},
-                 c.user_id AS {nameof(CartResponse.UserId)},
-                 ci.id AS {nameof(CartItemResponse.CartItemId)},
-                 ci.cart_id AS {nameof(CartItemResponse.CartId)},
-                 ci.product_id AS {nameof(CartItemResponse.ProductId)},
-                 ci.quantity AS {nameof(CartItemResponse.Quantity)},
-                 ci.unit_price AS {nameof(CartItemResponse.UnitPrice)},
-                 ci.total_price AS {nameof(CartItemResponse.TotalPrice)}
+                c.id AS {nameof(CartResponse.Id)},
+                c.user_id AS {nameof(CartResponse.UserId)},
+                ci.id AS {nameof(CartItemResponse.CartItemId)},
+                ci.product_id AS {nameof(CartItemResponse.ProductId)},
+                ci.cart_id AS {nameof(CartItemResponse.CartId)},
+                ci.quantity AS {nameof(CartItemResponse.Quantity)},
+                ci.unit_price AS {nameof(CartItemResponse.UnitPrice)}
              FROM carts c
              LEFT JOIN cart_items ci ON ci.cart_id = c.id
              WHERE c.id = @CartId
              """;
 
-        Dictionary<Guid, CartResponse> cartsDictionary = [];
+        var cartsDictionary = new Dictionary<Guid, CartResponse>();
 
         await connection.QueryAsync<CartResponse, CartItemResponse, CartResponse>(
             sql,
             (cart, cartItem) =>
-            {
-                if (!cartsDictionary.TryGetValue(cart.Id, out CartResponse? existingCart))
                 {
-                    existingCart = cart;
-                    cartsDictionary[cart.Id] = existingCart;
-                }
+                    if (!cartsDictionary.TryGetValue(cart.Id, out CartResponse? existingCart))
+                    {
+                        existingCart = new CartResponse(cart.Id, cart.UserId);
+                        cartsDictionary[cart.Id] = existingCart;
+                    }
 
-                if (cartItem is not null)
+                    if (cartItem is not null)
+                    {
+                        existingCart.CartItems.Add(cartItem);
+                    }
+
+                    return existingCart;
+                },
+                new
                 {
-                    existingCart.CartItems.Add(cartItem);
-                }
-
-                return existingCart;
-            },
-            new { request.CartId },
-            splitOn: nameof(CartItemResponse.CartItemId));
+                    request.CartId
+                },
+                splitOn: nameof(CartItemResponse.CartItemId));
 
         return cartsDictionary.TryGetValue(request.CartId, out CartResponse? cartResponse)
             ? cartResponse

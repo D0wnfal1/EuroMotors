@@ -22,7 +22,7 @@ internal sealed class ConvertToOrderCommandHandler(ICartRepository cartRepositor
 
         orderRepository.Insert(order);
 
-        cart.Clear();
+        await cartRepository.ClearCartAsync(cart.Id, cancellationToken);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

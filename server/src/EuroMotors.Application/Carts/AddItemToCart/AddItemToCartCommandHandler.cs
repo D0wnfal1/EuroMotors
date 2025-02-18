@@ -34,13 +34,11 @@ internal sealed class AddItemToCartCommandHandler(
             return Result.Failure(ProductErrors.NotEnoughStock(product.Stock));
         }
 
-
-
         Cart cart = await cartRepository.GetByUserIdAsync(user.Id, cancellationToken) ?? Cart.Create(user.Id);
 
         var cartItem = CartItem.Create(product, cart.Id, request.Quantity);
 
-        cart.AddItem(cartItem);
+        await cartRepository.AddItemToCartAsync(cartItem, cancellationToken);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
