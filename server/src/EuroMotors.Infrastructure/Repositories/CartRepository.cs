@@ -81,6 +81,6 @@ internal sealed class CartRepository : Repository<Cart>, ICartRepository
 
         _dbContext.CartItems.RemoveRange(cart.CartItems);
 
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        _dbContext.Remove(cart);
     }
 }

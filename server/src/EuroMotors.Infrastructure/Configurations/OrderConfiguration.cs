@@ -22,7 +22,7 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
 
         builder.HasMany(o => o.OrderItems)
             .WithOne()
-            .HasForeignKey(oi => oi.Id)
+            .HasForeignKey(oi => oi.OrderId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

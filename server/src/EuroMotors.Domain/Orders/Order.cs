@@ -1,4 +1,5 @@
 ﻿using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.Carts;
 using EuroMotors.Domain.Orders.Events;
 using EuroMotors.Domain.Products;
 using EuroMotors.Domain.Users;
@@ -9,91 +10,60 @@ public sealed class Order : Entity
 {
     private readonly List<OrderItem> _orderItems = [];
 
-    private Order()
-    {
-    }
+    private Order() { }
 
     public Guid UserId { get; private set; }
-
     public OrderStatus Status { get; private set; }
-
     public decimal TotalPrice { get; private set; }
-
-    public bool ProductsIssued { get; private set; }
-
     public DateTime CreatedAtUtc { get; private set; }
-
-    public IReadOnlyCollection<OrderItem> OrderItems => [];
-
+    public DateTime UpdatedAtUtc { get; private set; }
+    public IReadOnlyCollection<OrderItem> OrderItems => _orderItems.AsReadOnly();
     public Guid? PaymentId { get; private set; }
 
-    public DateTime UpdatedAtUtc { get; private set; }
-
-    public static Order Create(Guid userId)
+    public static Order Create(Guid userId, List<CartItem> cartItems)
     {
-        var order = new Order()
+        var order = new Order
         {
-           Id = Guid.NewGuid(),
-           UserId = userId,
-           Status = OrderStatus.Pending,
-           TotalPrice = 0m,
-           ProductsIssued = false,
-           CreatedAtUtc = DateTime.UtcNow,
-           UpdatedAtUtc = DateTime.UtcNow
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            Status = OrderStatus.Pending,
+            CreatedAtUtc = DateTime.UtcNow,
+            UpdatedAtUtc = DateTime.UtcNow
         };
 
-        order.RaiseDomainEvent(new OrderCreatedDomainEvent(order.Id));
+        foreach (CartItem cartItem in cartItems)
+        {
+            order.AddItem(cartItem.ProductId, cartItem.Quantity, cartItem.UnitPrice);
+        }
 
+        order.RaiseDomainEvent(new OrderCreatedDomainEvent(order.Id));
         return order;
     }
 
-    public void AddItem(Guid productId, decimal quantity, decimal price)
+    public void AddItem(Guid productId, decimal quantity, decimal unitPrice)
     {
-        if (quantity <= 0)
-        {
-            throw new ArgumentException("Quantity must be greater than zero.");
-        }
-
-        var orderItem = OrderItem.Create(Id, productId, quantity, price);
+        var orderItem = OrderItem.Create(Id, productId, quantity, unitPrice);
 
         _orderItems.Add(orderItem);
 
-        TotalPrice = _orderItems.Sum(o => o.Price);
-
-        UpdatedAtUtc = DateTime.UtcNow;
+        RecalculateTotalPrice();
     }
 
     public void RecalculateTotalPrice()
     {
         TotalPrice = _orderItems.Sum(o => o.Price);
-
         UpdatedAtUtc = DateTime.UtcNow;
-    }
-
-    public Result IssueProducts()
-    {
-        if (ProductsIssued)
-        {
-            return Result.Failure(OrderErrors.ProductIsNotAvailable);
-        }
-        ProductsIssued = true;
-
-        RaiseDomainEvent(new OrderProductsIssuedDomainEvent(Id));
-
-        UpdatedAtUtc = DateTime.UtcNow;
-
-        return Result.Success();
     }
 
     public void SetPaymentId(Guid paymentId)
     {
         PaymentId = paymentId;
-
         UpdatedAtUtc = DateTime.UtcNow;
     }
 
     public void ChangeStatus(OrderStatus status)
     {
         Status = status;
+        UpdatedAtUtc = DateTime.UtcNow;
     }
 }

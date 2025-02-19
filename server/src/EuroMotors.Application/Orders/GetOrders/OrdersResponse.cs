@@ -2,7 +2,7 @@
 
 namespace EuroMotors.Application.Orders.GetOrders;
 
-public sealed record OrderResponse(
+public sealed record OrdersResponse(
     Guid Id,
     Guid UserId,
     OrderStatus Status,

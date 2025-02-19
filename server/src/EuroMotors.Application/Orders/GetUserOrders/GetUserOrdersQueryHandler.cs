@@ -2,13 +2,17 @@
 using Dapper;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
+using EuroMotors.Application.Orders.GetOrders;
 using EuroMotors.Domain.Abstractions;
 
-namespace EuroMotors.Application.Orders.GetOrders;
+namespace EuroMotors.Application.Orders.GetUserOrders;
 
-internal sealed class GetOrdersQueryHandler(IDbConnectionFactory dbConnectionFactory) : IQueryHandler<GetOrdersQuery, IReadOnlyCollection<OrdersResponse>>
+internal sealed class GetUserOrdersQueryHandler(IDbConnectionFactory dbConnectionFactory)
+    : IQueryHandler<GetUserOrdersQuery, IReadOnlyCollection<OrdersResponse>>
 {
-    public async Task<Result<IReadOnlyCollection<OrdersResponse>>> Handle(GetOrdersQuery request, CancellationToken cancellationToken)
+    public async Task<Result<IReadOnlyCollection<OrdersResponse>>> Handle(
+        GetUserOrdersQuery request,
+        CancellationToken cancellationToken)
     {
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
@@ -21,6 +25,7 @@ internal sealed class GetOrdersQueryHandler(IDbConnectionFactory dbConnectionFac
                  total_price AS {nameof(OrdersResponse.TotalPrice)},
                  created_at_utc AS {nameof(OrdersResponse.CreatedAtUtc)}
              FROM orders
+             WHERE user_id = @UserId
              """;
 
         List<OrdersResponse> orders = (await connection.QueryAsync<OrdersResponse>(sql, request)).AsList();

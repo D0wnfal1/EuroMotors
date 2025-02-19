@@ -90,7 +90,7 @@ public sealed class Product : Entity
         Stock = stock;
     }
 
-    public Result BuyProduct(int quantity)
+    public Result SubtractProductQuantity(int quantity)
     {
         if (Stock < quantity)
         {
@@ -100,6 +100,15 @@ public sealed class Product : Entity
         Stock -= quantity;
 
         IsAvailable = Stock > 0;
+
+        RaiseDomainEvent(new ProductStockUpdatedEvent(Id, Stock));
+
+        return Result.Success();
+    }
+
+    public Result AddProductQuantity(int quantity)
+    {
+        Stock += quantity;
 
         RaiseDomainEvent(new ProductStockUpdatedEvent(Id, Stock));
 

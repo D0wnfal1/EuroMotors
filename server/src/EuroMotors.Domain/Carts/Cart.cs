@@ -39,7 +39,7 @@ public sealed class Cart : Entity
 
     public Order ConvertToOrder()
     {
-        var order = Order.Create(UserId);
+        var order = Order.Create(UserId, []);
 
         foreach (CartItem cartItem in _cartItems)
         {

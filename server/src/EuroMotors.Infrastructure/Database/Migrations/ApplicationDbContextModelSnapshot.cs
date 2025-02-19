@@ -143,10 +143,6 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("payment_id");
 
-                    b.Property<bool>("ProductsIssued")
-                        .HasColumnType("boolean")
-                        .HasColumnName("products_issued");
-
                     b.Property<int>("Status")
                         .HasColumnType("integer")
                         .HasColumnName("status");
@@ -231,6 +227,10 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                     b.Property<DateTime?>("RefundedAtUtc")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("refunded_at_utc");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
 
                     b.Property<Guid>("TransactionId")
                         .HasColumnType("uuid")

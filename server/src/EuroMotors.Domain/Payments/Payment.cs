@@ -15,6 +15,8 @@ public sealed class Payment : Entity
 
     public Guid TransactionId { get; private set; }
 
+    public PaymentStatus Status { get; private set; }
+
     public decimal Amount { get; private set; }
 
     public decimal? AmountRefunded { get; private set; }
@@ -25,12 +27,13 @@ public sealed class Payment : Entity
 
     public Order Order { get; private set; } = null!;
 
-    public static Payment Create(Order order, Guid transactionId, decimal amount)
+    public static Payment Create(Order order, Guid transactionId, PaymentStatus status, decimal amount)
     {
         var payment = new Payment()
         {
             Id = Guid.NewGuid(),
             OrderId = order.Id,
+            Status = status,
             Order = order, 
             TransactionId = transactionId,
             Amount = amount,

@@ -19,6 +19,5 @@ public class ProductRepository : Repository<Product>, IProductRepository
         }
 
         _dbContext.Remove(product);
-        await _dbContext.SaveChangesAsync();
     }
 }

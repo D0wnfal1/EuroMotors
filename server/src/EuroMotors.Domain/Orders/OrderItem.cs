@@ -34,10 +34,4 @@ public sealed class OrderItem : Entity
             Price = quantity * unitPrice
         };
     }
-
-    public void UpdateQuantity(decimal quantity)
-    {
-        Quantity = quantity;
-        Price = Quantity * UnitPrice;
-    }
 }
