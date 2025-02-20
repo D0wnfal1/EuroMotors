@@ -18,5 +18,11 @@ internal sealed class PaymentRepository : Repository<Payment>, IPaymentRepositor
             .Where(p => p.OrderId == order.Id)
             .ToListAsync(cancellationToken);
     }
+
+    public void Update(Payment payment)
+    {
+        _dbContext.Update(payment);
+
+    }
 }
 

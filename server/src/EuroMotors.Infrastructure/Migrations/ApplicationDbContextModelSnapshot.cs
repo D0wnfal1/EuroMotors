@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace EuroMotors.Infrastructure.Database.Migrations
+namespace EuroMotors.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -184,8 +184,8 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("product_id");
 
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("numeric")
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer")
                         .HasColumnName("quantity");
 
                     b.Property<decimal>("UnitPrice")

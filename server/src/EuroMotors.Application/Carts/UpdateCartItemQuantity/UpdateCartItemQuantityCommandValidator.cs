@@ -2,7 +2,7 @@
 
 namespace EuroMotors.Application.Carts.UpdateCartItemQuantity;
 
-public class UpdateCartItemQuantityCommandValidator : AbstractValidator<UpdateCartItemQuantityCommand>
+internal sealed class UpdateCartItemQuantityCommandValidator : AbstractValidator<UpdateCartItemQuantityCommand>
 {
     public UpdateCartItemQuantityCommandValidator()
     {

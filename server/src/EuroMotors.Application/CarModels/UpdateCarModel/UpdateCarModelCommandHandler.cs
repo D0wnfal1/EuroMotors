@@ -4,7 +4,7 @@ using EuroMotors.Domain.CarModels;
 
 namespace EuroMotors.Application.CarModels.UpdateCarModel;
 
-public sealed class UpdateCarModelCommandHandler(ICarModelRepository carModelRepository, IUnitOfWork unitOfWork) : ICommandHandler<UpdateCarModelCommand>
+internal sealed class UpdateCarModelCommandHandler(ICarModelRepository carModelRepository, IUnitOfWork unitOfWork) : ICommandHandler<UpdateCarModelCommand>
 {
     public async Task<Result> Handle(UpdateCarModelCommand request, CancellationToken cancellationToken)
     {

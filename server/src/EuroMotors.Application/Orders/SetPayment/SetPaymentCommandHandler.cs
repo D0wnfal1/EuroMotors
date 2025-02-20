@@ -5,7 +5,7 @@ using EuroMotors.Domain.Payments;
 
 namespace EuroMotors.Application.Orders.SetPayment;
 
-public class SetPaymentCommandHandler(IOrderRepository orderRepository, IUnitOfWork unitOfWork) : ICommandHandler<SetPaymentCommand>
+internal sealed class SetPaymentCommandHandler(IOrderRepository orderRepository, IUnitOfWork unitOfWork) : ICommandHandler<SetPaymentCommand>
 {
     public async Task<Result> Handle(SetPaymentCommand request, CancellationToken cancellationToken)
     {

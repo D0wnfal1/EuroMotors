@@ -10,10 +10,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace EuroMotors.Infrastructure.Database.Migrations
+namespace EuroMotors.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250219143553_Create_Database")]
+    [Migration("20250220130901_Create_Database")]
     partial class Create_Database
     {
         /// <inheritdoc />
@@ -187,8 +187,8 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("product_id");
 
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("numeric")
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer")
                         .HasColumnName("quantity");
 
                     b.Property<decimal>("UnitPrice")

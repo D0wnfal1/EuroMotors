@@ -25,11 +25,6 @@ internal sealed class GetCarModelByIdQueryHandler(IDbConnectionFactory dbConnect
 
         CarModelResponse? carModel = await connection.QuerySingleOrDefaultAsync<CarModelResponse>(sql, new { request.CarModelId });
 
-        if (carModel is null)
-        {
-            return Result.Failure<CarModelResponse>(CarModelErrors.NotFound(request.CarModelId));
-        }
-
-        return carModel;
+        return carModel ?? Result.Failure<CarModelResponse>(CarModelErrors.NotFound(request.CarModelId));
     }
 }

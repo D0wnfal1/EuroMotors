@@ -7,7 +7,7 @@ using EuroMotors.Domain.Abstractions;
 
 namespace EuroMotors.Application.CarModels.GetCarModels;
 
-public class GetCarModelsQueryHandler(IDbConnectionFactory dbConnectionFactory) : IQueryHandler<GetCarModelsQuery, IReadOnlyCollection<CarModelResponse>>
+internal sealed class GetCarModelsQueryHandler(IDbConnectionFactory dbConnectionFactory) : IQueryHandler<GetCarModelsQuery, IReadOnlyCollection<CarModelResponse>>
 {
     public async Task<Result<IReadOnlyCollection<CarModelResponse>>> Handle(GetCarModelsQuery request, CancellationToken cancellationToken)
     {

@@ -2,7 +2,7 @@
 
 namespace EuroMotors.Application.Orders.ChangeOrderStatus;
 
-public sealed class ChangeOrderStatusCommandValidator : AbstractValidator<ChangeOrderStatusCommand>
+internal sealed class ChangeOrderStatusCommandValidator : AbstractValidator<ChangeOrderStatusCommand>
 {
     public ChangeOrderStatusCommandValidator()
     {

@@ -5,7 +5,7 @@ using EuroMotors.Domain.Payments;
 
 namespace EuroMotors.Application.Payments.RefundPayment;
 
-internal sealed class RefundPaymentCommandHandler(IPaymentRepository paymentRepository, IUnitOfWork unitOfWork, IPaymentService paymentService)
+internal sealed class RefundPaymentCommandHandler(IPaymentRepository paymentRepository, IUnitOfWork unitOfWork /* IPaymentService paymentService */ )
     : ICommandHandler<RefundPaymentCommand>
 {
     public async Task<Result> Handle(RefundPaymentCommand request, CancellationToken cancellationToken)
@@ -24,7 +24,7 @@ internal sealed class RefundPaymentCommandHandler(IPaymentRepository paymentRepo
             return Result.Failure(result.Error);
         }
 
-        await paymentService.RefundAsync(payment.TransactionId, request.Amount);
+        // await paymentService.RefundAsync(payment.TransactionId, request.Amount);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

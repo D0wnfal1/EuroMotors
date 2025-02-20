@@ -2,7 +2,7 @@
 
 namespace EuroMotors.Application.Carts.ConvertToOrder;
 
-public class ConvertToOrderCommandValidator : AbstractValidator<ConvertToOrderCommand>
+internal sealed class ConvertToOrderCommandValidator : AbstractValidator<ConvertToOrderCommand>
 {
     public ConvertToOrderCommandValidator()
     {

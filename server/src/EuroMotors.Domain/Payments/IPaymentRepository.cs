@@ -10,4 +10,6 @@ public interface IPaymentRepository
     Task<IEnumerable<Payment>> GetForOrderAsync(Order order, CancellationToken cancellationToken = default);
 
     void Insert(Payment payment);
+
+    void Update(Payment payment);
 }

@@ -2,7 +2,7 @@
 
 namespace EuroMotors.Application.Products.UpdateProduct.UpdateProductDiscount;
 
-public class UpdateProductDiscountCommandValidator : AbstractValidator<UpdateProductDiscountCommand>
+internal sealed class UpdateProductDiscountCommandValidator : AbstractValidator<UpdateProductDiscountCommand>
 {
     public UpdateProductDiscountCommandValidator()
     {

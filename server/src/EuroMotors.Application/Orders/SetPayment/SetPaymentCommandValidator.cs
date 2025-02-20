@@ -2,7 +2,7 @@
 
 namespace EuroMotors.Application.Orders.SetPayment;
 
-public class SetPaymentCommandValidator : AbstractValidator<SetPaymentCommand>
+internal sealed class SetPaymentCommandValidator : AbstractValidator<SetPaymentCommand>
 {
     public SetPaymentCommandValidator()
     {

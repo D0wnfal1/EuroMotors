@@ -7,7 +7,7 @@ using EuroMotors.Domain.Abstractions;
 
 namespace EuroMotors.Application.Products.GetProducts;
 
-public class GetProductsQueryHandler(IDbConnectionFactory dbConnectionFactory) : IQueryHandler<GetProductsQuery, IReadOnlyCollection<ProductResponse>>
+internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionFactory) : IQueryHandler<GetProductsQuery, IReadOnlyCollection<ProductResponse>>
 {
     public async Task<Result<IReadOnlyCollection<ProductResponse>>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
     {

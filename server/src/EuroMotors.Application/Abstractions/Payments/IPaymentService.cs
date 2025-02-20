@@ -1,8 +1,9 @@
-﻿namespace EuroMotors.Application.Abstractions.Payments;
+﻿using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.Payments;
+
+namespace EuroMotors.Application.Abstractions.Payments;
 
 public interface IPaymentService
 {
-    Task<PaymentResponse> ChargeAsync(decimal amount);
-
-    Task RefundAsync(Guid transactionId, decimal amount);
+    Task<string> CreatePaymentAsync(Payment payment);
 }

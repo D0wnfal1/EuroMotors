@@ -4,7 +4,7 @@ using EuroMotors.Domain.Categories;
 
 namespace EuroMotors.Application.Categories.DeleteCategory;
 
-public sealed class DeleteCategoryCommandHandler(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork) : ICommandHandler<DeleteCategoryCommand>
+internal sealed class DeleteCategoryCommandHandler(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork) : ICommandHandler<DeleteCategoryCommand>
 {
     public async Task<Result> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
     {

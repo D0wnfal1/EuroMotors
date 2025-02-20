@@ -2,7 +2,7 @@
 
 namespace EuroMotors.Application.Orders.DeleteOrder;
 
-public class DeleteOrderCommandValidator : AbstractValidator<DeleteOrderCommand>
+internal sealed class DeleteOrderCommandValidator : AbstractValidator<DeleteOrderCommand>
 {
     public DeleteOrderCommandValidator()
     {

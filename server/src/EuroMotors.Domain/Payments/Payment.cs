@@ -73,4 +73,9 @@ public sealed class Payment : Entity
 
         return Result.Success();
     }
+
+    public void ChangeStatus(PaymentStatus status)
+    {
+        Status = status;
+    }
 }

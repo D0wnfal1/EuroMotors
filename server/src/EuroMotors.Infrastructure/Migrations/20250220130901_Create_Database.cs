@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace EuroMotors.Infrastructure.Database.Migrations
+namespace EuroMotors.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class Create_Database : Migration
@@ -134,7 +134,7 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     order_id = table.Column<Guid>(type: "uuid", nullable: false),
                     product_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    quantity = table.Column<decimal>(type: "numeric", nullable: false),
+                    quantity = table.Column<int>(type: "integer", nullable: false),
                     unit_price = table.Column<decimal>(type: "numeric", nullable: false),
                     price = table.Column<decimal>(type: "numeric", nullable: false)
                 },

@@ -4,7 +4,7 @@ using EuroMotors.Domain.ProductImages;
 
 namespace EuroMotors.Application.ProductImages.DeleteProductImagesByProductId;
 
-public class DeleteProductImageByProductIdCommandHandler(IProductImageRepository productImageRepository, IUnitOfWork unitOfWork) : ICommandHandler<DeleteProductImageByProductIdCommand>
+internal sealed class DeleteProductImageByProductIdCommandHandler(IProductImageRepository productImageRepository, IUnitOfWork unitOfWork) : ICommandHandler<DeleteProductImageByProductIdCommand>
 {
     public async Task<Result> Handle(DeleteProductImageByProductIdCommand request, CancellationToken cancellationToken)
     {

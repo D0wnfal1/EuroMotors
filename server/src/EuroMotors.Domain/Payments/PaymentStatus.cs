@@ -2,8 +2,9 @@
 
 public enum PaymentStatus
 {
-    Error = 0,
-    Success = 1,
-    Failure = 2,
-    Reversed = 3
+    Panding = 0,
+    Error = 1,
+    Success = 2,
+    Failure = 3,
+    Reversed = 4
 }

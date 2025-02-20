@@ -4,7 +4,7 @@ using EuroMotors.Domain.CarModels;
 
 namespace EuroMotors.Application.CarModels.DeleteCarModel;
 
-public class DeleteCarModelCommandHandler(ICarModelRepository carModelRepository, IUnitOfWork unitOfWork) : ICommandHandler<DeleteCarModelCommand>
+internal sealed class DeleteCarModelCommandHandler(ICarModelRepository carModelRepository, IUnitOfWork unitOfWork) : ICommandHandler<DeleteCarModelCommand>
 {
     public async Task<Result> Handle(DeleteCarModelCommand request, CancellationToken cancellationToken)
     {

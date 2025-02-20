@@ -4,7 +4,7 @@ using EuroMotors.Domain.ProductImages;
 
 namespace EuroMotors.Application.ProductImages.UpdateProductImage;
 
-public sealed class UpdateProductImageCommandHandler(IProductImageRepository productImageRepository, IUnitOfWork unitOfWork) : ICommandHandler<UpdateProductImageCommand>
+internal sealed class UpdateProductImageCommandHandler(IProductImageRepository productImageRepository, IUnitOfWork unitOfWork) : ICommandHandler<UpdateProductImageCommand>
 {
     public async Task<Result> Handle(UpdateProductImageCommand request, CancellationToken cancellationToken)
     {

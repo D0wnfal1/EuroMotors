@@ -39,6 +39,7 @@ public static class DependencyInjection
             .AddServices()
             .AddDatabase(configuration)
             .AddHealthChecks(configuration)
+            .AddPayment(configuration)
             .AddAuthenticationInternal(configuration)
             .AddAuthorizationInternal();
 
@@ -63,8 +64,6 @@ public static class DependencyInjection
         services.AddScoped<IPaymentRepository, PaymentRepository>();
 
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
-
-        services.AddScoped<IPaymentService, PaymentService>();
 
         return services;
     }
@@ -95,6 +94,16 @@ public static class DependencyInjection
         services
             .AddHealthChecks()
             .AddNpgSql(configuration.GetConnectionString("Database")!);
+
+        return services;
+    }
+
+    private static IServiceCollection AddPayment(this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.Configure<PaymentOptions>(configuration.GetSection("Payment"));
+
+        services.AddScoped<IPaymentService, PaymentService>();
 
         return services;
     }

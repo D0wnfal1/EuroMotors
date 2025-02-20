@@ -4,7 +4,7 @@ using EuroMotors.Domain.Orders;
 
 namespace EuroMotors.Application.Orders.DeleteOrder;
 
-public class DeleteOrderCommandHandler(IOrderRepository orderRepository, IUnitOfWork unitOfWork) : ICommandHandler<DeleteOrderCommand>
+internal sealed class DeleteOrderCommandHandler(IOrderRepository orderRepository, IUnitOfWork unitOfWork) : ICommandHandler<DeleteOrderCommand>
 {
     public async Task<Result> Handle(DeleteOrderCommand request, CancellationToken cancellationToken)
     {

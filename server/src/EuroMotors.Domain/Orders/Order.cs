@@ -40,7 +40,7 @@ public sealed class Order : Entity
         return order;
     }
 
-    public void AddItem(Guid productId, decimal quantity, decimal unitPrice)
+    public void AddItem(Guid productId, int quantity, decimal unitPrice)
     {
         var orderItem = OrderItem.Create(Id, productId, quantity, unitPrice);
 
