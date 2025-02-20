@@ -3,7 +3,6 @@ using EuroMotors.Application.Orders.DeleteOrder;
 using EuroMotors.Application.Orders.GetOrderById;
 using EuroMotors.Application.Orders.GetOrders;
 using EuroMotors.Application.Orders.GetUserOrders;
-using EuroMotors.Application.Orders.SetPayment;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Orders;
 using MediatR;
@@ -50,16 +49,6 @@ public class OrderController : ControllerBase
         Result<IReadOnlyCollection<OrdersResponse>> result = await _sender.Send(query, cancellationToken);
 
         return result.IsSuccess ? Ok(result) : NotFound();
-    }
-
-    [HttpPost("{id}/set-payment")]
-    public async Task<IActionResult> SetPayment(Guid id, [FromBody] SetPaymentRequest request)
-    {
-        var command = new SetPaymentCommand(id, request.PaymentId, request.Status);
-
-        Result result = await _sender.Send(command);
-
-        return result.IsSuccess ? Ok() : BadRequest(result.Error);
     }
 
     [HttpPatch]

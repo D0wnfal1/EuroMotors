@@ -7,7 +7,6 @@ using EuroMotors.Domain.Orders;
 using EuroMotors.Domain.Payments;
 using EuroMotors.Domain.ProductImages;
 using EuroMotors.Domain.Products;
-using EuroMotors.Domain.Todos;
 using EuroMotors.Domain.Users;
 using EuroMotors.Infrastructure.Configurations;
 using MediatR;
@@ -19,8 +18,6 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     : DbContext(options), IApplicationDbContext, IUnitOfWork
 {
     public DbSet<User> Users { get; set; }
-
-    public DbSet<TodoItem> TodoItems { get; set; }
 
     public DbSet<Product> Products { get; set; }
 
@@ -45,7 +42,6 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
         modelBuilder.ApplyConfiguration(new UserConfiguration());
-        modelBuilder.ApplyConfiguration(new TodoItemConfiguration());
         modelBuilder.ApplyConfiguration(new ProductConfiguration());
         modelBuilder.ApplyConfiguration(new ProductImageConfiguration());
         modelBuilder.ApplyConfiguration(new CategoryConfiguration());

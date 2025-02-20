@@ -1,5 +1,7 @@
-﻿using EuroMotors.Domain.Orders;
+﻿using EuroMotors.Domain.Carts;
+using EuroMotors.Domain.Orders;
 using EuroMotors.Domain.Payments;
+using EuroMotors.Domain.Users;
 using EuroMotors.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,12 +13,10 @@ internal sealed class PaymentRepository : Repository<Payment>, IPaymentRepositor
     {
     }
 
-    public async Task<IEnumerable<Payment>> GetForOrderAsync(Order order, CancellationToken cancellationToken = default)
+    public async Task<Payment> GetByOrderIdAsync(Guid orderId, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Payments
-            .AsNoTracking()
-            .Where(p => p.OrderId == order.Id)
-            .ToListAsync(cancellationToken);
+        return await _dbContext.Set<Payment>()
+            .FirstOrDefaultAsync(payment => payment.OrderId == orderId, cancellationToken);
     }
 
     public void Update(Payment payment)

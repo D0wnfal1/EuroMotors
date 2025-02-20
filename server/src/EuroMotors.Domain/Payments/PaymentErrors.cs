@@ -16,8 +16,8 @@ public static class PaymentErrors
     public static readonly Error NotEnoughFunds =
         Error.Problem("Payments.NotEnoughFunds", "There are not enough funds for a refund");
 
-    public static Error InvalidSignature() =>
-        Error.Failure("Payments.InvalidSignature", "Invalid signature.");
+    public static Error InvalidData() =>
+        Error.Failure("Payments.InvalidData", "Invalid data.");
 
     public static Error InvalidResponse() =>
         Error.Failure("Payments.InvalidResponse", "Invalid LiqPay response.");
