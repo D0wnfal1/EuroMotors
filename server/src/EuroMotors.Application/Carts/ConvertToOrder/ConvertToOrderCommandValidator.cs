@@ -6,7 +6,11 @@ internal sealed class ConvertToOrderCommandValidator : AbstractValidator<Convert
 {
     public ConvertToOrderCommandValidator()
     {
-        RuleFor(x => x.UserId)
-            .NotEmpty().WithMessage("UserId is required.");
+        RuleFor(c => c.UserId)
+            .NotEqual(Guid.Empty)
+            .When(c => c.SessionId == Guid.Empty);
+        RuleFor(c => c.SessionId)
+            .NotEqual(Guid.Empty)
+            .When(c => c.UserId == Guid.Empty);
     }
 }

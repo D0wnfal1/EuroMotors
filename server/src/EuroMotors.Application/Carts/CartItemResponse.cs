@@ -1,4 +1,4 @@
-﻿namespace EuroMotors.Application.Carts.GetCartById;
+﻿namespace EuroMotors.Application.Carts;
 
 public class CartItemResponse
 {

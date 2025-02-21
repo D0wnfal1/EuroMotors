@@ -11,10 +11,14 @@ internal sealed class CartConfiguration : IEntityTypeConfiguration<Cart>
         builder.HasKey(c => c.Id);
 
         builder.Property(c => c.UserId)
-            .IsRequired();
+            .IsRequired(false); 
 
-        builder.HasIndex(c => c.UserId)
-            .IsUnique();
+        builder.Property(c => c.SessionId)
+            .IsRequired(false); 
+
+        builder.HasIndex(c => new { c.UserId, c.SessionId })
+            .IsUnique()
+            .HasFilter("\"user_id\" IS NOT NULL OR \"session_id\" IS NOT NULL");
 
         builder.Ignore(c => c.TotalPrice);
 

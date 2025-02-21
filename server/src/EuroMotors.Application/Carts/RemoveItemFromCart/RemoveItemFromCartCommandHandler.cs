@@ -2,37 +2,37 @@
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Carts;
 using EuroMotors.Domain.Products;
-using EuroMotors.Domain.Users;
 
 namespace EuroMotors.Application.Carts.RemoveItemFromCart;
 
 internal sealed class RemoveItemFromCartCommandHandler(
-	IUserRepository userRepository,
 	IProductRepository productRepository,
 	ICartRepository cartRepository,
-	IUnitOfWork unitOfWork)
-	: ICommandHandler<RemoveItemFromCartCommand>
+	IUnitOfWork unitOfWork) : ICommandHandler<RemoveItemFromCartCommand>
 {
 	public async Task<Result> Handle(RemoveItemFromCartCommand request, CancellationToken cancellationToken)
 	{
-		User? customer = await userRepository.GetByIdAsync(request.UserId, cancellationToken);
+        Cart? cart = null;
 
-		if (customer is null)
-		{
-			return Result.Failure(UserErrors.NotFound(request.UserId));
-		}
+        if (request.UserId.HasValue)
+        {
+            cart = await cartRepository.GetByUserIdAsync(request.UserId.Value, cancellationToken);
+        }
+        else if (request.SessionId.HasValue)
+        {
+            cart = await cartRepository.GetBySessionIdAsync(request.SessionId.Value, cancellationToken);
+        }
 
-		Product? product = await productRepository.GetByIdAsync(request.ProductId, cancellationToken);
+        if (cart is null)
+        {
+            return Result.Failure(CartErrors.Empty);
+        }
+
+        Product? product = await productRepository.GetByIdAsync(request.ProductId, cancellationToken);
 
 		if (product is null)
 		{
 			return Result.Failure(ProductErrors.NotFound(request.ProductId));
-		}
-		Cart cart = await cartRepository.GetByUserIdAsync(request.UserId, cancellationToken);
-
-		if (cart is null)
-		{
-			return Result.Failure(CartErrors.NotFound(request.UserId));
 		}
 
 		CartItem? cartItem = cart.CartItems?.Find(c => c.ProductId == product.Id);
@@ -46,6 +46,6 @@ internal sealed class RemoveItemFromCartCommandHandler(
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-		return Result.Success();
+        return Result.Success();
 	}
 }

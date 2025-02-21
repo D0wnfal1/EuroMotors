@@ -6,6 +6,11 @@ internal sealed class ClearCartCommandValidator : AbstractValidator<ClearCartCom
 {
     public ClearCartCommandValidator()
     {
-        RuleFor(c => c.UserId).NotEmpty();
+        RuleFor(c => c.UserId)
+            .NotEqual(Guid.Empty)
+            .When(c => c.SessionId == Guid.Empty);
+        RuleFor(c => c.SessionId)
+            .NotEqual(Guid.Empty)
+            .When(c => c.UserId == Guid.Empty);
     }
 }

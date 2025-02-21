@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250220192418_Create_Database")]
+    [Migration("20250221135402_Create_Database")]
     partial class Create_Database
     {
         /// <inheritdoc />
@@ -58,16 +58,21 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("SessionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("session_id");
+
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
                         .HasName("pk_carts");
 
-                    b.HasIndex("UserId")
+                    b.HasIndex("UserId", "SessionId")
                         .IsUnique()
-                        .HasDatabaseName("ix_carts_user_id");
+                        .HasDatabaseName("ix_carts_user_id_session_id")
+                        .HasFilter("\"user_id\" IS NOT NULL OR \"session_id\" IS NOT NULL");
 
                     b.ToTable("carts", "public");
                 });
@@ -141,9 +146,9 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at_utc");
 
-                    b.Property<Guid?>("PaymentId")
+                    b.Property<Guid?>("SessionId")
                         .HasColumnType("uuid")
-                        .HasColumnName("payment_id");
+                        .HasColumnName("session_id");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer")
@@ -157,12 +162,17 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at_utc");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
                         .HasName("pk_orders");
+
+                    b.HasIndex("UserId", "SessionId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_orders_user_id_session_id")
+                        .HasFilter("\"user_id\" IS NOT NULL OR \"session_id\" IS NOT NULL");
 
                     b.ToTable("orders", "public");
                 });

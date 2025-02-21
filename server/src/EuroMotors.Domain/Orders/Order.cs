@@ -12,20 +12,22 @@ public sealed class Order : Entity
 
     private Order() { }
 
-    public Guid UserId { get; private set; }
+    public Guid? UserId { get; private set; }
+    public Guid? SessionId { get; private set; }
     public OrderStatus Status { get; private set; }
     public decimal TotalPrice { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime UpdatedAtUtc { get; private set; }
     public IReadOnlyCollection<OrderItem> OrderItems => _orderItems.AsReadOnly();
-    public Guid? PaymentId { get; private set; }
+    public Guid? PaymentId { get; }
 
-    public static Order Create(Guid userId, List<CartItem> cartItems)
+    public static Order Create(Guid? userId, Guid? sessionId, List<CartItem> cartItems)
     {
         var order = new Order
         {
             Id = Guid.NewGuid(),
             UserId = userId,
+            SessionId = sessionId,
             Status = OrderStatus.Pending,
             CreatedAtUtc = DateTime.UtcNow,
             UpdatedAtUtc = DateTime.UtcNow
@@ -52,12 +54,6 @@ public sealed class Order : Entity
     public void RecalculateTotalPrice()
     {
         TotalPrice = _orderItems.Sum(o => o.Price);
-        UpdatedAtUtc = DateTime.UtcNow;
-    }
-
-    public void SetPaymentId(Guid paymentId)
-    {
-        PaymentId = paymentId;
         UpdatedAtUtc = DateTime.UtcNow;
     }
 

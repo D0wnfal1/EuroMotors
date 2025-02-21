@@ -2,5 +2,5 @@
 
 namespace EuroMotors.Application.Carts.AddItemToCart;
 
-public sealed record AddItemToCartCommand(Guid UserId, Guid ProductId, int Quantity)
+public sealed record AddItemToCartCommand(Guid? UserId, Guid? SessionId, Guid ProductId, int Quantity)
     : ICommand;

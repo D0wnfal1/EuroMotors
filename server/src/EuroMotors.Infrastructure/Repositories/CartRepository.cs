@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using EuroMotors.Domain.Carts;
 using EuroMotors.Domain.Products;
+using EuroMotors.Domain.Users;
 using EuroMotors.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,13 @@ internal sealed class CartRepository : Repository<Cart>, ICartRepository
             .FirstOrDefaultAsync(cart => cart.UserId == userId, cancellationToken);
     }
 
+    public async Task<Cart?> GetBySessionIdAsync(Guid sessionId, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Set<Cart>()
+        .Include(c => c.CartItems)
+            .FirstOrDefaultAsync(cart => cart.SessionId == sessionId, cancellationToken);
+    }
+
     public async void Update(Cart cart)
     {
         _dbContext.Set<Cart>().Update(cart);
@@ -26,9 +34,9 @@ internal sealed class CartRepository : Repository<Cart>, ICartRepository
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateCartItemQuantityAsync(Guid userId, Guid productId, int newQuantity, CancellationToken cancellationToken)
+    public async Task UpdateCartItemQuantityAsync(Guid cartId, Guid productId, int newQuantity, CancellationToken cancellationToken)
     {
-        Cart? cart = await GetByUserIdAsync(userId, cancellationToken);
+        Cart? cart = await GetByIdAsync(cartId, cancellationToken);
 
         CartItem? cartItem = cart?.CartItems.FirstOrDefault(x => x.ProductId == productId);
 

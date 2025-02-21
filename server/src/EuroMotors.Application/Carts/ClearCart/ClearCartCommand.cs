@@ -2,4 +2,14 @@
 
 namespace EuroMotors.Application.Carts.ClearCart;
 
-public sealed record ClearCartCommand(Guid UserId) : ICommand;
+public sealed class ClearCartCommand : ICommand
+{
+    public Guid? UserId { get; }
+    public Guid? SessionId { get; }
+
+    public ClearCartCommand(Guid? userId, Guid? sessionId)
+    {
+        UserId = userId == Guid.Empty ? null : userId;
+        SessionId = sessionId;
+    }
+}

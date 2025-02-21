@@ -10,14 +10,23 @@ internal sealed class ConvertToOrderCommandHandler(ICartRepository cartRepositor
 {
     public async Task<Result> Handle(ConvertToOrderCommand request, CancellationToken cancellationToken)
     {
-        Cart? cart = await cartRepository.GetByUserIdAsync(request.UserId, cancellationToken);
+        Cart? cart = null;
+
+        if (request.UserId.HasValue)
+        {
+            cart = await cartRepository.GetByUserIdAsync(request.UserId.Value, cancellationToken);
+        }
+        else if (request.SessionId.HasValue)
+        {
+            cart = await cartRepository.GetBySessionIdAsync(request.SessionId.Value, cancellationToken);
+        }
 
         if (cart == null || !cart.CartItems.Any())
         {
-            return Result.Failure(CartErrors.NotFound(request.UserId));
+            return Result.Failure(CartErrors.Empty);
         }
 
-        var order = Order.Create(cart.UserId, cart.CartItems);
+        var order = Order.Create(cart.UserId, cart.SessionId, cart.CartItems);
 
         orderRepository.Insert(order);
 

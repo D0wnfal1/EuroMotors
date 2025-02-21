@@ -12,13 +12,14 @@ public sealed class Cart : Entity
     {
     }
 
-    public Guid UserId { get; private set; }
+    public Guid? UserId { get; private set; }
+    public Guid? SessionId { get; private set; }
 
     public List<CartItem> CartItems { get; private set; } = [];
 
     public decimal TotalPrice => _cartItems.Sum(item => item.TotalPrice);
 
-    public static Cart Create(Guid userId)
+    public static Cart CreateForUser(Guid userId)
     {
         var cart = new Cart()
         {
@@ -31,21 +32,16 @@ public sealed class Cart : Entity
         return cart;
     }
 
-    public void Clear()
+    public static Cart CreateForSession(Guid userId)
     {
-        _cartItems.Clear();
-        RaiseDomainEvent(new CartClearedDomainEvent(Id));
-    }
-
-    public Order ConvertToOrder()
-    {
-        var order = Order.Create(UserId, []);
-
-        foreach (CartItem cartItem in _cartItems)
+        var cart = new Cart()
         {
-            order.AddItem(cartItem.ProductId, cartItem.Quantity, cartItem.UnitPrice);
-        }
+            Id = Guid.NewGuid(),
+            SessionId = userId,
+        };
 
-        return order;
+        cart.RaiseDomainEvent(new CartCreatedDomainEvent(cart.Id));
+
+        return cart;
     }
 }

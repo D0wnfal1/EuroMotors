@@ -1,5 +1,4 @@
 ﻿using EuroMotors.Application.Abstractions.Messaging;
-using EuroMotors.Application.Carts.GetCartById;
 
 namespace EuroMotors.Application.Carts.GetCartByUserId;
 

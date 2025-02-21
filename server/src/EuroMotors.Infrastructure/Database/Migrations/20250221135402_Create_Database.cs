@@ -35,7 +35,8 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    user_id = table.Column<Guid>(type: "uuid", nullable: false)
+                    user_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    session_id = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -62,12 +63,12 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    session_id = table.Column<Guid>(type: "uuid", nullable: true),
                     status = table.Column<int>(type: "integer", nullable: false),
                     total_price = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    payment_id = table.Column<Guid>(type: "uuid", nullable: true)
+                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -239,17 +240,26 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                 column: "product_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_carts_user_id",
+                name: "ix_carts_user_id_session_id",
                 schema: "public",
                 table: "carts",
-                column: "user_id",
-                unique: true);
+                columns: new[] { "user_id", "session_id" },
+                unique: true,
+                filter: "\"user_id\" IS NOT NULL OR \"session_id\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "ix_order_items_order_id",
                 schema: "public",
                 table: "order_items",
                 column: "order_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_orders_user_id_session_id",
+                schema: "public",
+                table: "orders",
+                columns: new[] { "user_id", "session_id" },
+                unique: true,
+                filter: "\"user_id\" IS NOT NULL OR \"session_id\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "ix_payments_order_id",

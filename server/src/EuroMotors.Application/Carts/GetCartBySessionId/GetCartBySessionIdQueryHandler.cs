@@ -5,12 +5,12 @@ using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Carts;
 
-namespace EuroMotors.Application.Carts.GetCartByUserId;
+namespace EuroMotors.Application.Carts.GetCartBySessionId;
 
-internal sealed class GetCartByUserIdQueryHandler(IDbConnectionFactory dbConnectionFactory)
-    : IQueryHandler<GetCartByUserIdQuery, CartResponse>
+internal sealed class GetCartBySessionIdQueryHandler(IDbConnectionFactory dbConnectionFactory)
+    : IQueryHandler<GetCartBySessionIdQuery, CartResponse>
 {
-    public async Task<Result<CartResponse>> Handle(GetCartByUserIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<CartResponse>> Handle(GetCartBySessionIdQuery request, CancellationToken cancellationToken)
     {
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
@@ -27,7 +27,7 @@ internal sealed class GetCartByUserIdQueryHandler(IDbConnectionFactory dbConnect
                  ci.unit_price AS {nameof(CartItemResponse.UnitPrice)}
              FROM carts c
              LEFT JOIN cart_items ci ON ci.cart_id = c.id
-             WHERE c.user_id = @UserId
+             WHERE c.session_id = @SessionId
              """;
 
         var cartsDictionary = new Dictionary<Guid, CartResponse>();
@@ -36,10 +36,10 @@ internal sealed class GetCartByUserIdQueryHandler(IDbConnectionFactory dbConnect
             sql,
             (cart, cartItem) =>
             {
-                if (!cartsDictionary.TryGetValue(cart.UserId.GetValueOrDefault(), out CartResponse? existingCart))
+                if (!cartsDictionary.TryGetValue(cart.SessionId.GetValueOrDefault(), out CartResponse? existingCart))
                 {
-                    existingCart = new CartResponse(cart.Id, cart.UserId, null);
-                    cartsDictionary[cart.UserId.GetValueOrDefault()] = existingCart;
+                    existingCart = new CartResponse(cart.Id, null, cart.SessionId);
+                    cartsDictionary[cart.SessionId.GetValueOrDefault()] = existingCart;
                 }
 
                 existingCart.CartItems.Add(cartItem);
@@ -48,12 +48,12 @@ internal sealed class GetCartByUserIdQueryHandler(IDbConnectionFactory dbConnect
             },
             new
             {
-                request.UserId
+                request.SessionId
             },
             splitOn: nameof(CartItemResponse.CartItemId));
 
-        return cartsDictionary.TryGetValue(request.UserId, out CartResponse? cartResponse)
+        return cartsDictionary.TryGetValue(request.SessionId, out CartResponse? cartResponse)
             ? cartResponse
-            : Result.Failure<CartResponse>(CartErrors.NotFound(request.UserId));
+            : Result.Failure<CartResponse>(CartErrors.NotFound(request.SessionId));
     }
 }

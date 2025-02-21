@@ -1,7 +1,6 @@
 ﻿using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Carts;
-using EuroMotors.Domain.Users;
 
 namespace EuroMotors.Application.Carts.UpdateCartItemQuantity;
 
@@ -10,14 +9,23 @@ internal sealed class UpdateCartItemQuantityCommandHandler(ICartRepository cartR
 
     public async Task<Result> Handle(UpdateCartItemQuantityCommand request, CancellationToken cancellationToken)
     {
-        Cart? cart = await cartRepository.GetByUserIdAsync(request.UserId, cancellationToken);
+        Cart? cart = null;
+
+        if (request.UserId.HasValue)
+        {
+            cart = await cartRepository.GetByUserIdAsync(request.UserId.Value, cancellationToken);
+        }
+        else if (request.SessionId.HasValue)
+        {
+            cart = await cartRepository.GetBySessionIdAsync(request.SessionId.Value, cancellationToken);
+        }
 
         if (cart == null)
         {
-            return Result.Failure(CartErrors.NotFound(request.UserId));
+            return Result.Failure(CartErrors.Empty);
         }
 
-        await cartRepository.UpdateCartItemQuantityAsync(request.UserId, request.ProductId, request.NewQuantity, cancellationToken);
+        await cartRepository.UpdateCartItemQuantityAsync(cart.Id, request.ProductId, request.NewQuantity, cancellationToken);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

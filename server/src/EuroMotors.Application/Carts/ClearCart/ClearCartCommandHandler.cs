@@ -1,27 +1,29 @@
-﻿using EuroMotors.Application.Abstractions.Messaging;
+﻿using EuroMotors.Application.Abstractions.Caching;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Carts;
-using EuroMotors.Domain.Users;
 
 namespace EuroMotors.Application.Carts.ClearCart;
 
-internal sealed class ClearCartCommandHandler(IUserRepository userRepository, ICartRepository cartRepository, IUnitOfWork unitOfWork)
+internal sealed class ClearCartCommandHandler(ICartRepository cartRepository, IUnitOfWork unitOfWork)
     : ICommandHandler<ClearCartCommand>
 {
     public async Task<Result> Handle(ClearCartCommand request, CancellationToken cancellationToken)
     {
-        User? user = await userRepository.GetByIdAsync(request.UserId, cancellationToken);
+        Cart? cart = null;
 
-        if (user is null)
+        if (request.UserId.HasValue)
         {
-            return Result.Failure(UserErrors.NotFound(request.UserId));
+            cart = await cartRepository.GetByUserIdAsync(request.UserId.Value, cancellationToken);
         }
-
-        Cart cart = await cartRepository.GetByUserIdAsync(user.Id, cancellationToken);
+        else if (request.SessionId.HasValue)
+        {
+            cart = await cartRepository.GetBySessionIdAsync(request.SessionId.Value, cancellationToken);
+        }
 
         if (cart is null)
         {
-            return Result.Failure(CartErrors.NotFound(request.UserId));
+            return Result.Failure(CartErrors.Empty);
         }
 
         await cartRepository.ClearCartAsync(cart.Id, cancellationToken);

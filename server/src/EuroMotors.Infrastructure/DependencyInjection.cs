@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Dapper;
 using EuroMotors.Application.Abstractions.Authentication;
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.Abstractions.Clock;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Payments;
@@ -15,6 +16,7 @@ using EuroMotors.Domain.Products;
 using EuroMotors.Domain.Users;
 using EuroMotors.Infrastructure.Authentication;
 using EuroMotors.Infrastructure.Authorization;
+using EuroMotors.Infrastructure.Caching;
 using EuroMotors.Infrastructure.Database;
 using EuroMotors.Infrastructure.Payments;
 using EuroMotors.Infrastructure.Repositories;
@@ -27,6 +29,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 
 namespace EuroMotors.Infrastructure;
 
@@ -38,6 +41,7 @@ public static class DependencyInjection
         services
             .AddServices()
             .AddDatabase(configuration)
+            .AddCaching(configuration)
             .AddHealthChecks(configuration)
             .AddPayment(configuration)
             .AddAuthenticationInternal(configuration)
@@ -88,6 +92,26 @@ public static class DependencyInjection
 
         return services;
 	}
+
+    private static IServiceCollection AddCaching(this IServiceCollection services, IConfiguration configuration)
+    {
+        string redisConnectionString = configuration.GetConnectionString("Redis")!;
+        try
+        {
+            IConnectionMultiplexer connectionMultiplexer = ConnectionMultiplexer.Connect(redisConnectionString);
+            services.AddSingleton(connectionMultiplexer);
+            services.AddStackExchangeRedisCache(options =>
+                options.ConnectionMultiplexerFactory = () => Task.FromResult(connectionMultiplexer));
+        }
+        catch
+        {
+            services.AddDistributedMemoryCache();
+        }
+
+        services.TryAddSingleton<ICacheService, CacheService>();
+
+        return services;
+    }
 
     private static IServiceCollection AddHealthChecks(this IServiceCollection services, IConfiguration configuration)
     {
