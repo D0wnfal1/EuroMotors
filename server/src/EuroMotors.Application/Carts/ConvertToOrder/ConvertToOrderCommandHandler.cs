@@ -21,7 +21,12 @@ internal sealed class ConvertToOrderCommandHandler(ICartRepository cartRepositor
             cart = await cartRepository.GetBySessionIdAsync(request.SessionId.Value, cancellationToken);
         }
 
-        if (cart == null || !cart.CartItems.Any())
+        if (cart == null)
+        {
+            return Result.Failure(CartErrors.MissingIdentifiers);
+        }
+
+        if (!cart.CartItems.Any())
         {
             return Result.Failure(CartErrors.Empty);
         }

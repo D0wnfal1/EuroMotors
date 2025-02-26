@@ -36,6 +36,10 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("brand");
 
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text")
+                        .HasColumnName("image_url");
+
                     b.Property<string>("Model")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -115,6 +119,10 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text")
+                        .HasColumnName("image_url");
 
                     b.Property<bool>("IsArchived")
                         .HasColumnType("boolean")

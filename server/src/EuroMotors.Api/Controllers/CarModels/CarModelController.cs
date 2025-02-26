@@ -1,8 +1,10 @@
 ﻿using EuroMotors.Application.CarModels.CreateCarModel;
 using EuroMotors.Application.CarModels.DeleteCarModel;
+using EuroMotors.Application.CarModels.DeleteImage;
 using EuroMotors.Application.CarModels.GetCarModelById;
 using EuroMotors.Application.CarModels.GetCarModels;
 using EuroMotors.Application.CarModels.UpdateCarModel;
+using EuroMotors.Application.CarModels.UpdateImage;
 using EuroMotors.Domain.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -62,10 +64,30 @@ public class CarModelController : ControllerBase
         return result.IsSuccess ? NoContent() : BadRequest(result.Error);
     }
 
+    [HttpPut("{id}/image")]
+    public async Task<IActionResult> UpdateCarModelImage(Guid id, Uri url, CancellationToken cancellationToken)
+    {
+        var command = new UpdateCarModelImageCommand(id, url);
+
+        Result result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess ? NoContent() : BadRequest(result.Error);
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCarModel(Guid id, CancellationToken cancellationToken)
     {
         var command = new DeleteCarModelCommand(id);
+
+        Result result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess ? NoContent() : NotFound(result.Error);
+    }
+
+    [HttpDelete("{id}/image")]
+    public async Task<IActionResult> DeleteCarModelImage(Guid id, CancellationToken cancellationToken)
+    {
+        var command = new DeleteCarModelImageCommand(id);
 
         Result result = await _sender.Send(command, cancellationToken);
 

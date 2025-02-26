@@ -25,7 +25,7 @@ internal sealed class RemoveItemFromCartCommandHandler(
 
         if (cart is null)
         {
-            return Result.Failure(CartErrors.Empty);
+            return Result.Failure(CartErrors.MissingIdentifiers);
         }
 
         Product? product = await productRepository.GetByIdAsync(request.ProductId, cancellationToken);

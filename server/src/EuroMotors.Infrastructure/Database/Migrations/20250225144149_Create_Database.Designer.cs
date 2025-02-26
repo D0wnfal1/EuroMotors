@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250221135402_Create_Database")]
+    [Migration("20250225144149_Create_Database")]
     partial class Create_Database
     {
         /// <inheritdoc />
@@ -38,6 +38,10 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("brand");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text")
+                        .HasColumnName("image_url");
 
                     b.Property<string>("Model")
                         .IsRequired()
@@ -118,6 +122,10 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text")
+                        .HasColumnName("image_url");
 
                     b.Property<bool>("IsArchived")
                         .HasColumnType("boolean")

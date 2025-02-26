@@ -8,6 +8,32 @@ services:
     ports:
       - 5000:8080
       - 5001:8081
+    networks:
+      - server-network
+
+ # euromotors.client:
+ #   build:
+ #     context: ../client
+ #     dockerfile: Dockerfile
+ #   container_name: euromotors.Client
+ #   ports:
+ #     - "4200:4200"
+ #   volumes:
+ #     - ../client:/app 
+ #   depends_on:
+ #     - euromotors.api
+
+ # euromotors.nginx:
+ #   build:
+ #     context: ./nginx
+ #   container_name: euromotors.Nginx
+ #   ports:
+ #     - "80:80"
+ #   depends_on:
+ #     - euromotors.client
+ #     - euromotors.api
+ #   networks:
+ #     - server-network
 
   euromotors.db:
     image: postgres:17
@@ -20,6 +46,8 @@ services:
       - ./.containers/db:/var/lib/postgresql/data
     ports:
       - 5432:5432
+    networks:
+      - server-network
 
   euromotors.seq:
     image: datalust/seq:latest
@@ -27,6 +55,7 @@ services:
     environment:
       - ACCEPT_EULA=Y
     ports:
+      - 5341:5341
       - 8081:80
 
   euromotors.redis:
@@ -35,3 +64,7 @@ services:
     restart: always
     ports:
       - 6379:6379
+
+networks:
+  server-network:
+    driver: bridge

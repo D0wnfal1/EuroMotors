@@ -22,7 +22,8 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     brand = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    model = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                    model = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    image_url = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -50,7 +51,8 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    is_archived = table.Column<bool>(type: "boolean", nullable: false)
+                    is_archived = table.Column<bool>(type: "boolean", nullable: false),
+                    image_url = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {

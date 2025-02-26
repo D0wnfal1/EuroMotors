@@ -23,7 +23,7 @@ internal sealed class ClearCartCommandHandler(ICartRepository cartRepository, IU
 
         if (cart is null)
         {
-            return Result.Failure(CartErrors.Empty);
+            return Result.Failure(CartErrors.MissingIdentifiers);
         }
 
         await cartRepository.ClearCartAsync(cart.Id, cancellationToken);

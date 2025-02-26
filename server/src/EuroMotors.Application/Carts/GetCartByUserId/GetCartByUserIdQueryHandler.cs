@@ -54,6 +54,6 @@ internal sealed class GetCartByUserIdQueryHandler(IDbConnectionFactory dbConnect
 
         return cartsDictionary.TryGetValue(request.UserId, out CartResponse? cartResponse)
             ? cartResponse
-            : Result.Failure<CartResponse>(CartErrors.NotFound(request.UserId));
+            : Result.Failure<CartResponse>(CartErrors.MissingIdentifiers);
     }
 }

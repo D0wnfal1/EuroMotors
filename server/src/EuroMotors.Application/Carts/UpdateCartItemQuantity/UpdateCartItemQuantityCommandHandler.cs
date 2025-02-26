@@ -22,7 +22,7 @@ internal sealed class UpdateCartItemQuantityCommandHandler(ICartRepository cartR
 
         if (cart == null)
         {
-            return Result.Failure(CartErrors.Empty);
+            return Result.Failure(CartErrors.MissingIdentifiers);
         }
 
         await cartRepository.UpdateCartItemQuantityAsync(cart.Id, request.ProductId, request.NewQuantity, cancellationToken);

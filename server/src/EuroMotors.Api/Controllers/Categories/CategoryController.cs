@@ -1,9 +1,11 @@
 ﻿using EuroMotors.Application.Categories.ArchiveCategory;
 using EuroMotors.Application.Categories.CreateCategory;
 using EuroMotors.Application.Categories.DeleteCategory;
+using EuroMotors.Application.Categories.DeleteImage;
 using EuroMotors.Application.Categories.GetByIdCategory;
 using EuroMotors.Application.Categories.GetCategories;
 using EuroMotors.Application.Categories.UpdateCategory;
+using EuroMotors.Application.Categories.UpdateImage;
 using EuroMotors.Domain.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -63,6 +65,16 @@ public class CategoryController : ControllerBase
         return result.IsSuccess ? NoContent() : BadRequest(result.Error);
     }
 
+    [HttpPut("{id}/image")]
+    public async Task<IActionResult> UpdateCategoryImage(Guid id, Uri url, CancellationToken cancellationToken)
+    {
+        var command = new UpdateCategoryImageCommand(id, url);
+
+        Result result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess ? NoContent() : BadRequest(result.Error);
+    }
+
     [HttpPut("{id}/archive")]
     public async Task<IActionResult> ArchiveCategory(Guid id, CancellationToken cancellationToken)
     {
@@ -77,6 +89,16 @@ public class CategoryController : ControllerBase
     public async Task<IActionResult> DeleteCategory(Guid id, CancellationToken cancellationToken)
     {
         var command = new DeleteCategoryCommand(id);
+
+        Result result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess ? NoContent() : NotFound(result.Error);
+    }
+
+    [HttpDelete("{id}/image")]
+    public async Task<IActionResult> DeleteCategoryImage(Guid id, CancellationToken cancellationToken)
+    {
+        var command = new DeleteCategoryImageCommand(id);
 
         Result result = await _sender.Send(command, cancellationToken);
 

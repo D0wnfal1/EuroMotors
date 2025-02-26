@@ -25,7 +25,7 @@ if (app.Environment.IsDevelopment())
 
     app.ApplyMigrations();
 
-    // app.SeedData();
+    app.SeedData();
 }
 
 app.MapHealthChecks("health", new HealthCheckOptions

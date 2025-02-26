@@ -54,6 +54,6 @@ internal sealed class GetCartBySessionIdQueryHandler(IDbConnectionFactory dbConn
 
         return cartsDictionary.TryGetValue(request.SessionId, out CartResponse? cartResponse)
             ? cartResponse
-            : Result.Failure<CartResponse>(CartErrors.NotFound(request.SessionId));
+            : Result.Failure<CartResponse>(CartErrors.MissingIdentifiers);
     }
 }
