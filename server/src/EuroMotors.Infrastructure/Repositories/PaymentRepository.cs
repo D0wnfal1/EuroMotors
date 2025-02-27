@@ -1,5 +1,4 @@
-﻿using EuroMotors.Domain.Carts;
-using EuroMotors.Domain.Orders;
+﻿using EuroMotors.Domain.Orders;
 using EuroMotors.Domain.Payments;
 using EuroMotors.Domain.Users;
 using EuroMotors.Infrastructure.Database;

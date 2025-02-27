@@ -5,6 +5,7 @@
   <!-- .NET 9 packages -->
   <ItemGroup>
     <!-- Static code analysis -->
+    <PackageVersion Include="AspNetCore.HealthChecks.Redis" Version="9.0.0" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.6.0.109712" />
     <!-- Domain -->
     <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
@@ -32,7 +33,7 @@
     <PackageVersion Include="Bogus" Version="35.6.2" />
     <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
     <PackageVersion Include="Serilog.Sinks.Seq" Version="9.0.0" />
-    <PackageVersion Include="Swashbuckle.AspNetCore" Version="7.2.0" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="7.3.0" />
     <!-- ArchitectureTests -->
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />

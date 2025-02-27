@@ -1,4 +1,5 @@
 ﻿using EuroMotors.Application.Orders.ChangeOrderStatus;
+using EuroMotors.Application.Orders.CreateOrder;
 using EuroMotors.Application.Orders.DeleteOrder;
 using EuroMotors.Application.Orders.GetOrderById;
 using EuroMotors.Application.Orders.GetOrders;
@@ -49,6 +50,14 @@ public class OrderController : ControllerBase
         Result<IReadOnlyCollection<OrdersResponse>> result = await _sender.Send(query, cancellationToken);
 
         return result.IsSuccess ? Ok(result) : NotFound();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateOrder(Guid userId, CancellationToken cancellationToken)
+    {
+        var command = new CreateOrderCommand(userId);
+        Result result = await _sender.Send(command, cancellationToken);
+        return result.IsSuccess ? NoContent() : BadRequest();
     }
 
     [HttpPatch]

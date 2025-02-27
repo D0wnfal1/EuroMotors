@@ -1,8 +1,12 @@
-﻿namespace EuroMotors.Domain.Products;
+﻿using System.Net.Sockets;
+
+namespace EuroMotors.Domain.Products;
 
 public interface IProductRepository
 {
     Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+
+    Task<Product?> GetWithLockAsync(Guid id, CancellationToken cancellationToken = default);
 
     void Insert(Product product);
 

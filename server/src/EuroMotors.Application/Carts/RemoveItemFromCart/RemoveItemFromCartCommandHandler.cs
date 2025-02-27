@@ -1,51 +1,32 @@
-﻿using EuroMotors.Application.Abstractions.Messaging;
+﻿using System.Net.Sockets;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
-using EuroMotors.Domain.Carts;
 using EuroMotors.Domain.Products;
+using EuroMotors.Domain.Users;
 
 namespace EuroMotors.Application.Carts.RemoveItemFromCart;
 
-internal sealed class RemoveItemFromCartCommandHandler(
-	IProductRepository productRepository,
-	ICartRepository cartRepository,
-	IUnitOfWork unitOfWork) : ICommandHandler<RemoveItemFromCartCommand>
+internal sealed class RemoveItemFromCartCommandHandler(IUserRepository userRepository, IProductRepository productRepository, CartService cartService)
+    : ICommandHandler<RemoveItemFromCartCommand>
 {
-	public async Task<Result> Handle(RemoveItemFromCartCommand request, CancellationToken cancellationToken)
-	{
-        Cart? cart = null;
+    public async Task<Result> Handle(RemoveItemFromCartCommand request, CancellationToken cancellationToken)
+    {
+        User? user = await userRepository.GetByIdAsync(request.UserId, cancellationToken);
 
-        if (request.UserId.HasValue)
+        if (user is null)
         {
-            cart = await cartRepository.GetByUserIdAsync(request.UserId.Value, cancellationToken);
-        }
-        else if (request.SessionId.HasValue)
-        {
-            cart = await cartRepository.GetBySessionIdAsync(request.SessionId.Value, cancellationToken);
-        }
-
-        if (cart is null)
-        {
-            return Result.Failure(CartErrors.MissingIdentifiers);
+            return Result.Failure(UserErrors.NotFound(request.UserId));
         }
 
         Product? product = await productRepository.GetByIdAsync(request.ProductId, cancellationToken);
 
-		if (product is null)
-		{
-			return Result.Failure(ProductErrors.NotFound(request.ProductId));
-		}
+        if (product is null)
+        {
+            return Result.Failure(ProductErrors.NotFound(request.ProductId));
+        }
 
-		CartItem? cartItem = cart.CartItems?.Find(c => c.ProductId == product.Id);
-
-		if (cartItem is null)
-		{
-			return Result.Failure(CartErrors.Empty);
-		}
-
-		await cartRepository.RemoveItemFromCartAsync(cartItem);
-
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await cartService.RemoveItemAsync(user.Id, product.Id, cancellationToken);
 
         return Result.Success();
-	}
+    }
 }

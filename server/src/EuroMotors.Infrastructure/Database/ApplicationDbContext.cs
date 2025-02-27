@@ -1,7 +1,7 @@
-﻿using EuroMotors.Application.Abstractions.Data;
+﻿using System.Data.Common;
+using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
-using EuroMotors.Domain.Carts;
 using EuroMotors.Domain.Categories;
 using EuroMotors.Domain.Orders;
 using EuroMotors.Domain.Payments;
@@ -11,6 +11,7 @@ using EuroMotors.Domain.Users;
 using EuroMotors.Infrastructure.Configurations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EuroMotors.Infrastructure.Database;
 
@@ -27,10 +28,6 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
 
     public DbSet<CarModel> CarModels { get; set; }
 
-    public DbSet<Cart> Carts { get; set; }
-
-    public DbSet<CartItem> CartItems { get; set; }
-
     public DbSet<Order> Orders { get; set; }
 
     public DbSet<OrderItem> OrderItems { get; set; }
@@ -46,8 +43,6 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
         modelBuilder.ApplyConfiguration(new ProductImageConfiguration());
         modelBuilder.ApplyConfiguration(new CategoryConfiguration());
         modelBuilder.ApplyConfiguration(new CarModelConfiguration());
-        modelBuilder.ApplyConfiguration(new CartConfiguration());
-        modelBuilder.ApplyConfiguration(new CartItemConfiguration());
         modelBuilder.ApplyConfiguration(new OrderConfiguration());
         modelBuilder.ApplyConfiguration(new OrderItemConfiguration());
         modelBuilder.ApplyConfiguration(new PaymentConfiguration());
@@ -62,6 +57,15 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
         await PublishDomainEventsAsync();
 
         return result;
+    }
+    public async Task<DbTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        if (Database.CurrentTransaction is not null)
+        {
+            await Database.CurrentTransaction.DisposeAsync();
+        }
+
+        return (await Database.BeginTransactionAsync(cancellationToken)).GetDbTransaction();
     }
 
     private async Task PublishDomainEventsAsync()

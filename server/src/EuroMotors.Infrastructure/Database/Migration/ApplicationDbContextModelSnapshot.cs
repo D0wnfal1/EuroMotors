@@ -3,20 +3,17 @@ using System;
 using EuroMotors.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace EuroMotors.Infrastructure.Database.Migrations
+namespace EuroMotors.Infrastructure.Database.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250225144149_Create_Database")]
-    partial class Create_Database
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,67 +50,6 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                         .HasName("pk_car_models");
 
                     b.ToTable("car_models", "public");
-                });
-
-            modelBuilder.Entity("EuroMotors.Domain.Carts.Cart", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<Guid?>("SessionId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("session_id");
-
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_carts");
-
-                    b.HasIndex("UserId", "SessionId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_carts_user_id_session_id")
-                        .HasFilter("\"user_id\" IS NOT NULL OR \"session_id\" IS NOT NULL");
-
-                    b.ToTable("carts", "public");
-                });
-
-            modelBuilder.Entity("EuroMotors.Domain.Carts.CartItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<Guid>("CartId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("cart_id");
-
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("product_id");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer")
-                        .HasColumnName("quantity");
-
-                    b.Property<decimal>("UnitPrice")
-                        .HasColumnType("numeric")
-                        .HasColumnName("unit_price");
-
-                    b.HasKey("Id")
-                        .HasName("pk_cart_items");
-
-                    b.HasIndex("CartId")
-                        .HasDatabaseName("ix_cart_items_cart_id");
-
-                    b.HasIndex("ProductId")
-                        .HasDatabaseName("ix_cart_items_product_id");
-
-                    b.ToTable("cart_items", "public");
                 });
 
             modelBuilder.Entity("EuroMotors.Domain.Categories.Category", b =>
@@ -154,10 +90,6 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at_utc");
 
-                    b.Property<Guid?>("SessionId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("session_id");
-
                     b.Property<int>("Status")
                         .HasColumnType("integer")
                         .HasColumnName("status");
@@ -170,17 +102,12 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at_utc");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
                         .HasName("pk_orders");
-
-                    b.HasIndex("UserId", "SessionId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_orders_user_id_session_id")
-                        .HasFilter("\"user_id\" IS NOT NULL OR \"session_id\" IS NOT NULL");
 
                     b.ToTable("orders", "public");
                 });
@@ -389,23 +316,6 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                     b.ToTable("users", "public");
                 });
 
-            modelBuilder.Entity("EuroMotors.Domain.Carts.CartItem", b =>
-                {
-                    b.HasOne("EuroMotors.Domain.Carts.Cart", null)
-                        .WithMany("CartItems")
-                        .HasForeignKey("CartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_cart_items_carts_cart_id");
-
-                    b.HasOne("EuroMotors.Domain.Products.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_cart_items_products_product_id");
-                });
-
             modelBuilder.Entity("EuroMotors.Domain.Orders.OrderItem", b =>
                 {
                     b.HasOne("EuroMotors.Domain.Orders.Order", null)
@@ -460,11 +370,6 @@ namespace EuroMotors.Infrastructure.Database.Migrations
             modelBuilder.Entity("EuroMotors.Domain.CarModels.CarModel", b =>
                 {
                     b.Navigation("Products");
-                });
-
-            modelBuilder.Entity("EuroMotors.Domain.Carts.Cart", b =>
-                {
-                    b.Navigation("CartItems");
                 });
 
             modelBuilder.Entity("EuroMotors.Domain.Categories.Category", b =>

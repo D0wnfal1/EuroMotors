@@ -1,6 +1,6 @@
 ﻿using EuroMotors.Domain.Abstractions;
 
-namespace EuroMotors.Domain.Carts;
+namespace EuroMotors.Application.Carts;
 
 public static class CartErrors
 {

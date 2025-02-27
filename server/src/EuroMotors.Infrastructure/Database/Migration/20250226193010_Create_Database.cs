@@ -4,10 +4,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace EuroMotors.Infrastructure.Database.Migrations
+namespace EuroMotors.Infrastructure.Database.Migration
 {
     /// <inheritdoc />
-    public partial class Create_Database : Migration
+    public partial class Create_Database : Microsoft.EntityFrameworkCore.Migrations.Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,20 +31,6 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "carts",
-                schema: "public",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
-                    user_id = table.Column<Guid>(type: "uuid", nullable: true),
-                    session_id = table.Column<Guid>(type: "uuid", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_carts", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "categories",
                 schema: "public",
                 columns: table => new
@@ -65,8 +51,7 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    user_id = table.Column<Guid>(type: "uuid", nullable: true),
-                    session_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
                     status = table.Column<int>(type: "integer", nullable: false),
                     total_price = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -179,36 +164,6 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "cart_items",
-                schema: "public",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
-                    product_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    cart_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    quantity = table.Column<int>(type: "integer", nullable: false),
-                    unit_price = table.Column<decimal>(type: "numeric", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_cart_items", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_cart_items_carts_cart_id",
-                        column: x => x.cart_id,
-                        principalSchema: "public",
-                        principalTable: "carts",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "fk_cart_items_products_product_id",
-                        column: x => x.product_id,
-                        principalSchema: "public",
-                        principalTable: "products",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "product_images",
                 schema: "public",
                 columns: table => new
@@ -230,38 +185,10 @@ namespace EuroMotors.Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "ix_cart_items_cart_id",
-                schema: "public",
-                table: "cart_items",
-                column: "cart_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_cart_items_product_id",
-                schema: "public",
-                table: "cart_items",
-                column: "product_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_carts_user_id_session_id",
-                schema: "public",
-                table: "carts",
-                columns: new[] { "user_id", "session_id" },
-                unique: true,
-                filter: "\"user_id\" IS NOT NULL OR \"session_id\" IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
                 name: "ix_order_items_order_id",
                 schema: "public",
                 table: "order_items",
                 column: "order_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_orders_user_id_session_id",
-                schema: "public",
-                table: "orders",
-                columns: new[] { "user_id", "session_id" },
-                unique: true,
-                filter: "\"user_id\" IS NOT NULL OR \"session_id\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "ix_payments_order_id",
@@ -300,10 +227,6 @@ namespace EuroMotors.Infrastructure.Database.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "cart_items",
-                schema: "public");
-
-            migrationBuilder.DropTable(
                 name: "order_items",
                 schema: "public");
 
@@ -317,10 +240,6 @@ namespace EuroMotors.Infrastructure.Database.Migrations
 
             migrationBuilder.DropTable(
                 name: "users",
-                schema: "public");
-
-            migrationBuilder.DropTable(
-                name: "carts",
                 schema: "public");
 
             migrationBuilder.DropTable(

@@ -1,5 +1,4 @@
 ﻿using EuroMotors.Domain.Abstractions;
-using EuroMotors.Domain.Carts;
 using EuroMotors.Domain.Orders.Events;
 using EuroMotors.Domain.Products;
 using EuroMotors.Domain.Users;
@@ -12,49 +11,38 @@ public sealed class Order : Entity
 
     private Order() { }
 
-    public Guid? UserId { get; private set; }
-    public Guid? SessionId { get; private set; }
+    public Guid UserId { get; private set; }
     public OrderStatus Status { get; private set; }
     public decimal TotalPrice { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime UpdatedAtUtc { get; private set; }
-    public IReadOnlyCollection<OrderItem> OrderItems => _orderItems.AsReadOnly();
+    public IReadOnlyCollection<OrderItem> OrderItems => _orderItems?.ToList();
     public Guid? PaymentId { get; }
 
-    public static Order Create(Guid? userId, Guid? sessionId, List<CartItem> cartItems)
+    public static Order Create(User user)
     {
         var order = new Order
         {
             Id = Guid.NewGuid(),
-            UserId = userId,
-            SessionId = sessionId,
+            UserId = user.Id,
             Status = OrderStatus.Pending,
             CreatedAtUtc = DateTime.UtcNow,
             UpdatedAtUtc = DateTime.UtcNow
         };
 
-        foreach (CartItem cartItem in cartItems)
-        {
-            order.AddItem(cartItem.ProductId, cartItem.Quantity, cartItem.UnitPrice);
-        }
 
         order.RaiseDomainEvent(new OrderCreatedDomainEvent(order.Id));
+        
         return order;
     }
 
-    public void AddItem(Guid productId, int quantity, decimal unitPrice)
+    public void AddItem(Product product, int quantity, decimal unitPrice)
     {
-        var orderItem = OrderItem.Create(Id, productId, quantity, unitPrice);
+        var orderItem = OrderItem.Create(Id, product.Id, quantity, unitPrice);
 
         _orderItems.Add(orderItem);
 
-        RecalculateTotalPrice();
-    }
-
-    public void RecalculateTotalPrice()
-    {
         TotalPrice = _orderItems.Sum(o => o.Price);
-        UpdatedAtUtc = DateTime.UtcNow;
     }
 
     public void ChangeStatus(OrderStatus status)

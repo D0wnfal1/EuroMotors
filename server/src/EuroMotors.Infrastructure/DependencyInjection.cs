@@ -5,9 +5,9 @@ using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.Abstractions.Clock;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Payments;
+using EuroMotors.Application.Carts;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
-using EuroMotors.Domain.Carts;
 using EuroMotors.Domain.Categories;
 using EuroMotors.Domain.Orders;
 using EuroMotors.Domain.Payments;
@@ -61,7 +61,7 @@ public static class DependencyInjection
 
         services.AddScoped<ICategoryRepository, CategoryRepository>();
 
-        services.AddScoped<ICartRepository, CartRepository>();
+        services.AddScoped<CartService>();
 
         services.AddScoped<IOrderRepository, OrderRepository>();
 
@@ -95,10 +95,11 @@ public static class DependencyInjection
 
     private static IServiceCollection AddCaching(this IServiceCollection services, IConfiguration configuration)
     {
-        string redisConnectionString = configuration.GetConnectionString("Redis")!;
+        string? connectionString = configuration.GetConnectionString("Cache") ??
+                                   throw new ArgumentNullException(nameof(configuration));
         try
         {
-            IConnectionMultiplexer connectionMultiplexer = ConnectionMultiplexer.Connect(redisConnectionString);
+            IConnectionMultiplexer connectionMultiplexer = ConnectionMultiplexer.Connect(connectionString);
             services.AddSingleton(connectionMultiplexer);
             services.AddStackExchangeRedisCache(options =>
                 options.ConnectionMultiplexerFactory = () => Task.FromResult(connectionMultiplexer));
@@ -117,7 +118,8 @@ public static class DependencyInjection
     {
         services
             .AddHealthChecks()
-            .AddNpgSql(configuration.GetConnectionString("Database")!);
+            .AddNpgSql(configuration.GetConnectionString("Database")!)
+            .AddRedis(configuration.GetConnectionString("Cache")!);
 
         return services;
     }

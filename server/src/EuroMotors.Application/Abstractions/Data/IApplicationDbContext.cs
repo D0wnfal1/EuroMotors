@@ -1,5 +1,4 @@
 ﻿using EuroMotors.Domain.CarModels;
-using EuroMotors.Domain.Carts;
 using EuroMotors.Domain.Categories;
 using EuroMotors.Domain.Orders;
 using EuroMotors.Domain.Payments;
@@ -17,7 +16,6 @@ public interface IApplicationDbContext
     DbSet<ProductImage> ProductImages { get; }
     DbSet<Category> Categories { get; }
     DbSet<CarModel> CarModels { get; }
-    DbSet<Cart> Carts { get; }
     DbSet<Order> Orders { get; }
     DbSet<Payment> Payments { get; }
 

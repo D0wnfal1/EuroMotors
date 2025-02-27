@@ -85,9 +85,11 @@ public sealed class Product : Entity
         Discount = discount;
     }
 
-    public void UpdateStock(int stock)
+    public Result UpdateStock(int stock)
     {
         Stock = stock;
+
+        return Result.Success();
     }
 
     public Result SubtractProductQuantity(int quantity)

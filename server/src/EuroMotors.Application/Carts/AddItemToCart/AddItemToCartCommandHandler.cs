@@ -1,37 +1,23 @@
-﻿using EuroMotors.Application.Abstractions.Caching;
+﻿using System.Net.Sockets;
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
-using EuroMotors.Domain.Carts;
 using EuroMotors.Domain.Products;
 using EuroMotors.Domain.Users;
 
 namespace EuroMotors.Application.Carts.AddItemToCart;
 
 internal sealed class AddItemToCartCommandHandler(
-    IProductRepository productRepository,
-    ICartRepository cartRepository,
-    IUnitOfWork unitOfWork) : ICommandHandler<AddItemToCartCommand>
+    IProductRepository productRepository, IUserRepository userRepository,
+    CartService cartService) : ICommandHandler<AddItemToCartCommand>
 {
     public async Task<Result> Handle(AddItemToCartCommand request, CancellationToken cancellationToken)
     {
-        Cart? cart = null;
+        User? user = await userRepository.GetByIdAsync(request.UserId, cancellationToken);
 
-        if (request.UserId.HasValue)
+        if (user is null)
         {
-            cart = await cartRepository.GetByUserIdAsync(request.UserId.Value, cancellationToken);
-        }
-        else if (request.SessionId.HasValue)
-        {
-            cart = await cartRepository.GetBySessionIdAsync(request.SessionId.Value, cancellationToken);
-        }
-
-        if (cart == null)
-        {
-            cart = request.UserId.HasValue
-                ? Cart.CreateForUser(request.UserId.Value)
-                : Cart.CreateForSession(request.SessionId!.Value);
-
-            cartRepository.Insert(cart);
+            return Result.Failure(UserErrors.NotFound(request.UserId));
         }
 
         Product? product = await productRepository.GetByIdAsync(request.ProductId, cancellationToken);
@@ -46,11 +32,14 @@ internal sealed class AddItemToCartCommandHandler(
             return Result.Failure(ProductErrors.NotEnoughStock(product.Stock));
         }
 
-        var cartItem = CartItem.Create(product, cart.Id, request.Quantity);
+        var cartItem = new CartItem
+        {
+            ProductId = request.ProductId,
+            Quantity = request.Quantity,
+            UnitPrice = product.Price
+        };
 
-        await cartRepository.AddItemToCartAsync(cartItem, cancellationToken);
-
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await cartService.AddItemAsync(request.UserId, cartItem, cancellationToken);
 
         return Result.Success();
     }

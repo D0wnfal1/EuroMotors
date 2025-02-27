@@ -26,7 +26,6 @@
 
   <ItemGroup>
     <Folder Include="Payments\GetPaymentByOrderId\" />
-    <Folder Include="Carts\ConvertToOrder\" />
     <Folder Include="ProductImages\GetProductImagesByProductId\" />
     <Folder Include="Products\UpdateProduct\UpdateProductDiscount\" />
   </ItemGroup>
