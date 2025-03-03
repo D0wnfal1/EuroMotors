@@ -3,8 +3,7 @@ using EuroMotors.Application.Products.DeleteProduct;
 using EuroMotors.Application.Products.GetProductById;
 using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Application.Products.MarkAsNotAvailable;
-using EuroMotors.Application.Products.SearchProductsByCarModelId;
-using EuroMotors.Application.Products.SearchProductsByCategoryId;
+using EuroMotors.Application.Products.SearchProducts;
 using EuroMotors.Application.Products.UpdateProduct;
 using EuroMotors.Application.Products.UpdateProduct.UpdateProductDiscount;
 using EuroMotors.Application.Products.UpdateProduct.UpdateProductPrice;
@@ -46,27 +45,26 @@ public class ProductController : ControllerBase
         return result.IsSuccess ? Ok(result) : NotFound();
     }
 
-    [HttpGet("{id}/category")]
-    public async Task<IActionResult> SearchProductsByCategoryId(Guid id, CancellationToken cancellationToken)
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchProducts(
+        [FromQuery] string? categoryName,
+        [FromQuery] string? carModelBrand,
+        [FromQuery] string? carModelModel,
+        [FromQuery] string? sortOrder,
+        [FromQuery] string? searchTerm,
+        CancellationToken cancellationToken,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10)
     {
-        var query = new SearchProductsByCategoryIdQuery(id);
+        var query = new SearchProductsQuery(categoryName, carModelBrand, carModelModel, sortOrder, searchTerm, pageNumber, pageSize);
 
         Result<IReadOnlyCollection<ProductResponse>> result = await _sender.Send(query, cancellationToken);
 
-        return result.IsSuccess ? Ok(result) : NotFound();
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 
-    [HttpGet("{id}/car-model")]
-    public async Task<IActionResult> SearchProductsByCarModelId(Guid id, CancellationToken cancellationToken)
-    {
-        var query = new SearchProductsByCarModelIdQuery(id);
 
-        Result<IReadOnlyCollection<ProductResponse>> result = await _sender.Send(query, cancellationToken);
-
-        return result.IsSuccess ? Ok(result) : NotFound();
-    }
-
-     [HttpPost]
+    [HttpPost]
     public async Task<IActionResult> CreateProduct([FromBody] ProductRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateProductCommand(request.Name, request.Description, request.VendorCode, request.CategoryId, request.CarModelId, request.Price, request.Discount, request.Stock, request.IsAvailable);

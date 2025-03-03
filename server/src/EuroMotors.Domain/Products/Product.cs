@@ -119,13 +119,4 @@ public sealed class Product : Entity
 
         RaiseDomainEvent(new ProductIsNotAvailableDomainEvent(Id));
     }
-
-    public decimal CalculateDiscountedPrice()
-    {
-        if (Discount > 0)
-        {
-            return Price - Price * (Discount / 100);
-        }
-        return Price;
-    }
 }

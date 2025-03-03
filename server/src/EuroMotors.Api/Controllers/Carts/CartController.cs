@@ -1,7 +1,6 @@
 ﻿using EuroMotors.Application.Carts;
 using EuroMotors.Application.Carts.AddItemToCart;
 using EuroMotors.Application.Carts.ClearCart;
-using EuroMotors.Application.Carts.ConvertToOrder;
 using EuroMotors.Application.Carts.GetCartByUserId;
 using EuroMotors.Application.Carts.RemoveItemFromCart;
 using EuroMotors.Domain.Abstractions;
@@ -39,16 +38,6 @@ public class CartController : ControllerBase
         Result result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess ? Ok() : BadRequest();
-    }
-
-    [HttpPost("convert-to-order")]
-    public async Task<IActionResult> ConvertToOrder(Guid userId, CancellationToken cancellationToken)
-    {
-        var command = new ConvertToOrderCommand(userId);
-
-        Result result = await _sender.Send(command, cancellationToken);
-
-        return result.IsSuccess ? Ok() : BadRequest(result.Error);
     }
 
     [HttpDelete("/items")]

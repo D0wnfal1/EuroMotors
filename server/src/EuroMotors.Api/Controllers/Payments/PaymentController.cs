@@ -16,7 +16,7 @@ public class PaymentController : ControllerBase
 {
     private readonly ISender _sender;
 
-    public PaymentController(ISender sender, IPaymentService paymentService)
+    public PaymentController(ISender sender)
     {
         _sender = sender;
     }
