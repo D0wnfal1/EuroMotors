@@ -37,7 +37,7 @@ internal sealed class CreateProductCommandHandler(IProductRepository productRepo
             request.Price,
             request.Discount,
             request.Stock,
-            request.IsAvailable );
+            request.IsAvailable);
 
         if (result.IsFailure)
         {

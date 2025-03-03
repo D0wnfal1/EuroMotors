@@ -1,5 +1,4 @@
-﻿using EuroMotors.Application.CarModels.DeleteCarModel;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace EuroMotors.Application.CarModels.UpdateCarModel;
 

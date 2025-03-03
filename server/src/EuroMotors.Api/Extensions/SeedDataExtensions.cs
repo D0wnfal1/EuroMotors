@@ -46,7 +46,7 @@ public static class SeedDataExtensions
             c.Id,
             c.Brand,
             c.Model,
-            ImageUrl = c.ImageUrl?.ToString() 
+            ImageUrl = c.ImageUrl?.ToString()
         }));
     }
 
@@ -68,7 +68,7 @@ public static class SeedDataExtensions
             c.Id,
             c.Name,
             c.IsArchived,
-            ImageUrl = c.ImageUrl?.ToString() 
+            ImageUrl = c.ImageUrl?.ToString()
         }));
     }
 

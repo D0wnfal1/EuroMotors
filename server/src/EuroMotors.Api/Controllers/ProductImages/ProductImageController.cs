@@ -5,7 +5,6 @@ using EuroMotors.Application.ProductImages.GetProductImageById;
 using EuroMotors.Application.ProductImages.GetProductImagesByProductId;
 using EuroMotors.Application.ProductImages.UpdateProductImage;
 using EuroMotors.Domain.Abstractions;
-using EuroMotors.Domain.ProductImages;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -46,7 +45,7 @@ public class ProductImageController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateProductImage([FromBody] ProductImageRequest request, CancellationToken cancellationToken)
     {
-        var command = new CreateProductImageCommand( request.Url, request.ProductId);
+        var command = new CreateProductImageCommand(request.Url, request.ProductId);
 
         Result<Guid> result = await _sender.Send(command, cancellationToken);
 

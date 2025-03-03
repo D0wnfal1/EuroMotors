@@ -32,7 +32,7 @@ public sealed class Order : Entity
 
 
         order.RaiseDomainEvent(new OrderCreatedDomainEvent(order.Id));
-        
+
         return order;
     }
 

@@ -1,5 +1,6 @@
 ﻿using System.Data.Common;
 using EuroMotors.Application.Abstractions.Data;
+using EuroMotors.Application.Abstractions.Exceptions;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Categories;
@@ -52,11 +53,19 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        int result = await base.SaveChangesAsync(cancellationToken);
+        try
+        {
+            int result = await base.SaveChangesAsync(cancellationToken);
 
-        await PublishDomainEventsAsync();
+            await PublishDomainEventsAsync();
 
-        return result;
+            return result;
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            throw new ConcurrencyException("Concurrency exception occurred.", ex);
+        }
+
     }
     public async Task<DbTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
     {

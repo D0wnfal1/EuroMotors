@@ -7,16 +7,16 @@ public sealed class ProductRequest()
     public string Name { get; set; }
     public string Description { get; set; }
     public string VendorCode { get; set; }
-    [JsonRequired] 
+    [JsonRequired]
     public Guid CategoryId { get; set; }
-    [JsonRequired] 
+    [JsonRequired]
     public Guid CarModelId { get; set; }
-    [JsonRequired] 
+    [JsonRequired]
     public decimal Price { get; set; }
-    [JsonRequired] 
+    [JsonRequired]
     public decimal Discount { get; set; }
-    [JsonRequired] 
+    [JsonRequired]
     public int Stock { get; set; }
-    [JsonRequired] 
+    [JsonRequired]
     public bool IsAvailable { get; set; }
 }

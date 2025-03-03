@@ -1,6 +1,4 @@
-﻿using EuroMotors.Domain.Orders;
-using EuroMotors.Domain.Payments;
-using EuroMotors.Domain.Users;
+﻿using EuroMotors.Domain.Payments;
 using EuroMotors.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,7 +1,5 @@
-﻿using System;
-using EuroMotors.Domain.Abstractions;
+﻿using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Categories.Events;
-using EuroMotors.Domain.ProductImages.Events;
 using EuroMotors.Domain.Products;
 
 namespace EuroMotors.Domain.Categories;

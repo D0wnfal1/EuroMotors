@@ -1,5 +1,4 @@
-﻿using EuroMotors.Application.Abstractions.Caching;
-using EuroMotors.Application.Abstractions.Messaging;
+﻿using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 
 namespace EuroMotors.Application.Carts.GetCartByUserId;

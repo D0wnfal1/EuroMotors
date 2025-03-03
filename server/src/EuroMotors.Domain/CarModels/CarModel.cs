@@ -1,6 +1,5 @@
 ﻿using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels.Events;
-using EuroMotors.Domain.Categories;
 using EuroMotors.Domain.Products;
 
 namespace EuroMotors.Domain.CarModels;

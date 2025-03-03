@@ -1,6 +1,4 @@
-﻿using System.Net.Sockets;
-
-namespace EuroMotors.Domain.Products;
+﻿namespace EuroMotors.Domain.Products;
 
 public interface IProductRepository
 {

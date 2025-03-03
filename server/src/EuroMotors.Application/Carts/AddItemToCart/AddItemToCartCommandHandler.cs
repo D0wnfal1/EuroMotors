@@ -1,6 +1,4 @@
-﻿using System.Net.Sockets;
-using EuroMotors.Application.Abstractions.Caching;
-using EuroMotors.Application.Abstractions.Messaging;
+﻿using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Products;
 using EuroMotors.Domain.Users;

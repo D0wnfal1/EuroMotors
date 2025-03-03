@@ -17,7 +17,7 @@ internal sealed class DeleteProductImageByProductIdCommandHandler(IProductImageR
 
         foreach (ProductImage image in images)
         {
-           await productImageRepository.Delete(image.Id); 
+            await productImageRepository.Delete(image.Id);
         }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);

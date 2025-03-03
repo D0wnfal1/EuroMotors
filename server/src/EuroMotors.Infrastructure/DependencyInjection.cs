@@ -72,18 +72,18 @@ public static class DependencyInjection
         return services;
     }
 
-	private static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
-	{
-		string? connectionString = configuration.GetConnectionString("Database") ??
+    private static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
+    {
+        string? connectionString = configuration.GetConnectionString("Database") ??
                                    throw new ArgumentNullException(nameof(configuration));
 
-		services.AddDbContext<ApplicationDbContext>(
-			options => options
-				.UseNpgsql(connectionString, npgsqlOptions =>
-					npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Default))
-				.UseSnakeCaseNamingConvention());
+        services.AddDbContext<ApplicationDbContext>(
+            options => options
+                .UseNpgsql(connectionString, npgsqlOptions =>
+                    npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Default))
+                .UseSnakeCaseNamingConvention());
 
-		services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
+        services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
 
         services.AddSingleton<IDbConnectionFactory>(_ =>
             new DbConnectionFactory(connectionString));
@@ -91,7 +91,7 @@ public static class DependencyInjection
         SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
 
         return services;
-	}
+    }
 
     private static IServiceCollection AddCaching(this IServiceCollection services, IConfiguration configuration)
     {

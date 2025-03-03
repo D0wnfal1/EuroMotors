@@ -6,10 +6,9 @@ using MediatR;
 
 namespace EuroMotors.Application.Abstractions.Behaviors;
 
-internal sealed class ValidationPipelineBehavior<TRequest, TResponse>(
-    IEnumerable<IValidator<TRequest>> validators)
-    : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : class
+internal sealed class ValidationPipelineBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators)
+        : IPipelineBehavior<TRequest, TResponse>
+        where TRequest : IBaseRequest
 {
     public async Task<TResponse> Handle(
         TRequest request,
@@ -22,6 +21,8 @@ internal sealed class ValidationPipelineBehavior<TRequest, TResponse>(
         {
             return await next();
         }
+
+        var validationError = ValidationError.FromResults(validationFailures.Select(f => Result.Failure(Error.Problem(f.ErrorCode, f.ErrorMessage))));
 
         if (typeof(TResponse).IsGenericType &&
             typeof(TResponse).GetGenericTypeDefinition() == typeof(Result<>))
@@ -36,12 +37,12 @@ internal sealed class ValidationPipelineBehavior<TRequest, TResponse>(
             {
                 return (TResponse)failureMethod.Invoke(
                     null,
-                    [CreateValidationError(validationFailures)]);
+                    [validationError]);
             }
         }
         else if (typeof(TResponse) == typeof(Result))
         {
-            return (TResponse)(object)Result.Failure(CreateValidationError(validationFailures));
+            return (TResponse)(object)Result.Failure(validationError);
         }
 
         throw new ValidationException(validationFailures);
@@ -66,7 +67,4 @@ internal sealed class ValidationPipelineBehavior<TRequest, TResponse>(
 
         return validationFailures;
     }
-
-    private static ValidationError CreateValidationError(ValidationFailure[] validationFailures) =>
-        new(validationFailures.Select(f => Error.Problem(f.ErrorCode, f.ErrorMessage)).ToArray());
 }

@@ -18,7 +18,7 @@ internal sealed class RegisterUserCommandHandler(IApplicationDbContext context, 
             return Result.Failure<Guid>(UserErrors.EmailNotUnique);
         }
 
-        var user = User.Create( command.Email, command.FirstName, command.LastName, passwordHasher.Hash(command.Password));
+        var user = User.Create(command.Email, command.FirstName, command.LastName, passwordHasher.Hash(command.Password));
 
         user.RaiseDomainEvent(new UserRegisteredDomainEvent(user.Id));
 

@@ -10,7 +10,6 @@ internal sealed class ChangeOrderStatusCommandHandler(IOrderRepository orderRepo
     public async Task<Result> Handle(ChangeOrderStatusCommand request, CancellationToken cancellationToken)
     {
         Order? order = await orderRepository.GetByIdAsync(request.OrderId, cancellationToken);
-
         if (order is null)
         {
             return Result.Failure(OrderErrors.NotFound(request.OrderId));
@@ -18,27 +17,37 @@ internal sealed class ChangeOrderStatusCommandHandler(IOrderRepository orderRepo
 
         order.ChangeStatus(request.Status);
 
-        if (order.Status == OrderStatus.Shipped)
+        if (order.Status is OrderStatus.Shipped or OrderStatus.Canceled)
         {
-            foreach (OrderItem orderItem in order.OrderItems)
+            Result result = await HandleOrderItemsAsync(order, cancellationToken);
+            if (result.IsFailure)
             {
-                Product? product = await productRepository.GetByIdAsync(orderItem.ProductId, cancellationToken);
-
-                if (product is null)
-                {
-                    return Result.Failure(ProductErrors.NotFound(orderItem.ProductId));
-                }
-
-                Result result = product.SubtractProductQuantity(orderItem.Quantity);
-
-                if (result.IsFailure)
-                {
-                    return result;
-                }
+                return result;
             }
         }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
+    }
+
+    private async Task<Result> HandleOrderItemsAsync(Order order, CancellationToken cancellationToken)
+    {
+        foreach (OrderItem orderItem in order.OrderItems)
+        {
+            Product? product = await productRepository.GetByIdAsync(orderItem.ProductId, cancellationToken);
+
+            if (product is null)
+            {
+                return Result.Failure(ProductErrors.NotFound(orderItem.ProductId));
+            }
+
+            Result result = product.SubtractProductQuantity(orderItem.Quantity);
+            if (result.IsFailure)
+            {
+                return result;
+            }
+        }
 
         return Result.Success();
     }

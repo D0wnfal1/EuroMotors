@@ -47,6 +47,6 @@ public class UsersController : ControllerBase
 
         Result<Guid> result = await _sender.Send(command, cancellationToken);
 
-        return result.IsSuccess ? Ok(result.Value) :  BadRequest(result.Error);
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 }

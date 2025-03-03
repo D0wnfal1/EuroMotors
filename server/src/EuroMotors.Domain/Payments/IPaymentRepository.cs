@@ -1,7 +1,4 @@
-﻿
-using EuroMotors.Domain.Orders;
-
-namespace EuroMotors.Domain.Payments;
+﻿namespace EuroMotors.Domain.Payments;
 
 public interface IPaymentRepository
 {

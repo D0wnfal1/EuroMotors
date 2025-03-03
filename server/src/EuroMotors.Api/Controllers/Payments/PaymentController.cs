@@ -1,5 +1,4 @@
-﻿using EuroMotors.Application.Abstractions.Payments;
-using EuroMotors.Application.Payments.CreatePayment;
+﻿using EuroMotors.Application.Payments.CreatePayment;
 using EuroMotors.Application.Payments.GetPaymentById;
 using EuroMotors.Application.Payments.GetPaymentByOrderId;
 using EuroMotors.Application.Payments.GetPaymentByStatus;

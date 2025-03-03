@@ -10,12 +10,12 @@ namespace EuroMotors.Application.Payments.GetPaymentByStatus;
 
 public class GetPaymentByStatusQueryHandler(IDbConnectionFactory dbConnectionFactory) : IQueryHandler<GetPaymentByStatusQuery, PaymentResponse>
 {
-	public async Task<Result<PaymentResponse>> Handle(GetPaymentByStatusQuery request, CancellationToken cancellationToken)
-	{
-		using IDbConnection connection = dbConnectionFactory.CreateConnection();
+    public async Task<Result<PaymentResponse>> Handle(GetPaymentByStatusQuery request, CancellationToken cancellationToken)
+    {
+        using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
-		const string sql =
-			$"""
+        const string sql =
+            $"""
                  SELECT
                      id AS {nameof(PaymentResponse.Id)},
                      order_id AS {nameof(PaymentResponse.OrderId)},
@@ -27,8 +27,8 @@ public class GetPaymentByStatusQueryHandler(IDbConnectionFactory dbConnectionFac
                  WHERE status = @Status
                  """;
 
-		PaymentResponse? paymentResponse = await connection.QuerySingleOrDefaultAsync<PaymentResponse>(sql, new { request.Status });
+        PaymentResponse? paymentResponse = await connection.QuerySingleOrDefaultAsync<PaymentResponse>(sql, new { request.Status });
 
-		return paymentResponse is null ? Result.Failure<PaymentResponse>(PaymentErrors.NotFoundPaymentStatus(request.Status)) : Result.Success(paymentResponse);
+        return paymentResponse is null ? Result.Failure<PaymentResponse>(PaymentErrors.NotFoundPaymentStatus(request.Status)) : Result.Success(paymentResponse);
     }
 }

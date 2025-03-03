@@ -13,7 +13,7 @@ internal sealed class GetCarModelsQueryHandler(IDbConnectionFactory dbConnection
     {
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
-        const string sql = 
+        const string sql =
            $"""
             SELECT
                 id AS {nameof(CarModelResponse.Id)},

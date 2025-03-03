@@ -8,7 +8,7 @@ public static class OrderErrors
         Error.NotFound("Product.NotFound", $"The order with the identifier {orderId} was not found");
 
 
-    public static readonly Error ProductIsNotAvailable= Error.Problem(
+    public static readonly Error ProductIsNotAvailable = Error.Problem(
         "Product.ProductIsNotAvailable",
         "The product for this order were already issued");
 }

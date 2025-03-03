@@ -9,5 +9,5 @@ public sealed class AddItemToCartRequest
     [JsonRequired]
     public Guid ProductId { get; set; }
     [JsonRequired]
-    public int Quantity{ get; set; }
+    public int Quantity { get; set; }
 }

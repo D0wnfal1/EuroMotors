@@ -34,7 +34,7 @@ public sealed class Payment : Entity
             Id = Guid.NewGuid(),
             OrderId = order.Id,
             Status = status,
-            Order = order, 
+            Order = order,
             TransactionId = transactionId,
             Amount = amount,
             AmountRefunded = 0m,

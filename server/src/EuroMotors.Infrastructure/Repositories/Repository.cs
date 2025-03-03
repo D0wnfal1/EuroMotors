@@ -1,5 +1,4 @@
 ﻿using EuroMotors.Domain.Abstractions;
-using EuroMotors.Domain.Users;
 using EuroMotors.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 

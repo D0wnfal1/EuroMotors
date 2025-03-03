@@ -108,6 +108,15 @@ public sealed class Product : Entity
         return Result.Success();
     }
 
+    public Result AddProductQuantity(int quantity)
+    {
+        Stock += quantity;
+
+        RaiseDomainEvent(new ProductStockUpdatedEvent(Id, Stock));
+
+        return Result.Success();
+    }
+
     public void MarkAsNotAvailable()
     {
         if (!IsAvailable)

@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using System.Data.Common;
 using EuroMotors.Application.Abstractions.Data;
 using Npgsql;
 

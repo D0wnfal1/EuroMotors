@@ -16,7 +16,7 @@ internal sealed class DeleteCategoryCommandHandler(ICategoryRepository categoryR
         }
 
         await categoryRepository.Delete(category.Id);
-        
+
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();

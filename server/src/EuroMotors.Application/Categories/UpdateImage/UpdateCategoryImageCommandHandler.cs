@@ -1,7 +1,6 @@
 ﻿using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Categories;
-using EuroMotors.Domain.ProductImages;
 
 namespace EuroMotors.Application.Categories.UpdateImage;
 
