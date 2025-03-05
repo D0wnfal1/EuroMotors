@@ -29,7 +29,7 @@ public sealed class Product : Entity
 
     public bool IsAvailable { get; private set; }
 
-    public IReadOnlyCollection<ProductImage> Images { get; private set; } = [];
+    public List<ProductImage> Images { get; private set; } = []; 
 
     public static Product Create(
         string name,
@@ -71,18 +71,7 @@ public sealed class Product : Entity
         Stock = stock;
         IsAvailable = stock > 0;
 
-        RaiseDomainEvent(new ProductUpdatedEvent(Id));
-    }
-
-
-    public void UpdatePrice(decimal price)
-    {
-        Price = price;
-    }
-
-    public void UpdateDiscount(decimal discount)
-    {
-        Discount = discount;
+        RaiseDomainEvent(new ProductUpdatedDomainEvent(Id));
     }
 
     public Result UpdateStock(int stock)
@@ -103,7 +92,7 @@ public sealed class Product : Entity
 
         IsAvailable = Stock > 0;
 
-        RaiseDomainEvent(new ProductStockUpdatedEvent(Id, Stock));
+        RaiseDomainEvent(new ProductStockUpdatedDomainEvent(Id, Stock));
 
         return Result.Success();
     }
@@ -112,7 +101,7 @@ public sealed class Product : Entity
     {
         Stock += quantity;
 
-        RaiseDomainEvent(new ProductStockUpdatedEvent(Id, Stock));
+        RaiseDomainEvent(new ProductStockUpdatedDomainEvent(Id, Stock));
 
         return Result.Success();
     }

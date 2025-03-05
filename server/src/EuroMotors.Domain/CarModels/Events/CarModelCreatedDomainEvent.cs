@@ -2,4 +2,4 @@
 
 namespace EuroMotors.Domain.CarModels.Events;
 
-public record CarModelCreatedDomainEvent(Guid CarModelId) : IDomainEvent;
+public sealed record CarModelCreatedDomainEvent(Guid CarModelId) : IDomainEvent;

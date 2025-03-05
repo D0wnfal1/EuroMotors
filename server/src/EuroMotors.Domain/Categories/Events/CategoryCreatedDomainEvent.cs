@@ -2,4 +2,4 @@
 
 namespace EuroMotors.Domain.Categories.Events;
 
-public record CategoryCreatedDomainEvent(Guid CategoryId) : IDomainEvent;
+public sealed record CategoryCreatedDomainEvent(Guid CategoryId) : IDomainEvent;

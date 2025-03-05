@@ -1,0 +1,56 @@
+﻿using Bogus;
+using EuroMotors.Application.CarModels.GetCarModelById;
+using EuroMotors.Application.CarModels.GetCarModels;
+using EuroMotors.Application.IntegrationTests.Abstractions;
+using EuroMotors.Domain.Abstractions;
+using Shouldly;
+
+namespace EuroMotors.Application.IntegrationTests.CarModels;
+
+public class GetCarModelsTests : BaseIntegrationTest
+{
+    public GetCarModelsTests(IntegrationTestWebAppFactory factory)
+        : base(factory)
+    {
+    }
+
+    [Fact]
+    public async Task Should_ReturnEmptyCollection_WhenNoCategoriesExist()
+    {
+        // Arrange
+        await CleanDatabaseAsync();
+
+        var query = new GetCarModelsQuery();
+
+        // Act
+        Result<IReadOnlyCollection<CarModelResponse>> result = await Sender.Send(query);
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task Should_ReturnCarModel_WhenCarModelExists()
+    {
+        // Arrange
+        await CleanDatabaseAsync();
+
+        var faker = new Faker();
+        await Sender.CreateCarModelAsync(faker.Vehicle.Manufacturer(),
+            faker.Vehicle.Model());
+
+        await Sender.CreateCarModelAsync(faker.Vehicle.Manufacturer(),
+            faker.Vehicle.Model());
+
+
+        var query = new GetCarModelsQuery();
+
+        // Act
+        Result<IReadOnlyCollection<CarModelResponse>> result = await Sender.Send(query);
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Count.ShouldBe(2);
+    }
+}

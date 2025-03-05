@@ -30,7 +30,7 @@ public class ProductImage : Entity
 
     public Result UpdateUrl(Uri newUrl)
     {
-        if (string.IsNullOrWhiteSpace(newUrl.ToString()))
+        if (string.IsNullOrWhiteSpace(newUrl.ToString()) || !Uri.IsWellFormedUriString(newUrl.ToString(), UriKind.Absolute))
         {
             return Result.Failure(ProductImageErrors.InvalidUrl(newUrl));
         }
@@ -41,6 +41,7 @@ public class ProductImage : Entity
 
         return Result.Success();
     }
+
 
     public Result Delete()
     {

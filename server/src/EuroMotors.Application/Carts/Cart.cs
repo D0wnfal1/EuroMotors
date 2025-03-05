@@ -8,5 +8,5 @@ public sealed class Cart
 
     public decimal TotalPrice => CartItems.Sum(item => item.TotalPrice);
 
-    internal static Cart CreateDefault(Guid customerId) => new() { UserId = customerId };
+    internal static Cart CreateDefault(Guid UserId) => new() { UserId = UserId };
 }

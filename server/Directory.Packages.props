@@ -6,6 +6,7 @@
   <ItemGroup>
     <!-- Static code analysis -->
     <PackageVersion Include="AspNetCore.HealthChecks.Redis" Version="9.0.0" />
+    <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.7.0.110445" />
     <!-- Domain -->
     <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
@@ -41,5 +42,11 @@
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+    <!-- UnitTests -->
+    <PackageVersion Include="NSubstitute" Version="5.3.0" />
+    <!-- IntegrationTests -->
+    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.3.0" />
+    <PackageVersion Include="Testcontainers.Redis" Version="4.3.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.2" />
   </ItemGroup>
 </Project>

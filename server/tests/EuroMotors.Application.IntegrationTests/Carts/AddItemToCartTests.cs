@@ -1,0 +1,183 @@
+﻿using Bogus;
+using EuroMotors.Application.CarModels.CreateCarModel;
+using EuroMotors.Application.Carts.AddItemToCart;
+using EuroMotors.Application.Categories.CreateCategory;
+using EuroMotors.Application.IntegrationTests.Abstractions;
+using EuroMotors.Application.Products.CreateProduct;
+using EuroMotors.Application.Users.Register;
+using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.Products;
+using EuroMotors.Domain.Users;
+using Shouldly;
+
+namespace EuroMotors.Application.IntegrationTests.Carts;
+
+public class AddItemToCartTests : BaseIntegrationTest
+{
+    private const int Quantity = 10;
+
+    public AddItemToCartTests(IntegrationTestWebAppFactory factory)
+        : base(factory)
+    {
+    }
+
+    [Fact]
+    public async Task Should_ReturnFailure_WhenCustomerDoesNotExist()
+    {
+        // Arrange
+        var faker = new Faker();
+        Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
+        Guid carModelId = await Sender.CreateCarModelAsync(faker.Vehicle.Manufacturer(), faker.Vehicle.Model());
+
+        Guid productId = await Sender.CreateProductAsync(
+            "Product Name",
+            "Product Description",
+            "VendorCode123",
+            categoryId,
+            carModelId,
+            100m,
+            10m,
+            10
+        );
+
+        var command = new AddItemToCartCommand(
+            faker.Random.Guid(),
+            productId,
+            Quantity);
+
+        // Act
+        Result result = await Sender.Send(command);
+
+        // Assert
+        result.Error.ShouldBe(UserErrors.NotFound(command.UserId));
+    }
+
+    [Fact]
+    public async Task Should_ReturnFailure_WhenProductDoesNotExist()
+    {
+        // Arrange
+        Guid customerId = await Sender.CreateUserAsync();
+
+        var nonExistingProductId = Guid.NewGuid();
+
+        var faker = new Faker();
+        var command = new AddItemToCartCommand(
+            customerId,
+            nonExistingProductId,
+            faker.Random.Int(min: 1, max: 10));
+
+        // Act
+        Result result = await Sender.Send(command);
+
+        // Assert
+        result.Error.ShouldBe(ProductErrors.NotFound(nonExistingProductId));
+    }
+
+
+    [Fact]
+    public async Task Should_ReturnFailure_WhenNotEnoughQuantity()
+    {
+        // Arrange
+        Guid customerId = await Sender.CreateUserAsync();
+
+        var faker = new Faker();
+        Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
+        Guid carModelId = await Sender.CreateCarModelAsync(faker.Vehicle.Manufacturer(), faker.Vehicle.Model());
+
+        Guid productId = await Sender.CreateProductAsync(
+            "Product Name",
+            "Product Description",
+            "VendorCode123",
+            categoryId,
+            carModelId,
+            100m,
+            10m,
+            10
+        );
+
+        var command = new AddItemToCartCommand(
+            customerId,
+            productId,
+            Quantity + 1);
+
+        // Act
+        Result result = await Sender.Send(command);
+
+        // Assert
+        result.Error.ShouldBe(ProductErrors.NotEnoughStock(Quantity));
+    }
+
+    [Fact]
+    public async Task Should_ReturnSuccess_WhenItemAddedToCart()
+    {
+        // Arrange
+        Guid customerId = await Sender.CreateUserAsync();
+
+        var faker = new Faker();
+        Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
+        Guid carModelId = await Sender.CreateCarModelAsync(faker.Vehicle.Manufacturer(), faker.Vehicle.Model());
+
+        Guid productId = await Sender.CreateProductAsync(
+            "Product Name",
+            "Product Description",
+            "VendorCode123",
+            categoryId,
+            carModelId,
+            100m,
+            10m,
+            10
+        );
+
+        var command = new AddItemToCartCommand(
+            customerId,
+            productId,
+            Quantity);
+
+        // Act
+        Result result = await Sender.Send(command);
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task User_ShouldBeAbleTo_AddProductToCart()
+    {
+        var faker = new Faker();
+        var createcategoryCommand = new CreateCategoryCommand(faker.Commerce.Categories(1)[0]);
+        Result<Guid> createCategoryResult = await Sender.Send(createcategoryCommand);
+        createCategoryResult.IsSuccess.ShouldBeTrue();
+        Guid categoryId = createCategoryResult.Value;
+
+        var createCarModelCommand = new CreateCarModelCommand(faker.Vehicle.Manufacturer(), faker.Vehicle.Model());
+        Result<Guid> createCarModelResult = await Sender.Send(createCarModelCommand);
+        createCarModelResult.IsSuccess.ShouldBeTrue();
+        Guid carModelId = createCarModelResult.Value;
+
+        var createProductCommand = new CreateProductCommand(
+            faker.Commerce.ProductName(),
+            faker.Commerce.ProductDescription(),
+            faker.Commerce.Ean13(),
+            categoryId,
+            carModelId,
+            faker.Random.Decimal(100, 1000),
+            faker.Random.Decimal(0, 100),
+            Quantity,
+            true
+        );
+
+        Result<Guid> createProductResult = await Sender.Send(createProductCommand);
+
+
+        createProductResult.IsSuccess.ShouldBeTrue();
+        Guid productId = createProductResult.Value;
+
+        var createUserCommand = new RegisterUserCommand(faker.Internet.Email(), faker.Name.FirstName(), faker.Name.FirstName(), faker.Internet.Password());
+        Result<Guid> createUserResult = await Sender.Send(createUserCommand);
+        createUserResult.IsSuccess.ShouldBeTrue();
+        Guid userId = createUserResult.Value;
+
+        Result addToCartResult = await Sender.Send(new AddItemToCartCommand(userId, productId, Quantity));
+        addToCartResult.IsSuccess.ShouldBeTrue();
+    }
+}

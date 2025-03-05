@@ -24,10 +24,8 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Payments\GetPaymentByOrderId\" />
-    <Folder Include="ProductImages\GetProductImagesByProductId\" />
-    <Folder Include="Products\UpdateProduct\UpdateProductDiscount\" />
-  </ItemGroup>
+    <ItemGroup>
+        <InternalsVisibleTo Include="EuroMotors.Application.UnitTests"  />
+    </ItemGroup>
 
 </Project>

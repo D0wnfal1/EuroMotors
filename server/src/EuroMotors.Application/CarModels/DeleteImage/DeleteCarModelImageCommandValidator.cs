@@ -2,9 +2,9 @@
 
 namespace EuroMotors.Application.CarModels.DeleteImage;
 
-internal sealed class DeleteCategoryImageCommandValidator : AbstractValidator<DeleteCarModelImageCommand>
+internal sealed class DeleteCarModelImageCommandValidator : AbstractValidator<DeleteCarModelImageCommand>
 {
-    public DeleteCategoryImageCommandValidator()
+    public DeleteCarModelImageCommandValidator()
     {
         RuleFor(c => c.Id).NotEmpty();
     }

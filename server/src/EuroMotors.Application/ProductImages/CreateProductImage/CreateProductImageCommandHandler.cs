@@ -8,9 +8,9 @@ internal sealed class CreateProductImageCommandHandler(IProductImageRepository p
 {
     public async Task<Result<Guid>> Handle(CreateProductImageCommand request, CancellationToken cancellationToken)
     {
-        if (!request.Url.IsAbsoluteUri)
+        if (string.IsNullOrWhiteSpace(request.Url?.ToString()) || !Uri.IsWellFormedUriString(request.Url.ToString(), UriKind.Absolute))
         {
-            return Result.Failure<Guid>(ProductImageErrors.InvalidUrl(request.Url));
+            return Result.Failure<Guid>(ProductImageErrors.InvalidUrl(request.Url!));
         }
 
         var productImage = ProductImage.Create(request.Url, request.ProductId);

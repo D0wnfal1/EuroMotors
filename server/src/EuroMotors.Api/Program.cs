@@ -17,6 +17,8 @@ builder.Services
     .AddPresentation()
     .AddInfrastructure(builder.Configuration);
 
+builder.Services.AddCors();
+
 WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -42,6 +44,9 @@ app.UseExceptionHandler();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod()
+    .WithOrigins("http://localhost:4200", "https://localhost:4200"));
 
 app.MapControllers();
 

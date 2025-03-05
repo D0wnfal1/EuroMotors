@@ -19,16 +19,16 @@ internal sealed class CreateOrderCommandHandler(
     {
         await using DbTransaction transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
 
-        User? customer = await userRepository.GetByIdAsync(request.UserId, cancellationToken);
+        User? User = await userRepository.GetByIdAsync(request.UserId, cancellationToken);
 
-        if (customer is null)
+        if (User is null)
         {
             return Result.Failure(UserErrors.NotFound(request.UserId));
         }
 
-        var order = Order.Create(customer);
+        var order = Order.Create(User);
 
-        Cart cart = await cartService.GetAsync(customer.Id, cancellationToken);
+        Cart cart = await cartService.GetAsync(User.Id, cancellationToken);
 
         if (!cart.CartItems.Any())
         {
@@ -47,13 +47,6 @@ internal sealed class CreateOrderCommandHandler(
                 return Result.Failure(ProductErrors.NotFound(cartItem.ProductId));
             }
 
-            Result result = product.UpdateStock(cartItem.Quantity);
-
-            if (result.IsFailure)
-            {
-                return Result.Failure(result.Error);
-            }
-
             order.AddItem(product, cartItem.Quantity, cartItem.UnitPrice);
         }
 
@@ -63,7 +56,7 @@ internal sealed class CreateOrderCommandHandler(
 
         await transaction.CommitAsync(cancellationToken);
 
-        await cartService.ClearAsync(customer.Id, cancellationToken);
+        await cartService.ClearAsync(User.Id, cancellationToken);
 
         return Result.Success();
     }

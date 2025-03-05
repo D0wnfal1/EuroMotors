@@ -1,0 +1,71 @@
+﻿using Bogus;
+using EuroMotors.Application.CarModels.CreateCarModel;
+using EuroMotors.Application.Categories.CreateCategory;
+using EuroMotors.Application.ProductImages.CreateProductImage;
+using EuroMotors.Application.Products.CreateProduct;
+using EuroMotors.Application.Users.Register;
+using EuroMotors.Domain.Abstractions;
+using MediatR;
+using Shouldly;
+
+namespace EuroMotors.Application.IntegrationTests.Abstractions;
+
+internal static class CommandHelpers
+{
+    internal static async Task<Guid> CreateUserAsync(this ISender sender)
+    {
+        var faker = new Faker();
+        Result<Guid> result = await sender.Send(
+            new RegisterUserCommand(
+                faker.Internet.Email(),
+                faker.Person.FirstName,
+                faker.Person.LastName,
+                faker.Internet.Password()));
+
+        result.IsSuccess.ShouldBeTrue();
+
+        return result.Value;
+    }
+
+    public static async Task<Guid> CreateCategoryAsync(this ISender sender, string CategoryName)
+    {
+        var createCategoryCommand = new CreateCategoryCommand(CategoryName);
+        Result<Guid> result = await sender.Send(createCategoryCommand);
+        result.IsSuccess.ShouldBeTrue();
+        return result.Value;
+    }
+
+    public static async Task<Guid> CreateCarModelAsync(this ISender sender, string brand, string model)
+    {
+        var createCarModelCommand = new CreateCarModelCommand(brand, model);
+        Result<Guid> result = await sender.Send(createCarModelCommand);
+        result.IsSuccess.ShouldBeTrue();
+        return result.Value;
+    }
+
+    public static async Task<Guid> CreateProductAsync(this ISender sender, string productName, string productDescription, string ean13, Guid categoryId, Guid carModelId, decimal price, decimal discount, int quantity)
+    {
+        var createProductCommand = new CreateProductCommand(
+            productName,
+            productDescription,
+            ean13,
+            categoryId,
+            carModelId,
+            price,
+            discount,
+            quantity,
+            true);
+
+        Result<Guid> result = await sender.Send(createProductCommand);
+        result.IsSuccess.ShouldBeTrue();
+        return result.Value;
+    }
+
+    public static async Task<Guid> CreateProductImageAsync(this ISender sender, Guid productId, Uri url)
+    {
+        var createProductImageCommand = new CreateProductImageCommand(url, productId);
+        Result<Guid> result = await sender.Send(createProductImageCommand);
+        result.IsSuccess.ShouldBeTrue();
+        return result.Value;
+    }
+}

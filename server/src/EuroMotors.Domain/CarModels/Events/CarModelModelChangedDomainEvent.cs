@@ -2,7 +2,7 @@
 
 namespace EuroMotors.Domain.CarModels.Events;
 
-public class CarModelModelChangedDomainEvent(Guid carModelId, string model) : IDomainEvent
+public sealed class CarModelModelChangedDomainEvent(Guid carModelId, string model) : IDomainEvent
 {
     public Guid CarModelId { get; init; } = carModelId;
 

@@ -5,8 +5,6 @@ using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Application.Products.MarkAsNotAvailable;
 using EuroMotors.Application.Products.SearchProducts;
 using EuroMotors.Application.Products.UpdateProduct;
-using EuroMotors.Application.Products.UpdateProduct.UpdateProductDiscount;
-using EuroMotors.Application.Products.UpdateProduct.UpdateProductPrice;
 using EuroMotors.Application.Products.UpdateProduct.UpdateProductStock;
 using EuroMotors.Domain.Abstractions;
 using MediatR;
@@ -80,26 +78,6 @@ public class ProductController : ControllerBase
     public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateProductCommand(id, request.Name, request.Description, request.VendorCode, request.CategoryId, request.CarModelId, request.Price, request.Discount, request.Stock, request.IsAvailable);
-
-        Result result = await _sender.Send(command, cancellationToken);
-
-        return result.IsSuccess ? NoContent() : BadRequest(result.Error);
-    }
-
-    [HttpPut("{id}/price")]
-    public async Task<IActionResult> UpdateProductPrice(Guid id, [FromBody] decimal price, CancellationToken cancellationToken)
-    {
-        var command = new UpdateProductPriceCommand(id, price);
-
-        Result result = await _sender.Send(command, cancellationToken);
-
-        return result.IsSuccess ? NoContent() : BadRequest(result.Error);
-    }
-
-    [HttpPut("{id}/discount")]
-    public async Task<IActionResult> UpdateProductDiscount(Guid id, [FromBody] decimal discount, CancellationToken cancellationToken)
-    {
-        var command = new UpdateProductDiscountCommand(id, discount);
 
         Result result = await _sender.Send(command, cancellationToken);
 
