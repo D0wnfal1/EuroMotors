@@ -5,6 +5,7 @@
 		<PackageReference Include="AspNetCore.HealthChecks.Redis" />
 		<PackageReference Include="EFCore.NamingConventions" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
 		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
 		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
 		<PackageReference Include="Newtonsoft.Json" />
@@ -17,7 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<InternalsVisibleTo Include="EuroMotors.Application.IntegrationTests"  />
+		<InternalsVisibleTo Include="EuroMotors.Application.IntegrationTests" />
 	</ItemGroup>
 
 	<ItemGroup>
