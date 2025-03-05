@@ -22,10 +22,10 @@ jobs:
           dotnet-version: "9.0"
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore  ./server/EuroMotors.sln
 
       - name: Build the project
-        run: dotnet build --configuration Release
+        run: dotnet build ./server/EuroMotors.sln --configuration Release --no-restore
 
       - name: Run tests
-        run: dotnet test --configuration Release --no-build --verbosity normal
+        run: dotnet test ./server/EuroMotors.sln --configuration Release --no-restore --verbosity normal
