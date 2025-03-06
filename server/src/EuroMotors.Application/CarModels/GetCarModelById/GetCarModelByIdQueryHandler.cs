@@ -2,6 +2,7 @@
 using Dapper;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
+using EuroMotors.Application.Categories.GetByIdCategory;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
 
@@ -18,12 +19,13 @@ internal sealed class GetCarModelByIdQueryHandler(IDbConnectionFactory dbConnect
                 SELECT
                     id AS {nameof(CarModelResponse.Id)},
                     brand AS {nameof(CarModelResponse.Brand)},
-                    model AS {nameof(CarModelResponse.Model)}
+                    model AS {nameof(CarModelResponse.Model)},
+                    image_url AS {nameof(CarModelResponse.ImageUrl)}
                 FROM car_models
                 WHERE id = @CarModelId
                 """;
 
-        CarModelResponse? carModel = await connection.QuerySingleOrDefaultAsync<CarModelResponse>(sql, new { request.CarModelId });
+        CarModelResponse? carModel = await connection.QuerySingleOrDefaultAsync<CarModelResponse>(sql, new { request.CarModelId});
 
         return carModel ?? Result.Failure<CarModelResponse>(CarModelErrors.NotFound(request.CarModelId));
     }

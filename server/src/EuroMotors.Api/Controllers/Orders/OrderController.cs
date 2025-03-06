@@ -29,7 +29,7 @@ public class OrderController : ControllerBase
 
         Result<OrderResponse> result = await _sender.Send(query, cancellationToken);
 
-        return result.IsSuccess ? Ok(result) : NotFound();
+        return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
 
     [HttpGet("{id}/user")]
@@ -39,7 +39,7 @@ public class OrderController : ControllerBase
 
         Result<IReadOnlyCollection<OrdersResponse>> result = await _sender.Send(query, cancellationToken);
 
-        return result.IsSuccess ? Ok(result) : NotFound();
+        return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
 
     [HttpGet]
@@ -49,7 +49,7 @@ public class OrderController : ControllerBase
 
         Result<IReadOnlyCollection<OrdersResponse>> result = await _sender.Send(query, cancellationToken);
 
-        return result.IsSuccess ? Ok(result) : NotFound();
+        return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
 
     [HttpPost]

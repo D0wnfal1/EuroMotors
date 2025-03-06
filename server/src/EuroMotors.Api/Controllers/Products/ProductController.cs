@@ -30,7 +30,7 @@ public class ProductController : ControllerBase
 
         Result<IReadOnlyCollection<ProductResponse>> result = await _sender.Send(query, cancellationToken);
 
-        return result.IsSuccess ? Ok(result) : NotFound();
+        return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
 
     [HttpGet("{id}")]
@@ -40,7 +40,7 @@ public class ProductController : ControllerBase
 
         Result<ProductResponse> result = await _sender.Send(query, cancellationToken);
 
-        return result.IsSuccess ? Ok(result) : NotFound();
+        return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
 
     [HttpGet("search")]
@@ -56,7 +56,7 @@ public class ProductController : ControllerBase
     {
         var query = new SearchProductsQuery(categoryName, carModelBrand, carModelModel, sortOrder, searchTerm, pageNumber, pageSize);
 
-        Result<IReadOnlyCollection<ProductResponse>> result = await _sender.Send(query, cancellationToken);
+        Result<Pagination<ProductResponse>> result = await _sender.Send(query, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }

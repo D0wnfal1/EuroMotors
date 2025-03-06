@@ -8,7 +8,7 @@ public static class ProductImageErrors
         Error.Failure("ProductImage.InvalidUrl", $"The URL '{url}' provided for the product image is invalid.");
 
     public static Error ProductImageNotFound(Guid productImageId) =>
-        Error.NotFound("ProductImage.ProductImagesNotFound", $"The product image with ID {productImageId} was not found.");
+        Error.NotFound("ProductImage.ProductImageNotFound", $"The product image with ID {productImageId} was not found.");
 
     public static Error ProductImagesNotFound(Guid productId) =>
         Error.NotFound("ProductImages.ProductImagesNotFound", $"No images found for the product with ID {productId}.");

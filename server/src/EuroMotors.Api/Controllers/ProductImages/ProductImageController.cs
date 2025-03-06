@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EuroMotors.Api.Controllers.ProductImages;
 
-[Route("api/product_images")]
+[Route("api/productImages")]
 [ApiController]
 public class ProductImageController : ControllerBase
 {
@@ -29,7 +29,7 @@ public class ProductImageController : ControllerBase
 
         Result<ProductImageResponse> result = await _sender.Send(query, cancellationToken);
 
-        return result.IsSuccess ? Ok(result) : NotFound(result.Error);
+        return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
     }
 
     [HttpGet("{id}/product")]
@@ -39,7 +39,7 @@ public class ProductImageController : ControllerBase
 
         Result<IReadOnlyCollection<ProductImageResponse>> result = await _sender.Send(query, cancellationToken);
 
-        return result.IsSuccess ? Ok(result) : NotFound(result.Error);
+        return Ok(result.IsSuccess ? result.Value : new List<ProductImageResponse>());
     }
 
     [HttpPost]

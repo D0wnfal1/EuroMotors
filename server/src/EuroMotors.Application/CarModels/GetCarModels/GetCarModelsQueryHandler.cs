@@ -18,7 +18,8 @@ internal sealed class GetCarModelsQueryHandler(IDbConnectionFactory dbConnection
             SELECT
                 id AS {nameof(CarModelResponse.Id)},
                 brand AS {nameof(CarModelResponse.Brand)},
-                model AS {nameof(CarModelResponse.Model)}
+                model AS {nameof(CarModelResponse.Model)},
+                image_url AS {nameof(CarModelResponse.ImageUrl)}
             FROM car_models
             """;
 

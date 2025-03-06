@@ -84,6 +84,6 @@ public class ProductImageTests : BaseTest
 
         // Assert
         result.IsFailure.ShouldBeTrue();
-        result.Error.Code.ShouldBe("ProductImages.ProductImagesNotFound");
+        result.Error.Code.ShouldBe("ProductImage.ProductImageNotFound");
     }
 }

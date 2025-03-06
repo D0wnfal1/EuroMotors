@@ -27,7 +27,7 @@ public class CartController : ControllerBase
 
         Result<Cart> result = await _sender.Send(query, cancellationToken);
 
-        return result.IsSuccess ? Ok(result) : NotFound();
+        return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
 
     [HttpPost]

@@ -11,6 +11,6 @@ public record SearchProductsQuery(
     string? SearchTerm,
     int PageNumber = 1,
     int PageSize = 10
-) : IQuery<IReadOnlyCollection<ProductResponse>>;
+) : IQuery<Pagination<ProductResponse>>;
 
 

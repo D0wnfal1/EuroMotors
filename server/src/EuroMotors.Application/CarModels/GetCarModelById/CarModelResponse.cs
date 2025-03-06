@@ -1,3 +1,3 @@
 ﻿namespace EuroMotors.Application.CarModels.GetCarModelById;
 
-public sealed record CarModelResponse(Guid Id, string Brand, string Model);
+public sealed record CarModelResponse(Guid Id, string Brand, string Model, string? ImageUrl);

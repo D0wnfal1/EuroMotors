@@ -27,7 +27,7 @@ public class PaymentController : ControllerBase
 
         Result<PaymentResponse> result = await _sender.Send(query, cancellationToken);
 
-        return result.IsSuccess ? Ok(result) : NotFound();
+        return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
 
     [HttpGet("{id}/order")]
@@ -37,7 +37,7 @@ public class PaymentController : ControllerBase
 
         Result<PaymentResponse> result = await _sender.Send(query, cancellationToken);
 
-        return result.IsSuccess ? Ok(result) : NotFound();
+        return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
 
     [HttpGet("status")]
@@ -47,7 +47,7 @@ public class PaymentController : ControllerBase
 
         Result<PaymentResponse> result = await _sender.Send(query, cancellationToken);
 
-        return result.IsSuccess ? Ok(result) : NotFound();
+        return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
 
     [HttpPost]
@@ -55,7 +55,7 @@ public class PaymentController : ControllerBase
     {
         Result result = await _sender.Send(command, cancellationToken);
 
-        return result.IsSuccess ? Ok(result) : BadRequest(result);
+        return result.IsSuccess ? Ok(result.IsSuccess) : BadRequest(result.Error);
     }
 }
 

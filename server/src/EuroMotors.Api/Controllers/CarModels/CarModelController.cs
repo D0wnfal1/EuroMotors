@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EuroMotors.Api.Controllers.CarModels;
 
-[Route("api/car_models")]
+[Route("api/carModels")]
 [ApiController]
 public class CarModelController : ControllerBase
 {
@@ -29,7 +29,7 @@ public class CarModelController : ControllerBase
 
         Result<IReadOnlyCollection<CarModelResponse>> result = await _sender.Send(query, cancellationToken);
 
-        return result.IsSuccess ? Ok(result) : NotFound();
+        return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
 
     [HttpGet("{id}")]
@@ -39,7 +39,7 @@ public class CarModelController : ControllerBase
 
         Result<CarModelResponse> result = await _sender.Send(query, cancellationToken);
 
-        return result.IsSuccess ? Ok(result) : NotFound();
+        return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
 
     [HttpPost]

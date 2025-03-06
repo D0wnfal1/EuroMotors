@@ -30,7 +30,7 @@ public class CategoryController : ControllerBase
 
         Result<IReadOnlyCollection<CategoryResponse>> result = await _sender.Send(query, cancellationToken);
 
-        return result.IsSuccess ? Ok(result) : NotFound();
+        return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
 
     [HttpGet("{id}")]
@@ -40,7 +40,7 @@ public class CategoryController : ControllerBase
 
         Result<CategoryResponse> result = await _sender.Send(query, cancellationToken);
 
-        return result.IsSuccess ? Ok(result) : NotFound(result.Error);
+        return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
     }
 
     [HttpPost]

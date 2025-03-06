@@ -13,6 +13,6 @@ public class PaymentCallbackController(IPaymentService paymentService) : Control
     {
         Result result = await paymentService.ProcessPaymentCallbackAsync(data, signature);
 
-        return result.IsFailure ? BadRequest(result.Error) : Ok(result);
+        return result.IsFailure ? BadRequest(result.Error) : Ok(result.IsSuccess);
     }
 }
