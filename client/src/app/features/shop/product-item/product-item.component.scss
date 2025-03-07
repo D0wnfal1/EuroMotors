@@ -1,17 +1,16 @@
 .product-card {
-    transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .product-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    cursor: pointer;
+  transform: translateY(-10px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
 }
 .product-image {
-    @apply w-full h-48 object-contain rounded-lg; 
-  }
-  
-  .image-container {
-    @apply w-full h-48 flex justify-center items-center overflow-hidden; 
-  }
-  
+  @apply w-full h-48 object-contain rounded-lg;
+}
+
+.image-container {
+  @apply w-full h-48 flex justify-center items-center overflow-hidden;
+}

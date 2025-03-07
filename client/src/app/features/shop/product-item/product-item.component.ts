@@ -1,6 +1,10 @@
 import { Component, Input } from '@angular/core';
 import { Product } from '../../../shared/models/product';
-import { MatCard, MatCardActions, MatCardContent } from '@angular/material/card';
+import {
+  MatCard,
+  MatCardActions,
+  MatCardContent,
+} from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { CurrencyPipe, NgIf } from '@angular/common';
 import { MatButton } from '@angular/material/button';
@@ -17,10 +21,10 @@ import { RouterLink } from '@angular/router';
     CurrencyPipe,
     MatButton,
     RouterLink,
-    NgIf
+    NgIf,
   ],
   templateUrl: './product-item.component.html',
-  styleUrl: './product-item.component.scss'
+  styleUrl: './product-item.component.scss',
 })
 export class ProductItemComponent {
   @Input() product?: Product;

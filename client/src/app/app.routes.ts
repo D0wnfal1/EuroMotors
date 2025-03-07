@@ -6,10 +6,10 @@ import { NotFoundComponent } from './shared/components/not-found/not-found.compo
 import { ServerErrorComponent } from './shared/components/server-error/server-error.component';
 
 export const routes: Routes = [
-    {path: '', component: HomeComponent},
-    {path: 'shop', component: ShopComponent},
-    {path: 'shop/:id', component: ProductDetailsComponent},
-    {path: 'not-found', component: NotFoundComponent},
-    {path: 'server-error', component: ServerErrorComponent},
-    {path: '**', redirectTo: 'not-found', pathMatch: 'full'},
+  { path: '', component: HomeComponent },
+  { path: 'shop', component: ShopComponent },
+  { path: 'shop/:id', component: ProductDetailsComponent },
+  { path: 'not-found', component: NotFoundComponent },
+  { path: 'server-error', component: ServerErrorComponent },
+  { path: '**', redirectTo: 'not-found', pathMatch: 'full' },
 ];

@@ -5,8 +5,6 @@ import { MatListOption, MatSelectionList } from '@angular/material/list';
 import { MatButton } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
-import { Category } from '../../../shared/models/category';
-import { CarModel } from '../../../shared/models/carModel';
 
 @Component({
   selector: 'app-filters-dialog',
@@ -16,26 +14,23 @@ import { CarModel } from '../../../shared/models/carModel';
     MatSelectionList,
     MatListOption,
     MatButton,
-    FormsModule
+    FormsModule,
   ],
   templateUrl: './filters-dialog.component.html',
-  styleUrl: './filters-dialog.component.scss'
+  styleUrl: './filters-dialog.component.scss',
 })
 export class FiltersDialogComponent {
   shopService = inject(ShopService);
   private dialogRef = inject(MatDialogRef<FiltersDialogComponent>);
   data = inject(MAT_DIALOG_DATA);
 
-  selectedCategoryNames: string[] = this.data.selectedCategoriesNames;
-  selectedCarModelBrands: string[] = this.data.selectedCarModelBrands;
-  selectedCarModelModels: string[] = this.data.selectedCarModelModels;
+  selectedCategories: string[] = this.data.selectedCategoryIds;
+  selectedCarModels: string[] = this.data.selectedCarModelIds;
 
   applyFilters() {
     this.dialogRef.close({
-      selectedCategoryNames: this.selectedCategoryNames,
-      selectedCarModelBrands: this.selectedCarModelBrands,
-      selectedCarModelModels: this.selectedCarModelModels
-    })
+      selectedCategories: this.selectedCategories,
+      selectedCarModels: this.selectedCarModels,
+    });
   }
-
 }

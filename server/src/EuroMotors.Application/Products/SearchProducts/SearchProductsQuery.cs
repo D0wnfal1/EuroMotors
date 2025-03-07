@@ -4,9 +4,8 @@ using EuroMotors.Application.Products.GetProductById;
 namespace EuroMotors.Application.Products.SearchProducts;
 
 public record SearchProductsQuery(
-    string? CategoryName,
-    string? CarModelBrand,
-    string? CarModelModel,
+    List<Guid>? CategoryIds,
+    List<Guid>? CarModelIds,
     string? SortOrder,
     string? SearchTerm,
     int PageNumber = 1,

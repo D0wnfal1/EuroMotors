@@ -45,22 +45,20 @@ public class ProductController : ControllerBase
 
     [HttpGet("search")]
     public async Task<IActionResult> SearchProducts(
-        [FromQuery] string? categoryName,
-        [FromQuery] string? carModelBrand,
-        [FromQuery] string? carModelModel,
+        [FromQuery] List<Guid>? categoryIds,
+        [FromQuery] List<Guid>? carModelIds,
         [FromQuery] string? sortOrder,
         [FromQuery] string? searchTerm,
         CancellationToken cancellationToken,
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10)
     {
-        var query = new SearchProductsQuery(categoryName, carModelBrand, carModelModel, sortOrder, searchTerm, pageNumber, pageSize);
+        var query = new SearchProductsQuery(categoryIds, carModelIds, sortOrder, searchTerm, pageNumber, pageSize);
 
         Result<Pagination<ProductResponse>> result = await _sender.Send(query, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
-
 
     [HttpPost]
     public async Task<IActionResult> CreateProduct([FromBody] ProductRequest request, CancellationToken cancellationToken)

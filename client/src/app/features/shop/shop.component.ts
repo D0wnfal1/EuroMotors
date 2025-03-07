@@ -1,19 +1,22 @@
-import { Component, inject } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { MatButton } from "@angular/material/button";
-import { MatDialog } from "@angular/material/dialog";
-import { MatIcon } from "@angular/material/icon";
-import { MatSelectionList, MatListOption, MatSelectionListChange } from "@angular/material/list";
-import { MatMenu, MatMenuTrigger } from "@angular/material/menu";
-import { MatPaginator, PageEvent } from "@angular/material/paginator";
-import { ShopService } from "../../core/services/shop.service";
-import { Pagination } from "../../shared/models/pagination";
-import { Product } from "../../shared/models/product";
-import { ProductImage } from "../../shared/models/productImage";
-import { ShopParams } from "../../shared/models/shopParams";
-import { FiltersDialogComponent } from "./filters-dialog/filters-dialog.component";
-import { ProductItemComponent } from "./product-item/product-item.component";
-
+import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatButton } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { MatIcon } from '@angular/material/icon';
+import {
+  MatSelectionList,
+  MatListOption,
+  MatSelectionListChange,
+} from '@angular/material/list';
+import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { ShopService } from '../../core/services/shop.service';
+import { Pagination } from '../../shared/models/pagination';
+import { Product } from '../../shared/models/product';
+import { ProductImage } from '../../shared/models/productImage';
+import { ShopParams } from '../../shared/models/shopParams';
+import { FiltersDialogComponent } from './filters-dialog/filters-dialog.component';
+import { ProductItemComponent } from './product-item/product-item.component';
 
 @Component({
   selector: 'app-shop',
@@ -26,28 +29,28 @@ import { ProductItemComponent } from "./product-item/product-item.component";
     MatMenuTrigger,
     MatPaginator,
     FormsModule,
-    ProductItemComponent
-],
+    ProductItemComponent,
+  ],
   templateUrl: './shop.component.html',
-  styleUrl: './shop.component.scss'
+  styleUrl: './shop.component.scss',
 })
 export class ShopComponent {
   private shopService = inject(ShopService);
   private dialogService = inject(MatDialog);
   products?: Pagination<Product>;
-  productImages: { [key: string]: ProductImage[] } = {}; 
+  productImages: { [key: string]: ProductImage[] } = {};
   sortOptions = [
-    {name: 'Alphabetical', value: 'name'},
-    {name: 'Price: Low-High', value: 'ASC'},
-    {name: 'Price: High-Low', value: 'DESC'},
-  ]
+    { name: 'Alphabetical', value: 'name' },
+    { name: 'Price: Low-High', value: 'ASC' },
+    { name: 'Price: High-Low', value: 'DESC' },
+  ];
   shopParams = new ShopParams();
-  pageSizeOptions = [5,10,15,20]
+  pageSizeOptions = [5, 10, 15, 20];
 
   ngOnInit() {
     this.initialiseShop();
   }
-  
+
   initialiseShop() {
     this.shopService.getCategories();
     this.shopService.getCarModels();
@@ -56,31 +59,34 @@ export class ShopComponent {
 
   getProducts() {
     this.shopService.getProducts(this.shopParams).subscribe({
-      next: response => {
+      next: (response) => {
         this.products = response;
         this.loadProductImages();
       },
-      error: error => console.error(error)
+      error: (error) => console.error(error),
     });
   }
-  
-loadProductImages() {
-  if (this.products?.data) {
-      this.products.data.forEach(product => {
-          this.shopService.getProductImages(product.id).subscribe({
-              next: (images) => {
-                  product.images = images; 
-              },
-              error: (error) => {
-                  console.error('Error loading images for product:', product.id, error);
-                  product.images = []; 
-              }
-          });
-      });
-  }
-}
 
-  
+  loadProductImages() {
+    if (this.products?.data) {
+      this.products.data.forEach((product) => {
+        this.shopService.getProductImages(product.id).subscribe({
+          next: (images) => {
+            product.images = images;
+          },
+          error: (error) => {
+            console.error(
+              'Error loading images for product:',
+              product.id,
+              error
+            );
+            product.images = [];
+          },
+        });
+      });
+    }
+  }
+
   onSearchChange() {
     this.shopParams.pageNumber = 1;
     this.getProducts();
@@ -100,25 +106,29 @@ loadProductImages() {
       this.getProducts();
     }
   }
-
   openFiltersDialog() {
     const dialogRef = this.dialogService.open(FiltersDialogComponent, {
       minWidth: '500px',
       data: {
-        selectedCategoriesNames: this.shopParams.categoryName,
-        selectedCarModelsBrands: this.shopParams.carModelBrand,
-      }
+        selectedCategoryIds: this.shopParams.categoryIds ?? [],
+        selectedCarModelIds: this.shopParams.carModelIds ?? [],
+      },
     });
+
     dialogRef.afterClosed().subscribe({
-      next: result => {
-        if (result) {
-          this.shopParams.categoryName = result.selectedCategories;
-          this.shopParams.carModelBrand = result.selectedCarModels;
+      next: (result) => {
+        if (
+          result &&
+          Array.isArray(result.selectedCategories) &&
+          Array.isArray(result.selectedCarModels)
+        ) {
+          this.shopParams.categoryIds = result.selectedCategories;
+          this.shopParams.carModelIds = result.selectedCarModels;
           this.shopParams.pageNumber = 1;
           this.getProducts();
         }
-      }
-    })
+      },
+      error: (err) => console.error('Dialog closed with error:', err),
+    });
   }
 }
-

@@ -20,23 +20,31 @@ internal sealed class SearchProductsByCarModelIdQueryHandler(IDbConnectionFactor
         int offset = (request.PageNumber - 1) * request.PageSize;
         int limit = request.PageSize;
 
-        string countSql = """
+        string whereClause = "WHERE (1=1)";
+
+        if (request.CategoryIds?.Any() == true)
+        {
+            whereClause += " AND p.category_id = ANY(@CategoryIds)";
+        }
+        if (request.CarModelIds?.Any() == true)
+        {
+            whereClause += " AND p.car_model_id = ANY(@CarModelIds)";
+        }
+        if (!string.IsNullOrEmpty(request.SearchTerm))
+        {
+            whereClause += " AND (LOWER(p.name) LIKE LOWER(@SearchPattern) OR LOWER(p.description) LIKE LOWER(@SearchPattern) OR LOWER(p.vendor_code) LIKE LOWER(@SearchPattern))";
+        }
+
+        string countSql = $"""
         SELECT COUNT(*)
         FROM products p
-        LEFT JOIN categories c ON p.category_id = c.id
-        LEFT JOIN car_models cm ON p.car_model_id = cm.id
-        WHERE (@CategoryName IS NULL OR LOWER(c.name) LIKE LOWER(@CategoryName))  
-          AND (@CarModelBrand IS NULL OR LOWER(cm.brand) LIKE LOWER(@CarModelBrand))  
-          AND (@CarModelModel IS NULL OR LOWER(cm.model) LIKE LOWER(@CarModelModel))  
-          AND (@SearchTerm IS NULL OR (LOWER(p.name) LIKE LOWER(@SearchPattern) OR LOWER(p.description) LIKE LOWER(@SearchPattern) OR LOWER(p.vendor_code) LIKE LOWER(@SearchPattern)))
+        {whereClause}
         """;
 
         int totalItems = await connection.ExecuteScalarAsync<int>(countSql, new
         {
-            request.CategoryName,
-            request.CarModelBrand,
-            request.CarModelModel,
-            request.SearchTerm,
+            request.CategoryIds,
+            request.CarModelIds,
             SearchPattern = $"%{request.SearchTerm}%"
         });
 
@@ -53,22 +61,15 @@ internal sealed class SearchProductsByCarModelIdQueryHandler(IDbConnectionFactor
                          p.stock AS {nameof(ProductResponse.Stock)},
                          p.is_available AS {nameof(ProductResponse.IsAvailable)}
                      FROM products p
-                     LEFT JOIN categories c ON p.category_id = c.id
-                     LEFT JOIN car_models cm ON p.car_model_id = cm.id
-                     WHERE (@CategoryName IS NULL OR LOWER(c.name) LIKE LOWER(@CategoryName))  
-                       AND (@CarModelBrand IS NULL OR LOWER(cm.brand) LIKE LOWER(@CarModelBrand))  
-                       AND (@CarModelModel IS NULL OR LOWER(cm.model) LIKE LOWER(@CarModelModel))  
-                       AND (@SearchTerm IS NULL OR (LOWER(p.name) LIKE LOWER(@SearchPattern) OR LOWER(p.description) LIKE LOWER(@SearchPattern) OR LOWER(p.vendor_code) LIKE LOWER(@SearchPattern)))
+                     {whereClause}
                      ORDER BY {orderBy}
                      LIMIT @Limit OFFSET @Offset
                  """;
 
         var parameters = new
         {
-            request.CategoryName,
-            request.CarModelBrand,
-            request.CarModelModel,
-            request.SearchTerm,
+            request.CategoryIds,
+            request.CarModelIds,
             SearchPattern = $"%{request.SearchTerm}%",
             Limit = limit,
             Offset = offset

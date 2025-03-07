@@ -1,8 +1,7 @@
 .product-image {
-    @apply  object-contain rounded-lg;
-  }
-  
-  .image-container {
-    @apply w-full h-full flex justify-center items-center overflow-hidden;
-  }
-  
+  @apply object-contain rounded-lg;
+}
+
+.image-container {
+  @apply w-full h-full flex justify-center items-center overflow-hidden;
+}
