@@ -2,4 +2,4 @@
 
 namespace EuroMotors.Application.Carts.ClearCart;
 
-public sealed record ClearCartCommand(Guid UserId) : ICommand;
+public sealed record ClearCartCommand(Guid CartId) : ICommand;

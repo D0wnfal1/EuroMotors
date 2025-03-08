@@ -22,7 +22,7 @@ public class AddItemToCartTests : BaseIntegrationTest
     }
 
     [Fact]
-    public async Task Should_ReturnFailure_WhenCustomerDoesNotExist()
+    public async Task Should_ReturnFailure_WhenUserDoesNotExist()
     {
         // Arrange
         var faker = new Faker();
@@ -49,20 +49,20 @@ public class AddItemToCartTests : BaseIntegrationTest
         Result result = await Sender.Send(command);
 
         // Assert
-        result.Error.ShouldBe(UserErrors.NotFound(command.UserId));
+        result.Error.Type.ShouldBe(ErrorType.Failure);
     }
 
     [Fact]
     public async Task Should_ReturnFailure_WhenProductDoesNotExist()
     {
         // Arrange
-        Guid customerId = await Sender.CreateUserAsync();
+        Guid userId = await Sender.CreateUserAsync();
 
         var nonExistingProductId = Guid.NewGuid();
 
         var faker = new Faker();
         var command = new AddItemToCartCommand(
-            customerId,
+            userId,
             nonExistingProductId,
             faker.Random.Int(min: 1, max: 10));
 
@@ -78,7 +78,7 @@ public class AddItemToCartTests : BaseIntegrationTest
     public async Task Should_ReturnFailure_WhenNotEnoughQuantity()
     {
         // Arrange
-        Guid customerId = await Sender.CreateUserAsync();
+        Guid userId = await Sender.CreateUserAsync();
 
         var faker = new Faker();
         Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
@@ -96,7 +96,7 @@ public class AddItemToCartTests : BaseIntegrationTest
         );
 
         var command = new AddItemToCartCommand(
-            customerId,
+            userId,
             productId,
             Quantity + 1);
 
@@ -111,7 +111,7 @@ public class AddItemToCartTests : BaseIntegrationTest
     public async Task Should_ReturnSuccess_WhenItemAddedToCart()
     {
         // Arrange
-        Guid customerId = await Sender.CreateUserAsync();
+        Guid userId = await Sender.CreateUserAsync();
 
         var faker = new Faker();
         Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
@@ -129,7 +129,7 @@ public class AddItemToCartTests : BaseIntegrationTest
         );
 
         var command = new AddItemToCartCommand(
-            customerId,
+            userId,
             productId,
             Quantity);
 

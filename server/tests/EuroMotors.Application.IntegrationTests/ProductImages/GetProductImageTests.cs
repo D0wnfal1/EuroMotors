@@ -2,13 +2,11 @@
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Application.ProductImages.CreateProductImage;
 using EuroMotors.Application.ProductImages.GetProductImageById;
-using EuroMotors.Application.Products.GetProductById;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.ProductImages;
-using EuroMotors.Domain.Products;
 using Shouldly;
 
-namespace EuroMotors.Application.IntegrationTests.Products;
+namespace EuroMotors.Application.IntegrationTests.ProductImages;
 
 public class GetProductImageTests : BaseIntegrationTest
 {

@@ -1,21 +1,40 @@
-<mat-card *ngIf="product" appearance="raised" routerLink="/shop/{{ product.id }}" class="product-card">
-    <div class="image-container">
-        <img mat-card-image *ngIf="product.images && product.images.length > 0; else noImage" 
-             [src]="product.images[0].url" alt="Product image" class="product-image" />
-    </div>
-    <ng-template #noImage>
-        <img mat-card-image src="images/no-image.jpeg" alt="No product image" class="product-image" />
-    </ng-template>
+<mat-card
+  *ngIf="product"
+  appearance="raised"
+  routerLink="/shop/{{ product.id }}"
+  class="product-card"
+>
+  <div class="image-container">
+    <img
+      mat-card-image
+      *ngIf="product.images && product.images.length > 0; else noImage"
+      [src]="product.images[0].url"
+      alt="Product image"
+      class="product-image"
+    />
+  </div>
+  <ng-template #noImage>
+    <img
+      mat-card-image
+      src="images/no-image.jpeg"
+      alt="No product image"
+      class="product-image"
+    />
+  </ng-template>
 
-    <mat-card-content class="mt-2">
-        <h2 class="text-sm font-semibold uppercase">{{ product.name }}</h2>
-        <p class="font-light">{{ product.price | currency }}</p>
-    </mat-card-content>
-    
-    <mat-card-actions>
-        <button mat-stroked-button class="w-full">
-            <mat-icon>add_shopping_cart</mat-icon>
-            Add to cart
-        </button>
-    </mat-card-actions>
+  <mat-card-content class="mt-2">
+    <h2 class="text-sm font-semibold uppercase">{{ product.name }}</h2>
+    <p class="font-light">{{ product.price | currency }}</p>
+  </mat-card-content>
+
+  <mat-card-actions (click)="$event.stopPropagation()">
+    <button
+      mat-stroked-button
+      class="w-full"
+      (click)="cartService.addItemToCart(product.id)"
+    >
+      <mat-icon>add_shopping_cart</mat-icon>
+      Add to cart
+    </button>
+  </mat-card-actions>
 </mat-card>

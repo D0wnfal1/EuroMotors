@@ -6,7 +6,7 @@ internal sealed class RemoveItemFromCartCommandValidator : AbstractValidator<Rem
 {
     public RemoveItemFromCartCommandValidator()
     {
-        RuleFor(c => c.UserId)
+        RuleFor(c => c.CartId)
             .NotEmpty();
         RuleFor(c => c.ProductId).NotEmpty();
     }

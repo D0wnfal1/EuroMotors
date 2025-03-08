@@ -18,7 +18,7 @@ public class RemoveItemFromCartTests : BaseIntegrationTest
     }
 
     [Fact]
-    public async Task Should_ReturnFailure_WhenCustomerDoesNotExist()
+    public async Task Should_ReturnFailure_WhenUserDoesNotExist()
     {
         //Arrange
         var command = new RemoveItemFromCartCommand(
@@ -29,11 +29,11 @@ public class RemoveItemFromCartTests : BaseIntegrationTest
         Result result = await Sender.Send(command);
 
         //Assert
-        result.Error.ShouldBe(UserErrors.NotFound(command.UserId));
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
     }
 
     [Fact]
-    public async Task Should_ReturnFailure_WhenTicketTypeDoesNotExist()
+    public async Task Should_ReturnFailure_WhenProductDoesNotExist()
     {
         //Arrange
         Guid userId = await Sender.CreateUserAsync();

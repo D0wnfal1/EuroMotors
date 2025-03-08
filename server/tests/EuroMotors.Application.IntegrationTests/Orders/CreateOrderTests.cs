@@ -15,7 +15,7 @@ public class CreateOrderTests : BaseIntegrationTest
     }
 
     [Fact]
-    public async Task Should_ReturnFailure_WhenCustomerDoesNotExist()
+    public async Task Should_ReturnFailure_WhenUserDoesNotExist()
     {
         //Arrange
         var command = new CreateOrderCommand(Guid.NewGuid());

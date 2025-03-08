@@ -5,7 +5,7 @@ namespace EuroMotors.Api.Controllers.Carts;
 public sealed class AddItemToCartRequest
 {
     [JsonRequired]
-    public Guid UserId { get; set; }
+    public Guid CartId { get; set; }
     [JsonRequired]
     public Guid ProductId { get; set; }
     [JsonRequired]

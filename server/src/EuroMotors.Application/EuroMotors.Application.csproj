@@ -25,7 +25,7 @@
   </ItemGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="EuroMotors.Application.UnitTests"  />
+        <InternalsVisibleTo Include="EuroMotors.Application.UnitTests" />
     </ItemGroup>
 
 </Project>

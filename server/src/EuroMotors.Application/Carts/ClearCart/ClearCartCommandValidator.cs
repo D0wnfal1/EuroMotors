@@ -6,7 +6,7 @@ internal sealed class ClearCartCommandValidator : AbstractValidator<ClearCartCom
 {
     public ClearCartCommandValidator()
     {
-        RuleFor(c => c.UserId)
+        RuleFor(c => c.CartId)
             .NotEmpty();
     }
 }

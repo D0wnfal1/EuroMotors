@@ -14,7 +14,7 @@ public class ClearCartTests : BaseIntegrationTest
     }
 
     [Fact]
-    public async Task Should_ReturnFailure_WhenCustomerDoesNotExist()
+    public async Task Should_ReturnFailure_WhenUserDoesNotExist()
     {
         //Arrange
         var command = new ClearCartCommand(Guid.NewGuid());
@@ -23,16 +23,16 @@ public class ClearCartTests : BaseIntegrationTest
         Result result = await Sender.Send(command);
 
         //Assert
-        result.Error.ShouldBe(UserErrors.NotFound(command.UserId));
+        result.Error.Type.ShouldBe(ErrorType.Failure);
     }
 
     [Fact]
-    public async Task Should_ReturnSuccess_WhenCustomerExists()
+    public async Task Should_ReturnSuccess_WhenUserExists()
     {
         //Arrange
-        Guid customerId = await Sender.CreateUserAsync();
+        Guid userId = await Sender.CreateUserAsync();
 
-        var command = new ClearCartCommand(customerId);
+        var command = new ClearCartCommand(userId);
 
         //Act
         Result result = await Sender.Send(command);

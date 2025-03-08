@@ -6,8 +6,6 @@ internal sealed class AddItemToCartCommandValidator : AbstractValidator<AddItemT
 {
     public AddItemToCartCommandValidator()
     {
-        RuleFor(c => c.UserId)
-            .NotEmpty();
         RuleFor(c => c.ProductId).NotEmpty();
         RuleFor(c => c.Quantity).GreaterThan(0);
     }

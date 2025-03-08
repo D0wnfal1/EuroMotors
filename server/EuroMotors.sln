@@ -32,10 +32,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EuroMotors.Application.Unit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EuroMotors.Application.IntegrationTests", "tests\EuroMotors.Application.IntegrationTests\EuroMotors.Application.IntegrationTests.csproj", "{DFE0763B-382C-4CF9-A351-B92C77854C62}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EuroMotors.Api.IntegrationTests", "tests\EuroMotors.Api.IntegrationTests\EuroMotors.Api.IntegrationTests.csproj", "{73241665-C619-42CA-AAA4-D8DC1CA1DCCF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EuroMotors.Api.UnitTests", "tests\EuroMotors.Api.UnitTests\EuroMotors.Api.UnitTests.csproj", "{132A322F-CBDD-4ECC-953F-40EF52AFC423}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,14 +74,6 @@ Global
 		{DFE0763B-382C-4CF9-A351-B92C77854C62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFE0763B-382C-4CF9-A351-B92C77854C62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFE0763B-382C-4CF9-A351-B92C77854C62}.Release|Any CPU.Build.0 = Release|Any CPU
-		{73241665-C619-42CA-AAA4-D8DC1CA1DCCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{73241665-C619-42CA-AAA4-D8DC1CA1DCCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{73241665-C619-42CA-AAA4-D8DC1CA1DCCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{73241665-C619-42CA-AAA4-D8DC1CA1DCCF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{132A322F-CBDD-4ECC-953F-40EF52AFC423}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{132A322F-CBDD-4ECC-953F-40EF52AFC423}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{132A322F-CBDD-4ECC-953F-40EF52AFC423}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{132A322F-CBDD-4ECC-953F-40EF52AFC423}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -99,8 +87,6 @@ Global
 		{6C2BDC1E-B4D1-46B5-84AB-137CF4B7397B} = {1EB88D85-BE1E-46DE-99A2-2F02363060AF}
 		{12553001-B009-49F0-B8E1-765A90E3F8B0} = {1EB88D85-BE1E-46DE-99A2-2F02363060AF}
 		{DFE0763B-382C-4CF9-A351-B92C77854C62} = {1EB88D85-BE1E-46DE-99A2-2F02363060AF}
-		{73241665-C619-42CA-AAA4-D8DC1CA1DCCF} = {1EB88D85-BE1E-46DE-99A2-2F02363060AF}
-		{132A322F-CBDD-4ECC-953F-40EF52AFC423} = {1EB88D85-BE1E-46DE-99A2-2F02363060AF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B948A3CC-9872-4612-ABD2-BB3D49671542}

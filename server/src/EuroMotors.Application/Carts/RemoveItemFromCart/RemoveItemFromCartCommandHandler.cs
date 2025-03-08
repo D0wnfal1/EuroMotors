@@ -1,22 +1,14 @@
 ﻿using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Products;
-using EuroMotors.Domain.Users;
 
 namespace EuroMotors.Application.Carts.RemoveItemFromCart;
 
-internal sealed class RemoveItemFromCartCommandHandler(IUserRepository userRepository, IProductRepository productRepository, CartService cartService)
+internal sealed class RemoveItemFromCartCommandHandler(IProductRepository productRepository, CartService cartService)
     : ICommandHandler<RemoveItemFromCartCommand>
 {
     public async Task<Result> Handle(RemoveItemFromCartCommand request, CancellationToken cancellationToken)
     {
-        User? user = await userRepository.GetByIdAsync(request.UserId, cancellationToken);
-
-        if (user is null)
-        {
-            return Result.Failure(UserErrors.NotFound(request.UserId));
-        }
-
         Product? product = await productRepository.GetByIdAsync(request.ProductId, cancellationToken);
 
         if (product is null)
@@ -24,7 +16,7 @@ internal sealed class RemoveItemFromCartCommandHandler(IUserRepository userRepos
             return Result.Failure(ProductErrors.NotFound(request.ProductId));
         }
 
-        await cartService.RemoveItemAsync(user.Id, product.Id, cancellationToken);
+        await cartService.RemoveItemAsync(request.CartId, product.Id, cancellationToken);
 
         return Result.Success();
     }

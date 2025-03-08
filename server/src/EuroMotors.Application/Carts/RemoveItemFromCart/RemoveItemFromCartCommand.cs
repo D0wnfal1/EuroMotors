@@ -2,4 +2,4 @@
 
 namespace EuroMotors.Application.Carts.RemoveItemFromCart;
 
-public sealed record RemoveItemFromCartCommand(Guid UserId, Guid ProductId) : ICommand;
+public sealed record RemoveItemFromCartCommand(Guid CartId, Guid ProductId) : ICommand;

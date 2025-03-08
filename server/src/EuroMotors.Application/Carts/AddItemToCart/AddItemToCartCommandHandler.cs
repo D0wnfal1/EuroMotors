@@ -1,22 +1,16 @@
 ﻿using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Products;
-using EuroMotors.Domain.Users;
 
 namespace EuroMotors.Application.Carts.AddItemToCart;
 
 internal sealed class AddItemToCartCommandHandler(
-    IProductRepository productRepository, IUserRepository userRepository,
+    IProductRepository productRepository,
     CartService cartService) : ICommandHandler<AddItemToCartCommand>
 {
     public async Task<Result> Handle(AddItemToCartCommand request, CancellationToken cancellationToken)
     {
-        User? user = await userRepository.GetByIdAsync(request.UserId, cancellationToken);
-
-        if (user is null)
-        {
-            return Result.Failure(UserErrors.NotFound(request.UserId));
-        }
+        Cart cart = await cartService.GetAsync(request.CartId, cancellationToken);
 
         Product? product = await productRepository.GetByIdAsync(request.ProductId, cancellationToken);
 
@@ -37,7 +31,7 @@ internal sealed class AddItemToCartCommandHandler(
             UnitPrice = product.Price
         };
 
-        await cartService.AddItemAsync(request.UserId, cartItem, cancellationToken);
+        await cartService.AddItemAsync(cart.Id, cartItem, cancellationToken);
 
         return Result.Success();
     }
