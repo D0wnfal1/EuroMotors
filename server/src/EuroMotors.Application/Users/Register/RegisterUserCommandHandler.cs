@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EuroMotors.Application.Users.Register;
 
-internal sealed class RegisterUserCommandHandler(IApplicationDbContext context, IPasswordHasher passwordHasher)
+internal sealed class RegisterUserCommandHandler(IApplicationDbContext context, IUserRepository userRepository, IPasswordHasher passwordHasher)
     : ICommandHandler<RegisterUserCommand, Guid>
 {
     public async Task<Result<Guid>> Handle(RegisterUserCommand command, CancellationToken cancellationToken)
@@ -22,7 +22,7 @@ internal sealed class RegisterUserCommandHandler(IApplicationDbContext context, 
 
         user.RaiseDomainEvent(new UserRegisteredDomainEvent(user.Id));
 
-        context.Users.Add(user);
+        userRepository.Insert(user);
 
         await context.SaveChangesAsync(cancellationToken);
 

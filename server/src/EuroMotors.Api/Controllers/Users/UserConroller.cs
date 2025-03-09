@@ -1,9 +1,11 @@
-﻿using EuroMotors.Application.Users.GetById;
+﻿using EuroMotors.Application.Users.GetByEmail;
+using EuroMotors.Application.Users.GetById;
 using EuroMotors.Application.Users.Login;
 using EuroMotors.Application.Users.Register;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Infrastructure.Authorization;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EuroMotors.Api.Controllers.Users;
@@ -20,10 +22,21 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{userId}")]
-    [HasPermission(Permissions.UsersAccess)]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> GetById(Guid userId, CancellationToken cancellationToken)
     {
         var query = new GetUserByIdQuery(userId);
+
+        Result<UserResponse> result = await _sender.Send(query, cancellationToken);
+
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+    }
+
+    [HttpGet("email")]
+    [Authorize(Roles = Roles.Customer + "," + Roles.Admin)]
+    public async Task<IActionResult> GetByEmail(string email, CancellationToken cancellationToken)
+    {
+        var query = new GetUserByEmailQuery(email);
 
         Result<UserResponse> result = await _sender.Send(query, cancellationToken);
 

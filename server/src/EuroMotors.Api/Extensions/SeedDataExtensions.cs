@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using Bogus;
 using Dapper;
+using EuroMotors.Application.Abstractions.Authentication;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Categories;
@@ -12,7 +13,7 @@ namespace EuroMotors.Api.Extensions;
 
 public static class SeedDataExtensions
 {
-    public static void SeedData(this IApplicationBuilder app)
+    public static void SeedData(this IApplicationBuilder app, IPasswordHasher passwordHasher)
     {
         using IServiceScope scope = app.ApplicationServices.CreateScope();
 
@@ -23,8 +24,8 @@ public static class SeedDataExtensions
         SeedCarModels(connection);
         SeedCategories(connection);
         SeedProducts(connection);
-        SeedUsers(connection);
         SeedProductImages(connection);
+        SeedUsers(connection, passwordHasher);
     }
 
     private static void SeedCarModels(IDbConnection connection)
@@ -149,20 +150,42 @@ public static class SeedDataExtensions
         connection.Execute(sql, productImages);
     }
 
-    private static void SeedUsers(IDbConnection dbConnection)
+    private static void SeedUsers(IDbConnection connection, IPasswordHasher passwordHasher)
     {
-        Faker<User> faker = new Faker<User>()
-            .CustomInstantiator(f => User.Create(
-                f.Person.Email,
-                f.Person.FirstName,
-                f.Person.LastName,
-                f.Internet.Password()
-            ));
+        var existingUsers = connection.Query<Guid>("SELECT id FROM users").ToList();
+        if (existingUsers.Count > 0)
+        {
+            return;
+        }
 
-        List<User> users = faker.Generate(10);
+        var roles = new[]
+        {
+            new { Id = 1, Name = "Admin" },
+            new { Id = 2, Name = "Customer" }
+        };
 
-        const string sql = @"INSERT INTO users (id, email, first_name, last_name, password_hash) VALUES (@Id, @Email, @FirstName, @LastName, @PasswordHash);";
+        User[] users = new[]
+        {
+             User.Create("admin@example.com", "Admin", "User", passwordHasher.Hash("Admin123!")),
+             User.Create("customer@example.com", "Customer", "User", passwordHasher.Hash("Customer123!")),
+        };
 
-        dbConnection.Execute(sql, users);
+        const string userSql = @"
+        INSERT INTO users (id, email, first_name, last_name, password_hash) 
+        VALUES (@Id, @Email, @FirstName, @LastName, @PasswordHash);
+    ";
+        connection.Execute(userSql, users);
+
+        var roleUserMappings = new[]
+        {
+            new { UserId = users[0].Id, RoleId = roles[0].Id }, 
+            new { UserId = users[1].Id, RoleId = roles[1].Id }  
+        };
+
+        const string roleUserSql = @"
+        INSERT INTO role_user (roles_id, users_id) 
+        VALUES (@RoleId, @UserId);
+    ";
+        connection.Execute(roleUserSql, roleUserMappings);
     }
 }

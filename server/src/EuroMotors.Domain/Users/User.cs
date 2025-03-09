@@ -5,6 +5,7 @@ namespace EuroMotors.Domain.Users;
 
 public sealed class User : Entity
 {
+    private readonly List<Role> _roles = new();
     private User()
     {
 
@@ -14,6 +15,8 @@ public sealed class User : Entity
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string PasswordHash { get; set; }
+
+    public IReadOnlyCollection<Role> Roles => _roles.ToList();
 
     public static User Create(string email, string firstName, string lastName, string passwordHash)
     {
@@ -28,6 +31,10 @@ public sealed class User : Entity
 
         user.RaiseDomainEvent(new UserRegisteredDomainEvent(user.Id));
 
+        user._roles.Add(Role.Customer);
+
         return user;
     }
+
+
 }

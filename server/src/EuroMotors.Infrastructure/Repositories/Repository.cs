@@ -19,7 +19,7 @@ public abstract class Repository<T> where T : Entity
 
     }
 
-    public void Insert(T entity)
+    public virtual void Insert(T entity)
     {
         _dbContext.Add(entity);
     }

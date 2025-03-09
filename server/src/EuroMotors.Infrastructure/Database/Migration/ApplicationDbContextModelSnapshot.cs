@@ -279,6 +279,38 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     b.ToTable("products", "public");
                 });
 
+            modelBuilder.Entity("EuroMotors.Domain.Users.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_roles");
+
+                    b.ToTable("roles", "public");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 2,
+                            Name = "Customer"
+                        },
+                        new
+                        {
+                            Id = 1,
+                            Name = "Admin"
+                        });
+                });
+
             modelBuilder.Entity("EuroMotors.Domain.Users.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -314,6 +346,25 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasDatabaseName("ix_users_email");
 
                     b.ToTable("users", "public");
+                });
+
+            modelBuilder.Entity("RoleUser", b =>
+                {
+                    b.Property<int>("RolesId")
+                        .HasColumnType("integer")
+                        .HasColumnName("roles_id");
+
+                    b.Property<Guid>("UsersId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("users_id");
+
+                    b.HasKey("RolesId", "UsersId")
+                        .HasName("pk_role_user");
+
+                    b.HasIndex("UsersId")
+                        .HasDatabaseName("ix_role_user_users_id");
+
+                    b.ToTable("role_user", "public");
                 });
 
             modelBuilder.Entity("EuroMotors.Domain.Orders.OrderItem", b =>
@@ -365,6 +416,23 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_products_categories_category_id");
+                });
+
+            modelBuilder.Entity("RoleUser", b =>
+                {
+                    b.HasOne("EuroMotors.Domain.Users.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RolesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_role_user_role_roles_id");
+
+                    b.HasOne("EuroMotors.Domain.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_role_user_users_users_id");
                 });
 
             modelBuilder.Entity("EuroMotors.Domain.CarModels.CarModel", b =>

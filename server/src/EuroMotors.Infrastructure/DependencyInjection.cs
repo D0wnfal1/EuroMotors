@@ -21,6 +21,7 @@ using EuroMotors.Infrastructure.Database;
 using EuroMotors.Infrastructure.Payments;
 using EuroMotors.Infrastructure.Repositories;
 using EuroMotors.Infrastructure.Time;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -163,11 +164,9 @@ public static class DependencyInjection
     {
         services.AddAuthorization();
 
-        services.AddScoped<PermissionProvider>();
+        services.AddScoped<AuthorizationService>();
 
-        services.AddTransient<IAuthorizationHandler, PermissionAuthorizationHandler>();
-
-        services.AddTransient<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
+        services.AddTransient<IClaimsTransformation, CustomClaimsTransformation>();
 
         return services;
     }
