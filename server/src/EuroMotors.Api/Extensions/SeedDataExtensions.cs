@@ -164,11 +164,11 @@ public static class SeedDataExtensions
             new { Id = 2, Name = "Customer" }
         };
 
-        User[] users = new[]
-        {
-             User.Create("admin@example.com", "Admin", "User", passwordHasher.Hash("Admin123!")),
-             User.Create("customer@example.com", "Customer", "User", passwordHasher.Hash("Customer123!")),
-        };
+        User[] users =
+        [
+            User.Create("admin@example.com", "Admin", "User", passwordHasher.Hash("Admin123!")),
+             User.Create("customer@example.com", "Customer", "User", passwordHasher.Hash("Customer123!"))
+        ];
 
         const string userSql = @"
         INSERT INTO users (id, email, first_name, last_name, password_hash) 

@@ -1,9 +1,8 @@
-﻿using EuroMotors.Application.Users.GetByEmail;
-using EuroMotors.Application.Users.GetById;
+﻿using System.Security.Claims;
+using EuroMotors.Application.Users.GetByEmail;
 using EuroMotors.Application.Users.Login;
 using EuroMotors.Application.Users.Register;
 using EuroMotors.Domain.Abstractions;
-using EuroMotors.Infrastructure.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,27 +20,36 @@ public class UsersController : ControllerBase
         _sender = sender;
     }
 
-    [HttpGet("{userId}")]
-    [Authorize(Roles = Roles.Admin)]
-    public async Task<IActionResult> GetById(Guid userId, CancellationToken cancellationToken)
-    {
-        var query = new GetUserByIdQuery(userId);
-
-        Result<UserResponse> result = await _sender.Send(query, cancellationToken);
-
-        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
-    }
-
+    [Authorize]
     [HttpGet("email")]
-    [Authorize(Roles = Roles.Customer + "," + Roles.Admin)]
-    public async Task<IActionResult> GetByEmail(string email, CancellationToken cancellationToken)
+	public async Task<IActionResult> GetByEmail(CancellationToken cancellationToken)
+	{
+		if (User.Identity is not { IsAuthenticated: true })
+		{
+			return NoContent();
+		}
+
+		string? email = User.FindFirst(ClaimTypes.Email)?.Value;
+
+		if (string.IsNullOrEmpty(email))
+		{
+			return Unauthorized("Email not found in token");
+		}
+
+		var query = new GetUserByEmailQuery(email);
+
+		Result<UserResponse> result = await _sender.Send(query, cancellationToken);
+
+		return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+	}
+
+    [HttpGet("auth-status")]
+    [ProducesResponseType(typeof(object), 200)]
+    public IActionResult GetAuthState()
     {
-        var query = new GetUserByEmailQuery(email);
-
-        Result<UserResponse> result = await _sender.Send(query, cancellationToken);
-
-        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        return Ok(new { IsAuthenticated = User.Identity?.IsAuthenticated ?? false });
     }
+
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)

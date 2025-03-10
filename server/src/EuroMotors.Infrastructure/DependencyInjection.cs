@@ -145,9 +145,13 @@ public static class DependencyInjection
                 o.RequireHttpsMetadata = false;
                 o.TokenValidationParameters = new TokenValidationParameters
                 {
+                    ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Secret"]!)),
+                    ValidateIssuer = true,
                     ValidIssuer = configuration["Jwt:Issuer"],
+                    ValidateAudience = true,
                     ValidAudience = configuration["Jwt:Audience"],
+                    ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
                 };
             });

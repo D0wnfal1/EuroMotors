@@ -1,4 +1,4 @@
-﻿namespace EuroMotors.Application.Users.GetById;
+﻿namespace EuroMotors.Application.Users.GetByEmail;
 
 public sealed record UserResponse
 {

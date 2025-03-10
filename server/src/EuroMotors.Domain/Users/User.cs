@@ -5,7 +5,7 @@ namespace EuroMotors.Domain.Users;
 
 public sealed class User : Entity
 {
-    private readonly List<Role> _roles = new();
+    private readonly List<Role> _roles = [];
     private User()
     {
 

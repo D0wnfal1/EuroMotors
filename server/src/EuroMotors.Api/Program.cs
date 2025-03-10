@@ -1,7 +1,6 @@
 using EuroMotors.Api;
 using EuroMotors.Api.Extensions;
 using EuroMotors.Application;
-using EuroMotors.Application.Abstractions.Authentication;
 using EuroMotors.Infrastructure;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -18,7 +17,13 @@ builder.Services
     .AddPresentation()
     .AddInfrastructure(builder.Configuration);
 
-builder.Services.AddCors();
+builder.Services.AddCors(options =>
+    options.AddPolicy("Client", corsPolicyBuilder => corsPolicyBuilder
+        .WithOrigins("http://localhost:4200", "https://localhost:4200")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials()));
+
 
 WebApplication app = builder.Build();
 
@@ -41,14 +46,13 @@ app.UseRequestContextLogging();
 
 app.UseSerilogRequestLogging();
 
+app.UseCors("Client");
+
 app.UseExceptionHandler();
 
 app.UseAuthentication();
 
 app.UseAuthorization();
-
-app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod()
-    .WithOrigins("http://localhost:4200", "https://localhost:4200"));
 
 app.MapControllers();
 
