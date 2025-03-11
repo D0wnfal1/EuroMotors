@@ -16,7 +16,7 @@ public class PaymentTests
         // Arrange
         var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
         var order = Order.Create(user);
-        var payment = Payment.Create(order, Guid.NewGuid(), PaymentStatus.Pending, 100m);
+        var payment = Payment.Create(order.Id, Guid.NewGuid(), PaymentStatus.Pending, 100m);
 
         // Act
         PaymentCreatedDomainEvent domainEvent = BaseTest.AssertDomainEventWasPublished<PaymentCreatedDomainEvent>(payment);
@@ -32,7 +32,7 @@ public class PaymentTests
         // Arrange
         var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
         var order = Order.Create(user);
-        var payment = Payment.Create(order, Guid.NewGuid(), PaymentStatus.Success, 100m);
+        var payment = Payment.Create(order.Id, Guid.NewGuid(), PaymentStatus.Success, 100m);
 
         // Act
         Result result = payment.Refund(50m);
@@ -48,7 +48,7 @@ public class PaymentTests
         // Arrange
         var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
         var order = Order.Create(user);
-        var payment = Payment.Create(order, Guid.NewGuid(), PaymentStatus.Success, 100m);
+        var payment = Payment.Create(order.Id, Guid.NewGuid(), PaymentStatus.Success, 100m);
 
         // Act
         Result result = payment.Refund(150m);
@@ -63,7 +63,7 @@ public class PaymentTests
     {
         var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
         var order = Order.Create(user);
-        var payment = Payment.Create(order, Guid.NewGuid(), PaymentStatus.Pending, 100m);
+        var payment = Payment.Create(order.Id, Guid.NewGuid(), PaymentStatus.Pending, 100m);
 
         payment.ChangeStatus(PaymentStatus.Success);
 
@@ -75,7 +75,7 @@ public class PaymentTests
     {
         var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
         var order = Order.Create(user);
-        var payment = Payment.Create(order, Guid.NewGuid(), PaymentStatus.Success, 100m);
+        var payment = Payment.Create(order.Id, Guid.NewGuid(), PaymentStatus.Success, 100m);
         payment.Refund(100m);
 
         Result result = payment.Refund(50m);
@@ -89,7 +89,7 @@ public class PaymentTests
     {
         var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
         var order = Order.Create(user);
-        var payment = Payment.Create(order, Guid.NewGuid(), PaymentStatus.Success, 100m);
+        var payment = Payment.Create(order.Id, Guid.NewGuid(), PaymentStatus.Success, 100m);
 
         payment.Refund(100m);
 

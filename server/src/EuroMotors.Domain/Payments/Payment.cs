@@ -25,16 +25,13 @@ public sealed class Payment : Entity
 
     public DateTime? RefundedAtUtc { get; set; }
 
-    public Order Order { get; private set; } = null!;
-
-    public static Payment Create(Order order, Guid transactionId, PaymentStatus status, decimal amount)
+    public static Payment Create(Guid orderId, Guid transactionId, PaymentStatus status, decimal amount)
     {
         var payment = new Payment()
         {
             Id = Guid.NewGuid(),
-            OrderId = order.Id,
+            OrderId = orderId,
             Status = status,
-            Order = order,
             TransactionId = transactionId,
             Amount = amount,
             AmountRefunded = 0m,
@@ -69,7 +66,6 @@ public sealed class Payment : Entity
         {
             RaiseDomainEvent(new PaymentPartiallyRefundedDomainEvent(Id, TransactionId, refundAmount));
         }
-        Order.ChangeStatus(OrderStatus.Refunded);
 
         return Result.Success();
     }

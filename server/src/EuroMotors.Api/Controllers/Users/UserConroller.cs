@@ -2,6 +2,7 @@
 using EuroMotors.Application.Users.GetByEmail;
 using EuroMotors.Application.Users.Login;
 using EuroMotors.Application.Users.Register;
+using EuroMotors.Application.Users.Update;
 using EuroMotors.Domain.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -22,26 +23,26 @@ public class UsersController : ControllerBase
 
     [Authorize]
     [HttpGet("email")]
-	public async Task<IActionResult> GetByEmail(CancellationToken cancellationToken)
-	{
-		if (User.Identity is not { IsAuthenticated: true })
-		{
-			return NoContent();
-		}
+    public async Task<IActionResult> GetByEmail(CancellationToken cancellationToken)
+    {
+        if (User.Identity is not { IsAuthenticated: true })
+        {
+            return NoContent();
+        }
 
-		string? email = User.FindFirst(ClaimTypes.Email)?.Value;
+        string? email = User.FindFirst(ClaimTypes.Email)?.Value;
 
-		if (string.IsNullOrEmpty(email))
-		{
-			return Unauthorized("Email not found in token");
-		}
+        if (string.IsNullOrEmpty(email))
+        {
+            return Unauthorized("Email not found in token");
+        }
 
-		var query = new GetUserByEmailQuery(email);
+        var query = new GetUserByEmailQuery(email);
 
-		Result<UserResponse> result = await _sender.Send(query, cancellationToken);
+        Result<UserResponse> result = await _sender.Send(query, cancellationToken);
 
-		return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
-	}
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+    }
 
     [HttpGet("auth-status")]
     [ProducesResponseType(typeof(object), 200)]
@@ -69,5 +70,24 @@ public class UsersController : ControllerBase
         Result<Guid> result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+    }
+
+    [HttpPut]
+    [Authorize]
+    [Route("update")]
+    public async Task<IActionResult> UpdateUser([FromBody] UpdateUserInformationRequest request, CancellationToken cancellationToken)
+    {
+        string? email = User.FindFirst(ClaimTypes.Email)?.Value;
+
+        if (string.IsNullOrEmpty(email))
+        {
+            return Unauthorized("Email not found in token");
+        }
+
+        var command = new UpdateUserInformationCommand(email, request.PhoneNumber, request.City);
+
+        Result result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess ? NoContent() : BadRequest(result.Error);
     }
 }

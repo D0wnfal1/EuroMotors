@@ -9,4 +9,8 @@ public sealed record UserResponse
     public string FirstName { get; init; }
 
     public string LastName { get; init; }
+
+    public string? PhoneNumber { get; init; }
+
+    public string? City { get; init; }
 }

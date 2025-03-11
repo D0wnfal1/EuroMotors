@@ -1,4 +1,5 @@
-﻿using EuroMotors.Domain.Payments;
+﻿using EuroMotors.Domain.Orders;
+using EuroMotors.Domain.Payments;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -20,8 +21,9 @@ internal sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.Property(p => p.AmountRefunded)
             .HasColumnType("decimal(18,2)");
 
-        builder.HasOne(p => p.Order)
-            .WithOne()
-            .HasForeignKey<Payment>(p => p.OrderId);
+        builder.HasOne<Order>()
+            .WithMany()
+            .HasForeignKey(p => p.OrderId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

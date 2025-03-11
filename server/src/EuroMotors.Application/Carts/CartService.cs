@@ -4,7 +4,7 @@ namespace EuroMotors.Application.Carts;
 
 public sealed class CartService(ICacheService cacheService)
 {
-    private static readonly TimeSpan DefaultExpiration = TimeSpan.FromMinutes(30);
+    private static readonly TimeSpan DefaultExpiration = TimeSpan.FromDays(30);
 
     public async Task<Cart> GetAsync(Guid cartId, CancellationToken cancellationToken = default)
     {

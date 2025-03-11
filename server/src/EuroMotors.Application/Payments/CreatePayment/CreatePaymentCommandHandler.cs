@@ -16,7 +16,7 @@ internal sealed class CreatePaymentCommandHandler(IPaymentRepository paymentRepo
             return Result.Failure<string>(OrderErrors.NotFound(request.OrderId));
         }
 
-        var payment = Payment.Create(order, Guid.NewGuid(), PaymentStatus.Pending, order.TotalPrice);
+        var payment = Payment.Create(order.Id, Guid.NewGuid(), PaymentStatus.Pending, order.TotalPrice);
 
         paymentRepository.Insert(payment);
 

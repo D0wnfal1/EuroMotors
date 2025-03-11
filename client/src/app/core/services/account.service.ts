@@ -1,4 +1,3 @@
-// account.service.ts
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
@@ -24,7 +23,7 @@ export class AccountService {
             this.cookieService.set('AuthToken', token, {
               secure: true,
               sameSite: 'Strict',
-              expires: 1,
+              expires: 30,
             });
             this.getUserInfo().subscribe();
           }
@@ -42,6 +41,19 @@ export class AccountService {
       map((user) => {
         this.currentUser.set(user);
         return user;
+      })
+    );
+  }
+
+  updateUserInfo(values: { phoneNumber: string; city: string }) {
+    const body = {
+      phoneNumber: values.phoneNumber,
+      city: values.city,
+    };
+
+    return this.http.put(this.baseUrl + 'users/update', body).pipe(
+      map(() => {
+        this.getUserInfo().subscribe();
       })
     );
   }

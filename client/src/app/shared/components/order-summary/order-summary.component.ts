@@ -21,4 +21,5 @@ import { CartService } from '../../../core/services/cart.service';
 })
 export class OrderSummaryComponent {
   cartService = inject(CartService);
+  location = inject(Location);
 }

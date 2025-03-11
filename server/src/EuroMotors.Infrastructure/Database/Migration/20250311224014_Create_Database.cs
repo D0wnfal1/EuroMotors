@@ -88,7 +88,9 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     email = table.Column<string>(type: "text", nullable: false),
                     first_name = table.Column<string>(type: "text", nullable: false),
                     last_name = table.Column<string>(type: "text", nullable: false),
-                    password_hash = table.Column<string>(type: "text", nullable: false)
+                    password_hash = table.Column<string>(type: "text", nullable: false),
+                    phone_number = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    city = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -177,7 +179,7 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         principalSchema: "public",
                         principalTable: "orders",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -248,8 +250,7 @@ namespace EuroMotors.Infrastructure.Database.Migration
                 name: "ix_payments_order_id",
                 schema: "public",
                 table: "payments",
-                column: "order_id",
-                unique: true);
+                column: "order_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_product_images_product_id",

@@ -7,21 +7,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EuroMotors.Application.Users.GetByEmail;
 
-internal sealed class GetUserByEmailQueryHandler(IApplicationDbContext context, IUserContext userContext)
+internal sealed class GetUserByEmailQueryHandler(IUserRepository userRepository, IUserContext userContext)
     : IQueryHandler<GetUserByEmailQuery, UserResponse>
 {
     public async Task<Result<UserResponse>> Handle(GetUserByEmailQuery query, CancellationToken cancellationToken)
     {
-        UserResponse? user = await context.Users
-            .Where(u => u.Email == query.Email)
-            .Select(u => new UserResponse
-            {
-                Id = u.Id,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                Email = u.Email
-            })
-            .SingleOrDefaultAsync(cancellationToken);
+        User? user = await userRepository.GetByEmailAsync(query.Email, cancellationToken);
 
         if (user is null)
         {
@@ -33,6 +24,16 @@ internal sealed class GetUserByEmailQueryHandler(IApplicationDbContext context, 
             return Result.Failure<UserResponse>(UserErrors.Unauthorized());
         }
 
-        return user;
+        var userResponse = new UserResponse
+        {
+            Id = user.Id,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            PhoneNumber = user.PhoneNumber,
+            City = user.City
+        };
+
+        return userResponse;
     }
 }

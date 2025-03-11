@@ -16,6 +16,9 @@ public sealed class User : Entity
     public string LastName { get; set; }
     public string PasswordHash { get; set; }
 
+    public string? PhoneNumber { get; private set; }  
+    public string? City { get; private set; }
+
     public IReadOnlyCollection<Role> Roles => _roles.ToList();
 
     public static User Create(string email, string firstName, string lastName, string passwordHash)
@@ -36,5 +39,9 @@ public sealed class User : Entity
         return user;
     }
 
-
+    public void UpdateContactInfo(string phoneNumber, string city)
+    {
+        PhoneNumber = phoneNumber;
+        City = city;
+    }
 }

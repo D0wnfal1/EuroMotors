@@ -8,15 +8,13 @@ using Microsoft.EntityFrameworkCore;
 namespace EuroMotors.Application.Users.Login;
 
 internal sealed class LoginUserCommandHandler(
-    IApplicationDbContext context,
+    IUserRepository userRepository,
     IPasswordHasher passwordHasher,
     ITokenProvider tokenProvider) : ICommandHandler<LoginUserCommand, string>
 {
     public async Task<Result<string>> Handle(LoginUserCommand command, CancellationToken cancellationToken)
     {
-        User? user = await context.Users
-            .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.Email == command.Email, cancellationToken);
+        User? user = await userRepository.GetByEmailAsync(command.Email, cancellationToken);
 
         if (user is null)
         {

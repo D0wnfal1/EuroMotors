@@ -3,4 +3,6 @@ export type User = {
   lastName: string;
   email: string;
   paswword: string;
+  phoneNumber?: string;
+  city?: string;
 };
