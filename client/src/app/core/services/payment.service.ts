@@ -2,18 +2,20 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Payment } from '../../shared/models/payment';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PaymentService {
+  baseUrl = environment.apiUrl;
   constructor(private http: HttpClient) {}
 
   createPayment(paymentRequest: any): Observable<Payment> {
-    return this.http.post<Payment>('/api/payments', paymentRequest);
+    return this.http.post<Payment>(this.baseUrl, paymentRequest);
   }
 
   getPaymentById(id: string): Observable<Payment> {
-    return this.http.get<Payment>(`/api/payments/${id}`);
+    return this.http.get<Payment>(this.baseUrl + id);
   }
 }

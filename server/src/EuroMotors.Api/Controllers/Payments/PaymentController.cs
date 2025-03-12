@@ -53,9 +53,9 @@ public class PaymentController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreatePayment(CreatePaymentCommand command, CancellationToken cancellationToken)
     {
-        Result result = await _sender.Send(command, cancellationToken);
+        Result<Dictionary<string, string>> result = await _sender.Send(command, cancellationToken);
 
-        return result.IsSuccess ? Ok(result.IsSuccess) : BadRequest(result.Error);
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 }
 

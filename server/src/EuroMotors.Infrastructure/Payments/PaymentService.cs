@@ -18,7 +18,7 @@ internal sealed class PaymentService(
 {
     private readonly PaymentOptions _options = paymentOptions.Value;
 
-    public async Task<string> CreatePaymentAsync(Payment payment)
+    public async Task<Dictionary<string, string>> CreatePaymentAsync(Payment payment)
     {
         var data = new
         {
@@ -37,7 +37,13 @@ internal sealed class PaymentService(
         string encodedData = Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonData));
         string signature = GenerateSignature(encodedData);
 
-        return await Task.FromResult($"https://www.liqpay.ua/api/3/checkout?data={encodedData}&signature={signature}");
+        var result = new Dictionary<string, string>
+        {
+            { "data", encodedData },
+            { "signature", signature }
+        };
+
+        return await Task.FromResult(result);
     }
 
     public async Task<Result> ProcessPaymentCallbackAsync(string data, string signature)

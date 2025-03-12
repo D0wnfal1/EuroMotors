@@ -1,9 +1,22 @@
-import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { OrderSummaryComponent } from '../../shared/components/order-summary/order-summary.component';
 import { MatStepperModule } from '@angular/material/stepper';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import {
+  MatCheckboxChange,
+  MatCheckboxModule,
+} from '@angular/material/checkbox';
+import { AccountService } from '../../core/services/account.service';
 import { CartService } from '../../core/services/cart.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import {
+  FormGroup,
+  FormBuilder,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { firstValueFrom } from 'rxjs';
+import { CheckoutInformationComponent } from './checkout-information/checkout-information.component';
 
 @Component({
   selector: 'app-checkout',
@@ -13,10 +26,85 @@ import { CartService } from '../../core/services/cart.service';
     MatStepperModule,
     MatCheckboxModule,
     MatProgressSpinnerModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    CheckoutInformationComponent,
   ],
   templateUrl: './checkout.component.html',
-  styleUrl: './checkout.component.scss',
+  styleUrls: ['./checkout.component.scss'],
 })
-export class CheckoutComponent {
+export class CheckoutComponent implements OnInit {
   cartService = inject(CartService);
+  accountService = inject(AccountService);
+  form: FormGroup;
+  saveInformation = false;
+
+  // Статус завершения шагов
+  completionStatus = signal<{
+    information: boolean;
+    card: boolean;
+    delivery: boolean;
+  }>({ information: false, card: false, delivery: false });
+
+  constructor(private fb: FormBuilder) {
+    this.form = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      firstName: ['', [Validators.required]],
+      lastName: ['', [Validators.required]],
+      phoneNumber: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(
+            '^\\+?[0-9]{1,4}?[-. ]?(\\(?\\d{1,3}?\\)?[-. ]?)?\\d{1,4}[-. ]?\\d{1,4}[-. ]?\\d{1,4}$'
+          ),
+        ],
+      ],
+      city: ['', [Validators.required]],
+      saveAsDefault: [false],
+    });
+  }
+
+  ngOnInit() {
+    this.accountService.getUserInfo().subscribe((user) => {
+      if (user) {
+        this.form.patchValue({
+          email: user.email,
+          firstName: user.firstName || '',
+          lastName: user.lastName || '',
+          phoneNumber: user.phoneNumber || '',
+          city: user.city || '',
+        });
+      }
+    });
+  }
+
+  async onStepChange(event: any) {
+    const stepIndex = event.selectedIndex;
+
+    if (this.saveInformation) {
+      await firstValueFrom(this.accountService.updateUserInfo(this.form.value));
+    }
+
+    if (stepIndex === 0 && this.form.valid) {
+      this.completionStatus.update((status) => ({
+        ...status,
+        information: true,
+      }));
+    } else if (stepIndex === 1) {
+      this.completionStatus.update((status) => ({
+        ...status,
+        delivery: true,
+      }));
+    } else if (stepIndex === 2) {
+      this.completionStatus.update((status) => ({
+        ...status,
+        card: true,
+      }));
+    }
+  }
+
+  onSaveAddressCheckboxChange(event: any) {
+    this.saveInformation = (event as MatCheckboxChange).checked;
+  }
 }

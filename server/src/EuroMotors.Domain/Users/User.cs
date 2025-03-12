@@ -39,8 +39,11 @@ public sealed class User : Entity
         return user;
     }
 
-    public void UpdateContactInfo(string phoneNumber, string city)
+    public void UpdateContactInfo(string email, string firstName, string lastName, string phoneNumber, string city)
     {
+        Email = email;
+        FirstName = firstName;
+        LastName = lastName;
         PhoneNumber = phoneNumber;
         City = city;
     }

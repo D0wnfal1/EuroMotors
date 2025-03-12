@@ -84,7 +84,7 @@ public class UsersController : ControllerBase
             return Unauthorized("Email not found in token");
         }
 
-        var command = new UpdateUserInformationCommand(email, request.PhoneNumber, request.City);
+        var command = new UpdateUserInformationCommand(email, request.Firstname, request.LastName, request.PhoneNumber, request.City);
 
         Result result = await _sender.Send(command, cancellationToken);
 

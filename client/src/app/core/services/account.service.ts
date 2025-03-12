@@ -45,8 +45,17 @@ export class AccountService {
     );
   }
 
-  updateUserInfo(values: { phoneNumber: string; city: string }) {
+  updateUserInfo(values: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    city: string;
+  }) {
     const body = {
+      email: values.email,
+      firstName: values.firstName,
+      lastName: values.lastName,
       phoneNumber: values.phoneNumber,
       city: values.city,
     };

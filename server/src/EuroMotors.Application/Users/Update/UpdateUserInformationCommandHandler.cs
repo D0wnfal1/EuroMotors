@@ -18,7 +18,7 @@ internal sealed class UpdateUserInformationCommandHandler(IApplicationDbContext 
             return Result.Failure<string>(UserErrors.NotFoundByEmail);
         }
 
-        user.UpdateContactInfo(command.PhoneNumber, command.City);
+        user.UpdateContactInfo(command.Email, command.FirstName, command.LastName, command.PhoneNumber, command.City);
 
         user.RaiseDomainEvent(new UserRegisteredDomainEvent(user.Id));
 

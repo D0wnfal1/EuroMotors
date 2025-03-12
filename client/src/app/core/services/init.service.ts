@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { CartService } from './cart.service';
-import { forkJoin, of } from 'rxjs';
+import { forkJoin, of, switchMap } from 'rxjs';
 import { AccountService } from './account.service';
 
 @Injectable({
@@ -11,12 +11,19 @@ export class InitService {
   private accountService = inject(AccountService);
 
   init() {
-    const cartId = localStorage.getItem('cart_id');
-    const cart$ = cartId ? this.cartService.getCart(cartId) : of(null);
-
-    return forkJoin({
-      cart: cart$,
-      user: this.accountService.getUserInfo(),
-    });
+    return this.accountService.getAuthState().pipe(
+      switchMap((auth) => {
+        if (auth.isAuthenticated) {
+          return forkJoin({
+            cart: this.cartService.getCart(
+              localStorage.getItem('cart_id') ?? ''
+            ),
+            user: this.accountService.getUserInfo(),
+          });
+        } else {
+          return of({ cart: null, user: null });
+        }
+      })
+    );
   }
 }

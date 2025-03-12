@@ -6,24 +6,29 @@ using EuroMotors.Domain.Payments;
 
 namespace EuroMotors.Application.Payments.CreatePayment;
 
-internal sealed class CreatePaymentCommandHandler(IPaymentRepository paymentRepository, IOrderRepository orderRepository, IUnitOfWork unitOfWork, IPaymentService paymentService) : ICommandHandler<CreatePaymentCommand>
+internal sealed class CreatePaymentCommandHandler(
+    IPaymentRepository paymentRepository,
+    IOrderRepository orderRepository,
+    IUnitOfWork unitOfWork,
+    IPaymentService paymentService)
+    : ICommandHandler<CreatePaymentCommand, Dictionary<string, string>>
 {
-    public async Task<Result> Handle(CreatePaymentCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Dictionary<string, string>>> Handle(CreatePaymentCommand request, CancellationToken cancellationToken)
     {
         Order? order = await orderRepository.GetByIdAsync(request.OrderId, cancellationToken);
         if (order is null)
         {
-            return Result.Failure<string>(OrderErrors.NotFound(request.OrderId));
+            return Result.Failure<Dictionary<string, string>>(OrderErrors.NotFound(request.OrderId));
         }
 
         var payment = Payment.Create(order.Id, Guid.NewGuid(), PaymentStatus.Pending, order.TotalPrice);
 
         paymentRepository.Insert(payment);
-
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        string paymentUrl = await paymentService.CreatePaymentAsync(payment);
+        Dictionary<string, string> paymentData = await paymentService.CreatePaymentAsync(payment);
 
-        return Result.Success(paymentUrl);
+        return Result.Success(paymentData);
     }
 }
+

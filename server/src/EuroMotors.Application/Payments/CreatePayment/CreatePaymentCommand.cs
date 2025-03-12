@@ -2,4 +2,4 @@
 
 namespace EuroMotors.Application.Payments.CreatePayment;
 
-public sealed record CreatePaymentCommand(Guid OrderId) : ICommand;
+public sealed record CreatePaymentCommand(Guid OrderId) : ICommand<Dictionary<string, string>>;
