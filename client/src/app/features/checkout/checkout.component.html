@@ -3,35 +3,20 @@
     <mat-stepper
       #stepper
       [linear]="true"
-      (selectionChange)="onStepChange($event)"
       class="bg-white border border-gray-200 shadow-sm"
     >
-      <mat-step label="Information" [stepControl]="form">
-        <app-checkout-information
-          [form]="form"
-          [saveInformation]="saveInformation"
-          (saveInformationChange)="onSaveInformationCheckboxChange($event)"
-        ></app-checkout-information>
+      <mat-step label="Information">
+        <app-checkout-information></app-checkout-information>
         <div class="flex justify-between mt-6">
           <button routerLink="/shop" mat-stroked-button class="btn">
             Continue shopping
           </button>
-          <button
-            type="submit"
-            matStepperNext
-            class="btn"
-            [disabled]="form.invalid"
-          >
-            Next
-          </button>
+          <button type="submit" matStepperNext class="btn">Next</button>
         </div>
       </mat-step>
 
       <mat-step label="Shipping">
-        <app-checkout-delivery
-          [cityControl]="cityControl"
-          (deliveryMethodChanged)="deliveryMethod = $event"
-        ></app-checkout-delivery>
+        <app-checkout-delivery></app-checkout-delivery>
         <div class="flex justify-between mt-6">
           <button matStepperPrevious mat-stroked-button class="btn">
             Back
@@ -41,11 +26,7 @@
       </mat-step>
 
       <mat-step label="Payment">
-        <app-checkout-payment
-          (paymentMethodChanged)="paymentMethod = $event"
-          (formValidityChanged)="onFormValidityChanged($event)"
-        >
-        </app-checkout-payment>
+        <app-checkout-payment> </app-checkout-payment>
 
         <div class="flex justify-between mt-6">
           <button matStepperPrevious mat-stroked-button class="btn">

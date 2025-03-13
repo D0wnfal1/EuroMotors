@@ -1,14 +1,12 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  inject,
-  output,
-} from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
@@ -25,6 +23,17 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
+
+function deliveryMethodValidator(
+  group: AbstractControl
+): { [key: string]: any } | null {
+  const method = group.get('method')?.value;
+  const warehouse = group.get('warehouse')?.value;
+  if (method === 'delivery' && !warehouse) {
+    return { warehouseRequired: true };
+  }
+  return null;
+}
 
 @Component({
   selector: 'app-checkout-delivery',
@@ -46,19 +55,48 @@ import {
 })
 export class CheckoutDeliveryComponent implements OnInit {
   checkoutService = inject(CheckoutService);
-  deliveryMethod = '';
-  deliveryFeeText: string = '';
-  warehouseControl = new FormControl();
-  queryControl = new FormControl('');
-  @Input() cityControl!: FormControl;
-  filteredWarehouses: Observable<Warehouse[]> = new Observable();
-  isLoading = false;
-  private isWarehouseSelected = false;
-  deliveryForm = new FormControl('', Validators.required);
-  @Output() deliveryMethodChanged: EventEmitter<string> = new EventEmitter();
-  selectedDeliveryMethod: string = '';
 
-  ngOnInit() {
+  // Инициализация формы в конструкторе
+  deliveryGroup: FormGroup;
+
+  cityControl = new FormControl<string>('', Validators.required);
+  queryControl = new FormControl<string>('');
+
+  filteredWarehouses: Observable<Warehouse[]> = of([]);
+  isLoading = false;
+  isWarehouseSelected = false;
+
+  selectedWarehouseDescription: string = '';
+
+  @Output() deliveryMethodChanged: EventEmitter<string> =
+    new EventEmitter<string>();
+
+  constructor() {
+    this.deliveryGroup = new FormGroup(
+      {
+        method: new FormControl<string>('pickup', Validators.required),
+        warehouse: new FormControl<Warehouse | null>(null),
+      },
+      { validators: deliveryMethodValidator }
+    );
+  }
+
+  ngOnInit(): void {
+    // Проверка инициализации deliveryGroup и метода
+    const methodControl = this.deliveryGroup.get('method');
+    if (methodControl) {
+      methodControl.valueChanges.subscribe((value: string | null) => {
+        const method = value ?? 'pickup';
+        this.deliveryMethodChanged.emit(method);
+        if (method === 'delivery') {
+          const city = this.cityControl.value ?? '';
+          const query = this.queryControl.value ?? '';
+          this.loadWarehouses(city, query);
+        }
+      });
+    }
+
+    // Проверка на город и запрос
     combineLatest([
       this.cityControl.valueChanges,
       this.queryControl.valueChanges,
@@ -67,63 +105,54 @@ export class CheckoutDeliveryComponent implements OnInit {
         debounceTime(1000),
         switchMap(([city, query]) => {
           if (!city) {
-            this.warehouseControl.disable();
             return of([]);
           } else if (this.isWarehouseSelected) {
             return of([]);
           } else {
-            this.warehouseControl.enable();
-            const queryString = query ?? '';
             this.isLoading = true;
-            return this.checkoutService.getWarehouses(city, queryString);
+            return this.checkoutService.getWarehouses(city, query ?? '');
           }
         }),
         tap(() => {
           this.isLoading = false;
         })
       )
-      .subscribe((warehouses) => {
+      .subscribe((warehouses: Warehouse[]) => {
         this.filteredWarehouses = of(warehouses);
       });
   }
 
-  onDeliveryMethodChange(method: string) {
-    this.selectedDeliveryMethod = method;
-    this.deliveryMethodChanged.emit(this.selectedDeliveryMethod);
-
-    if (this.selectedDeliveryMethod === 'delivery') {
-      const city = this.cityControl.value;
-      const queryString = this.queryControl.value ?? '';
-      this.loadWarehouses(city, queryString);
+  onDeliveryMethodChange(method: string | null): void {
+    if (method === 'delivery') {
+      const city = this.cityControl.value ?? '';
+      const query = this.queryControl.value ?? '';
+      this.loadWarehouses(city, query);
     }
   }
 
-  loadWarehouses(city: string, query: string) {
+  loadWarehouses(city: string, query: string): void {
     if (city && !this.isWarehouseSelected) {
       this.isLoading = true;
       this.checkoutService
         .getWarehouses(city, query)
-        .subscribe((warehouses) => {
+        .subscribe((warehouses: Warehouse[]) => {
           this.filteredWarehouses = of(warehouses);
           this.isLoading = false;
         });
     }
   }
 
-  onPickupSelected(warehouse: Warehouse) {
-    this.warehouseControl.setValue(warehouse);
-    this.isWarehouseSelected = true;
+  onPickupSelected(warehouse: Warehouse): void {
+    // Проверка на инициализацию warehouse
+    const warehouseControl = this.deliveryGroup.get('warehouse');
+    if (warehouseControl) {
+      warehouseControl.setValue(warehouse);
+      this.isWarehouseSelected = true;
+      this.selectedWarehouseDescription = warehouse.description;
+    }
   }
 
-  displayWarehouse(warehouse: Warehouse): string {
+  displayWarehouse(warehouse: Warehouse | null): string {
     return warehouse ? warehouse.description : '';
-  }
-
-  get isFormValid() {
-    return (
-      this.deliveryMethod &&
-      (this.deliveryMethod !== 'delivery' ||
-        (this.cityControl.valid && this.queryControl.valid))
-    );
   }
 }

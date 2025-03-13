@@ -1,6 +1,11 @@
 import { NgIf } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatRadioModule } from '@angular/material/radio';
 
 @Component({
@@ -9,23 +14,17 @@ import { MatRadioModule } from '@angular/material/radio';
   templateUrl: './checkout-payment.component.html',
   styleUrl: './checkout-payment.component.scss',
 })
-export class CheckoutPaymentComponent {
-  paymentMethodControl: FormControl = new FormControl('', Validators.required);
-  @Output() paymentMethodChanged: EventEmitter<string> = new EventEmitter();
-  @Output() formValidityChanged: EventEmitter<boolean> = new EventEmitter();
-  selectedPaymentMethod: string = '';
+export class CheckoutPaymentComponent implements OnInit {
+  paymentForm!: FormGroup;
+  isFormValid: boolean = true;
 
-  onPaymentMethodChange(method: string) {
-    this.selectedPaymentMethod = method;
-    this.paymentMethodChanged.emit(this.selectedPaymentMethod);
-    this.emitFormValidity();
-  }
+  ngOnInit() {
+    this.paymentForm = new FormGroup({
+      paymentMethod: new FormControl('', Validators.required),
+    });
 
-  private emitFormValidity() {
-    this.formValidityChanged.emit(this.paymentMethodControl.valid);
-  }
-
-  get isFormValid() {
-    return this.paymentMethodControl.valid;
+    this.paymentForm.statusChanges.subscribe((status) => {
+      this.isFormValid = status === 'VALID';
+    });
   }
 }

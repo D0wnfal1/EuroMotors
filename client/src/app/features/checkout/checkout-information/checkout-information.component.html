@@ -1,6 +1,7 @@
 <form
-  [formGroup]="form"
   class="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md"
+  [formGroup]="checkoutForm"
+  (ngSubmit)="onSubmit()"
 >
   <div class="mb-6">
     <label for="email" class="block text-lg font-medium text-gray-800"
@@ -14,18 +15,16 @@
       placeholder="Enter your email"
     />
     <p
-      *ngIf="form.get('email')?.hasError('required')"
+      *ngIf="
+        checkoutForm.controls['email'].invalid &&
+        checkoutForm.controls['email'].touched
+      "
       class="mt-1 text-xs text-red-600"
     >
-      Email is required.
-    </p>
-    <p
-      *ngIf="form.get('email')?.hasError('email')"
-      class="mt-1 text-xs text-red-600"
-    >
-      Please enter a valid email.
+      Email is required and must be valid.
     </p>
   </div>
+
   <div class="mb-6 flex gap-4">
     <div class="w-1/2">
       <label for="firstName" class="block text-lg font-medium text-gray-800"
@@ -38,7 +37,17 @@
         class="input"
         placeholder="Enter your first name"
       />
+      <p
+        *ngIf="
+          checkoutForm.controls['firstName'].invalid &&
+          checkoutForm.controls['firstName'].touched
+        "
+        class="mt-1 text-xs text-red-600"
+      >
+        First name is required.
+      </p>
     </div>
+
     <div class="w-1/2">
       <label for="lastName" class="block text-lg font-medium text-gray-800"
         >Last Name</label
@@ -50,8 +59,18 @@
         class="input"
         placeholder="Enter your last name"
       />
+      <p
+        *ngIf="
+          checkoutForm.controls['lastName'].invalid &&
+          checkoutForm.controls['lastName'].touched
+        "
+        class="mt-1 text-xs text-red-600"
+      >
+        Last name is required.
+      </p>
     </div>
   </div>
+
   <div class="mb-6">
     <label for="phoneNumber" class="block text-lg font-medium text-gray-800"
       >Phone Number</label
@@ -65,18 +84,16 @@
       placeholder="Enter your phone number"
     />
     <p
-      *ngIf="form.get('phoneNumber')?.hasError('required')"
+      *ngIf="
+        checkoutForm.controls['phoneNumber'].invalid &&
+        checkoutForm.controls['phoneNumber'].touched
+      "
       class="mt-1 text-xs text-red-600"
     >
-      Phone number is required.
-    </p>
-    <p
-      *ngIf="form.get('phoneNumber')?.hasError('pattern')"
-      class="mt-1 text-xs text-red-600"
-    >
-      Please enter a valid phone number.
+      Phone number is required and must be valid.
     </p>
   </div>
+
   <div class="mb-6">
     <label for="city" class="block text-lg font-medium text-gray-800"
       >City</label
@@ -89,19 +106,29 @@
       placeholder="Enter your city"
     />
     <p
-      *ngIf="form.get('city')?.hasError('required')"
+      *ngIf="
+        checkoutForm.controls['city'].invalid &&
+        checkoutForm.controls['city'].touched
+      "
       class="mt-1 text-xs text-red-600"
     >
       City is required.
     </p>
   </div>
+
   <div class="mb-6 flex items-center">
-    <mat-checkbox
-      [checked]="saveInformation"
-      (change)="onCheckboxChange($event)"
-      class="text-sm text-gray-800"
-    >
+    <mat-checkbox formControlName="saveAsDefault" class="text-sm text-gray-800">
       Save as default information
     </mat-checkbox>
+  </div>
+
+  <div class="mb-6">
+    <button
+      type="submit"
+      [disabled]="!checkoutForm.valid"
+      class="w-full bg-blue-500 text-white py-2 rounded-md"
+    >
+      Save Information
+    </button>
   </div>
 </form>

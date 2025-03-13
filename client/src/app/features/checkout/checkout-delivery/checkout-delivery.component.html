@@ -1,43 +1,56 @@
-<mat-radio-group
-  [(ngModel)]="deliveryMethod"
-  (change)="onDeliveryMethodChange($event.value)"
-  [formControl]="deliveryForm"
->
-  <mat-radio-button value="pickup">Pickup</mat-radio-button>
-  <mat-radio-button value="delivery">Delivery by NovaPoshta</mat-radio-button>
-</mat-radio-group>
+<form [formGroup]="deliveryGroup">
+  <mat-radio-group
+    formControlName="method"
+    (change)="onDeliveryMethodChange($event.value)"
+  >
+    <mat-radio-button value="pickup">Pickup</mat-radio-button>
+    <mat-radio-button value="delivery">Delivery by NovaPoshta</mat-radio-button>
+  </mat-radio-group>
 
-<div *ngIf="deliveryMethod === 'delivery'" class="delivery-selection">
-  <mat-form-field appearance="fill" class="w-full">
-    <mat-label>Select a city</mat-label>
-    <input
-      matInput
-      [formControl]="cityControl"
-      placeholder="Enter city"
-      class="border border-gray-300 p-2 rounded"
-      required
-    />
-  </mat-form-field>
-  <mat-form-field appearance="fill" class="w-full">
-    <mat-label>Select a NovaPoshta warehouse</mat-label>
-    <input
-      type="text"
-      matInput
-      [formControl]="queryControl"
-      [matAutocomplete]="auto"
-      class="border border-gray-300 p-2 rounded"
-      required
-    />
-    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayWarehouse">
-      <mat-option
-        *ngFor="let warehouse of filteredWarehouses | async"
-        [value]="warehouse"
-        (onSelectionChange)="onPickupSelected(warehouse)"
+  <div
+    *ngIf="deliveryGroup.get('method')?.value === 'delivery'"
+    class="delivery-selection"
+  >
+    <mat-form-field appearance="fill" class="w-full">
+      <mat-label>Select a city</mat-label>
+      <input
+        matInput
+        [formControl]="cityControl"
+        placeholder="Enter city"
+        class="border border-gray-300 p-2 rounded"
+        required
+      />
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="w-full">
+      <mat-label>Select a NovaPoshta warehouse</mat-label>
+      <input
+        type="text"
+        matInput
+        [formControl]="queryControl"
+        [matAutocomplete]="auto"
+        class="border border-gray-300 p-2 rounded"
+        required
+      />
+      <mat-autocomplete
+        #auto="matAutocomplete"
+        [displayWith]="displayWarehouse"
       >
-        {{ warehouse.description }}
-      </mat-option>
-      <mat-option *ngIf="isLoading" disabled>Loading...</mat-option>
-    </mat-autocomplete>
-  </mat-form-field>
-  <p class="mt-4 mb-6">Delivery cost according to NovaPoshta rates</p>
-</div>
+        <mat-option
+          *ngFor="let warehouse of filteredWarehouses | async"
+          [value]="warehouse"
+          (onSelectionChange)="onPickupSelected(warehouse)"
+        >
+          {{ warehouse.description }}
+        </mat-option>
+        <mat-option *ngIf="isLoading" disabled>Loading...</mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+    <div
+      *ngIf="deliveryGroup.errors?.['warehouseRequired']"
+      class="text-red-600 text-xs"
+    >
+      Warehouse selection is required for delivery.
+    </div>
+    <p class="mt-4 mb-6">Delivery cost according to NovaPoshta rates</p>
+  </div>
+</form>
