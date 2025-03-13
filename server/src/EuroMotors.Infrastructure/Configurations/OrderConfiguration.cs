@@ -24,5 +24,13 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
             .WithOne()
             .HasForeignKey(oi => oi.OrderId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Property(o => o.DeliveryMethod)
+            .HasConversion<string>() 
+            .IsRequired(false);
+
+        builder.Property(o => o.DeliveryDetails)
+            .HasMaxLength(500) 
+            .IsRequired(false);
     }
 }

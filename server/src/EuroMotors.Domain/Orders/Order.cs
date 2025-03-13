@@ -19,6 +19,9 @@ public sealed class Order : Entity
     public IReadOnlyCollection<OrderItem> OrderItems => _orderItems?.ToList();
     public Guid? PaymentId { get; }
 
+    public DeliveryMethod? DeliveryMethod { get; private set; }
+    public string? DeliveryDetails { get; private set; }
+
     public static Order Create(User user)
     {
         var order = new Order
@@ -49,5 +52,14 @@ public sealed class Order : Entity
     {
         Status = status;
         UpdatedAtUtc = DateTime.UtcNow;
+    }
+
+    public void SetDelivery(DeliveryMethod deliveryMethod, string? deliveryDetails = null)
+    {
+        DeliveryMethod = deliveryMethod;
+        DeliveryDetails = deliveryDetails;
+        UpdatedAtUtc = DateTime.UtcNow;
+
+        RaiseDomainEvent(new OrderDeliveryMethodChangedDomainEvent(Id, deliveryMethod, deliveryDetails));
     }
 }

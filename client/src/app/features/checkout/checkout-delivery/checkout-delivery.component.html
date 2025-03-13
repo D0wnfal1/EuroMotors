@@ -1,1 +1,18 @@
-<p>checkout-delivery works!</p>
+<div class="delivery-options">
+  <h3>Select how to receive your order</h3>
+  <mat-radio-group>
+    <mat-radio-button value="delivery">Delivery by NovaPoshta</mat-radio-button>
+    <mat-radio-button value="pickup">Pickup</mat-radio-button>
+  </mat-radio-group>
+</div>
+
+<div *ngIf="deliveryMethod === 'delivery'" class="delivery-selection">
+  <mat-form-field appearance="fill">
+    <mat-label>Select a pick-up location</mat-label>
+    <mat-select (selectionChange)="onPickupSelected($event)">
+      <mat-option *ngFor="let warehouse of warehouses" [value]="warehouse.Ref">
+        {{ warehouse.Description }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250311224014_Create_Database")]
+    [Migration("20250312193906_Create_Database")]
     partial class Create_Database
     {
         /// <inheritdoc />
@@ -92,6 +92,15 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at_utc");
+
+                    b.Property<string>("DeliveryDetails")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("delivery_details");
+
+                    b.Property<string>("DeliveryMethod")
+                        .HasColumnType("text")
+                        .HasColumnName("delivery_method");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer")

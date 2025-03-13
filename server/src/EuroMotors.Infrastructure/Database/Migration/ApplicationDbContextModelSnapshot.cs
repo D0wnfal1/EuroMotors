@@ -90,6 +90,15 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at_utc");
 
+                    b.Property<string>("DeliveryDetails")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("delivery_details");
+
+                    b.Property<string>("DeliveryMethod")
+                        .HasColumnType("text")
+                        .HasColumnName("delivery_method");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer")
                         .HasColumnName("status");

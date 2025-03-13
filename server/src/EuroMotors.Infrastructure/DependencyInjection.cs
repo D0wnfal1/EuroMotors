@@ -4,6 +4,7 @@ using EuroMotors.Application.Abstractions.Authentication;
 using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.Abstractions.Clock;
 using EuroMotors.Application.Abstractions.Data;
+using EuroMotors.Application.Abstractions.Delivery;
 using EuroMotors.Application.Abstractions.Payments;
 using EuroMotors.Application.Carts;
 using EuroMotors.Domain.Abstractions;
@@ -18,12 +19,12 @@ using EuroMotors.Infrastructure.Authentication;
 using EuroMotors.Infrastructure.Authorization;
 using EuroMotors.Infrastructure.Caching;
 using EuroMotors.Infrastructure.Database;
+using EuroMotors.Infrastructure.Delivery;
 using EuroMotors.Infrastructure.Payments;
 using EuroMotors.Infrastructure.Repositories;
 using EuroMotors.Infrastructure.Time;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
@@ -45,6 +46,7 @@ public static class DependencyInjection
             .AddCaching(configuration)
             .AddHealthChecks(configuration)
             .AddPayment(configuration)
+            .AddDelivery(configuration)
             .AddAuthenticationInternal(configuration)
             .AddAuthorizationInternal();
 
@@ -131,6 +133,18 @@ public static class DependencyInjection
         services.Configure<PaymentOptions>(configuration.GetSection("Payment"));
 
         services.AddScoped<IPaymentService, PaymentService>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddDelivery(this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.Configure<DeliveryOptions>(configuration.GetSection("Delivery"));
+
+        services.AddHttpClient<IDeliveryService, DeliveryService>();
+
+        services.AddScoped<IDeliveryService, DeliveryService>();
 
         return services;
     }
