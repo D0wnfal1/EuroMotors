@@ -21,13 +21,11 @@ export class CartService {
       (sum, item) => sum + item.unitPrice * item.quantity,
       0
     );
-    const shipping = 0;
     const discount = 0;
     return {
       subtotal,
-      shipping,
       discount,
-      total: subtotal + shipping - discount,
+      total: subtotal - discount,
     };
   });
 

@@ -1,0 +1,59 @@
+import { Component, Input, inject } from '@angular/core';
+import { CartService } from '../../../core/services/cart.service';
+import { ShopService } from '../../../core/services/shop.service';
+import { Product } from '../../../shared/models/product';
+import { ProductImage } from '../../../shared/models/productImage';
+import { CurrencyPipe, NgFor, NgIf } from '@angular/common';
+
+@Component({
+  selector: 'app-checkout-review',
+  imports: [NgIf, NgFor, CurrencyPipe],
+  templateUrl: './checkout-review.component.html',
+  styleUrl: './checkout-review.component.scss',
+})
+export class CheckoutReviewComponent {
+  cartService = inject(CartService);
+  shopService = inject(ShopService);
+  products: Product[] = [];
+  productImages: { [productId: string]: ProductImage } = {};
+
+  ngOnInit() {
+    this.loadProducts();
+  }
+
+  loadProducts() {
+    const cartItems = this.cartService.cart()?.cartItems ?? [];
+    cartItems.forEach((item) => {
+      this.shopService.getProduct(item.productId).subscribe((product) => {
+        this.products.push(product);
+        this.loadProductImage(product.id);
+      });
+    });
+  }
+
+  loadProductImage(productId: string) {
+    this.shopService.getProductImages(productId).subscribe((images) => {
+      if (images.length > 0) {
+        this.productImages[productId] = images[0];
+      }
+    });
+  }
+
+  getProductImage(productId: string) {
+    return this.productImages[productId];
+  }
+
+  getProductName(productId: string) {
+    const product = this.products.find((p) => p.id === productId);
+    return product ? product.name : 'Product not found';
+  }
+
+  getProductPrice(productId: string) {
+    const product = this.products.find((p) => p.id === productId);
+    return product ? product.price : 0;
+  }
+
+  trackByProductId(index: number, item: any) {
+    return item.productId;
+  }
+}

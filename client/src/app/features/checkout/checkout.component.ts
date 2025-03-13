@@ -21,12 +21,15 @@ import {
   FormBuilder,
   Validators,
   ReactiveFormsModule,
+  FormControl,
 } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { firstValueFrom } from 'rxjs';
 import { CheckoutInformationComponent } from './checkout-information/checkout-information.component';
 import { CheckoutDeliveryComponent } from './checkout-delivery/checkout-delivery.component';
 import { RouterLink } from '@angular/router';
+import { CheckoutReviewComponent } from './checkout-review/checkout-review.component';
+import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-checkout',
@@ -41,6 +44,7 @@ import { RouterLink } from '@angular/router';
     CheckoutInformationComponent,
     CheckoutDeliveryComponent,
     RouterLink,
+    CheckoutReviewComponent,
   ],
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.scss'],
@@ -49,10 +53,12 @@ export class CheckoutComponent implements OnInit, OnChanges {
   cartService = inject(CartService);
   accountService = inject(AccountService);
   saveInformation = false;
-  @Input() form!: FormGroup; // To receive form from the parent
+  deliveryForm = new FormControl('', Validators.required);
+  @Input() form!: FormGroup;
   @Input() selectedCity: string = '';
+  cityControl = new FormControl();
 
-  // Статус завершения шагов
+  deliveryMethod: any = null;
   completionStatus = signal<{
     information: boolean;
     card: boolean;
@@ -93,6 +99,8 @@ export class CheckoutComponent implements OnInit, OnChanges {
           phoneNumber: user.phoneNumber || '',
           city: user.city || '',
         });
+
+        this.cityControl.setValue(user.city || '');
       }
     });
   }
@@ -110,9 +118,8 @@ export class CheckoutComponent implements OnInit, OnChanges {
         information: true,
       }));
     } else if (stepIndex === 1) {
-      // Переходимо до Shipping і передаємо місто
       const city = this.form.controls['city'].value;
-      this.form.controls['city'].setValue(city); // Це дозволить зберегти місто в Delivery
+      this.cityControl.setValue(city);
       this.completionStatus.update((status) => ({
         ...status,
         delivery: true,
@@ -126,7 +133,7 @@ export class CheckoutComponent implements OnInit, OnChanges {
   }
 
   onCityChange(city: string) {
-    this.selectedCity = city; // Обновляем город
+    this.selectedCity = city;
   }
 
   onSaveAddressCheckboxChange(event: any) {

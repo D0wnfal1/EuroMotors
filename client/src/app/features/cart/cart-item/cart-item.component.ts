@@ -16,9 +16,9 @@ import { ProductImage } from '../../../shared/models/productImage';
   styleUrls: ['./cart-item.component.scss'],
 })
 export class CartItemComponent implements OnInit {
-  @Input() item: CartItem | undefined; // Use @Input to bind the cart item from the parent component
-  product: Product | undefined; // Product data
-  productImage: ProductImage | undefined; // First product image
+  @Input() item: CartItem | undefined;
+  product: Product | undefined;
+  productImage: ProductImage | undefined;
 
   cartService = inject(CartService);
   shopService = inject(ShopService);
