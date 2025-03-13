@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, output } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 import { NgIf } from '@angular/common';
@@ -21,9 +21,11 @@ import { MatButtonModule } from '@angular/material/button';
 export class CheckoutInformationComponent {
   @Input() form!: FormGroup;
   @Input() saveInformation: boolean = false;
-  @Output() saveAddressChange = new EventEmitter<MatCheckboxChange>();
+  @Output() saveInformationChange = new EventEmitter<MatCheckboxChange>();
+  informationComplete = output<boolean>();
 
   onCheckboxChange(event: MatCheckboxChange) {
-    this.saveAddressChange.emit(event);
+    this.saveInformationChange.emit(event);
+    this.informationComplete.emit(true);
   }
 }

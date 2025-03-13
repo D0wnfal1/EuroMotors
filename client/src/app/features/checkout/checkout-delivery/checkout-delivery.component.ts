@@ -5,6 +5,7 @@ import {
   OnInit,
   Output,
   inject,
+  output,
 } from '@angular/core';
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';

@@ -1,0 +1,25 @@
+<form class="space-y-4">
+  <mat-radio-group
+    class="flex flex-col space-y-2"
+    [formControl]="paymentMethodControl"
+  >
+    <mat-radio-button
+      value="prepayment"
+      (change)="onPaymentMethodChange('prepayment')"
+      class="mat-radio-button"
+    >
+      <span class="text-lg font-medium">Prepayment</span>
+    </mat-radio-button>
+    <mat-radio-button
+      value="postpayment"
+      (change)="onPaymentMethodChange('postpayment')"
+      class="mat-radio-button"
+    >
+      <span class="text-lg font-medium">Afterpayment</span>
+    </mat-radio-button>
+  </mat-radio-group>
+
+  <div *ngIf="!isFormValid" class="text-red-500 text-sm mt-2">
+    Select a payment method.
+  </div>
+</form>

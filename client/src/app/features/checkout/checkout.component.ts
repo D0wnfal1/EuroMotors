@@ -7,89 +7,82 @@ import {
   signal,
   SimpleChanges,
 } from '@angular/core';
-import { OrderSummaryComponent } from '../../shared/components/order-summary/order-summary.component';
-import { MatStepperModule } from '@angular/material/stepper';
-import {
-  MatCheckboxChange,
-  MatCheckboxModule,
-} from '@angular/material/checkbox';
-import { AccountService } from '../../core/services/account.service';
-import { CartService } from '../../core/services/cart.service';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
   FormGroup,
   FormBuilder,
   Validators,
-  ReactiveFormsModule,
   FormControl,
 } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
 import { firstValueFrom } from 'rxjs';
-import { CheckoutInformationComponent } from './checkout-information/checkout-information.component';
+import { AccountService } from '../../core/services/account.service';
+import { CartService } from '../../core/services/cart.service';
+import { OrderSummaryComponent } from '../../shared/components/order-summary/order-summary.component';
 import { CheckoutDeliveryComponent } from './checkout-delivery/checkout-delivery.component';
-import { RouterLink } from '@angular/router';
+import { CheckoutInformationComponent } from './checkout-information/checkout-information.component';
+import { MatStepperModule } from '@angular/material/stepper';
 import { CheckoutReviewComponent } from './checkout-review/checkout-review.component';
-import { CurrencyPipe } from '@angular/common';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { CheckoutPaymentComponent } from './checkout-payment/checkout-payment.component';
 
 @Component({
   selector: 'app-checkout',
   standalone: true,
   imports: [
     OrderSummaryComponent,
-    MatStepperModule,
-    MatCheckboxModule,
-    MatProgressSpinnerModule,
-    MatInputModule,
-    ReactiveFormsModule,
-    CheckoutInformationComponent,
     CheckoutDeliveryComponent,
-    RouterLink,
+    CheckoutInformationComponent,
+    MatStepperModule,
     CheckoutReviewComponent,
+    MatProgressSpinner,
+    CheckoutPaymentComponent,
   ],
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.scss'],
 })
 export class CheckoutComponent implements OnInit, OnChanges {
+  isFormValid: boolean = false;
+  onFormValidityChanged(isValid: boolean) {
+    this.isFormValid = isValid;
+  }
   cartService = inject(CartService);
   accountService = inject(AccountService);
-  saveInformation = false;
-  deliveryForm = new FormControl('', Validators.required);
+
   @Input() form!: FormGroup;
   @Input() selectedCity: string = '';
-  cityControl = new FormControl();
 
+  saveInformation = false;
+  cityControl = new FormControl('');
   deliveryMethod: any = null;
-  completionStatus = signal<{
-    information: boolean;
-    card: boolean;
-    delivery: boolean;
-  }>({ information: false, card: false, delivery: false });
-
+  paymentMethodControl: FormControl = new FormControl('', Validators.required);
+  paymentMethod: any;
   constructor(private fb: FormBuilder) {
-    this.form = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
-      phoneNumber: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern(
-            '^\\+?[0-9]{1,4}?[-. ]?(\\(?\\d{1,3}?\\)?[-. ]?)?\\d{1,4}[-. ]?\\d{1,4}[-. ]?\\d{1,4}$'
-          ),
+    if (!this.form) {
+      this.form = this.fb.group({
+        email: ['', [Validators.required, Validators.email]],
+        firstName: ['', Validators.required],
+        lastName: ['', Validators.required],
+        phoneNumber: [
+          '',
+          [
+            Validators.required,
+            Validators.pattern(
+              '^\\+?[0-9]{1,4}?[-. ]?(\\(?\\d{1,3}?\\)?[-. ]?)?\\d{1,4}[-. ]?\\d{1,4}[-. ]?\\d{1,4}$'
+            ),
+          ],
         ],
-      ],
-      city: ['', [Validators.required]],
-      saveAsDefault: [false],
-    });
+        city: ['', Validators.required],
+        saveAsDefault: [false],
+      });
+    }
   }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['form'] && this.form) {
       this.selectedCity = this.form.get('city')?.value || '';
     }
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.accountService.getUserInfo().subscribe((user) => {
       if (user) {
         this.form.patchValue({
@@ -99,44 +92,46 @@ export class CheckoutComponent implements OnInit, OnChanges {
           phoneNumber: user.phoneNumber || '',
           city: user.city || '',
         });
-
         this.cityControl.setValue(user.city || '');
       }
     });
   }
 
-  async onStepChange(event: any) {
-    const stepIndex = event.selectedIndex;
+  async onStepChange(event: { selectedIndex: number }): Promise<void> {
+    const { selectedIndex } = event;
 
     if (this.saveInformation) {
       await firstValueFrom(this.accountService.updateUserInfo(this.form.value));
     }
 
-    if (stepIndex === 0 && this.form.valid) {
-      this.completionStatus.update((status) => ({
-        ...status,
-        information: true,
-      }));
-    } else if (stepIndex === 1) {
-      const city = this.form.controls['city'].value;
-      this.cityControl.setValue(city);
-      this.completionStatus.update((status) => ({
-        ...status,
-        delivery: true,
-      }));
-    } else if (stepIndex === 2) {
-      this.completionStatus.update((status) => ({
-        ...status,
-        card: true,
-      }));
+    switch (selectedIndex) {
+      case 0:
+        if (this.form.valid) {
+          this.updateCompletionStatus('information');
+        }
+        break;
+      case 1:
+        const city = this.form.get('city')?.value;
+        this.cityControl.setValue(city);
+        this.updateCompletionStatus('delivery');
+        break;
+      case 2:
+        this.updateCompletionStatus('payment');
+        break;
+      default:
+        break;
     }
   }
 
-  onCityChange(city: string) {
+  private updateCompletionStatus(
+    _step: 'information' | 'delivery' | 'payment'
+  ): void {}
+
+  onCityChange(city: string): void {
     this.selectedCity = city;
   }
 
-  onSaveAddressCheckboxChange(event: any) {
-    this.saveInformation = (event as MatCheckboxChange).checked;
+  onSaveInformationCheckboxChange(event: { checked: boolean }): void {
+    this.saveInformation = event.checked;
   }
 }
