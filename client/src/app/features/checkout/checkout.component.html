@@ -6,33 +6,46 @@
       class="bg-white border border-gray-200 shadow-sm"
     >
       <mat-step label="Information">
-        <app-checkout-information></app-checkout-information>
+        <app-checkout-information
+          (cityChange)="onCityChanged($event)"
+        ></app-checkout-information>
         <div class="flex justify-between mt-6">
           <button routerLink="/shop" mat-stroked-button class="btn">
             Continue shopping
           </button>
-          <button type="submit" matStepperNext class="btn">Next</button>
+          <button
+            type="submit"
+            matStepperNext
+            class="btn"
+            (click)="saveInformation()"
+            [disabled]="!isStepValid(0)"
+          >
+            Next
+          </button>
         </div>
       </mat-step>
 
       <mat-step label="Shipping">
-        <app-checkout-delivery></app-checkout-delivery>
+        <app-checkout-delivery [city]="selectedCity"></app-checkout-delivery>
         <div class="flex justify-between mt-6">
           <button matStepperPrevious mat-stroked-button class="btn">
             Back
           </button>
-          <button matStepperNext class="btn">Next</button>
+          <button [disabled]="!isStepValid(1)" matStepperNext class="btn">
+            Next
+          </button>
         </div>
       </mat-step>
 
       <mat-step label="Payment">
         <app-checkout-payment> </app-checkout-payment>
-
         <div class="flex justify-between mt-6">
           <button matStepperPrevious mat-stroked-button class="btn">
             Back
           </button>
-          <button matStepperNext class="btn">Next</button>
+          <button matStepperNext class="btn" [disabled]="!isStepValid(2)">
+            Next
+          </button>
         </div>
       </mat-step>
 

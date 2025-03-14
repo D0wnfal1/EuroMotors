@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -27,6 +27,7 @@ import { AccountService } from '../../../core/services/account.service';
 export class CheckoutInformationComponent implements OnInit {
   checkoutForm!: FormGroup;
   isFormFilled = false;
+  @Output() cityChange: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(
     private fb: FormBuilder,
@@ -66,21 +67,25 @@ export class CheckoutInformationComponent implements OnInit {
     this.checkoutForm.valueChanges.subscribe(() => {
       this.isFormFilled = this.checkoutForm.valid;
     });
+
+    this.checkoutForm.get('city')?.valueChanges.subscribe((city: string) => {
+      this.cityChange.emit(city);
+    });
+
+    this.checkoutForm
+      .get('saveAsDefault')
+      ?.valueChanges.subscribe((save: boolean) => {
+        if (save) {
+          this.onSubmit();
+        }
+      });
   }
 
   onSubmit(): void {
     if (this.checkoutForm.valid) {
       const formValues = this.checkoutForm.value;
-      this.accountService.updateUserInfo(formValues).subscribe({
-        next: () => {
-          console.log('Information updated successfully');
-        },
-        error: (error) => {
-          console.error('Error updating information', error);
-        },
-      });
+      this.accountService.updateUserInfo(formValues).subscribe({});
     } else {
-      console.log('Form is invalid');
     }
   }
 }

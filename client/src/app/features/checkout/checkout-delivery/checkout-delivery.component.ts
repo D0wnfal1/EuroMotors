@@ -1,4 +1,13 @@
-import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+  inject,
+} from '@angular/core';
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 import {
   AbstractControl,
@@ -53,10 +62,9 @@ function deliveryMethodValidator(
   templateUrl: './checkout-delivery.component.html',
   styleUrls: ['./checkout-delivery.component.scss'],
 })
-export class CheckoutDeliveryComponent implements OnInit {
+export class CheckoutDeliveryComponent implements OnInit, OnChanges {
   checkoutService = inject(CheckoutService);
-
-  // Инициализация формы в конструкторе
+  @Input() city: string = '';
   deliveryGroup: FormGroup;
 
   cityControl = new FormControl<string>('', Validators.required);
@@ -82,7 +90,6 @@ export class CheckoutDeliveryComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Проверка инициализации deliveryGroup и метода
     const methodControl = this.deliveryGroup.get('method');
     if (methodControl) {
       methodControl.valueChanges.subscribe((value: string | null) => {
@@ -96,7 +103,6 @@ export class CheckoutDeliveryComponent implements OnInit {
       });
     }
 
-    // Проверка на город и запрос
     combineLatest([
       this.cityControl.valueChanges,
       this.queryControl.valueChanges,
@@ -122,6 +128,16 @@ export class CheckoutDeliveryComponent implements OnInit {
       });
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['city'] && changes['city'].currentValue) {
+      this.cityControl.setValue(changes['city'].currentValue);
+      const query = this.queryControl.value ?? '';
+      setTimeout(() => {
+        this.loadWarehouses(changes['city'].currentValue, query);
+      }, 1000);
+    }
+  }
+
   onDeliveryMethodChange(method: string | null): void {
     if (method === 'delivery') {
       const city = this.cityControl.value ?? '';
@@ -143,7 +159,6 @@ export class CheckoutDeliveryComponent implements OnInit {
   }
 
   onPickupSelected(warehouse: Warehouse): void {
-    // Проверка на инициализацию warehouse
     const warehouseControl = this.deliveryGroup.get('warehouse');
     if (warehouseControl) {
       warehouseControl.setValue(warehouse);
