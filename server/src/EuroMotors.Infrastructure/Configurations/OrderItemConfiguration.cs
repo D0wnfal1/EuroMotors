@@ -25,8 +25,6 @@ internal sealed class OrderItemConfiguration : IEntityTypeConfiguration<OrderIte
         builder.Property(oi => oi.Price)
             .IsRequired();
 
-        builder.Ignore(oi => oi.Product);
-
         builder.HasOne<Order>()
             .WithMany(o => o.OrderItems)
             .HasForeignKey(oi => oi.OrderId)

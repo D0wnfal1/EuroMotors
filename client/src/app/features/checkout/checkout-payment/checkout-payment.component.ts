@@ -7,6 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatRadioModule } from '@angular/material/radio';
+import { PaymentMethod } from '../../../shared/models/order';
 
 @Component({
   selector: 'app-checkout-payment',
@@ -16,15 +17,15 @@ import { MatRadioModule } from '@angular/material/radio';
 })
 export class CheckoutPaymentComponent implements OnInit {
   paymentForm!: FormGroup;
-  isFormValid: boolean = true;
+  PaymentMethod = PaymentMethod;
 
   ngOnInit() {
+    // Можно задать значение по умолчанию, например, Prepaid
     this.paymentForm = new FormGroup({
-      paymentMethod: new FormControl('', Validators.required),
-    });
-
-    this.paymentForm.statusChanges.subscribe((status) => {
-      this.isFormValid = status === 'VALID';
+      paymentMethod: new FormControl(
+        PaymentMethod.Postpaid,
+        Validators.required
+      ),
     });
   }
 }

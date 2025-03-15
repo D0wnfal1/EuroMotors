@@ -20,8 +20,6 @@ public sealed class OrderItem : Entity
 
     public decimal Price { get; private set; }
 
-    public Product Product { get; private set; } = null!;
-
     public static OrderItem Create(Guid orderId, Guid productId, int quantity, decimal unitPrice)
     {
         return new OrderItem()

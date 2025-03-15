@@ -2,6 +2,6 @@
 
 public enum DeliveryMethod
 {
-    NovaPoshta,
-    Pickup
+    Pickup = 1,
+    Delivery = 2
 }

@@ -2,6 +2,6 @@
 
 public enum PaymentMethod
 {
-    Prepaid,  
-    Postpaid
+    Prepaid = 1,  
+    Postpaid = 2
 }

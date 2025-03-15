@@ -18,6 +18,9 @@ import { CartService } from '../../core/services/cart.service';
 import { OrderService } from '../../core/services/order.service';
 import { PaymentService } from '../../core/services/payment.service';
 import { NgIf } from '@angular/common';
+import { DeliveryMethod, PaymentMethod } from '../../shared/models/order';
+import { AccountService } from '../../core/services/account.service';
+import { User } from '../../shared/models/user';
 
 @Component({
   selector: 'app-checkout',
@@ -40,8 +43,10 @@ export class CheckoutComponent implements AfterViewInit {
   cartService = inject(CartService);
   orderService = inject(OrderService);
   paymentService = inject(PaymentService);
+  accountService = inject(AccountService);
   router = inject(Router);
 
+  currentUser: User | null = null;
   selectedCity: string = '';
   selectedDeliveryMethod: string = '';
   selectedWarehouseName: string = '';
@@ -58,6 +63,13 @@ export class CheckoutComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.cdRef.detectChanges();
+    this.accountService.getAuthState().subscribe((authState) => {
+      if (authState.isAuthenticated) {
+        this.accountService.getUserInfo().subscribe((user) => {
+          this.currentUser = user;
+        });
+      }
+    });
   }
 
   get checkoutForm(): FormGroup {
@@ -106,7 +118,48 @@ export class CheckoutComponent implements AfterViewInit {
       return;
     }
 
-    this.isProcessing = false;
-    this.router.navigateByUrl('/checkout/success');
+    const deliveryMethodValue =
+      this.selectedDeliveryMethod === 'delivery'
+        ? DeliveryMethod.Delivery
+        : DeliveryMethod.Pickup;
+
+    const shippingAddress =
+      this.selectedDeliveryMethod === 'delivery'
+        ? this.selectedWarehouseName
+        : null;
+
+    const paymentMethodValue = this.paymentForm.get('paymentMethod')?.value;
+
+    const orderData = {
+      CartId: cartId,
+      UserId: this.currentUser ? this.currentUser.id : null,
+      DeliveryMethod: deliveryMethodValue,
+      ShippingAddress: shippingAddress,
+      PaymentMethod: paymentMethodValue,
+    };
+
+    this.orderService.createOrder(orderData).subscribe((orderResponse) => {
+      console.log('Order Response:', orderResponse);
+      const orderId = orderResponse?.orderId;
+      if (orderId) {
+        if (paymentMethodValue === PaymentMethod.Prepaid) {
+          this.paymentService.createPayment(orderId).subscribe({
+            next: (paymentResponse) => {
+              this.isProcessing = false;
+              const { data, signature } = paymentResponse;
+              const paymentUrl = `https://www.liqpay.ua/api/3/checkout?data=${data}&signature=${signature}`;
+              window.location.href = paymentUrl;
+            },
+          });
+        } else {
+          this.isProcessing = false;
+          this.cartService.clearCart(cartId);
+          this.router.navigateByUrl('/checkout/success');
+        }
+      } else {
+        console.error('Order ID is missing');
+        this.isProcessing = false;
+      }
+    });
   }
 }
