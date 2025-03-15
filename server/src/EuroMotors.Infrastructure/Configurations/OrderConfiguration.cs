@@ -11,13 +11,14 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.HasKey(o => o.Id);
 
         builder.Property(c => c.UserId)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.Property(o => o.TotalPrice)
             .HasColumnType("decimal(18,2)")
             .IsRequired();
 
         builder.Property(o => o.Status)
+            .HasConversion<string>()
             .IsRequired();
 
         builder.HasMany(o => o.OrderItems)
@@ -27,10 +28,14 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
 
         builder.Property(o => o.DeliveryMethod)
             .HasConversion<string>() 
-            .IsRequired(false);
+            .IsRequired();
 
-        builder.Property(o => o.DeliveryDetails)
+        builder.Property(o => o.ShippingAddress)
             .HasMaxLength(500) 
             .IsRequired(false);
+
+        builder.Property(o => o.PaymentMethod)
+            .HasConversion<string>()
+            .IsRequired();
     }
 }

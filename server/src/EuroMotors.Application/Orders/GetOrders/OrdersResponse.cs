@@ -7,4 +7,7 @@ public sealed record OrdersResponse(
     Guid UserId,
     OrderStatus Status,
     decimal TotalPrice,
-    DateTime CreatedAtUtc);
+    DeliveryMethod DeliveryMethod,
+    string ShippingAddress,
+    DateTime CreatedAtUtc,
+    DateTime UpdatedAtUtc);

@@ -53,11 +53,13 @@ public class OrderController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateOrder(Guid userId, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateOrder([FromBody]CreateOrderRequest request, CancellationToken cancellationToken)
     {
-        var command = new CreateOrderCommand(userId);
-        Result result = await _sender.Send(command, cancellationToken);
-        return result.IsSuccess ? NoContent() : BadRequest();
+        var command = new CreateOrderCommand(request.CartId, request.UserId, request.DeliveryMethod, request.ShippingAddress, request.PaymentMethod); 
+
+        Result<Guid> result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess ? Ok(new { orderId = result.Value }) : BadRequest();
     }
 
     [HttpPatch]

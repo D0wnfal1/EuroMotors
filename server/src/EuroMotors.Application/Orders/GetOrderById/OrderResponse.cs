@@ -7,7 +7,10 @@ public sealed record OrderResponse(
     Guid UserId,
     OrderStatus Status,
     decimal TotalPrice,
-    DateTime CreatedAtUtc)
+    DeliveryMethod DeliveryMethod,
+    string ShippingAddress,
+    DateTime CreatedAtUtc,
+    DateTime UpdatedAtUtc)
 {
     public List<OrderItemResponse> OrderItems { get; } = [];
 }

@@ -5,7 +5,7 @@
       [linear]="true"
       class="bg-white border border-gray-200 shadow-sm"
     >
-      <mat-step label="Information">
+      <mat-step label="Information" [stepControl]="checkoutForm">
         <app-checkout-information
           (cityChange)="onCityChanged($event)"
         ></app-checkout-information>
@@ -18,45 +18,54 @@
             matStepperNext
             class="btn"
             (click)="saveInformation()"
-            [disabled]="!isStepValid(0)"
           >
             Next
           </button>
         </div>
       </mat-step>
 
-      <mat-step label="Shipping">
-        <app-checkout-delivery [city]="selectedCity"></app-checkout-delivery>
+      <mat-step label="Delivery" [stepControl]="deliveryGroup">
+        <app-checkout-delivery
+          [city]="selectedCity"
+          (warehouseSelected)="onWarehouseSelected($event)"
+          (deliveryMethodChanged)="onDeliveryMethodChanged($event)"
+        ></app-checkout-delivery>
         <div class="flex justify-between mt-6">
           <button matStepperPrevious mat-stroked-button class="btn">
             Back
           </button>
-          <button [disabled]="!isStepValid(1)" matStepperNext class="btn">
-            Next
-          </button>
+          <button matStepperNext class="btn">Next</button>
         </div>
       </mat-step>
 
-      <mat-step label="Payment">
-        <app-checkout-payment> </app-checkout-payment>
+      <mat-step label="Payment" [stepControl]="paymentForm">
+        <app-checkout-payment></app-checkout-payment>
         <div class="flex justify-between mt-6">
           <button matStepperPrevious mat-stroked-button class="btn">
             Back
           </button>
-          <button matStepperNext class="btn" [disabled]="!isStepValid(2)">
-            Next
-          </button>
+          <button matStepperNext class="btn">Next</button>
         </div>
       </mat-step>
 
       <mat-step label="Confirmation">
-        <app-checkout-review></app-checkout-review>
+        <app-checkout-review
+          [deliveryMethod]="deliveryGroup.get('method')?.value"
+          [paymentMethod]="paymentForm.get('paymentMethod')?.value"
+          [selectedWarehouse]="selectedWarehouseName"
+          >></app-checkout-review
+        >
         <div class="flex justify-between mt-6">
           <button matStepperPrevious mat-stroked-button class="btn">
             Back
           </button>
-          <button class="btn">
-            <mat-spinner diameter="20"></mat-spinner>
+          <button
+            class="btn"
+            (click)="completeCheckout()"
+            [disabled]="isProcessing"
+          >
+            <mat-spinner *ngIf="isProcessing" diameter="20"></mat-spinner>
+            <span *ngIf="!isProcessing">Confirm Order</span>
           </button>
         </div>
       </mat-step>

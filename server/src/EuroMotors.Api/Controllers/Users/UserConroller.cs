@@ -21,13 +21,13 @@ public class UsersController : ControllerBase
         _sender = sender;
     }
 
-    [Authorize]
     [HttpGet("email")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetByEmail(CancellationToken cancellationToken)
     {
-        if (User.Identity is not { IsAuthenticated: true })
+        if (User?.Identity is null || !User.Identity.IsAuthenticated)
         {
-            return NoContent();
+            return Ok(null);
         }
 
         string? email = User.FindFirst(ClaimTypes.Email)?.Value;

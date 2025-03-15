@@ -13,26 +13,30 @@ internal sealed class CreateOrderCommandHandler(
     IOrderRepository orderRepository,
     IProductRepository productRepository,
     CartService cartService,
-    IUnitOfWork unitOfWork) : ICommandHandler<CreateOrderCommand>
+    IUnitOfWork unitOfWork) : ICommandHandler<CreateOrderCommand, Guid>
 {
-    public async Task<Result> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
     {
         await using DbTransaction transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
 
-        User? User = await userRepository.GetByIdAsync(request.UserId, cancellationToken);
-
-        if (User is null)
+        User? user = null;
+        if (request.UserId is not null && request.UserId != Guid.Empty)
         {
-            return Result.Failure(UserErrors.NotFound(request.UserId));
+            user = await userRepository.GetByIdAsync(request.UserId.Value, cancellationToken);
+
+            if (user is null)
+            {
+                return Result.Failure<Guid>(UserErrors.NotFound(request.UserId.Value));
+            }
         }
 
-        var order = Order.Create(User);
+        var order = Order.Create(user?.Id, request.DeliveryMethod, request.ShippingAddress, request.PaymentMethod);
 
-        Cart cart = await cartService.GetAsync(User.Id, cancellationToken);
+        Cart cart = await cartService.GetAsync(request.CartId, cancellationToken);
 
         if (!cart.CartItems.Any())
         {
-            return Result.Failure(CartErrors.Empty);
+            return Result.Failure<Guid>(CartErrors.Empty);
         }
 
         foreach (CartItem cartItem in cart.CartItems)
@@ -44,7 +48,7 @@ internal sealed class CreateOrderCommandHandler(
 
             if (product is null)
             {
-                return Result.Failure(ProductErrors.NotFound(cartItem.ProductId));
+                return Result.Failure<Guid>(ProductErrors.NotFound(cartItem.ProductId));
             }
 
             order.AddItem(product, cartItem.Quantity, cartItem.UnitPrice);
@@ -56,8 +60,8 @@ internal sealed class CreateOrderCommandHandler(
 
         await transaction.CommitAsync(cancellationToken);
 
-        await cartService.ClearAsync(User.Id, cancellationToken);
+        await cartService.ClearAsync(request.CartId, cancellationToken);
 
-        return Result.Success();
+        return Result.Success(order.Id);
     }
 }

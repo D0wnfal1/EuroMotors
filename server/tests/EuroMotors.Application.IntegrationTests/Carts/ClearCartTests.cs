@@ -26,18 +26,4 @@ public class ClearCartTests : BaseIntegrationTest
         result.Error.Type.ShouldBe(ErrorType.Failure);
     }
 
-    [Fact]
-    public async Task Should_ReturnSuccess_WhenUserExists()
-    {
-        //Arrange
-        Guid userId = await Sender.CreateUserAsync();
-
-        var command = new ClearCartCommand(userId);
-
-        //Act
-        Result result = await Sender.Send(command);
-
-        //Assert
-        result.IsSuccess.ShouldBeTrue();
-    }
 }

@@ -11,11 +11,11 @@ export class PaymentService {
   baseUrl = environment.apiUrl;
   constructor(private http: HttpClient) {}
 
-  createPayment(paymentRequest: any): Observable<Payment> {
-    return this.http.post<Payment>(this.baseUrl, paymentRequest);
+  createPayment(paymentRequest: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/payments`, paymentRequest);
   }
 
   getPaymentById(id: string): Observable<Payment> {
-    return this.http.get<Payment>(this.baseUrl + id);
+    return this.http.get<Payment>(`${this.baseUrl}payments/${id}`);
   }
 }

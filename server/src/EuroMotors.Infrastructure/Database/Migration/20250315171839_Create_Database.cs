@@ -54,13 +54,15 @@ namespace EuroMotors.Infrastructure.Database.Migration
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    status = table.Column<int>(type: "integer", nullable: false),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    status = table.Column<string>(type: "text", nullable: false),
                     total_price = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    payment_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    delivery_method = table.Column<string>(type: "text", nullable: false),
+                    shipping_address = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    payment_method = table.Column<string>(type: "text", nullable: false),
                     created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    delivery_method = table.Column<string>(type: "text", nullable: true),
-                    delivery_details = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true)
+                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {

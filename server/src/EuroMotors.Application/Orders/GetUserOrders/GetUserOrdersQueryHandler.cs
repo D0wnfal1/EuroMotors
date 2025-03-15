@@ -18,15 +18,18 @@ internal sealed class GetUserOrdersQueryHandler(IDbConnectionFactory dbConnectio
 
         const string sql =
             $"""
-             SELECT
-                 id AS {nameof(OrdersResponse.Id)},
-                 user_id AS {nameof(OrdersResponse.UserId)},
-                 status AS {nameof(OrdersResponse.Status)},
-                 total_price AS {nameof(OrdersResponse.TotalPrice)},
-                 created_at_utc AS {nameof(OrdersResponse.CreatedAtUtc)}
-             FROM orders
-             WHERE user_id = @UserId
-             """;
+              SELECT
+                  id AS {nameof(OrdersResponse.Id)},
+                  user_id AS {nameof(OrdersResponse.UserId)},
+                  status AS {nameof(OrdersResponse.Status)},
+                  total_price AS {nameof(OrdersResponse.TotalPrice)},
+                  delivery_method AS {nameof(OrdersResponse.DeliveryMethod)},
+                  shipping_address AS {nameof(OrdersResponse.ShippingAddress)},
+                  created_at_utc AS {nameof(OrdersResponse.CreatedAtUtc)},
+                  updated_at_utc AS {nameof(OrdersResponse.UpdatedAtUtc)}
+              FROM orders
+              WHERE user_id = @UserId
+              """;
 
         List<OrdersResponse> orders = (await connection.QueryAsync<OrdersResponse>(sql, request)).AsList();
 

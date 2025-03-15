@@ -15,7 +15,7 @@ public class OrderTests
     {
         // Arrange
         var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
-        var order = Order.Create(user);
+        var order = Order.Create(user.Id, DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
 
         // Act
         OrderCreatedDomainEvent domainEvent = BaseTest.AssertDomainEventWasPublished<OrderCreatedDomainEvent>(order);
@@ -30,7 +30,7 @@ public class OrderTests
     {
         // Arrange
         var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
-        var order = Order.Create(user);
+        var order = Order.Create(user.Id, DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
         var product = Product.Create(ProductData.Name, ProductData.Description, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
             ProductData.Discount, ProductData.Stock, ProductData.IsAvailable);
 
@@ -46,7 +46,7 @@ public class OrderTests
     {
         // Arrange
         var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
-        var order = Order.Create(user);
+        var order = Order.Create(user.Id, DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
 
         // Act
         order.ChangeStatus(OrderStatus.Shipped);

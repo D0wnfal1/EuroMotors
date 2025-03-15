@@ -27,6 +27,7 @@ import { AccountService } from '../../../core/services/account.service';
 export class CheckoutInformationComponent implements OnInit {
   checkoutForm!: FormGroup;
   isFormFilled = false;
+  isAuthenticated = false;
   @Output() cityChange: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(
@@ -61,31 +62,30 @@ export class CheckoutInformationComponent implements OnInit {
           phoneNumber: user.phoneNumber,
           city: user.city,
         });
+        this.cityChange.emit(user.city);
       }
+    });
+
+    this.checkoutForm.get('city')?.valueChanges.subscribe((newCity: string) => {
+      this.cityChange.emit(newCity);
     });
 
     this.checkoutForm.valueChanges.subscribe(() => {
       this.isFormFilled = this.checkoutForm.valid;
     });
 
-    this.checkoutForm.get('city')?.valueChanges.subscribe((city: string) => {
-      this.cityChange.emit(city);
+    this.accountService.getAuthState().subscribe((authStatus) => {
+      this.isAuthenticated = authStatus.isAuthenticated;
     });
-
-    this.checkoutForm
-      .get('saveAsDefault')
-      ?.valueChanges.subscribe((save: boolean) => {
-        if (save) {
-          this.onSubmit();
-        }
-      });
   }
 
   onSubmit(): void {
     if (this.checkoutForm.valid) {
       const formValues = this.checkoutForm.value;
-      this.accountService.updateUserInfo(formValues).subscribe({});
-    } else {
+
+      if (formValues.saveAsDefault) {
+        this.accountService.updateUserInfo(formValues).subscribe();
+      }
     }
   }
 }

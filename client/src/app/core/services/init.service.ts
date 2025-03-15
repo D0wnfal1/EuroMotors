@@ -13,16 +13,16 @@ export class InitService {
   init() {
     return this.accountService.getAuthState().pipe(
       switchMap((auth) => {
-        if (auth.isAuthenticated) {
-          return forkJoin({
-            cart: this.cartService.getCart(
-              localStorage.getItem('cart_id') ?? ''
-            ),
-            user: this.accountService.getUserInfo(),
-          });
-        } else {
-          return of({ cart: null, user: null });
-        }
+        const cartId = localStorage.getItem('cart_id');
+        const cart$ = cartId
+          ? this.cartService.getCart(cartId)
+          : of(this.cartService.createCart());
+
+        const user$ = auth.isAuthenticated
+          ? this.accountService.getUserInfo()
+          : of(null);
+
+        return forkJoin({ cart: cart$, user: user$ });
       })
     );
   }

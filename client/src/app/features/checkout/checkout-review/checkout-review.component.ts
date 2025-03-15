@@ -1,9 +1,10 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, SimpleChanges, inject } from '@angular/core';
 import { CartService } from '../../../core/services/cart.service';
 import { ShopService } from '../../../core/services/shop.service';
 import { Product } from '../../../shared/models/product';
 import { ProductImage } from '../../../shared/models/productImage';
 import { CurrencyPipe, NgFor, NgIf } from '@angular/common';
+import { OrderService } from '../../../core/services/order.service';
 
 @Component({
   selector: 'app-checkout-review',
@@ -14,8 +15,13 @@ import { CurrencyPipe, NgFor, NgIf } from '@angular/common';
 export class CheckoutReviewComponent {
   cartService = inject(CartService);
   shopService = inject(ShopService);
+  orderService = inject(OrderService);
   products: Product[] = [];
   productImages: { [productId: string]: ProductImage } = {};
+
+  @Input() deliveryMethod!: string;
+  @Input() selectedWarehouse!: string;
+  @Input() paymentMethod!: string;
 
   ngOnInit() {
     this.loadProducts();

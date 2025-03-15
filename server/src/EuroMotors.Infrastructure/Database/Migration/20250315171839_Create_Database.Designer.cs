@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250312193906_Create_Database")]
+    [Migration("20250315171839_Create_Database")]
     partial class Create_Database
     {
         /// <inheritdoc />
@@ -21,7 +21,7 @@ namespace EuroMotors.Infrastructure.Database.Migration
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("public")
-                .HasAnnotation("ProductVersion", "9.0.2")
+                .HasAnnotation("ProductVersion", "9.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -93,17 +93,28 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at_utc");
 
-                    b.Property<string>("DeliveryDetails")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("delivery_details");
-
                     b.Property<string>("DeliveryMethod")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("delivery_method");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer")
+                    b.Property<Guid?>("PaymentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("payment_id");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("payment_method");
+
+                    b.Property<string>("ShippingAddress")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("shipping_address");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text")
                         .HasColumnName("status");
 
                     b.Property<decimal>("TotalPrice")
@@ -114,7 +125,7 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at_utc");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uuid")
                         .HasColumnName("user_id");
 

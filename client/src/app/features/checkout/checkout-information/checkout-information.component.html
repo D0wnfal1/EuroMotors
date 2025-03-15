@@ -116,7 +116,7 @@
     </p>
   </div>
 
-  <div class="mb-6 flex items-center">
+  <div class="mb-6 flex items-center" *ngIf="isAuthenticated">
     <mat-checkbox formControlName="saveAsDefault" class="text-sm text-gray-800">
       Save as default information
     </mat-checkbox>

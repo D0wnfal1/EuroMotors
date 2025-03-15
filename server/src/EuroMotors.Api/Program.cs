@@ -25,7 +25,6 @@ builder.Services.AddCors(options =>
         .AllowAnyMethod()
         .AllowCredentials()));
 
-
 WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())

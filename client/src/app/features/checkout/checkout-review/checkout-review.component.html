@@ -1,10 +1,27 @@
 <div class="mt-4 w-full">
   <h4 class="text-lg font-semibold">Billing and delivery information</h4>
   <dl>
-    <dt class="font-medium">Shipping address</dt>
-    <dd class="mt-1 text-gray-500"></dd>
-    <dt class="font-medium">Payment details</dt>
-    <dd class="mt-1 text-gray-500"></dd>
+    <dt class="font-medium">Delivery Method</dt>
+    <dd class="mt-1 text-gray-500">
+      {{ deliveryMethod }}
+    </dd>
+
+    <dt *ngIf="deliveryMethod === 'delivery'" class="font-medium mt-4">
+      Warehouse
+    </dt>
+    <dd *ngIf="deliveryMethod === 'delivery'" class="mt-1 text-gray-500">
+      {{ selectedWarehouse }}
+    </dd>
+
+    <dt *ngIf="deliveryMethod !== 'delivery'" class="font-medium mt-4">
+      Warehouse
+    </dt>
+    <dd *ngIf="deliveryMethod !== 'delivery'" class="mt-1 text-gray-500">
+      {{ deliveryMethod }}
+    </dd>
+
+    <dt class="font-medium mt-4">Payment details</dt>
+    <dd class="mt-1 text-gray-500">{{ paymentMethod }}</dd>
   </dl>
 </div>
 

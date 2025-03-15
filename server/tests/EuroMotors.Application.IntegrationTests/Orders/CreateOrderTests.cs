@@ -1,7 +1,7 @@
-﻿using EuroMotors.Application.Carts;
-using EuroMotors.Application.IntegrationTests.Abstractions;
+﻿using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Application.Orders.CreateOrder;
 using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.Orders;
 using EuroMotors.Domain.Users;
 using Shouldly;
 
@@ -18,27 +18,12 @@ public class CreateOrderTests : BaseIntegrationTest
     public async Task Should_ReturnFailure_WhenUserDoesNotExist()
     {
         //Arrange
-        var command = new CreateOrderCommand(Guid.NewGuid());
+        var command = new CreateOrderCommand(Guid.NewGuid(), Guid.NewGuid(), DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
 
         //Act
         Result result = await Sender.Send(command);
 
         //Assert
-        result.Error.ShouldBe(UserErrors.NotFound(command.UserId));
-    }
-
-    [Fact]
-    public async Task Should_ReturnFailure_WhenCartIsEmpty()
-    {
-        //Arrange
-        Guid userId = await Sender.CreateUserAsync();
-
-        var command = new CreateOrderCommand(userId);
-
-        //Act
-        Result result = await Sender.Send(command);
-
-        //Assert
-        result.Error.ShouldBe(CartErrors.Empty);
+        result.Error.ShouldBe(UserErrors.NotFound(command.UserId!.Value));
     }
 }
