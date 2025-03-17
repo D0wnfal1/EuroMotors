@@ -25,6 +25,7 @@ internal sealed class GetUserOrdersQueryHandler(IDbConnectionFactory dbConnectio
                   total_price AS {nameof(OrdersResponse.TotalPrice)},
                   delivery_method AS {nameof(OrdersResponse.DeliveryMethod)},
                   shipping_address AS {nameof(OrdersResponse.ShippingAddress)},
+                  payment_method AS {nameof(OrdersResponse.PaymentMethod)},
                   created_at_utc AS {nameof(OrdersResponse.CreatedAtUtc)},
                   updated_at_utc AS {nameof(OrdersResponse.UpdatedAtUtc)}
               FROM orders

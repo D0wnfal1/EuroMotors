@@ -1,38 +1,78 @@
-<section class="bg-white py-16">
-  <div class="mx-auto max-w-2xl px-4">
-    <h2 class="font-semibold text-2xl mb-2">Thanks for your fake order!</h2>
-    <p class="text-gray-500 mb-8">
-      Your order <span class="font-medium">#42</span>
-      will never be processed as this is a fake shop. we will not notify you
-      once your order has not shipped.
-    </p>
-    <div
-      class="space-y-2 rounded-lg border border-gray-100 bg-gray-50 p-6 mb-8"
-    >
-      <dl class="flex items-center justify-between gap-4">
-        <dt class="font-normal text-gray-500">Date</dt>
-        <dd class="font-medium text-gray-900 text-end">15 Apr 2025</dd>
-      </dl>
-      <dl class="flex items-center justify-between gap-4">
-        <dt class="font-normal text-gray-500">Payment method</dt>
-        <dd class="font-medium text-gray-900 text-end">PostPayment</dd>
-      </dl>
-      <dl class="flex items-center justify-between gap-4">
-        <dt class="font-normal text-gray-500">Delivery</dt>
-        <dd class="font-medium text-gray-900 text-end">NovaPoshta</dd>
-      </dl>
-      <dl class="flex items-center justify-between gap-4">
-        <dt class="font-normal text-gray-500">Address</dt>
-        <dd class="font-medium text-gray-900 text-end">Address goes here</dd>
-      </dl>
-      <dl class="flex items-center justify-between gap-4">
-        <dt class="font-normal text-gray-500">Amount</dt>
-        <dd class="font-medium text-gray-900 text-end">$100</dd>
-      </dl>
-    </div>
-    <div class="flex items-center space-x-4">
-      <button mat-flat-button>View your order</button>
-      <button routerLink="/shop" mat-stroked-button>Continue shopping</button>
-    </div>
+<div class="checkout-success container mx-auto p-4">
+  <h1 class="text-2xl font-bold mb-4">Thank you for your order!</h1>
+
+  <div *ngIf="isLoading" class="flex justify-center my-4">
+    <mat-spinner></mat-spinner>
   </div>
-</section>
+
+  <div *ngIf="error && !isLoading" class="my-4">
+    <p class="text-red-500">{{ error }}</p>
+  </div>
+
+  <div *ngIf="order && !isLoading" class="bg-white shadow rounded p-4">
+    <h2 class="text-xl font-semibold mb-2">Order Details</h2>
+    <p><strong>Order Number:</strong> {{ order.id }}</p>
+    <p><strong>User:</strong> {{ order.userId || "Guest" }}</p>
+    <p><strong>Total Price:</strong> {{ order.totalPrice | currency }}</p>
+    <p><strong>Payment ID:</strong> {{ order.paymentId }}</p>
+    <p>
+      <strong>Delivery Method:</strong>
+      {{ order.deliveryMethod === 1 ? "Pickup" : "Delivery" }}
+    </p>
+    <p><strong>Shipping Address:</strong> {{ order.shippingAddress }}</p>
+    <p>
+      <strong>Payment Method:</strong>
+      {{ order.paymentMethod === 1 ? "Prepaid" : "Cash on Delivery" }}
+    </p>
+    <p><strong>Created:</strong> {{ order.createdAtUtc | date : "short" }}</p>
+    <p><strong>Updated:</strong> {{ order.updatedAtUtc | date : "short" }}</p>
+
+    <h3 class="text-lg font-semibold mt-4">Order Items</h3>
+    <table class="min-w-full divide-y divide-gray-200 mt-2">
+      <thead class="bg-gray-50">
+        <tr>
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Product Code
+          </th>
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Quantity
+          </th>
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Unit Price
+          </th>
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Total Price
+          </th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let item of order.orderItems">
+          <td class="px-6 py-4 whitespace-nowrap">{{ item.productId }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ item.quantity }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            {{ item.unitPrice | currency }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            {{ item.price | currency }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <button
+    mat-raised-button
+    routerLink="/"
+    class="mt-4 px-6 py-3 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+  >
+    Go to Home
+  </button>
+</div>

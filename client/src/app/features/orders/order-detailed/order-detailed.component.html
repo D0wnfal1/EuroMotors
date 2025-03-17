@@ -1,0 +1,79 @@
+@if (order) {
+<div class="container mx-auto p-6">
+  <mat-card class="bg-white shadow-md rounded-lg p-6">
+    <h2 class="text-2xl font-semibold mb-4">Order Details</h2>
+
+    <div class="flex justify-between mb-4">
+      <div class="w-1/2 pr-4">
+        <div class="mb-2 text-lg font-medium">Order ID</div>
+        <div class="text-sm text-gray-600">{{ order.id }}</div>
+      </div>
+      <div class="w-1/2 pl-4">
+        <div class="mb-2 text-lg font-medium">Status</div>
+        <div class="text-sm text-gray-600">
+          {{ order.status | status }}
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-between mb-4">
+      <div class="w-1/2 pr-4">
+        <div class="mb-2 text-lg font-medium">Total Price</div>
+        <div class="text-sm text-gray-600">
+          {{ order.totalPrice | currency }}
+        </div>
+      </div>
+      <div class="w-1/2 pl-4">
+        <div class="mb-2 text-lg font-medium">Payment Method</div>
+        <div class="text-sm text-gray-600">
+          {{ order.paymentMethod === 1 ? "Prepaid" : "Postpaid" }}
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <div class="mb-2 text-lg font-medium">Shipping Address</div>
+      <div class="text-sm text-gray-600">{{ order.shippingAddress }}</div>
+    </div>
+
+    <div class="mb-4">
+      <div class="mb-2 text-lg font-medium">Delivery Method</div>
+      <div class="text-sm text-gray-600">
+        {{ order.deliveryMethod === 1 ? "Pickup" : "Delivery" }}
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <div class="mb-2 text-lg font-medium">Order Items</div>
+      <div *ngIf="order.orderItems.length === 0" class="text-sm text-gray-600">
+        No items in this order.
+      </div>
+      <div
+        *ngFor="let item of order?.orderItems"
+        class="flex justify-between mb-2"
+      >
+        <div class="w-1/2">
+          <div class="text-sm text-gray-600">{{ item.productId }}</div>
+        </div>
+        <div class="w-1/4">
+          <div class="text-sm text-gray-600">Quantity: {{ item.quantity }}</div>
+        </div>
+        <div class="w-1/4">
+          <div class="text-sm text-gray-600">{{ item.price | currency }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-end mt-6">
+      <button
+        mat-raised-button
+        (click)="onReturnClick()"
+        class="mt-4 px-6 py-3 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+      >
+        Back to Orders
+      </button>
+    </div>
+  </mat-card>
+</div>
+
+}

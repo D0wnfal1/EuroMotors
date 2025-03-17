@@ -9,6 +9,7 @@ public sealed record OrderResponse(
     decimal TotalPrice,
     DeliveryMethod DeliveryMethod,
     string ShippingAddress,
+    PaymentMethod PaymentMethod,
     DateTime CreatedAtUtc,
     DateTime UpdatedAtUtc)
 {

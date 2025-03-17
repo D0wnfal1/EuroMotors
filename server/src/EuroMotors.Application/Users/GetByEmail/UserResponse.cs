@@ -13,4 +13,6 @@ public sealed record UserResponse
     public string? PhoneNumber { get; init; }
 
     public string? City { get; init; }
+
+    public List<string> Roles { get; init; }
 }

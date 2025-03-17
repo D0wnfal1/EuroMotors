@@ -4,9 +4,11 @@ using EuroMotors.Application.Orders.DeleteOrder;
 using EuroMotors.Application.Orders.GetOrderById;
 using EuroMotors.Application.Orders.GetOrders;
 using EuroMotors.Application.Orders.GetUserOrders;
+using EuroMotors.Application.Products.SearchProducts;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Orders;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EuroMotors.Api.Controllers.Orders;
@@ -32,10 +34,10 @@ public class OrderController : ControllerBase
         return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
 
-    [HttpGet("{id}/user")]
-    public async Task<IActionResult> GetUserOrders(Guid id, CancellationToken cancellationToken)
+    [HttpGet("{userId}/user")]
+    public async Task<IActionResult> GetUserOrders(Guid userId, CancellationToken cancellationToken)
     {
-        var query = new GetUserOrdersQuery(id);
+        var query = new GetUserOrdersQuery(userId);
 
         Result<IReadOnlyCollection<OrdersResponse>> result = await _sender.Send(query, cancellationToken);
 
@@ -43,19 +45,24 @@ public class OrderController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetOrders(CancellationToken cancellationToken)
+    [Authorize(Roles = Roles.Admin)]
+    public async Task<IActionResult> GetOrders(
+        CancellationToken cancellationToken,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] OrderStatus? status = null)
     {
-        var query = new GetOrdersQuery();
+        var query = new GetOrdersQuery(pageNumber, pageSize, status);
 
-        Result<IReadOnlyCollection<OrdersResponse>> result = await _sender.Send(query, cancellationToken);
+        Result<Pagination<OrdersResponse>> result = await _sender.Send(query, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateOrder([FromBody]CreateOrderRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request, CancellationToken cancellationToken)
     {
-        var command = new CreateOrderCommand(request.CartId, request.UserId, request.DeliveryMethod, request.ShippingAddress, request.PaymentMethod); 
+        var command = new CreateOrderCommand(request.CartId, request.UserId, request.DeliveryMethod, request.ShippingAddress, request.PaymentMethod);
 
         Result<Guid> result = await _sender.Send(command, cancellationToken);
 

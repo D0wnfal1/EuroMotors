@@ -15,4 +15,5 @@ public class PaymentCallbackController(IPaymentService paymentService) : Control
 
         return result.IsFailure ? BadRequest(result.Error) : Ok(result.IsSuccess);
     }
+
 }

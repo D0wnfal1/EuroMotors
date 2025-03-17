@@ -29,8 +29,7 @@ internal sealed class PaymentService(
             currency = "UAH",
             description = $"Payment for order {payment.OrderId}",
             order_id = payment.Id.ToString(),
-            result_url = _options.ResultUrl,
-            server_url = _options.CallbackUrl,
+            result_url = _options.ResultUrl + $"/{payment.OrderId}",
         };
 
         string jsonData = JsonConvert.SerializeObject(data);

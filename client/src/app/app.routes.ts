@@ -5,12 +5,8 @@ import { ProductDetailsComponent } from './features/shop/product-details/product
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 import { ServerErrorComponent } from './shared/components/server-error/server-error.component';
 import { CartComponent } from './features/cart/cart.component';
-import { CheckoutComponent } from './features/checkout/checkout.component';
-import { LoginComponent } from './features/account/login/login.component';
-import { RegisterComponent } from './features/account/register/register.component';
 import { authGuard } from './core/guards/auth.guard';
-import { emptyCartGuard } from './core/guards/epmty-cart.guard';
-import { CheckoutSuccessComponent } from './features/checkout/checkout-success/checkout-success.component';
+import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -19,17 +15,26 @@ export const routes: Routes = [
   { path: 'cart', component: CartComponent },
   {
     path: 'checkout',
-    component: CheckoutComponent,
-    // canActivate: [authGuard, emptyCartGuard],
-    canActivate: [emptyCartGuard],
+    loadChildren: () =>
+      import('./features/checkout/routes').then((r) => r.checkoutRourtes),
   },
   {
-    path: 'checkout/success',
-    component: CheckoutSuccessComponent,
+    path: 'orders',
+    loadChildren: () =>
+      import('./features/orders/routes').then((r) => r.orderRourtes),
   },
-  { path: 'account/login', component: LoginComponent },
-  { path: 'account/register', component: RegisterComponent },
+  {
+    path: 'account',
+    loadChildren: () =>
+      import('./features/account/routes').then((r) => r.accountRourtes),
+  },
   { path: 'not-found', component: NotFoundComponent },
+  {
+    path: 'admin',
+    loadComponent: () =>
+      import('./features/admin/admin.component').then((c) => c.AdminComponent),
+    canActivate: [authGuard, adminGuard],
+  },
   { path: 'server-error', component: ServerErrorComponent },
   { path: '**', redirectTo: 'not-found', pathMatch: 'full' },
 ];

@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../../shared/models/user';
@@ -13,6 +13,10 @@ export class AccountService {
   private http = inject(HttpClient);
   private cookieService = inject(CookieService);
   currentUser = signal<User | null>(null);
+  isAdmin = computed(() => {
+    const roles = this.currentUser()?.roles;
+    return Array.isArray(roles) ? roles.includes('Admin') : roles === 'Admin';
+  });
 
   login(values: any) {
     return this.http

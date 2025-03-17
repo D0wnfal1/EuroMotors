@@ -139,7 +139,6 @@ export class CheckoutComponent implements AfterViewInit {
     };
 
     this.orderService.createOrder(orderData).subscribe((orderResponse) => {
-      console.log('Order Response:', orderResponse);
       const orderId = orderResponse?.orderId;
       if (orderId) {
         if (paymentMethodValue === PaymentMethod.Prepaid) {
@@ -154,7 +153,7 @@ export class CheckoutComponent implements AfterViewInit {
         } else {
           this.isProcessing = false;
           this.cartService.clearCart(cartId);
-          this.router.navigateByUrl('/checkout/success');
+          this.router.navigateByUrl(`/checkout/success/${orderId}`);
         }
       } else {
         console.error('Order ID is missing');

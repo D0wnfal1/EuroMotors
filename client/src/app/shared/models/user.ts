@@ -6,4 +6,5 @@ export type User = {
   paswword: string;
   phoneNumber?: string;
   city?: string;
+  roles: string | string[];
 };

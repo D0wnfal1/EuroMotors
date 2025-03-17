@@ -1,6 +1,7 @@
 export type Order = {
   id: string;
   userId?: string;
+  status: OrderStatus;
   totalPrice: number;
   orderItems: OrderItem[];
   paymentId: string;
@@ -18,6 +19,15 @@ export type OrderItem = {
   unitPrice: number;
   price: number;
 };
+
+export enum OrderStatus {
+  Pending = 1,
+  Paid = 2,
+  Shipped = 3,
+  Completed = 4,
+  Canceled = 5,
+  Refunded = 6,
+}
 
 export enum DeliveryMethod {
   Pickup = 1,

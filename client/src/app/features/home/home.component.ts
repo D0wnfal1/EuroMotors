@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, inject } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -8,12 +9,12 @@ import { Component, OnInit, inject } from '@angular/core';
   styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit {
-  baseUrl = 'https://localhost:5001/api';
+  baseUrl = environment.apiUrl;
   private http = inject(HttpClient);
   categories: any[] = [];
 
   ngOnInit(): void {
-    this.http.get<any>(`${this.baseUrl}/categories`).subscribe({
+    this.http.get<any>(`${this.baseUrl}categories`).subscribe({
       next: (response) => (this.categories = response),
       error: (error) => console.error(error),
       complete: () => {

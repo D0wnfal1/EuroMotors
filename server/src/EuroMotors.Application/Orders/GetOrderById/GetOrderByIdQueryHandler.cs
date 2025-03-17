@@ -23,6 +23,7 @@ internal sealed class GetOrderByIdQueryHandler(IDbConnectionFactory dbConnection
                  o.total_price AS {nameof(OrderResponse.TotalPrice)},
                  o.delivery_method AS {nameof(OrderResponse.DeliveryMethod)},
                  o.shipping_address AS {nameof(OrderResponse.ShippingAddress)},
+                 o.payment_method AS {nameof(OrderResponse.PaymentMethod)},
                  o.created_at_utc AS {nameof(OrderResponse.CreatedAtUtc)},
                  o.updated_at_utc AS {nameof(OrderResponse.UpdatedAtUtc)},
                  oi.id AS {nameof(OrderItemResponse.OrderItemId)},

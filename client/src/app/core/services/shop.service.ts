@@ -6,12 +6,13 @@ import { Product } from '../../shared/models/product';
 import { ProductImage } from '../../shared/models/productImage';
 import { Category } from '../../shared/models/category';
 import { CarModel } from '../../shared/models/carModel';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ShopService {
-  baseUrl = 'https://localhost:5001/api/';
+  baseUrl = environment.apiUrl;
   private http = inject(HttpClient);
   categories: Category[] = [];
   carModels: CarModel[] = [];
