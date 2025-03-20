@@ -24,13 +24,20 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetProducts(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetProducts(
+        [FromQuery] List<Guid>? categoryIds,
+        [FromQuery] List<Guid>? carModelIds,
+        [FromQuery] string? sortOrder,
+        [FromQuery] string? searchTerm,
+        CancellationToken cancellationToken,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10)
     {
-        var query = new GetProductsQuery();
+        var query = new GetProductsQuery(categoryIds, carModelIds, sortOrder, searchTerm, pageNumber, pageSize);
 
-        Result<IReadOnlyCollection<ProductResponse>> result = await _sender.Send(query, cancellationToken);
+        Result<Pagination<ProductResponse>> result = await _sender.Send(query, cancellationToken);
 
-        return result.IsSuccess ? Ok(result.Value) : NotFound();
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 
     [HttpGet("{id}")]
@@ -41,23 +48,6 @@ public class ProductController : ControllerBase
         Result<ProductResponse> result = await _sender.Send(query, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : NotFound();
-    }
-
-    [HttpGet("search")]
-    public async Task<IActionResult> SearchProducts(
-        [FromQuery] List<Guid>? categoryIds,
-        [FromQuery] List<Guid>? carModelIds,
-        [FromQuery] string? sortOrder,
-        [FromQuery] string? searchTerm,
-        CancellationToken cancellationToken,
-        [FromQuery] int pageNumber = 1,
-        [FromQuery] int pageSize = 10)
-    {
-        var query = new SearchProductsQuery(categoryIds, carModelIds, sortOrder, searchTerm, pageNumber, pageSize);
-
-        Result<Pagination<ProductResponse>> result = await _sender.Send(query, cancellationToken);
-
-        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 
     [HttpPost]

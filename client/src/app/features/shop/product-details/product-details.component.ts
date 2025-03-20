@@ -1,5 +1,4 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ShopService } from '../../../core/services/shop.service';
 import { ActivatedRoute } from '@angular/router';
 import { Product } from '../../../shared/models/product';
 import { CommonModule, CurrencyPipe } from '@angular/common';
@@ -11,6 +10,7 @@ import { MatDivider } from '@angular/material/divider';
 import { ProductImage } from '../../../shared/models/productImage';
 import { CartService } from '../../../core/services/cart.service';
 import { FormsModule } from '@angular/forms';
+import { ProductService } from '../../../core/services/product.service';
 
 @Component({
   selector: 'app-product-details',
@@ -30,7 +30,7 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './product-details.component.scss',
 })
 export class ProductDetailsComponent implements OnInit {
-  private shopService = inject(ShopService);
+  private productService = inject(ProductService);
   private activatedRoute = inject(ActivatedRoute);
   private cartService = inject(CartService);
   product?: Product;
@@ -63,10 +63,10 @@ export class ProductDetailsComponent implements OnInit {
     const id = this.activatedRoute.snapshot.paramMap.get('id');
     if (!id) return;
 
-    this.shopService.getProduct(id).subscribe({
+    this.productService.getProductById(id).subscribe({
       next: (product) => {
         this.product = product;
-        this.shopService.getProductImages(id).subscribe({
+        this.productService.getProductImages(id).subscribe({
           next: (images) => {
             this.productImages = images;
             if (this.productImages.length) {

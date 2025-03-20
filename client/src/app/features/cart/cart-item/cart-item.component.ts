@@ -1,13 +1,13 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { CartItem } from '../../../shared/models/cart';
 import { CartService } from '../../../core/services/cart.service';
-import { ShopService } from '../../../core/services/shop.service';
 import { RouterLink } from '@angular/router';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { CurrencyPipe, NgIf } from '@angular/common';
 import { Product } from '../../../shared/models/product';
 import { ProductImage } from '../../../shared/models/productImage';
+import { ProductService } from '../../../core/services/product.service';
 
 @Component({
   selector: 'app-cart-item',
@@ -21,19 +21,21 @@ export class CartItemComponent implements OnInit {
   productImage: ProductImage | undefined;
 
   cartService = inject(CartService);
-  shopService = inject(ShopService);
+  productService = inject(ProductService);
 
   ngOnInit() {
     if (this.item?.productId) {
-      this.shopService.getProduct(this.item.productId).subscribe((product) => {
-        this.product = product;
-        this.getProductImage(product.id);
-      });
+      this.productService
+        .getProductById(this.item.productId)
+        .subscribe((product) => {
+          this.product = product;
+          this.getProductImage(product.id);
+        });
     }
   }
 
   getProductImage(productId: string) {
-    this.shopService.getProductImages(productId).subscribe((images) => {
+    this.productService.getProductImages(productId).subscribe((images) => {
       if (images.length > 0) {
         this.productImage = images[0];
       }

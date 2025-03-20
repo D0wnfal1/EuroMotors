@@ -39,8 +39,7 @@ public sealed class Product : Entity
         Guid carModelId,
         decimal price,
         decimal discount,
-        int stock,
-        bool isAvailable)
+        int stock)
     {
         var product = new Product
         {
@@ -77,6 +76,8 @@ public sealed class Product : Entity
     public Result UpdateStock(int stock)
     {
         Stock = stock;
+
+        IsAvailable = stock > 0;
 
         return Result.Success();
     }

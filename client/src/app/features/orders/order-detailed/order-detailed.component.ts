@@ -20,17 +20,16 @@ export class OrderDetailedComponent implements OnInit {
   private accountService = inject(AccountService);
   order?: Order;
   private router = inject(Router);
-  buttonText = this.accountService.isAdmin()
-    ? 'Return to admin'
-    : 'Return to orders';
+  buttonText: string | undefined;
 
   ngOnInit(): void {
     this.loadOrder();
+    this.updateButtonText();
   }
 
   onReturnClick() {
     this.accountService.isAdmin()
-      ? this.router.navigateByUrl('/admin')
+      ? this.router.navigateByUrl('/admin/orders')
       : this.router.navigateByUrl('/orders');
   }
 
@@ -40,5 +39,11 @@ export class OrderDetailedComponent implements OnInit {
     this.orderService.getOrderById(id).subscribe({
       next: (order) => (this.order = order),
     });
+  }
+
+  updateButtonText() {
+    this.buttonText = this.accountService.isAdmin()
+      ? 'Return to admin'
+      : 'Return to orders';
   }
 }

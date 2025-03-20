@@ -1,10 +1,10 @@
 import { Component, Input, SimpleChanges, inject } from '@angular/core';
 import { CartService } from '../../../core/services/cart.service';
-import { ShopService } from '../../../core/services/shop.service';
 import { Product } from '../../../shared/models/product';
 import { ProductImage } from '../../../shared/models/productImage';
 import { CurrencyPipe, NgFor, NgIf } from '@angular/common';
 import { OrderService } from '../../../core/services/order.service';
+import { ProductService } from '../../../core/services/product.service';
 
 @Component({
   selector: 'app-checkout-review',
@@ -14,7 +14,7 @@ import { OrderService } from '../../../core/services/order.service';
 })
 export class CheckoutReviewComponent {
   cartService = inject(CartService);
-  shopService = inject(ShopService);
+  productService = inject(ProductService);
   orderService = inject(OrderService);
   products: Product[] = [];
   productImages: { [productId: string]: ProductImage } = {};
@@ -30,15 +30,17 @@ export class CheckoutReviewComponent {
   loadProducts() {
     const cartItems = this.cartService.cart()?.cartItems ?? [];
     cartItems.forEach((item) => {
-      this.shopService.getProduct(item.productId).subscribe((product) => {
-        this.products.push(product);
-        this.loadProductImage(product.id);
-      });
+      this.productService
+        .getProductById(item.productId)
+        .subscribe((product) => {
+          this.products.push(product);
+          this.loadProductImage(product.id);
+        });
     });
   }
 
   loadProductImage(productId: string) {
-    this.shopService.getProductImages(productId).subscribe((images) => {
+    this.productService.getProductImages(productId).subscribe((images) => {
       if (images.length > 0) {
         this.productImages[productId] = images[0];
       }

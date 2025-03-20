@@ -1,0 +1,73 @@
+<app-product-list
+  [products]="products"
+  [shopParams]="shopParams"
+  [pageSizeOptions]="pageSizeOptions"
+  [sortOptions]="sortOptions"
+  (pageChanged)="handlePageEvent($event)"
+  (searchChanged)="onSearchChange()"
+  (sortChanged)="onSortChange($event)"
+>
+  <table class="w-full mt-4 border-collapse border border-gray-300">
+    <thead>
+      <tr class="bg-gray-100">
+        <th class="border p-2 text-center">Name</th>
+        <th class="border p-2 text-center">Category</th>
+        <th class="border p-2 text-center">CarModel</th>
+        <th class="border p-2 text-center">VendorCode</th>
+        <th class="border p-2 text-center">Price</th>
+        <th class="border p-2 text-center">Discount</th>
+        <th class="border p-2 text-center">Stock</th>
+        <th class="border p-2 text-center">IsAvailable</th>
+        <th class="border p-2 text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let product of products?.data">
+        <td class="text-center">{{ product.name }}</td>
+        <td class="text-center">{{ getCategoryName(product.categoryId) }}</td>
+        <td class="text-center">{{ getCarModelName(product.carModelId) }}</td>
+        <td class="text-center">{{ product.vendorCode }}</td>
+        <td class="text-center">{{ product.price | currency }}</td>
+        <td class="text-center">{{ product.discount }}%</td>
+        <td class="text-center">{{ product.stock }}</td>
+        <td class="border p-2 text-center">
+          <mat-icon *ngIf="product.isAvailable" class="text-green-500">
+            check_circle
+          </mat-icon>
+          <mat-icon *ngIf="!product.isAvailable" class="text-red-500">
+            cancel
+          </mat-icon>
+        </td>
+        <td class="border p-2 text-center">
+          <button
+            mat-button
+            color="primary"
+            [routerLink]="['/admin/products/edit', product.id]"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Edit
+          </button>
+          <button
+            mat-button
+            color="warn"
+            (click)="deleteProduct(product.id)"
+            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2"
+          >
+            Delete
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="flex justify-start">
+    <button
+      mat-button
+      color="accent"
+      [routerLink]="['/admin/products/create']"
+      class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded m-4"
+    >
+      Create
+    </button>
+  </div>
+</app-product-list>

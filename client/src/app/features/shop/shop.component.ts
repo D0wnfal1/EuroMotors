@@ -10,32 +10,29 @@ import {
 } from '@angular/material/list';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { ShopService } from '../../core/services/shop.service';
 import { Pagination } from '../../shared/models/pagination';
 import { Product } from '../../shared/models/product';
 import { ProductImage } from '../../shared/models/productImage';
 import { ShopParams } from '../../shared/models/shopParams';
 import { FiltersDialogComponent } from './filters-dialog/filters-dialog.component';
 import { ProductItemComponent } from './product-item/product-item.component';
+import { ProductService } from '../../core/services/product.service';
+import { ProductListComponent } from '../../shared/components/product-list/product-list.component';
 
 @Component({
   selector: 'app-shop',
   imports: [
     MatButton,
     MatIcon,
-    MatMenu,
-    MatSelectionList,
-    MatListOption,
-    MatMenuTrigger,
-    MatPaginator,
     FormsModule,
     ProductItemComponent,
+    ProductListComponent,
   ],
   templateUrl: './shop.component.html',
   styleUrl: './shop.component.scss',
 })
 export class ShopComponent {
-  private shopService = inject(ShopService);
+  private productService = inject(ProductService);
   private dialogService = inject(MatDialog);
   products?: Pagination<Product>;
   productImages: { [key: string]: ProductImage[] } = {};
@@ -52,13 +49,13 @@ export class ShopComponent {
   }
 
   initialiseShop() {
-    this.shopService.getCategories();
-    this.shopService.getCarModels();
+    this.productService.getCategories();
+    this.productService.getCarModels();
     this.getProducts();
   }
 
   getProducts() {
-    this.shopService.getProducts(this.shopParams).subscribe({
+    this.productService.getProducts(this.shopParams).subscribe({
       next: (response) => {
         this.products = response;
         this.loadProductImages();
@@ -70,7 +67,7 @@ export class ShopComponent {
   loadProductImages() {
     if (this.products?.data) {
       this.products.data.forEach((product) => {
-        this.shopService.getProductImages(product.id).subscribe({
+        this.productService.getProductImages(product.id).subscribe({
           next: (images) => {
             product.images = images;
           },

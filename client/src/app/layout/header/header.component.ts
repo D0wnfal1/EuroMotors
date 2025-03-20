@@ -10,6 +10,7 @@ import { AccountService } from '../../core/services/account.service';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MatDivider } from '@angular/material/divider';
 import { IsAdminDirective } from '../../shared/directives/is-admin.directive';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-header',
@@ -25,7 +26,7 @@ import { IsAdminDirective } from '../../shared/directives/is-admin.directive';
     MatMenu,
     MatDivider,
     MatMenuItem,
-    IsAdminDirective,
+    NgIf,
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',

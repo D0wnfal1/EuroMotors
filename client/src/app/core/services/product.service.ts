@@ -1,21 +1,24 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { Pagination } from '../../shared/models/pagination';
-import { ShopParams } from '../../shared/models/shopParams';
-import { Product } from '../../shared/models/product';
-import { ProductImage } from '../../shared/models/productImage';
-import { Category } from '../../shared/models/category';
-import { CarModel } from '../../shared/models/carModel';
+import { Injectable, inject } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { Product } from '../../shared/models/product';
+import { CarModel } from '../../shared/models/carModel';
+import { Category } from '../../shared/models/category';
+import { Pagination } from '../../shared/models/pagination';
+import { ProductImage } from '../../shared/models/productImage';
+import { ShopParams } from '../../shared/models/shopParams';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ShopService {
+export class ProductService {
   baseUrl = environment.apiUrl;
   private http = inject(HttpClient);
-  categories: Category[] = [];
-  carModels: CarModel[] = [];
+  private categoriesSubject = new BehaviorSubject<Category[]>([]);
+  categories$ = this.categoriesSubject.asObservable();
+  private carModelsSubject = new BehaviorSubject<CarModel[]>([]);
+  carModels$ = this.carModelsSubject.asObservable();
 
   getProducts(shopParams: ShopParams) {
     let params = new HttpParams();
@@ -48,10 +51,6 @@ export class ShopService {
     });
   }
 
-  getProduct(id: string) {
-    return this.http.get<Product>(`${this.baseUrl}products/${id}`);
-  }
-
   getProductImages(productId: string) {
     return this.http.get<ProductImage[]>(
       `${this.baseUrl}productImages/${productId}/product`
@@ -59,22 +58,36 @@ export class ShopService {
   }
 
   getCategories() {
-    if (this.categories.length > 0) return;
     this.http.get<Category[]>(this.baseUrl + 'categories').subscribe({
       next: (response) => {
-        this.categories = response;
+        this.categoriesSubject.next(response);
       },
       error: (err) => console.error('Failed to load categories', err),
     });
   }
 
   getCarModels() {
-    if (this.carModels.length > 0) return;
     this.http.get<CarModel[]>(this.baseUrl + 'carModels').subscribe({
       next: (response) => {
-        this.carModels = response;
+        this.carModelsSubject.next(response);
       },
       error: (err) => console.error('Failed to load car models', err),
     });
+  }
+
+  getProductById(id: string): Observable<Product> {
+    return this.http.get<Product>(`${this.baseUrl}products/${id}`);
+  }
+
+  createProduct(product: Product): Observable<string> {
+    return this.http.post<string>(`${this.baseUrl}products`, product);
+  }
+
+  updateProduct(id: string, product: Product): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}products/${id}`, product);
+  }
+
+  deleteProduct(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}products/${id}`);
   }
 }

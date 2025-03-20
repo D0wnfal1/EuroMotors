@@ -1,6 +1,14 @@
 ﻿using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Products.GetProductById;
+using EuroMotors.Application.Products.SearchProducts;
 
 namespace EuroMotors.Application.Products.GetProducts;
 
-public sealed record GetProductsQuery() : IQuery<IReadOnlyCollection<ProductResponse>>;
+public sealed record GetProductsQuery(
+    List<Guid>? CategoryIds,
+    List<Guid>? CarModelIds,
+    string? SortOrder,
+    string? SearchTerm,
+    int PageNumber = 1,
+    int PageSize = 10
+) : IQuery<Pagination<ProductResponse>>;
