@@ -1,4 +1,4 @@
-﻿namespace EuroMotors.Application.Products.SearchProducts;
+﻿namespace EuroMotors.Application.Products.GetProducts;
 
 public sealed class Pagination<T>
 {

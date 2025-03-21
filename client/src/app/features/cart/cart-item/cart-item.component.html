@@ -4,7 +4,7 @@
       <div class="image-container">
         <img
           *ngIf="productImage; else noImage"
-          [src]="productImage.url"
+          [src]="getImageUrl(productImage.url)"
           alt="product image"
           class="h-40 w-40"
         />

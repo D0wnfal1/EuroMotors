@@ -22,7 +22,6 @@ internal sealed class CreateProductCommandValidator : AbstractValidator<CreatePr
 
         RuleFor(x => x.Stock).GreaterThanOrEqualTo(0);
 
-        RuleFor(x => x.IsAvailable).NotNull();
     }
 }
 

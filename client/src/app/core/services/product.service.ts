@@ -46,19 +46,13 @@ export class ProductService {
     params = params.append('pageSize', shopParams.pageSize.toString());
     params = params.append('pageNumber', shopParams.pageNumber.toString());
 
-    return this.http.get<Pagination<Product>>(this.baseUrl + 'products', {
+    return this.http.get<Pagination<Product>>(this.baseUrl + '/products', {
       params,
     });
   }
 
-  getProductImages(productId: string) {
-    return this.http.get<ProductImage[]>(
-      `${this.baseUrl}productImages/${productId}/product`
-    );
-  }
-
   getCategories() {
-    this.http.get<Category[]>(this.baseUrl + 'categories').subscribe({
+    this.http.get<Category[]>(this.baseUrl + '/categories').subscribe({
       next: (response) => {
         this.categoriesSubject.next(response);
       },
@@ -67,7 +61,7 @@ export class ProductService {
   }
 
   getCarModels() {
-    this.http.get<CarModel[]>(this.baseUrl + 'carModels').subscribe({
+    this.http.get<CarModel[]>(this.baseUrl + '/carModels').subscribe({
       next: (response) => {
         this.carModelsSubject.next(response);
       },
@@ -76,18 +70,52 @@ export class ProductService {
   }
 
   getProductById(id: string): Observable<Product> {
-    return this.http.get<Product>(`${this.baseUrl}products/${id}`);
+    return this.http.get<Product>(`${this.baseUrl}/products/${id}`);
   }
 
   createProduct(product: Product): Observable<string> {
-    return this.http.post<string>(`${this.baseUrl}products`, product);
+    return this.http.post<string>(`${this.baseUrl}/products`, product);
   }
 
   updateProduct(id: string, product: Product): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}products/${id}`, product);
+    return this.http.put<void>(`${this.baseUrl}/products/${id}`, product);
   }
 
   deleteProduct(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}products/${id}`);
+    return this.http.delete<void>(`${this.baseUrl}/products/${id}`);
+  }
+
+  getProductImages(productId: string): Observable<ProductImage[]> {
+    return this.http.get<ProductImage[]>(
+      `${this.baseUrl}/productImages/${productId}/product`
+    );
+  }
+
+  createProductImage(image: ProductImage): Observable<ProductImage> {
+    return this.http.post<ProductImage>(`${this.baseUrl}/productImages`, image);
+  }
+
+  uploadProductImage(
+    productId: string,
+    file: File
+  ): Observable<{ id: string; imageUrl: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('productId', productId);
+    return this.http.post<{ id: string; imageUrl: string }>(
+      `${this.baseUrl}/productImages/upload`,
+      formData
+    );
+  }
+
+  updateProductImage(image: ProductImage): Observable<void> {
+    return this.http.put<void>(
+      `${this.baseUrl}/productImages/${image.id}`,
+      image
+    );
+  }
+
+  deleteProductImage(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/productImages/${id}`);
   }
 }

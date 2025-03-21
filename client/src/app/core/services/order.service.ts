@@ -16,7 +16,7 @@ export class OrderService {
 
   createOrder(orderData: any): Observable<{ orderId: string }> {
     return this.http.post<{ orderId: string }>(
-      `${this.baseUrl}orders`,
+      `${this.baseUrl}/orders`,
       orderData
     );
   }
@@ -28,27 +28,27 @@ export class OrderService {
     if (orderParams.filter) {
       params = params.set('status', orderParams.filter);
     }
-    return this.http.get<Pagination<Order>>(this.baseUrl + 'orders', {
+    return this.http.get<Pagination<Order>>(this.baseUrl + '/orders', {
       params,
     });
   }
 
   getOrderById(orderId: string): Observable<Order> {
-    return this.http.get<Order>(`${this.baseUrl}orders/${orderId}`);
+    return this.http.get<Order>(`${this.baseUrl}/orders/${orderId}`);
   }
 
   getUserOrders(userId: string): Observable<Order[]> {
-    return this.http.get<Order[]>(`${this.baseUrl}orders/${userId}/user`);
+    return this.http.get<Order[]>(`${this.baseUrl}/orders/${userId}/user`);
   }
 
   changeOrderStatus(orderId: string, status: string): Observable<void> {
     return this.http.patch<void>(
-      `${this.baseUrl}orders?id=${orderId}&status=${status}`,
+      `${this.baseUrl}/orders?id=${orderId}&status=${status}`,
       {}
     );
   }
 
   deleteOrder(orderId: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}orders?id=${orderId}`);
+    return this.http.delete<void>(`${this.baseUrl}/orders?id=${orderId}`);
   }
 }

@@ -7,7 +7,7 @@ internal sealed class UpdateProductImageCommandValidator : AbstractValidator<Upd
     public UpdateProductImageCommandValidator()
     {
         RuleFor(c => c.Id).NotEmpty();
-        RuleFor(c => c.Url).NotEmpty();
+        RuleFor(c => c.File).NotEmpty();
         RuleFor(c => c.ProductId).NotEmpty();
     }
 }

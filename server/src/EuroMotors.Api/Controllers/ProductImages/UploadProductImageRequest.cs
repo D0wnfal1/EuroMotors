@@ -2,10 +2,11 @@
 
 namespace EuroMotors.Api.Controllers.ProductImages;
 
-public sealed class ProductImageRequest
+public sealed class UploadProductImageRequest
 {
     [JsonRequired]
-    public Uri Url { get; set; }
+    public IFormFile File { get; set; }
+
     [JsonRequired]
     public Guid ProductId { get; set; }
 }

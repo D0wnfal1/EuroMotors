@@ -8,6 +8,7 @@ import { CurrencyPipe, NgIf } from '@angular/common';
 import { Product } from '../../../shared/models/product';
 import { ProductImage } from '../../../shared/models/productImage';
 import { ProductService } from '../../../core/services/product.service';
+import { ImageService } from '../../../core/services/image.service';
 
 @Component({
   selector: 'app-cart-item',
@@ -22,6 +23,11 @@ export class CartItemComponent implements OnInit {
 
   cartService = inject(CartService);
   productService = inject(ProductService);
+  imageService = inject(ImageService);
+
+  getImageUrl(imagePath: string): string {
+    return this.imageService.getImageUrl(imagePath);
+  }
 
   ngOnInit() {
     if (this.item?.productId) {
@@ -35,7 +41,7 @@ export class CartItemComponent implements OnInit {
   }
 
   getProductImage(productId: string) {
-    this.productService.getProductImages(productId).subscribe((images) => {
+    this.imageService.getProductImages(productId).subscribe((images) => {
       if (images.length > 0) {
         this.productImage = images[0];
       }

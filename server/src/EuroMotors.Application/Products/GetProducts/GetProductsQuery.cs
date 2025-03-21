@@ -1,6 +1,5 @@
 ﻿using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Products.GetProductById;
-using EuroMotors.Application.Products.SearchProducts;
 
 namespace EuroMotors.Application.Products.GetProducts;
 

@@ -13,12 +13,12 @@ export class PaymentService {
 
   createPayment(orderId: string) {
     return this.http.post<{ data: string; signature: string }>(
-      `${this.baseUrl}payments?orderId=${orderId}`,
+      `${this.baseUrl}/payments?orderId=${orderId}`,
       {}
     );
   }
 
   getPaymentById(id: string): Observable<Payment> {
-    return this.http.get<Payment>(`${this.baseUrl}payments/${id}`);
+    return this.http.get<Payment>(`${this.baseUrl}/payments/${id}`);
   }
 }

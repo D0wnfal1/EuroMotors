@@ -3,7 +3,6 @@ using EuroMotors.Application.Products.DeleteProduct;
 using EuroMotors.Application.Products.GetProductById;
 using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Application.Products.MarkAsNotAvailable;
-using EuroMotors.Application.Products.SearchProducts;
 using EuroMotors.Application.Products.UpdateProduct;
 using EuroMotors.Application.Products.UpdateProduct.UpdateProductStock;
 using EuroMotors.Domain.Abstractions;
@@ -53,7 +52,7 @@ public class ProductController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateProduct([FromBody] ProductRequest request, CancellationToken cancellationToken)
     {
-        var command = new CreateProductCommand(request.Name, request.Description, request.VendorCode, request.CategoryId, request.CarModelId, request.Price, request.Discount, request.Stock, request.IsAvailable);
+        var command = new CreateProductCommand(request.Name, request.Description, request.VendorCode, request.CategoryId, request.CarModelId, request.Price, request.Discount, request.Stock);
 
         Result<Guid> result = await _sender.Send(command, cancellationToken);
 
@@ -65,7 +64,7 @@ public class ProductController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductRequest request, CancellationToken cancellationToken)
     {
-        var command = new UpdateProductCommand(id, request.Name, request.Description, request.VendorCode, request.CategoryId, request.CarModelId, request.Price, request.Discount, request.Stock, request.IsAvailable);
+        var command = new UpdateProductCommand(id, request.Name, request.Description, request.VendorCode, request.CategoryId, request.CarModelId, request.Price, request.Discount, request.Stock);
 
         Result result = await _sender.Send(command, cancellationToken);
 

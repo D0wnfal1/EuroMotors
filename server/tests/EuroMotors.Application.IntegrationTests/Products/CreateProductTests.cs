@@ -31,8 +31,7 @@ public class CreateProductTests : BaseIntegrationTest
             carModelId,
             -100,
             faker.Random.Decimal(0, 100),
-            10,
-            true);
+            10);
 
         // Act
         Result<Guid> result = await Sender.Send(command);
@@ -59,8 +58,7 @@ public class CreateProductTests : BaseIntegrationTest
             carModelId,
             faker.Random.Decimal(100, 1000),
             faker.Random.Decimal(0, 100),
-            10,
-            true);
+            10);
 
         // Act
         Result<Guid> result = await Sender.Send(command);
@@ -85,8 +83,7 @@ public class CreateProductTests : BaseIntegrationTest
             carModelId,
             faker.Random.Decimal(100, 1000),
             faker.Random.Decimal(0, 100),
-            10,
-            true);
+            10);
 
         // Act
         Result<Guid> result = await Sender.Send(command);
@@ -112,8 +109,7 @@ public class CreateProductTests : BaseIntegrationTest
             carModelId,
             faker.Random.Decimal(100, 1000),
             faker.Random.Decimal(0, 100),
-            10,
-            true);
+            10);
 
         // Act
         Result<Guid> result = await Sender.Send(command);

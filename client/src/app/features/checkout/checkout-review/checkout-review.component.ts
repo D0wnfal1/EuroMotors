@@ -5,6 +5,7 @@ import { ProductImage } from '../../../shared/models/productImage';
 import { CurrencyPipe, NgFor, NgIf } from '@angular/common';
 import { OrderService } from '../../../core/services/order.service';
 import { ProductService } from '../../../core/services/product.service';
+import { ImageService } from '../../../core/services/image.service';
 
 @Component({
   selector: 'app-checkout-review',
@@ -16,6 +17,8 @@ export class CheckoutReviewComponent {
   cartService = inject(CartService);
   productService = inject(ProductService);
   orderService = inject(OrderService);
+  imageService = inject(ImageService);
+
   products: Product[] = [];
   productImages: { [productId: string]: ProductImage } = {};
 
@@ -45,6 +48,10 @@ export class CheckoutReviewComponent {
         this.productImages[productId] = images[0];
       }
     });
+  }
+
+  getImageUrl(imagePath: string): string {
+    return this.imageService.getImageUrl(imagePath);
   }
 
   getProductImage(productId: string) {

@@ -17,6 +17,4 @@ public sealed class ProductRequest()
     public decimal Discount { get; set; }
     [JsonRequired]
     public int Stock { get; set; }
-    [JsonRequired]
-    public bool IsAvailable { get; set; }
 }

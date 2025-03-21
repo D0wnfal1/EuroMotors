@@ -54,6 +54,8 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.UseStaticFiles();
+
 app.MapControllers();
 
 await app.RunAsync();

@@ -10,6 +10,7 @@ import { CurrencyPipe, NgIf } from '@angular/common';
 import { MatButton } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { CartService } from '../../../core/services/cart.service';
+import { ImageService } from '../../../core/services/image.service';
 
 @Component({
   selector: 'app-product-item',
@@ -30,4 +31,9 @@ import { CartService } from '../../../core/services/cart.service';
 export class ProductItemComponent {
   @Input() product?: Product;
   cartService = inject(CartService);
+  imageService = inject(ImageService);
+
+  getImageUrl(imagePath: string): string {
+    return this.imageService.getImageUrl(imagePath);
+  }
 }

@@ -39,7 +39,7 @@
             <div class="flex items-center gap-4">
               <img
                 *ngIf="getProductImage(item.productId); else noImage"
-                [src]="getProductImage(item.productId).url"
+                [src]="getImageUrl(getProductImage(item.productId).url)"
                 alt="product image"
                 class="w-10 h-10"
               />

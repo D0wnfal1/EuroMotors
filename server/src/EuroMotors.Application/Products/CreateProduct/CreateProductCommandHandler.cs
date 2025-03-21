@@ -36,8 +36,7 @@ internal sealed class CreateProductCommandHandler(IProductRepository productRepo
             request.CarModelId,
             request.Price,
             request.Discount,
-            request.Stock,
-            request.IsAvailable);
+            request.Stock);
 
         if (result.IsFailure)
         {

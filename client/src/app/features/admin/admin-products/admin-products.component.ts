@@ -37,7 +37,7 @@ export class AdminProductsComponent implements OnInit {
   products?: Pagination<Product>;
   productImages: { [key: string]: ProductImage[] } = {};
   sortOptions = [
-    { name: 'Alphabetical', value: 'name' },
+    { name: 'Alphabetical', value: '' },
     { name: 'Price: Low-High', value: 'ASC' },
     { name: 'Price: High-Low', value: 'DESC' },
   ];

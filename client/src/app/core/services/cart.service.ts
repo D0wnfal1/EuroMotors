@@ -30,7 +30,7 @@ export class CartService {
   });
 
   getCart(id: string) {
-    return this.http.get<Cart>(`${this.baseUrl}carts/${id}`).pipe(
+    return this.http.get<Cart>(`${this.baseUrl}/carts/${id}`).pipe(
       map((cart) => {
         this.cart.set(cart);
         return cart;
@@ -45,7 +45,7 @@ export class CartService {
       productId,
       quantity: quantity !== undefined ? quantity : 1,
     };
-    this.http.post<Cart>(`${this.baseUrl}carts`, request).subscribe({
+    this.http.post<Cart>(`${this.baseUrl}/carts`, request).subscribe({
       next: () => this.getCart(cart.id).subscribe(),
     });
   }
@@ -58,7 +58,7 @@ export class CartService {
       quantity: -quantity,
     };
     this.http
-      .post<Cart>(`${this.baseUrl}carts/update-quantity`, request)
+      .post<Cart>(`${this.baseUrl}/carts/update-quantity`, request)
       .subscribe({
         next: () => this.getCart(cart.id).subscribe(),
       });
@@ -68,7 +68,7 @@ export class CartService {
     const cart = this.cart() ?? this.createCart();
     return this.http
       .delete(
-        `${this.baseUrl}carts/item?cartId=${cart.id}&productId=${productId}`
+        `${this.baseUrl}/carts/item?cartId=${cart.id}&productId=${productId}`
       )
       .subscribe({
         next: () => this.getCart(cart.id).subscribe(),
@@ -77,7 +77,7 @@ export class CartService {
 
   clearCart(cartId: string) {
     return this.http
-      .delete(`${this.baseUrl}carts/clear?cartId=${cartId}`)
+      .delete(`${this.baseUrl}/carts/clear?cartId=${cartId}`)
       .subscribe({
         next: () => {
           localStorage.removeItem('cart_id');

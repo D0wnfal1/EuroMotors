@@ -23,10 +23,10 @@ public class ProductImageTests : BaseTest
     public void Create_ShouldSetPropertiesCorrectly()
     {
         // Act
-        var productImage = ProductImage.Create(new Uri("https://example.com/image.png"), Guid.NewGuid());
+        var productImage = ProductImage.Create(new string("https://example.com/image.png"), Guid.NewGuid());
 
         // Assert
-        productImage.Url.ShouldBe(new Uri("https://example.com/image.png"));
+        productImage.Url.ShouldBe(new string("https://example.com/image.png"));
         productImage.ProductId.ShouldNotBe(Guid.Empty);
     }
 
@@ -37,25 +37,11 @@ public class ProductImageTests : BaseTest
         var productImage = ProductImage.Create(ProductImageData.Url, ProductImageData.ProductId);
 
         // Act
-        productImage.UpdateUrl(new Uri("https://example.com/updated.png"));
+        productImage.UpdateImage(new string("https://example.com/updated.png"), ProductImageData.ProductId);
 
         // Assert
         ProductImageUpdatedDomainEvent @event = AssertDomainEventWasPublished<ProductImageUpdatedDomainEvent>(productImage);
         @event.ProductImageId.ShouldBe(productImage.Id);
-    }
-
-    [Fact]
-    public void UpdateUrl_ShouldFail_WhenUrlIsInvalid()
-    {
-        // Arrange
-        var productImage = ProductImage.Create(ProductImageData.Url, ProductImageData.ProductId);
-
-        // Act
-        Result result = productImage.UpdateUrl(new Uri("invalid-url", UriKind.RelativeOrAbsolute));
-
-        // Assert
-        result.IsSuccess.ShouldBeFalse();
-        result.Error.ShouldBe(ProductImageErrors.InvalidUrl(new Uri("invalid-url", UriKind.RelativeOrAbsolute)));
     }
 
     [Fact]

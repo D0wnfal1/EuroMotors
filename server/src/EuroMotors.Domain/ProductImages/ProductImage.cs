@@ -10,11 +10,11 @@ public class ProductImage : Entity
     {
     }
 
-    public Uri Url { get; private set; }
+    public string Url { get; private set; }
     public Guid ProductId { get; private set; }
     public Product Product { get; }
 
-    public static ProductImage Create(Uri url, Guid productId)
+    public static ProductImage Create(string url, Guid productId)
     {
         var productImage = new ProductImage
         {
@@ -28,14 +28,15 @@ public class ProductImage : Entity
         return productImage;
     }
 
-    public Result UpdateUrl(Uri newUrl)
+    public Result UpdateImage(string newImageUrl, Guid productId)
     {
-        if (string.IsNullOrWhiteSpace(newUrl.ToString()) || !Uri.IsWellFormedUriString(newUrl.ToString(), UriKind.Absolute))
+        if (string.IsNullOrWhiteSpace(newImageUrl))
         {
-            return Result.Failure(ProductImageErrors.InvalidUrl(newUrl));
+            return Result.Failure(ProductImageErrors.InvalidUrl(newImageUrl));
         }
 
-        Url = newUrl;
+        Url = newImageUrl;
+        ProductId = productId;
 
         RaiseDomainEvent(new ProductImageUpdatedDomainEvent(Id));
 

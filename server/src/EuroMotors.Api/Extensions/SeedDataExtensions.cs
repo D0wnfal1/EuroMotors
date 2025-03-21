@@ -24,7 +24,6 @@ public static class SeedDataExtensions
         SeedCarModels(connection);
         SeedCategories(connection);
         SeedProducts(connection);
-        SeedProductImages(connection);
         SeedUsers(connection, passwordHasher);
     }
 
@@ -103,8 +102,7 @@ public static class SeedDataExtensions
                     carModel.Id,
                     f.Random.Decimal(100, 1000),
                     f.Random.Decimal(0, 30),
-                    f.Random.Int(0, 100),
-                    true
+                    f.Random.Int(0, 100)
                 );
             });
 
@@ -117,37 +115,6 @@ public static class SeedDataExtensions
                        """;
 
         connection.Execute(sql, products);
-    }
-
-    private static void SeedProductImages(IDbConnection connection)
-    {
-        var products = connection.Query<Product>("SELECT id FROM products").ToList();
-
-        if (products.Count == 0)
-        {
-            return;
-        }
-
-        Faker<ProductImage> faker = new Faker<ProductImage>()
-            .CustomInstantiator(f =>
-            {
-                Product product = products[f.Random.Int(0, products.Count - 1)];
-
-                string? url = f.Image.PicsumUrl();
-
-                return ProductImage.Create(new Uri(url), product.Id);
-            });
-
-        const string sql = @"INSERT INTO product_images (id, url, product_id) VALUES (@Id, @Url, @ProductId);";
-
-        var productImages = faker.Generate(15).Select(pi => new
-        {
-            pi.Id,
-            Url = pi.Url.ToString(),
-            pi.ProductId
-        });
-
-        connection.Execute(sql, productImages);
     }
 
     private static void SeedUsers(IDbConnection connection, IPasswordHasher passwordHasher)

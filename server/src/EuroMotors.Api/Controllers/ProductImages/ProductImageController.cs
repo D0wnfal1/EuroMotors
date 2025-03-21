@@ -4,6 +4,7 @@ using EuroMotors.Application.ProductImages.DeleteProductImagesByProductId;
 using EuroMotors.Application.ProductImages.GetProductImageById;
 using EuroMotors.Application.ProductImages.GetProductImagesByProductId;
 using EuroMotors.Application.ProductImages.UpdateProductImage;
+using EuroMotors.Application.ProductImages.UploadProductImage;
 using EuroMotors.Domain.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -42,22 +43,23 @@ public class ProductImageController : ControllerBase
         return Ok(result.IsSuccess ? result.Value : new List<ProductImageResponse>());
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateProductImage([FromBody] ProductImageRequest request, CancellationToken cancellationToken)
+    [HttpPost("upload")]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UploadProductImage([FromForm] UploadProductImageRequest request, CancellationToken cancellationToken)
     {
-        var command = new CreateProductImageCommand(request.Url, request.ProductId);
+        var command = new UploadProductImageCommand(request.File, request.ProductId);
 
         Result<Guid> result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess
-            ? CreatedAtAction(nameof(GetProductImageById), new { id = result.Value }, result.Value)
+            ? CreatedAtAction(nameof(GetProductImageById), new { id = result.Value }, new { id = result.Value })
             : BadRequest(result.Error);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateProductImage(Guid id, [FromBody] ProductImageRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateProductImage(Guid id, [FromBody] UploadProductImageRequest request, CancellationToken cancellationToken)
     {
-        var command = new UpdateProductImageCommand(id, request.Url, request.ProductId);
+        var command = new UpdateProductImageCommand(id, request.File, request.ProductId);
 
         Result result = await _sender.Send(command, cancellationToken);
 

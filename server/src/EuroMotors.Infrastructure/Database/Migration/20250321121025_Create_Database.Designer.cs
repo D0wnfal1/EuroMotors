@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250315171839_Create_Database")]
+    [Migration("20250321121025_Create_Database")]
     partial class Create_Database
     {
         /// <inheritdoc />

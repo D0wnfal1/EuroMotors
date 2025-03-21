@@ -14,7 +14,10 @@ export class CheckoutService {
   getWarehouses(city: string, query: string): Observable<Warehouse[]> {
     const payload = { city, query };
     return this.http
-      .post<WarehousesResponse>(this.baseUrl + 'deliveries/warehouses', payload)
+      .post<WarehousesResponse>(
+        this.baseUrl + '/deliveries/warehouses',
+        payload
+      )
       .pipe(
         map((response) => {
           if (response.success) {

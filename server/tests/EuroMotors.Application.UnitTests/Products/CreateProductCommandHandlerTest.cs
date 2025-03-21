@@ -37,8 +37,7 @@ public class CreateProductCommandHandlerTests
             Guid.NewGuid(),
             100,
             10,
-            50,
-            true);
+            50);
 
         _categoryRepository.GetByIdAsync(command.CategoryId, CancellationToken.None).Returns((Category)null);
 
@@ -59,8 +58,7 @@ public class CreateProductCommandHandlerTests
             Guid.NewGuid(),
             100,
             10,
-            50,
-            true);
+            50);
 
         _categoryRepository.GetByIdAsync(command.CategoryId, CancellationToken.None).Returns(Category.Create("Test Name"));
         _carModelRepository.GetByIdAsync(command.CarModelId, CancellationToken.None).Returns((CarModel)null);
@@ -82,8 +80,7 @@ public class CreateProductCommandHandlerTests
             Guid.NewGuid(),
             100,
             10,
-            50,
-            true);
+            50);
 
         _categoryRepository.GetByIdAsync(command.CategoryId, CancellationToken.None).Returns(Category.Create("Test Name"));
         _carModelRepository.GetByIdAsync(command.CarModelId, CancellationToken.None).Returns(CarModel.Create("Test Brand", "Test CarModel"));

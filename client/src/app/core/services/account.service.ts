@@ -20,7 +20,7 @@ export class AccountService {
 
   login(values: any) {
     return this.http
-      .post(this.baseUrl + 'users/login', values, { responseType: 'text' })
+      .post(this.baseUrl + '/users/login', values, { responseType: 'text' })
       .pipe(
         map((token: string) => {
           if (token) {
@@ -37,11 +37,11 @@ export class AccountService {
   }
 
   register(values: any) {
-    return this.http.post(this.baseUrl + 'users/register', values);
+    return this.http.post(this.baseUrl + '/users/register', values);
   }
 
   getUserInfo() {
-    return this.http.get<User>(this.baseUrl + 'users/email').pipe(
+    return this.http.get<User>(this.baseUrl + '/users/email').pipe(
       map((user) => {
         this.currentUser.set(user);
         return user;
@@ -64,7 +64,7 @@ export class AccountService {
       city: values.city,
     };
 
-    return this.http.put(this.baseUrl + 'users/update', body).pipe(
+    return this.http.put(this.baseUrl + '/users/update', body).pipe(
       map(() => {
         this.getUserInfo().subscribe();
       })
@@ -78,7 +78,7 @@ export class AccountService {
 
   getAuthState() {
     return this.http.get<{ isAuthenticated: boolean }>(
-      this.baseUrl + 'users/auth-status'
+      this.baseUrl + '/users/auth-status'
     );
   }
 }

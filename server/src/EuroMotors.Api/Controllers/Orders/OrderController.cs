@@ -4,7 +4,7 @@ using EuroMotors.Application.Orders.DeleteOrder;
 using EuroMotors.Application.Orders.GetOrderById;
 using EuroMotors.Application.Orders.GetOrders;
 using EuroMotors.Application.Orders.GetUserOrders;
-using EuroMotors.Application.Products.SearchProducts;
+using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Orders;
 using MediatR;

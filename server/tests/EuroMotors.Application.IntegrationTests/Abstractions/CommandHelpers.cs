@@ -2,10 +2,12 @@
 using EuroMotors.Application.CarModels.CreateCarModel;
 using EuroMotors.Application.Categories.CreateCategory;
 using EuroMotors.Application.ProductImages.CreateProductImage;
+using EuroMotors.Application.ProductImages.UploadProductImage;
 using EuroMotors.Application.Products.CreateProduct;
 using EuroMotors.Application.Users.Register;
 using EuroMotors.Domain.Abstractions;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.Abstractions;
@@ -53,19 +55,19 @@ internal static class CommandHelpers
             carModelId,
             price,
             discount,
-            quantity,
-            true);
+            quantity);
 
         Result<Guid> result = await sender.Send(createProductCommand);
         result.IsSuccess.ShouldBeTrue();
         return result.Value;
     }
 
-    public static async Task<Guid> CreateProductImageAsync(this ISender sender, Guid productId, Uri url)
+    public static async Task<Guid> CreateProductImageAsync(this ISender sender, Guid productId, IFormFile file)
     {
-        var createProductImageCommand = new CreateProductImageCommand(url, productId);
+        var createProductImageCommand = new UploadProductImageCommand(file, productId);
         Result<Guid> result = await sender.Send(createProductImageCommand);
         result.IsSuccess.ShouldBeTrue();
         return result.Value;
     }
+
 }

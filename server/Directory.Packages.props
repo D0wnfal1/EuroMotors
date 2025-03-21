@@ -9,6 +9,7 @@
     <!-- Domain -->
     <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
     <!-- Application -->
+    <PackageVersion Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
     <PackageVersion Include="MediatR" Version="12.4.1" />
     <PackageVersion Include="Dapper" Version="2.1.66" />
@@ -33,7 +34,7 @@
     <PackageVersion Include="Bogus" Version="35.6.2" />
     <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
     <PackageVersion Include="Serilog.Sinks.Seq" Version="9.0.0" />
-    <PackageVersion Include="Swashbuckle.AspNetCore" Version="7.3.1" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="8.0.0" />
     <!-- ArchitectureTests -->
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.3" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />

@@ -29,8 +29,7 @@ public class DeleteProductCommandHandlerTests
             Guid.NewGuid(),
             100,
             10,
-            50,
-            true);
+            50);
 
         typeof(Product).GetProperty(nameof(Product.Id))?.SetValue(product, productId);
 

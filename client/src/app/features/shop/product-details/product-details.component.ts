@@ -11,6 +11,7 @@ import { ProductImage } from '../../../shared/models/productImage';
 import { CartService } from '../../../core/services/cart.service';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../../core/services/product.service';
+import { ImageService } from '../../../core/services/image.service';
 
 @Component({
   selector: 'app-product-details',
@@ -32,12 +33,17 @@ import { ProductService } from '../../../core/services/product.service';
 export class ProductDetailsComponent implements OnInit {
   private productService = inject(ProductService);
   private activatedRoute = inject(ActivatedRoute);
+  private imageService = inject(ImageService);
   private cartService = inject(CartService);
   product?: Product;
   productImages: ProductImage[] = [];
   activeIndex: number = 0;
   quantityInCart = 0;
   quantity = 1;
+
+  getImageUrl(imagePath: string): string {
+    return this.imageService.getImageUrl(imagePath);
+  }
 
   nextImage() {
     if (
@@ -66,7 +72,7 @@ export class ProductDetailsComponent implements OnInit {
     this.productService.getProductById(id).subscribe({
       next: (product) => {
         this.product = product;
-        this.productService.getProductImages(id).subscribe({
+        this.imageService.getProductImages(id).subscribe({
           next: (images) => {
             this.productImages = images;
             if (this.productImages.length) {

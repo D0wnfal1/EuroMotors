@@ -13,7 +13,7 @@ public class ProductTests : BaseTest
     {
         // Act
         var product = Product.Create(ProductData.Name, ProductData.Description, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
-            ProductData.Discount, ProductData.Stock, ProductData.IsAvailable);
+            ProductData.Discount, ProductData.Stock);
 
         // Assert
         ProductCreatedDomainEvent @event = AssertDomainEventWasPublished<ProductCreatedDomainEvent>(product);
@@ -25,7 +25,7 @@ public class ProductTests : BaseTest
     {
         // Arrange
         var product = Product.Create(ProductData.Name, ProductData.Description, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
-            ProductData.Discount, ProductData.Stock, ProductData.IsAvailable);
+            ProductData.Discount, ProductData.Stock);
 
         // Act
         product.Update("Updated Name", "Updated Description", 150m, 5m, 100);
@@ -40,7 +40,7 @@ public class ProductTests : BaseTest
     {
         // Arrange
         var product = Product.Create(ProductData.Name, ProductData.Description, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
-            ProductData.Discount, ProductData.Stock, ProductData.IsAvailable);
+            ProductData.Discount, ProductData.Stock);
 
         // Act
         product.AddProductQuantity(20);
@@ -54,7 +54,7 @@ public class ProductTests : BaseTest
     {
         // Arrange
         var product = Product.Create(ProductData.Name, ProductData.Description, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
-            ProductData.Discount, ProductData.Stock, ProductData.IsAvailable);
+            ProductData.Discount, ProductData.Stock);
 
         // Act
         product.MarkAsNotAvailable();
@@ -69,7 +69,7 @@ public class ProductTests : BaseTest
     {
         // Arrange
         var product = Product.Create(ProductData.Name, ProductData.Description, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
-            ProductData.Discount, ProductData.Stock, ProductData.IsAvailable);
+            ProductData.Discount, ProductData.Stock);
 
         // Act
         product.AddProductQuantity(20);
@@ -83,7 +83,7 @@ public class ProductTests : BaseTest
     {
         // Arrange
         var product = Product.Create(ProductData.Name, ProductData.Description, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
-            ProductData.Discount, ProductData.Stock, ProductData.IsAvailable);
+            ProductData.Discount, ProductData.Stock);
 
         // Act
         Result result = product.SubtractProductQuantity(10);
@@ -99,7 +99,7 @@ public class ProductTests : BaseTest
     {
         // Arrange
         var product = Product.Create(ProductData.Name, ProductData.Description, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
-            ProductData.Discount, 5, ProductData.IsAvailable);
+            ProductData.Discount, 5);
 
         // Act
         Result result = product.SubtractProductQuantity(10);
@@ -114,7 +114,7 @@ public class ProductTests : BaseTest
     {
         // Arrange
         var product = Product.Create(ProductData.Name, ProductData.Description, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
-            ProductData.Discount, ProductData.Stock, ProductData.IsAvailable);
+            ProductData.Discount, ProductData.Stock);
 
         // Act
         product.UpdateStock(50);

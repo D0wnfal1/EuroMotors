@@ -162,8 +162,7 @@ public class AddItemToCartTests : BaseIntegrationTest
             carModelId,
             faker.Random.Decimal(100, 1000),
             faker.Random.Decimal(0, 100),
-            Quantity,
-            true
+            Quantity
         );
 
         Result<Guid> createProductResult = await Sender.Send(createProductCommand);

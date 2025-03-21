@@ -27,8 +27,8 @@ internal sealed class GetProductImagesByProductIdQueryHandler(IDbConnectionFacto
              WHERE product_id = @ProductId
              """;
 
-        var productImages = (await connection.QueryAsync<ProductImageRaw>(sql, new { request.ProductId }))
-            .Select(img => new ProductImageResponse(img.Id, new Uri(img.Url), img.ProductId))
+        var productImages = (await connection.QueryAsync<ProductImageResponse>(sql, new { request.ProductId }))
+            .Select(img => new ProductImageResponse(img.Id, img.Url, img.ProductId))
             .ToList();
 
         if (!productImages.Any())

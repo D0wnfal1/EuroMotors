@@ -1,0 +1,107 @@
+<form
+  [formGroup]="productForm"
+  (ngSubmit)="onSubmit()"
+  class="space-y-6 p-6 bg-white shadow-lg rounded-lg"
+>
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="col-span-3">
+      <mat-form-field class="w-full">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" type="text" required />
+      </mat-form-field>
+
+      <mat-form-field class="w-full">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description"></textarea>
+      </mat-form-field>
+
+      <mat-form-field class="w-full">
+        <mat-label>Vendor Code</mat-label>
+        <input matInput formControlName="vendorCode" type="text" required />
+      </mat-form-field>
+
+      <mat-form-field class="w-full">
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="categoryId">
+          <mat-option *ngFor="let category of categories" [value]="category.id">
+            {{ category.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="w-full">
+        <mat-label>Car Model</mat-label>
+        <mat-select formControlName="carModelId">
+          <mat-option *ngFor="let model of carModels" [value]="model.id">
+            {{ model.brand }} {{ model.model }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="w-full">
+        <mat-label>Price</mat-label>
+        <input matInput formControlName="price" type="number" required />
+      </mat-form-field>
+
+      <mat-form-field class="w-full">
+        <mat-label>Discount</mat-label>
+        <input matInput formControlName="discount" type="number" />
+      </mat-form-field>
+
+      <mat-form-field class="w-full">
+        <mat-label>Stock Quantity</mat-label>
+        <input matInput formControlName="stock" type="number" required />
+      </mat-form-field>
+    </div>
+
+    <div class="col-span-1 space-y-4">
+      <mat-label class="text-lg font-semibold">Product Image(s)</mat-label>
+
+      <div *ngIf="productImages.length > 0" class="space-y-4">
+        <div
+          *ngFor="let image of productImages"
+          class="flex items-center space-x-4"
+        >
+          <img
+            [src]="getImageUrl(image.url)"
+            alt="Product Image"
+            class="w-48 h-48 object-cover rounded-lg shadow-lg transition-transform transform hover:scale-105"
+          />
+          <button
+            mat-raised-button
+            color="warn"
+            (click)="deleteImage(image.id)"
+            class="text-sm font-semibold px-4 py-2 rounded-md border-2 border-red-500 hover:bg-red-500 hover:text-white transition-all"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+
+      <div
+        *ngIf="selectedImages.length > 0"
+        class="flex flex-wrap gap-4 justify-center"
+      >
+        <img
+          *ngFor="let img of selectedImages"
+          [src]="img"
+          alt="Selected Image"
+          class="w-32 h-32 object-cover rounded-lg shadow-xl border-2 border-gray-300"
+        />
+      </div>
+
+      <div class="flex items-center justify-between mt-4">
+        <input
+          type="file"
+          (change)="onFileSelected($event)"
+          accept="image/*"
+          multiple
+          class="file-input w-full p-2 border-2 border-gray-300 rounded-md bg-gray-100 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+    </div>
+  </div>
+  <button mat-raised-button color="primary" type="submit" class="mt-6">
+    {{ isEditMode ? "Update Product" : "Create Product" }}
+  </button>
+</form>
