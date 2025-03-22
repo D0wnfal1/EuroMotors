@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AccountService } from '../services/account.service';
-import { map, of } from 'rxjs';
+import { catchError, map, of } from 'rxjs';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const accountService = inject(AccountService);
@@ -20,6 +20,12 @@ export const authGuard: CanActivateFn = (route, state) => {
           });
           return false;
         }
+      }),
+      catchError(() => {
+        router.navigate(['/account/login'], {
+          queryParams: { returnUrl: state.url },
+        });
+        return of(false);
       })
     );
   }

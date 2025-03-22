@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250321121025_Create_Database")]
+    [Migration("20250322213603_Create_Database")]
     partial class Create_Database
     {
         /// <inheritdoc />
@@ -414,7 +414,7 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     b.HasOne("EuroMotors.Domain.Orders.Order", null)
                         .WithMany()
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_payments_orders_order_id");
                 });

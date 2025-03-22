@@ -183,7 +183,7 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         principalSchema: "public",
                         principalTable: "orders",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

@@ -3,7 +3,7 @@ import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../../shared/models/user';
 import { CookieService } from 'ngx-cookie-service';
-import { map } from 'rxjs';
+import { catchError, map, of, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -24,14 +24,19 @@ export class AccountService {
       .pipe(
         map((token: string) => {
           if (token) {
+            console.log('Token received:', token); // Добавляем лог
             this.cookieService.set('AuthToken', token, {
               secure: true,
               sameSite: 'Strict',
               expires: 30,
             });
-            this.getUserInfo().subscribe();
+            return this.getUserInfo();
           }
-          return token;
+          return '';
+        }),
+        catchError((error) => {
+          console.error('Login error:', error);
+          return [];
         })
       );
   }
@@ -41,12 +46,28 @@ export class AccountService {
   }
 
   getUserInfo() {
-    return this.http.get<User>(this.baseUrl + '/users/email').pipe(
-      map((user) => {
-        this.currentUser.set(user);
-        return user;
+    const token = this.cookieService.get('AuthToken');
+
+    if (!token) {
+      console.error('Token is missing!');
+      this.currentUser.set(null);
+      return of(null);
+    }
+
+    return this.http
+      .get<User>(this.baseUrl + '/users/email', {
+        headers: { Authorization: `Bearer ${token}` },
       })
-    );
+      .pipe(
+        tap((user) => {
+          this.currentUser.set(user);
+        }),
+        catchError((error) => {
+          console.error('Error fetching user info', error);
+          this.currentUser.set(null);
+          return of(null);
+        })
+      );
   }
 
   updateUserInfo(values: {
@@ -77,8 +98,15 @@ export class AccountService {
   }
 
   getAuthState() {
+    const token = this.cookieService.get('AuthToken');
+    if (!token) {
+      return of({ isAuthenticated: false });
+    }
     return this.http.get<{ isAuthenticated: boolean }>(
-      this.baseUrl + '/users/auth-status'
+      this.baseUrl + '/users/auth-status',
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
     );
   }
 }

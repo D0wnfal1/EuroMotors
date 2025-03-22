@@ -3,6 +3,15 @@
     <div
       class="flex justify-between items-center mt-4 max-w-screen-2xl mx-auto px-4"
     >
+      <mat-paginator
+        class="bg-white mt-4"
+        [pageSizeOptions]="[5, 10, 20]"
+        [length]="totalItems"
+        [pageSize]="orderParams.pageSize"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+      >
+      </mat-paginator>
       <h2 class="text-2xl font-semibold text-gray-800">Customer orders</h2>
       <mat-form-field appearance="outline" class="mt-2">
         <mat-label>Filter by status</mat-label>
@@ -131,16 +140,6 @@
           ></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
-
-        <mat-paginator
-          class="bg-white mt-4"
-          [pageSizeOptions]="[5, 10, 20]"
-          [length]="totalItems"
-          [pageSize]="orderParams.pageSize"
-          (page)="onPageChange($event)"
-          showFirstLastButtons
-        >
-        </mat-paginator>
       </div>
     </div>
   </div>

@@ -69,7 +69,8 @@ public class OrderController : ControllerBase
         return result.IsSuccess ? Ok(new { orderId = result.Value }) : BadRequest();
     }
 
-    [HttpPatch]
+    [HttpPatch("{id}")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> ChangeOrderStatus(Guid id, OrderStatus status, CancellationToken cancellationToken)
     {
         var command = new ChangeOrderStatusCommand(id, status);
