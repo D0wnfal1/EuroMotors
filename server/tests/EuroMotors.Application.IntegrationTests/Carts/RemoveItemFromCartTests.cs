@@ -3,7 +3,6 @@ using EuroMotors.Application.Carts.RemoveItemFromCart;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Products;
-using EuroMotors.Domain.Users;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.Carts;

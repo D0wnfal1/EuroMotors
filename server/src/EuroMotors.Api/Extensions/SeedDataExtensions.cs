@@ -5,7 +5,6 @@ using EuroMotors.Application.Abstractions.Authentication;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Categories;
-using EuroMotors.Domain.ProductImages;
 using EuroMotors.Domain.Products;
 using EuroMotors.Domain.Users;
 
@@ -145,8 +144,8 @@ public static class SeedDataExtensions
 
         var roleUserMappings = new[]
         {
-            new { UserId = users[0].Id, RoleId = roles[0].Id }, 
-            new { UserId = users[1].Id, RoleId = roles[1].Id }  
+            new { UserId = users[0].Id, RoleId = roles[0].Id },
+            new { UserId = users[1].Id, RoleId = roles[1].Id }
         };
 
         const string roleUserSql = @"

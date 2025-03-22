@@ -2,6 +2,7 @@
 using EuroMotors.Application.Categories.GetByIdCategory;
 using EuroMotors.Application.Categories.GetCategories;
 using EuroMotors.Application.IntegrationTests.Abstractions;
+using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Domain.Abstractions;
 using Shouldly;
 
@@ -20,14 +21,14 @@ public class GetCategoriesTests : BaseIntegrationTest
         // Arrange
         await CleanDatabaseAsync();
 
-        var query = new GetCategoriesQuery();
+        var query = new GetCategoriesQuery(1, 10);
 
         // Act
-        Result<IReadOnlyCollection<CategoryResponse>> result = await Sender.Send(query);
+        Result<Pagination<CategoryResponse>> result = await Sender.Send(query);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
-        result.Value.ShouldBeEmpty();
+        result.Value.Data.ShouldBeEmpty();
     }
 
     [Fact]
@@ -40,10 +41,10 @@ public class GetCategoriesTests : BaseIntegrationTest
         await Sender.CreateCategoryAsync(faker.Music.Genre());
         await Sender.CreateCategoryAsync(faker.Music.Genre());
 
-        var query = new GetCategoriesQuery();
+        var query = new GetCategoriesQuery(1, 10);
 
         // Act
-        Result<IReadOnlyCollection<CategoryResponse>> result = await Sender.Send(query);
+        Result<Pagination<CategoryResponse>> result = await Sender.Send(query);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();

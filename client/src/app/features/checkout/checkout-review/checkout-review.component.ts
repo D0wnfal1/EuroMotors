@@ -43,7 +43,7 @@ export class CheckoutReviewComponent {
   }
 
   loadProductImage(productId: string) {
-    this.productService.getProductImages(productId).subscribe((images) => {
+    this.imageService.getProductImages(productId).subscribe((images) => {
       if (images.length > 0) {
         this.productImages[productId] = images[0];
       }

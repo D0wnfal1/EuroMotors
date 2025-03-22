@@ -3,10 +3,8 @@ using System.Text;
 using Dapper;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
-using EuroMotors.Application.Products.GetProductById;
 using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Domain.Abstractions;
-using EuroMotors.Domain.Products;
 
 namespace EuroMotors.Application.Orders.GetOrders;
 

@@ -1,7 +1,6 @@
 using EuroMotors.Api;
 using EuroMotors.Api.Extensions;
 using EuroMotors.Application;
-using EuroMotors.Application.Abstractions.Authentication;
 using EuroMotors.Infrastructure;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;

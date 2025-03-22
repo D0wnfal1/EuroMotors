@@ -29,7 +29,7 @@ public sealed class Product : Entity
 
     public bool IsAvailable { get; private set; }
 
-    public List<ProductImage> Images { get; private set; } = []; 
+    public List<ProductImage> Images { get; private set; } = [];
 
     public static Product Create(
         string name,

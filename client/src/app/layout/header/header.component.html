@@ -15,10 +15,7 @@
     </nav>
     <div class="flex gap-3 align-middle">
       <ng-container *ngIf="accountService.isAdmin()">
-        <button mat-button [matMenuTriggerFor]="adminMenu">
-          <mat-icon>arrow_drop_down</mat-icon>
-          Admin
-        </button>
+        <button mat-stroked-button routerLink="/admin">Admin</button>
       </ng-container>
       <a
         routerLink="/cart"
@@ -43,8 +40,7 @@
     </div>
   </div>
 </header>
-
-@if (busyService.loading) {
+> @if (busyService.loading) {
 <mat-progress-bar
   mode="indeterminate"
   class="fixed top-20 z-50"
@@ -75,6 +71,14 @@
   <button mat-menu-item class="px-3" routerLink="/admin/products">
     <mat-icon>inventory 2</mat-icon>
     Products
+  </button>
+  <button mat-menu-item class="px-3" routerLink="/admin/categories">
+    <mat-icon>create_new_folder</mat-icon>
+    Categories
+  </button>
+  <button mat-menu-item class="px-3" routerLink="/admin/carmodels">
+    <mat-icon>directions_car</mat-icon>
+    Car Models
   </button>
   <mat-divider></mat-divider>
   <button mat-menu-item class="px-3" (click)="logout()">

@@ -1,22 +1,25 @@
 ﻿using System.Data;
+using System.Text;
 using Dapper;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Categories.GetByIdCategory;
+using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Domain.Abstractions;
 
 namespace EuroMotors.Application.Categories.GetCategories;
 
 internal sealed class GetCategoriesQueryHandler(IDbConnectionFactory dbConnectionFactory)
-    : IQueryHandler<GetCategoriesQuery, IReadOnlyCollection<CategoryResponse>>
+    : IQueryHandler<GetCategoriesQuery, Pagination<CategoryResponse>>
 {
-    public async Task<Result<IReadOnlyCollection<CategoryResponse>>> Handle(
+    public async Task<Result<Pagination<CategoryResponse>>> Handle(
         GetCategoriesQuery request,
         CancellationToken cancellationToken)
     {
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
-        const string sql =
+        var sql = new StringBuilder();
+        sql.AppendLine(
             $"""
              SELECT
                  id AS {nameof(CategoryResponse.Id)},
@@ -24,10 +27,45 @@ internal sealed class GetCategoriesQueryHandler(IDbConnectionFactory dbConnectio
                  is_archived AS {nameof(CategoryResponse.IsArchived)},
                  image_url AS {nameof(CategoryResponse.ImageUrl)}
              FROM categories
-             """;
+             """);
 
-        List<CategoryResponse> categories = (await connection.QueryAsync<CategoryResponse>(sql, request)).AsList();
+        var parameters = new Dictionary<string, object>();
 
-        return categories;
+        if (request.PageSize > 0)
+        {
+            parameters.Add("PageSize", request.PageSize);
+            parameters.Add("Offset", (request.PageNumber - 1) * request.PageSize);
+            sql.AppendLine("LIMIT @PageSize OFFSET @Offset");
+        }
+
+        List<CategoryResponse> categories = (await connection.QueryAsync<CategoryResponse>(sql.ToString(), parameters)).AsList();
+
+        var countSql = new StringBuilder();
+        countSql.Append("SELECT COUNT(*) FROM categories ");
+
+        int totalCount = await connection.ExecuteScalarAsync<int>(countSql.ToString());
+
+        if (request.PageSize > 0)
+        {
+            var paginatedResult = new Pagination<CategoryResponse>
+            {
+                PageIndex = request.PageNumber,
+                PageSize = request.PageSize,
+                Count = totalCount,
+                Data = categories
+            };
+
+            return Result.Success(paginatedResult);
+        }
+
+        var result = new Pagination<CategoryResponse>
+        {
+            PageIndex = 1,
+            PageSize = totalCount,
+            Count = totalCount,
+            Data = categories
+        };
+
+        return Result.Success(result);
     }
 }

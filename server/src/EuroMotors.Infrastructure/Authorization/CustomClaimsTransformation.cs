@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.DependencyInjection;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using EuroMotors.Domain.Users;
 using EuroMotors.Infrastructure.Authentication;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace EuroMotors.Infrastructure.Authorization;

@@ -8,11 +8,11 @@ public sealed class CartService(ICacheService cacheService)
 
     public async Task<Cart> GetAsync(Guid cartId, CancellationToken cancellationToken = default)
     {
-        
+
         string cacheKey = CreateCacheKey(cartId);
 
         Cart cart = await cacheService.GetAsync<Cart>(cacheKey, cancellationToken) ??
-                    Cart.CreateDefault(cartId); 
+                    Cart.CreateDefault(cartId);
 
         return cart;
     }

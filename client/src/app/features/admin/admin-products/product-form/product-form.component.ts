@@ -18,6 +18,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ProductImage } from '../../../../shared/models/productImage';
 import { ImageService } from '../../../../core/services/image.service';
+import { CategoryService } from '../../../../core/services/category.service';
+import { CarmodelService } from '../../../../core/services/carmodel.service';
 
 @Component({
   selector: 'app-product-form',
@@ -47,6 +49,8 @@ export class ProductFormComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private productService: ProductService,
+    private categoryService: CategoryService,
+    private carModelService: CarmodelService,
     private imageService: ImageService,
     private route: ActivatedRoute,
     private router: Router
@@ -67,15 +71,15 @@ export class ProductFormComponent implements OnInit {
       stock: [0, [Validators.required, Validators.min(0)]],
     });
 
-    this.productService.categories$.subscribe(
+    this.categoryService.categories$.subscribe(
       (categories) => (this.categories = categories)
     );
-    this.productService.carModels$.subscribe(
+    this.carModelService.carModels$.subscribe(
       (carModels) => (this.carModels = carModels)
     );
 
-    this.productService.getCategories();
-    this.productService.getCarModels();
+    this.categoryService.getCategories({ pageNumber: 1, pageSize: 0 });
+    this.carModelService.getCarModels({ pageNumber: 1, pageSize: 0 });
 
     if (this.isEditMode) {
       this.productService
@@ -94,7 +98,7 @@ export class ProductFormComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input.files) {
       this.selectedFiles = Array.from(input.files);
-      this.selectedImages = []; // Очищаем предыдущие превью
+      this.selectedImages = [];
       for (const file of this.selectedFiles) {
         const reader = new FileReader();
         reader.onload = () => {
@@ -105,7 +109,10 @@ export class ProductFormComponent implements OnInit {
     }
   }
 
-  deleteImage(imageId: string) {
+  deleteImage(imageId: string, event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+
     this.imageService.deleteProductImage(imageId).subscribe({
       next: () => {
         this.productImages = this.productImages.filter(

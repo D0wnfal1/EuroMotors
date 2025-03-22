@@ -18,6 +18,9 @@ import { FiltersDialogComponent } from './filters-dialog/filters-dialog.componen
 import { ProductItemComponent } from './product-item/product-item.component';
 import { ProductService } from '../../core/services/product.service';
 import { ProductListComponent } from '../../shared/components/product-list/product-list.component';
+import { ImageService } from '../../core/services/image.service';
+import { CarmodelService } from '../../core/services/carmodel.service';
+import { CategoryService } from '../../core/services/category.service';
 
 @Component({
   selector: 'app-shop',
@@ -33,6 +36,9 @@ import { ProductListComponent } from '../../shared/components/product-list/produ
 })
 export class ShopComponent {
   private productService = inject(ProductService);
+  private categoryService = inject(CategoryService);
+  private carModelService = inject(CarmodelService);
+  private imageService = inject(ImageService);
   private dialogService = inject(MatDialog);
   products?: Pagination<Product>;
   productImages: { [key: string]: ProductImage[] } = {};
@@ -49,8 +55,8 @@ export class ShopComponent {
   }
 
   initialiseShop() {
-    this.productService.getCategories();
-    this.productService.getCarModels();
+    this.categoryService.getCategories({ pageNumber: 1, pageSize: 0 });
+    this.carModelService.getCarModels({ pageNumber: 1, pageSize: 0 });
     this.getProducts();
   }
 
@@ -67,7 +73,7 @@ export class ShopComponent {
   loadProductImages() {
     if (this.products?.data) {
       this.products.data.forEach((product) => {
-        this.productService.getProductImages(product.id).subscribe({
+        this.imageService.getProductImages(product.id).subscribe({
           next: (images) => {
             product.images = images;
           },

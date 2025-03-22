@@ -14,6 +14,8 @@ import { PageEvent } from '@angular/material/paginator';
 import { CarModel } from '../../../shared/models/carModel';
 import { Category } from '../../../shared/models/category';
 import { MatIcon } from '@angular/material/icon';
+import { CarmodelService } from '../../../core/services/carmodel.service';
+import { CategoryService } from '../../../core/services/category.service';
 
 @Component({
   selector: 'app-admin-products',
@@ -32,6 +34,8 @@ import { MatIcon } from '@angular/material/icon';
 })
 export class AdminProductsComponent implements OnInit {
   private productService = inject(ProductService);
+  private categoryService = inject(CategoryService);
+  private carModelService = inject(CarmodelService);
   categories: Category[] = [];
   carModels: CarModel[] = [];
   products?: Pagination<Product>;
@@ -59,15 +63,15 @@ export class AdminProductsComponent implements OnInit {
   }
 
   loadCategories() {
-    this.productService.getCategories();
-    this.productService.categories$.subscribe((data) => {
+    this.categoryService.getCategories({ pageNumber: 1, pageSize: 0 });
+    this.categoryService.categories$.subscribe((data) => {
       this.categories = data;
     });
   }
 
   loadCarModels() {
-    this.productService.getCarModels();
-    this.productService.carModels$.subscribe((data) => {
+    this.carModelService.getCarModels({ pageNumber: 1, pageSize: 0 });
+    this.carModelService.carModels$.subscribe((data) => {
       this.carModels = data;
     });
   }

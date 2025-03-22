@@ -1,9 +1,7 @@
 ﻿using EuroMotors.Application.Abstractions.Authentication;
-using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Users;
-using Microsoft.EntityFrameworkCore;
 
 namespace EuroMotors.Application.Users.Login;
 

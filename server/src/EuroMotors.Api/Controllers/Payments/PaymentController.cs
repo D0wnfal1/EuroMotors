@@ -51,7 +51,7 @@ public class PaymentController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreatePayment([FromQuery]Guid orderId, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreatePayment([FromQuery] Guid orderId, CancellationToken cancellationToken)
     {
         var command = new CreatePaymentCommand(orderId);
 

@@ -1,5 +1,4 @@
 ﻿using EuroMotors.Application.Abstractions.Messaging;
-using EuroMotors.Domain.Payments;
 
 namespace EuroMotors.Application.Payments.CreatePayment;
 

@@ -7,7 +7,6 @@ using EuroMotors.Application.Products.CreateProduct;
 using EuroMotors.Application.Users.Register;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Products;
-using EuroMotors.Domain.Users;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.Carts;

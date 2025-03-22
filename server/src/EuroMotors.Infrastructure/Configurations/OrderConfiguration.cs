@@ -27,11 +27,11 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(o => o.DeliveryMethod)
-            .HasConversion<string>() 
+            .HasConversion<string>()
             .IsRequired();
 
         builder.Property(o => o.ShippingAddress)
-            .HasMaxLength(500) 
+            .HasMaxLength(500)
             .IsRequired(false);
 
         builder.Property(o => o.PaymentMethod)

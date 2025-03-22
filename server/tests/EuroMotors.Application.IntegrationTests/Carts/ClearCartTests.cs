@@ -1,7 +1,6 @@
 ﻿using EuroMotors.Application.Carts.ClearCart;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Domain.Abstractions;
-using EuroMotors.Domain.Users;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.Carts;

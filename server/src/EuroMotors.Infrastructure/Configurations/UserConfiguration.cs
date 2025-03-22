@@ -13,11 +13,11 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasIndex(u => u.Email).IsUnique();
 
         builder.Property(u => u.PhoneNumber)
-            .HasMaxLength(20) 
-            .IsRequired(false); 
+            .HasMaxLength(20)
+            .IsRequired(false);
 
         builder.Property(u => u.City)
-            .HasMaxLength(100) 
+            .HasMaxLength(100)
             .IsRequired(false);
     }
 }

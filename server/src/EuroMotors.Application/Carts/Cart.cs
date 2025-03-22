@@ -16,5 +16,5 @@ public sealed class Cart
 
     public decimal TotalPrice => CartItems.Sum(item => item.TotalPrice);
 
-    internal static Cart CreateDefault(Guid cartId) => new (cartId);
+    internal static Cart CreateDefault(Guid cartId) => new(cartId);
 }

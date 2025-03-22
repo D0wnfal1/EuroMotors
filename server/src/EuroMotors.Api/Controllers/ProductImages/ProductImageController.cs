@@ -1,5 +1,4 @@
-﻿using EuroMotors.Application.ProductImages.CreateProductImage;
-using EuroMotors.Application.ProductImages.DeleteProductImage;
+﻿using EuroMotors.Application.ProductImages.DeleteProductImage;
 using EuroMotors.Application.ProductImages.DeleteProductImagesByProductId;
 using EuroMotors.Application.ProductImages.GetProductImageById;
 using EuroMotors.Application.ProductImages.GetProductImagesByProductId;

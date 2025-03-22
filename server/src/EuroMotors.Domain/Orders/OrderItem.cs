@@ -1,5 +1,4 @@
 ﻿using EuroMotors.Domain.Abstractions;
-using EuroMotors.Domain.Products;
 
 namespace EuroMotors.Domain.Orders;
 

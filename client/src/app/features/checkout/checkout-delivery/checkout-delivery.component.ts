@@ -133,9 +133,16 @@ export class CheckoutDeliveryComponent implements OnInit, OnChanges {
     if (changes['city'] && changes['city'].currentValue) {
       this.cityControl.setValue(changes['city'].currentValue);
       const query = this.queryControl.value ?? '';
-      // setTimeout(() => {
-      //   this.loadWarehouses(changes['city'].currentValue, query);
-      // }, 1000);
+      setTimeout(() => {
+        this.loadWarehouses(changes['city'].currentValue, query);
+      }, 1000);
+    }
+    if (changes['warehouse'] && changes['warehouse'].currentValue) {
+      this.cityControl.setValue(changes['warehouse'].currentValue);
+      const query = this.queryControl.value ?? '';
+      setTimeout(() => {
+        this.loadWarehouses(changes['warehouse'].currentValue, query);
+      }, 1000);
     }
   }
 
@@ -165,7 +172,6 @@ export class CheckoutDeliveryComponent implements OnInit, OnChanges {
       warehouseControl.setValue(warehouse);
       this.isWarehouseSelected = true;
       this.selectedWarehouseDescription = warehouse.description;
-      // Emit the selected warehouse name to parent component
       this.warehouseSelected.emit(warehouse.description);
     }
   }

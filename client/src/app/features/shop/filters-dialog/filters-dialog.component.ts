@@ -6,6 +6,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../../core/services/product.service';
 import { CommonModule } from '@angular/common';
+import { CategoryService } from '../../../core/services/category.service';
+import { CarmodelService } from '../../../core/services/carmodel.service';
 
 @Component({
   selector: 'app-filters-dialog',
@@ -22,7 +24,8 @@ import { CommonModule } from '@angular/common';
   styleUrl: './filters-dialog.component.scss',
 })
 export class FiltersDialogComponent {
-  productService = inject(ProductService);
+  categoryService = inject(CategoryService);
+  carModelService = inject(CarmodelService);
   private dialogRef = inject(MatDialogRef<FiltersDialogComponent>);
   data = inject(MAT_DIALOG_DATA);
 

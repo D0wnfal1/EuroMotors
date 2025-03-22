@@ -32,7 +32,7 @@ internal sealed class GetUserByEmailQueryHandler(IUserRepository userRepository,
             Email = user.Email,
             PhoneNumber = user.PhoneNumber,
             City = user.City,
-            Roles = roles  
+            Roles = roles
         };
 
         return userResponse;

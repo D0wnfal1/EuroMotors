@@ -1,5 +1,4 @@
 ﻿using EuroMotors.Domain.Abstractions;
-using EuroMotors.Domain.Orders;
 using EuroMotors.Domain.Payments.Events;
 
 namespace EuroMotors.Domain.Payments;

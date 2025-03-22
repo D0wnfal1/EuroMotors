@@ -18,8 +18,8 @@ internal sealed class UserRepository : Repository<User>, IUserRepository
     }
 
     public void Update(User user)
-    { 
-        _dbContext.Users.Update(user);  
+    {
+        _dbContext.Users.Update(user);
     }
 
     public override void Insert(User user)

@@ -1,7 +1,6 @@
 ﻿using Bogus;
 using EuroMotors.Application.CarModels.CreateCarModel;
 using EuroMotors.Application.Categories.CreateCategory;
-using EuroMotors.Application.ProductImages.CreateProductImage;
 using EuroMotors.Application.ProductImages.UploadProductImage;
 using EuroMotors.Application.Products.CreateProduct;
 using EuroMotors.Application.Users.Register;

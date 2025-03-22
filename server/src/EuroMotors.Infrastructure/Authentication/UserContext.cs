@@ -24,7 +24,7 @@ internal sealed class UserContext : IUserContext
         _httpContextAccessor
             .HttpContext?
             .User
-            .FindAll(ClaimTypes.Role)  
+            .FindAll(ClaimTypes.Role)
             .Select(c => c.Value)
             .ToList() ?? [];
 }

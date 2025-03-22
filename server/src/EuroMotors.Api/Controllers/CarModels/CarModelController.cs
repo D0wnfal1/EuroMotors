@@ -5,6 +5,7 @@ using EuroMotors.Application.CarModels.GetCarModelById;
 using EuroMotors.Application.CarModels.GetCarModels;
 using EuroMotors.Application.CarModels.UpdateCarModel;
 using EuroMotors.Application.CarModels.UpdateImage;
+using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Domain.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -23,11 +24,12 @@ public class CarModelController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetCarModels(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetCarModels(CancellationToken cancellationToken, [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10)
     {
-        var query = new GetCarModelsQuery();
+        var query = new GetCarModelsQuery(pageNumber, pageSize);
 
-        Result<IReadOnlyCollection<CarModelResponse>> result = await _sender.Send(query, cancellationToken);
+        Result<Pagination<CarModelResponse>> result = await _sender.Send(query, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
