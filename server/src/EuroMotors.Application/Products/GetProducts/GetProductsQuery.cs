@@ -1,4 +1,5 @@
 ﻿using EuroMotors.Application.Abstractions.Messaging;
+using EuroMotors.Application.Abstractions.Pagination;
 using EuroMotors.Application.Products.GetProductById;
 
 namespace EuroMotors.Application.Products.GetProducts;

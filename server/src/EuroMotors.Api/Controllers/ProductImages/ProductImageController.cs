@@ -6,6 +6,7 @@ using EuroMotors.Application.ProductImages.UpdateProductImage;
 using EuroMotors.Application.ProductImages.UploadProductImage;
 using EuroMotors.Domain.Abstractions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EuroMotors.Api.Controllers.ProductImages;
@@ -39,11 +40,12 @@ public class ProductImageController : ControllerBase
 
         Result<IReadOnlyCollection<ProductImageResponse>> result = await _sender.Send(query, cancellationToken);
 
-        return Ok(result.IsSuccess ? result.Value : new List<ProductImageResponse>());
+        return Ok(result.IsSuccess ? result.Value : (List<ProductImageResponse>) []);
     }
 
     [HttpPost("upload")]
     [Consumes("multipart/form-data")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> UploadProductImage([FromForm] UploadProductImageRequest request, CancellationToken cancellationToken)
     {
         var command = new UploadProductImageCommand(request.File, request.ProductId);
@@ -56,6 +58,7 @@ public class ProductImageController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> UpdateProductImage(Guid id, [FromBody] UploadProductImageRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateProductImageCommand(id, request.File, request.ProductId);
@@ -66,6 +69,7 @@ public class ProductImageController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> DeleteProductImage(Guid id, CancellationToken cancellationToken)
     {
         var command = new DeleteProductImageCommand(id);

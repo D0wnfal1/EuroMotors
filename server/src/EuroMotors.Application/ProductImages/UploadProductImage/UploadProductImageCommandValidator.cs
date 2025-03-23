@@ -1,7 +1,6 @@
-﻿using EuroMotors.Application.ProductImages.UploadProductImage;
-using FluentValidation;
+﻿using FluentValidation;
 
-namespace EuroMotors.Application.ProductImages.CreateProductImage;
+namespace EuroMotors.Application.ProductImages.UploadProductImage;
 
 internal sealed class UploadProductImageCommandValidator : AbstractValidator<UploadProductImageCommand>
 {

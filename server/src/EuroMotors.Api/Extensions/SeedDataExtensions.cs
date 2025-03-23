@@ -32,20 +32,19 @@ public static class SeedDataExtensions
             .CustomInstantiator(f => CarModel.Create(
                 f.Vehicle.Manufacturer(),
                 f.Vehicle.Model()
-            ))
-            .RuleFor(c => c.ImageUrl, f => new Uri($"https://loremflickr.com/320/240/car?random={f.Random.Number(1, 1000)}"));
+            ));
 
         List<CarModel>? carModels = faker.Generate(10);
 
-        const string sql = @"INSERT INTO car_models (id, brand, model, image_url) 
-                         VALUES (@Id, @Brand, @Model, @ImageUrl);";
+        const string sql = @"INSERT INTO car_models (id, brand, model, image_path) 
+                         VALUES (@Id, @Brand, @Model, @ImagePath);";
 
         connection.Execute(sql, carModels.Select(c => new
         {
             c.Id,
             c.Brand,
             c.Model,
-            ImageUrl = c.ImageUrl?.ToString()
+            c.ImagePath
         }));
     }
 
@@ -54,20 +53,19 @@ public static class SeedDataExtensions
         Faker<Category>? faker = new Faker<Category>()
             .CustomInstantiator(f => Category.Create(
                 f.Commerce.Categories(1)[0]
-            ))
-            .RuleFor(c => c.ImageUrl, f => new Uri($"https://loremflickr.com/320/240/category?random={f.Random.Number(1, 1000)}"));
+            ));
 
         List<Category>? categories = faker.Generate(10);
 
-        const string sql = @"INSERT INTO categories (id, name, is_archived, image_url) 
-                         VALUES (@Id, @Name, @IsArchived, @ImageUrl);";
+        const string sql = @"INSERT INTO categories (id, name, is_archived, image_path) 
+                         VALUES (@Id, @Name, @IsArchived, @ImagePath);";
 
         connection.Execute(sql, categories.Select(c => new
         {
             c.Id,
             c.Name,
             c.IsArchived,
-            ImageUrl = c.ImageUrl?.ToString()
+            c.ImagePath
         }));
     }
 

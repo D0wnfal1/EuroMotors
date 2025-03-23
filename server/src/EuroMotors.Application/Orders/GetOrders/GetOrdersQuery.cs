@@ -1,5 +1,5 @@
 ﻿using EuroMotors.Application.Abstractions.Messaging;
-using EuroMotors.Application.Products.GetProducts;
+using EuroMotors.Application.Abstractions.Pagination;
 using EuroMotors.Domain.Orders;
 
 namespace EuroMotors.Application.Orders.GetOrders;

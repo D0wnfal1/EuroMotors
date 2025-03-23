@@ -1,10 +1,10 @@
-﻿using EuroMotors.Application.Orders.ChangeOrderStatus;
+﻿using EuroMotors.Application.Abstractions.Pagination;
+using EuroMotors.Application.Orders.ChangeOrderStatus;
 using EuroMotors.Application.Orders.CreateOrder;
 using EuroMotors.Application.Orders.DeleteOrder;
 using EuroMotors.Application.Orders.GetOrderById;
 using EuroMotors.Application.Orders.GetOrders;
 using EuroMotors.Application.Orders.GetUserOrders;
-using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Orders;
 using MediatR;
@@ -81,6 +81,7 @@ public class OrderController : ControllerBase
     }
 
     [HttpDelete]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> DeleteOrder(Guid id, CancellationToken cancellationToken)
     {
         var command = new DeleteOrderCommand(id);

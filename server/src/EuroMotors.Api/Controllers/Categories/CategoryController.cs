@@ -1,14 +1,13 @@
-﻿using EuroMotors.Application.Categories.ArchiveCategory;
+﻿using EuroMotors.Application.Abstractions.Pagination;
+using EuroMotors.Application.Categories.ArchiveCategory;
 using EuroMotors.Application.Categories.CreateCategory;
 using EuroMotors.Application.Categories.DeleteCategory;
-using EuroMotors.Application.Categories.DeleteImage;
 using EuroMotors.Application.Categories.GetByIdCategory;
 using EuroMotors.Application.Categories.GetCategories;
 using EuroMotors.Application.Categories.UpdateCategory;
-using EuroMotors.Application.Categories.UpdateImage;
-using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Domain.Abstractions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EuroMotors.Api.Controllers.Categories;
@@ -46,9 +45,10 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateCategory([FromBody] CategoryRequest request, CancellationToken cancellationToken)
+    [Authorize(Roles = Roles.Admin)]
+    public async Task<IActionResult> CreateCategory([FromForm] CategoryRequest request, CancellationToken cancellationToken)
     {
-        var command = new CreateCategoryCommand(request.Name);
+        var command = new CreateCategoryCommand(request.Name, request.Image);
 
         Result<Guid> result = await _sender.Send(command, cancellationToken);
 
@@ -58,19 +58,10 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateCategory(Guid id, [FromBody] CategoryRequest request, CancellationToken cancellationToken)
+    [Authorize(Roles = Roles.Admin)]
+    public async Task<IActionResult> UpdateCategory(Guid id, [FromForm] CategoryRequest request, CancellationToken cancellationToken)
     {
-        var command = new UpdateCategoryCommand(id, request.Name);
-
-        Result result = await _sender.Send(command, cancellationToken);
-
-        return result.IsSuccess ? NoContent() : BadRequest(result.Error);
-    }
-
-    [HttpPut("{id}/image")]
-    public async Task<IActionResult> UpdateCategoryImage(Guid id, Uri url, CancellationToken cancellationToken)
-    {
-        var command = new UpdateCategoryImageCommand(id, url);
+        var command = new UpdateCategoryCommand(id, request.Name, request.Image);
 
         Result result = await _sender.Send(command, cancellationToken);
 
@@ -78,6 +69,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPut("{id}/archive")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> ArchiveCategory(Guid id, CancellationToken cancellationToken)
     {
         var command = new ArchiveCategoryCommand(id);
@@ -88,19 +80,10 @@ public class CategoryController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> DeleteCategory(Guid id, CancellationToken cancellationToken)
     {
         var command = new DeleteCategoryCommand(id);
-
-        Result result = await _sender.Send(command, cancellationToken);
-
-        return result.IsSuccess ? NoContent() : NotFound(result.Error);
-    }
-
-    [HttpDelete("{id}/image")]
-    public async Task<IActionResult> DeleteCategoryImage(Guid id, CancellationToken cancellationToken)
-    {
-        var command = new DeleteCategoryImageCommand(id);
 
         Result result = await _sender.Send(command, cancellationToken);
 

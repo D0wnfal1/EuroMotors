@@ -1,4 +1,6 @@
 ﻿using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.CarModels.Events;
+using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Categories.Events;
 using EuroMotors.Domain.Products;
 
@@ -15,7 +17,7 @@ public class Category : Entity
 
     public bool IsArchived { get; private set; }
 
-    public Uri? ImageUrl { get; private set; }
+    public string? ImagePath { get; private set; }
 
     public List<Product> Products { get; private set; } = [];
 
@@ -57,30 +59,15 @@ public class Category : Entity
         RaiseDomainEvent(new CategoryNameChangedDomainEvent(Id, Name));
     }
 
-    public Result UpdateImage(Uri newUrl)
+    public Result SetImagePath(string path)
     {
-        if (string.IsNullOrWhiteSpace(newUrl.ToString()))
+        if (string.IsNullOrWhiteSpace(path))
         {
-            return Result.Failure(CategoryErrors.InvalidUrl(newUrl));
+            return Result.Failure(CategoryErrors.InvalidPath(path));
         }
-
-        ImageUrl = newUrl;
+        ImagePath = path;
 
         RaiseDomainEvent(new CategoryImageUpdatedDomainEvent(Id));
-
-        return Result.Success();
-    }
-
-    public Result DeleteImage()
-    {
-        if (Id == Guid.Empty)
-        {
-            return Result.Failure(CategoryErrors.NotFound(Id));
-        }
-
-        ImageUrl = null;
-
-        RaiseDomainEvent(new CategoryImageDeletedDomainEvent(Id));
 
         return Result.Success();
     }

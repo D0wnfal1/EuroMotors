@@ -30,7 +30,7 @@ internal static class CommandHelpers
 
     public static async Task<Guid> CreateCategoryAsync(this ISender sender, string CategoryName)
     {
-        var createCategoryCommand = new CreateCategoryCommand(CategoryName);
+        var createCategoryCommand = new CreateCategoryCommand(CategoryName, null);
         Result<Guid> result = await sender.Send(createCategoryCommand);
         result.IsSuccess.ShouldBeTrue();
         return result.Value;
@@ -38,7 +38,7 @@ internal static class CommandHelpers
 
     public static async Task<Guid> CreateCarModelAsync(this ISender sender, string brand, string model)
     {
-        var createCarModelCommand = new CreateCarModelCommand(brand, model);
+        var createCarModelCommand = new CreateCarModelCommand(brand, model, null);
         Result<Guid> result = await sender.Send(createCarModelCommand);
         result.IsSuccess.ShouldBeTrue();
         return result.Value;

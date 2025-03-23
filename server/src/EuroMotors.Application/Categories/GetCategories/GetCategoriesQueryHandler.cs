@@ -3,8 +3,8 @@ using System.Text;
 using Dapper;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
+using EuroMotors.Application.Abstractions.Pagination;
 using EuroMotors.Application.Categories.GetByIdCategory;
-using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Domain.Abstractions;
 
 namespace EuroMotors.Application.Categories.GetCategories;
@@ -25,7 +25,7 @@ internal sealed class GetCategoriesQueryHandler(IDbConnectionFactory dbConnectio
                  id AS {nameof(CategoryResponse.Id)},
                  name AS {nameof(CategoryResponse.Name)},
                  is_archived AS {nameof(CategoryResponse.IsArchived)},
-                 image_url AS {nameof(CategoryResponse.ImageUrl)}
+                 image_path AS {nameof(CategoryResponse.ImagePath)}
              FROM categories
              """);
 

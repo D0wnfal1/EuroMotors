@@ -39,12 +39,12 @@ export class CategoryService {
     return this.http.get<Category>(`${this.baseUrl}/categories/${id}`);
   }
 
-  createCategory(category: Category): Observable<string> {
-    return this.http.post<string>(`${this.baseUrl}/categories`, category);
+  createCategory(formData: FormData): Observable<string> {
+    return this.http.post<string>(`${this.baseUrl}/categories`, formData);
   }
 
-  updateCategory(id: string, category: Category): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/categories/${id}`, category);
+  updateCategory(id: string, formData: FormData): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/categories/${id}`, formData);
   }
 
   deleteCategory(id: string): Observable<void> {

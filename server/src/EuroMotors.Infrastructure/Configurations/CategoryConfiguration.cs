@@ -17,14 +17,11 @@ internal sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
         builder.Property(c => c.IsArchived)
             .IsRequired();
 
-        builder.Property(c => c.ImageUrl)
-            .HasConversion(
-                v => v!.ToString(),
-                v => new Uri(v));
+        builder.Property(c => c.ImagePath);
 
         builder.HasMany(c => c.Products)
             .WithOne()
             .HasForeignKey(p => p.CategoryId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

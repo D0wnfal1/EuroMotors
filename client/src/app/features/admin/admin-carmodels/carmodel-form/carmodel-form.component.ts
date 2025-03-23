@@ -35,6 +35,8 @@ export class CarmodelFormComponent implements OnInit {
   carModelForm: FormGroup = new FormGroup({});
   isEditMode: boolean = false;
   carModelId: string | null = null;
+  imageInvalid: boolean = false;
+  selectedImage: File | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -80,33 +82,48 @@ export class CarmodelFormComponent implements OnInit {
     }
   }
 
+  onImageSelected(event: any) {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      this.selectedImage = file;
+      this.imageInvalid = false;
+    } else {
+      this.selectedImage = null;
+      this.imageInvalid = true;
+    }
+  }
+
   onSubmit() {
     if (this.carModelForm.invalid) {
       return;
     }
 
-    const carModelData: CarModel = this.carModelForm.value;
+    const formData = new FormData();
+    formData.append('brand', this.carModelForm.get('brand')?.value);
+    formData.append('model', this.carModelForm.get('model')?.value);
+
+    if (this.selectedImage) {
+      formData.append('image', this.selectedImage, this.selectedImage.name);
+    }
 
     if (this.isEditMode && this.carModelId) {
-      this.carModelService
-        .updateCarModel(this.carModelId, carModelData)
-        .subscribe({
-          next: () => {
-            this.snackBar.open('CarModel updated successfully!', 'Close', {
-              duration: 3000,
-              panelClass: ['snack-success'],
-            });
-            this.router.navigate(['/admin/carmodels']);
-          },
-          error: () => {
-            this.snackBar.open('Failed to update car model', 'Close', {
-              duration: 3000,
-              panelClass: ['snack-error'],
-            });
-          },
-        });
+      this.carModelService.updateCarModel(this.carModelId, formData).subscribe({
+        next: () => {
+          this.snackBar.open('CarModel updated successfully!', 'Close', {
+            duration: 3000,
+            panelClass: ['snack-success'],
+          });
+          this.router.navigate(['/admin/carmodels']);
+        },
+        error: () => {
+          this.snackBar.open('Failed to update car model', 'Close', {
+            duration: 3000,
+            panelClass: ['snack-error'],
+          });
+        },
+      });
     } else {
-      this.carModelService.createCarModel(carModelData).subscribe({
+      this.carModelService.createCarModel(formData).subscribe({
         next: (newCarModelId) => {
           this.snackBar.open('CarModel created successfully!', 'Close', {
             duration: 3000,

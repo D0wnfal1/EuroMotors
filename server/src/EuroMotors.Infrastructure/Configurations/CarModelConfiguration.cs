@@ -18,10 +18,8 @@ internal sealed class CarModelConfiguration : IEntityTypeConfiguration<CarModel>
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.Property(cm => cm.ImageUrl)
-            .HasConversion(
-                v => v!.ToString(),
-                v => new Uri(v));
+        builder.Property(cm => cm.ImagePath);
+
 
         builder.HasMany(cm => cm.Products)
             .WithOne()

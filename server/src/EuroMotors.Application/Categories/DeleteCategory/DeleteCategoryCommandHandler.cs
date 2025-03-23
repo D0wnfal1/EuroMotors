@@ -15,6 +15,18 @@ internal sealed class DeleteCategoryCommandHandler(ICategoryRepository categoryR
             return Result.Failure(CategoryErrors.NotFound(request.CategoryId));
         }
 
+        if (!string.IsNullOrEmpty(category.ImagePath))
+        {
+            string projectRoot = Path.GetFullPath(Directory.GetCurrentDirectory());
+            string basePath = Path.Combine(projectRoot, "wwwroot", "images", "categories");
+            string filePath = Path.Combine(basePath, Path.GetFileName(category.ImagePath));
+
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+        }
+
         await categoryRepository.Delete(category.Id);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);

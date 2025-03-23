@@ -8,6 +8,7 @@ import { NgFor, CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
+import { ImageService } from '../../../core/services/image.service';
 
 @Component({
   selector: 'app-admin-categories',
@@ -25,11 +26,13 @@ import { RouterLink } from '@angular/router';
 })
 export class AdminCategoriesComponent implements OnInit {
   private categoryService = inject(CategoryService);
+  private imageService = inject(ImageService);
   categories: Category[] = [];
   totalItems = 0;
   shopParams = new ShopParams();
   pageSizeOptions = [5, 10, 15, 20];
   count = 0;
+
   ngOnInit() {
     this.getCategories();
   }
@@ -53,6 +56,12 @@ export class AdminCategoriesComponent implements OnInit {
     this.shopParams.pageNumber = event.pageIndex + 1;
     this.shopParams.pageSize = event.pageSize;
     this.getCategories();
+  }
+
+  getCarModelImage(imagePath?: string): string {
+    return imagePath
+      ? this.imageService.getImageUrl(imagePath)
+      : '/images/no-image.jpeg';
   }
 
   onSortChange(event: MatSelectionListChange) {

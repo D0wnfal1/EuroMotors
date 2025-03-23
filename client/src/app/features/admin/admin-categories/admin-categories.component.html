@@ -5,6 +5,7 @@
     <table class="min-w-full bg-white shadow-md rounded-lg">
       <thead>
         <tr class="bg-gray-100">
+          <th class="py-2 px-4 text-left">Image</th>
           <th class="py-2 px-4 text-left">Category Name</th>
           <th class="py-2 px-4 text-left">Is Archived</th>
           <th class="py-2 px-4 text-left">Actions</th>
@@ -12,6 +13,21 @@
       </thead>
       <tbody>
         <tr *ngFor="let category of categories" class="border-b">
+          <td class="py-2 px-4">
+            <img
+              *ngIf="category.imagePath; else defaultImage"
+              [src]="getCarModelImage(category.imagePath)"
+              alt="Car Model Image"
+              class="w-16 h-16 object-cover rounded"
+            />
+            <ng-template #defaultImage>
+              <img
+                [src]="getCarModelImage('')"
+                alt="Default Car Model Image"
+                class="w-16 h-16 object-cover rounded"
+              />
+            </ng-template>
+          </td>
           <td class="py-2 px-4">{{ category.name }}</td>
           <td class="py-2 px-4">{{ category.isArchived ? "Yes" : "No" }}</td>
           <td class="border p-2 text-center">

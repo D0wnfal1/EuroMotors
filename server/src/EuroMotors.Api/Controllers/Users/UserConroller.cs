@@ -45,6 +45,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("auth-status")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(object), 200)]
     public IActionResult GetAuthState()
     {

@@ -1,13 +1,12 @@
-﻿using EuroMotors.Application.CarModels.CreateCarModel;
+﻿using EuroMotors.Application.Abstractions.Pagination;
+using EuroMotors.Application.CarModels.CreateCarModel;
 using EuroMotors.Application.CarModels.DeleteCarModel;
-using EuroMotors.Application.CarModels.DeleteImage;
 using EuroMotors.Application.CarModels.GetCarModelById;
 using EuroMotors.Application.CarModels.GetCarModels;
 using EuroMotors.Application.CarModels.UpdateCarModel;
-using EuroMotors.Application.CarModels.UpdateImage;
-using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Domain.Abstractions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EuroMotors.Api.Controllers.CarModels;
@@ -45,9 +44,10 @@ public class CarModelController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateCarModel([FromBody] CarModelRequest request, CancellationToken cancellationToken)
+    [Authorize(Roles = Roles.Admin)]
+    public async Task<IActionResult> CreateCarModel([FromForm] CarModelRequest request, CancellationToken cancellationToken)
     {
-        var command = new CreateCarModelCommand(request.Brand, request.Model);
+        var command = new CreateCarModelCommand(request.Brand, request.Model, request.Image);
 
         Result<Guid> result = await _sender.Send(command, cancellationToken);
 
@@ -57,19 +57,13 @@ public class CarModelController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateCarModel(Guid id, [FromBody] CarModelRequest request, CancellationToken cancellationToken)
+    [Authorize(Roles = Roles.Admin)]
+    public async Task<IActionResult> UpdateCarModel(
+        Guid id,
+        [FromForm] CarModelRequest request,
+        CancellationToken cancellationToken)
     {
-        var command = new UpdateCarModelCommand(id, request.Brand, request.Model);
-
-        Result result = await _sender.Send(command, cancellationToken);
-
-        return result.IsSuccess ? NoContent() : BadRequest(result.Error);
-    }
-
-    [HttpPut("{id}/image")]
-    public async Task<IActionResult> UpdateCarModelImage(Guid id, Uri url, CancellationToken cancellationToken)
-    {
-        var command = new UpdateCarModelImageCommand(id, url);
+        var command = new UpdateCarModelCommand(id, request.Brand, request.Model, request.Image);
 
         Result result = await _sender.Send(command, cancellationToken);
 
@@ -77,19 +71,10 @@ public class CarModelController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> DeleteCarModel(Guid id, CancellationToken cancellationToken)
     {
         var command = new DeleteCarModelCommand(id);
-
-        Result result = await _sender.Send(command, cancellationToken);
-
-        return result.IsSuccess ? NoContent() : NotFound(result.Error);
-    }
-
-    [HttpDelete("{id}/image")]
-    public async Task<IActionResult> DeleteCarModelImage(Guid id, CancellationToken cancellationToken)
-    {
-        var command = new DeleteCarModelImageCommand(id);
 
         Result result = await _sender.Send(command, cancellationToken);
 

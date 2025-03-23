@@ -24,7 +24,6 @@ export class AccountService {
       .pipe(
         map((token: string) => {
           if (token) {
-            console.log('Token received:', token); // Добавляем лог
             this.cookieService.set('AuthToken', token, {
               secure: true,
               sameSite: 'Strict',
@@ -46,28 +45,12 @@ export class AccountService {
   }
 
   getUserInfo() {
-    const token = this.cookieService.get('AuthToken');
-
-    if (!token) {
-      console.error('Token is missing!');
-      this.currentUser.set(null);
-      return of(null);
-    }
-
-    return this.http
-      .get<User>(this.baseUrl + '/users/email', {
-        headers: { Authorization: `Bearer ${token}` },
+    return this.http.get<User>(this.baseUrl + '/users/email').pipe(
+      map((user) => {
+        this.currentUser.set(user);
+        return user;
       })
-      .pipe(
-        tap((user) => {
-          this.currentUser.set(user);
-        }),
-        catchError((error) => {
-          console.error('Error fetching user info', error);
-          this.currentUser.set(null);
-          return of(null);
-        })
-      );
+    );
   }
 
   updateUserInfo(values: {

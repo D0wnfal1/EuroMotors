@@ -6,11 +6,7 @@ using EuroMotors.Domain.Products;
 
 namespace EuroMotors.Application.Products.UpdateProduct;
 
-internal sealed class UpdateProductCommandHandler(
-    IProductRepository productRepository,
-    ICategoryRepository categoryRepository,
-    ICarModelRepository carModelRepository,
-    IUnitOfWork unitOfWork) : ICommandHandler<UpdateProductCommand>
+internal sealed class UpdateProductCommandHandler(IProductRepository productRepository, ICategoryRepository categoryRepository, ICarModelRepository carModelRepository, IUnitOfWork unitOfWork) : ICommandHandler<UpdateProductCommand>
 {
     public async Task<Result> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {

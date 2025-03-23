@@ -8,6 +8,7 @@ import { RouterLink } from '@angular/router';
 import { ShopParams } from '../../../shared/models/shopParams';
 import { CarmodelService } from '../../../core/services/carmodel.service';
 import { CarModel } from '../../../shared/models/carModel';
+import { ImageService } from '../../../core/services/image.service';
 
 @Component({
   selector: 'app-admin-carmodels',
@@ -25,11 +26,13 @@ import { CarModel } from '../../../shared/models/carModel';
 })
 export class AdminCarmodelsComponent implements OnInit {
   private carModelService = inject(CarmodelService);
+  private imageService = inject(ImageService);
   carModels: CarModel[] = [];
   totalItems = 0;
   shopParams = new ShopParams();
   pageSizeOptions = [5, 10, 15, 20];
   count = 0;
+
   ngOnInit() {
     this.getCarModels();
   }
@@ -47,6 +50,12 @@ export class AdminCarmodelsComponent implements OnInit {
 
   getCarModelName(carModelId: string): string {
     return this.carModels.find((c) => c.id === carModelId)?.brand || '—';
+  }
+
+  getCarModelImage(imagePath?: string): string {
+    return imagePath
+      ? this.imageService.getImageUrl(imagePath)
+      : '/images/no-image.jpeg';
   }
 
   handlePageEvent(event: PageEvent) {

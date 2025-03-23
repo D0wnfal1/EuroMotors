@@ -3,8 +3,8 @@ using System.Text;
 using Dapper;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
+using EuroMotors.Application.Abstractions.Pagination;
 using EuroMotors.Application.CarModels.GetCarModelById;
-using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Domain.Abstractions;
 
 namespace EuroMotors.Application.CarModels.GetCarModels;
@@ -22,7 +22,7 @@ internal sealed class GetCarModelsQueryHandler(IDbConnectionFactory dbConnection
                 id AS {nameof(CarModelResponse.Id)},
                 brand AS {nameof(CarModelResponse.Brand)},
                 model AS {nameof(CarModelResponse.Model)},
-                image_url AS {nameof(CarModelResponse.ImageUrl)}
+                image_path AS {nameof(CarModelResponse.ImagePath)}
             FROM car_models
             """);
 

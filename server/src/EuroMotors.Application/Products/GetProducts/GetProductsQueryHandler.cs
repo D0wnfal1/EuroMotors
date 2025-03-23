@@ -2,6 +2,7 @@
 using Dapper;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
+using EuroMotors.Application.Abstractions.Pagination;
 using EuroMotors.Application.Products.GetProductById;
 using EuroMotors.Domain.Abstractions;
 

@@ -38,12 +38,12 @@ export class CarmodelService {
     return this.http.get<CarModel>(`${this.baseUrl}/carModels/${id}`);
   }
 
-  createCarModel(carModel: CarModel): Observable<string> {
-    return this.http.post<string>(`${this.baseUrl}/carModels`, carModel);
+  createCarModel(formData: FormData): Observable<string> {
+    return this.http.post<string>(`${this.baseUrl}/carModels`, formData);
   }
 
-  updateCarModel(id: string, carModel: CarModel): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/carModels/${id}`, carModel);
+  updateCarModel(id: string, formData: FormData): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/carModels/${id}`, formData);
   }
 
   deleteCarModel(id: string): Observable<void> {

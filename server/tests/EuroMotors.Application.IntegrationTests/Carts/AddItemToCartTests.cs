@@ -143,12 +143,12 @@ public class AddItemToCartTests : BaseIntegrationTest
     public async Task User_ShouldBeAbleTo_AddProductToCart()
     {
         var faker = new Faker();
-        var createcategoryCommand = new CreateCategoryCommand(faker.Commerce.Categories(1)[0]);
+        var createcategoryCommand = new CreateCategoryCommand(faker.Commerce.Categories(1)[0], null);
         Result<Guid> createCategoryResult = await Sender.Send(createcategoryCommand);
         createCategoryResult.IsSuccess.ShouldBeTrue();
         Guid categoryId = createCategoryResult.Value;
 
-        var createCarModelCommand = new CreateCarModelCommand(faker.Vehicle.Manufacturer(), faker.Vehicle.Model());
+        var createCarModelCommand = new CreateCarModelCommand(faker.Vehicle.Manufacturer(), faker.Vehicle.Model(), null);
         Result<Guid> createCarModelResult = await Sender.Send(createCarModelCommand);
         createCarModelResult.IsSuccess.ShouldBeTrue();
         Guid carModelId = createCarModelResult.Value;

@@ -11,6 +11,6 @@ public static class CategoryErrors
         "Category.AlreadyArchived",
         "The category was already archived");
 
-    public static Error InvalidUrl(Uri url) =>
-        Error.Failure("Category.InvalidUrl", $"The URL '{url}' provided for the product image is invalid.");
+    public static Error InvalidPath(string path) =>
+        Error.Failure("Category.InvalidPath", $"The URL '{path}' provided for the product image is invalid.");
 }

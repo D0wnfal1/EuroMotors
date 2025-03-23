@@ -36,9 +36,9 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnType("character varying(100)")
                         .HasColumnName("brand");
 
-                    b.Property<string>("ImageUrl")
+                    b.Property<string>("ImagePath")
                         .HasColumnType("text")
-                        .HasColumnName("image_url");
+                        .HasColumnName("image_path");
 
                     b.Property<string>("Model")
                         .IsRequired()
@@ -59,9 +59,9 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<string>("ImageUrl")
+                    b.Property<string>("ImagePath")
                         .HasColumnType("text")
-                        .HasColumnName("image_url");
+                        .HasColumnName("image_path");
 
                     b.Property<bool>("IsArchived")
                         .HasColumnType("boolean")
@@ -440,7 +440,7 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     b.HasOne("EuroMotors.Domain.Categories.Category", null)
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_products_categories_category_id");
                 });

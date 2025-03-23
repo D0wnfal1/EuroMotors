@@ -1,6 +1,6 @@
 ﻿using EuroMotors.Application.Abstractions.Messaging;
+using EuroMotors.Application.Abstractions.Pagination;
 using EuroMotors.Application.Categories.GetByIdCategory;
-using EuroMotors.Application.Products.GetProducts;
 
 namespace EuroMotors.Application.Categories.GetCategories;
 

@@ -4,6 +4,6 @@ export type CarModel = {
   id: string;
   brand: string;
   model: string;
-  imageUrl?: string;
+  imagePath?: string;
   products: Product[];
 };

@@ -22,6 +22,19 @@
       </mat-form-field>
     </div>
 
+    <div class="mb-4">
+      <label for="image">Category Image (Optional)</label>
+      <input
+        type="file"
+        id="image"
+        (change)="onImageSelected($event)"
+        class="w-full"
+      />
+      <mat-error *ngIf="imageInvalid && selectedImage">
+        Please select a valid image.
+      </mat-error>
+    </div>
+
     <div class="flex justify-between">
       <button
         mat-button

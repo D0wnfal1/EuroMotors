@@ -1,8 +1,8 @@
 ﻿using Bogus;
+using EuroMotors.Application.Abstractions.Pagination;
 using EuroMotors.Application.Categories.GetByIdCategory;
 using EuroMotors.Application.Categories.GetCategories;
 using EuroMotors.Application.IntegrationTests.Abstractions;
-using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Domain.Abstractions;
 using Shouldly;
 

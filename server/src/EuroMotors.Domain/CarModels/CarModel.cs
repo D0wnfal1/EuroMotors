@@ -15,7 +15,7 @@ public class CarModel : Entity
 
     public string Model { get; private set; }
 
-    public Uri? ImageUrl { get; private set; }
+    public string? ImagePath { get; private set; }
 
     public List<Product> Products { get; private set; } = [];
 
@@ -53,30 +53,16 @@ public class CarModel : Entity
 
         RaiseDomainEvent(new CarModelModelChangedDomainEvent(Id, Model));
     }
-    public Result UpdateImage(Uri newUrl)
-    {
-        if (string.IsNullOrWhiteSpace(newUrl.ToString()))
-        {
-            return Result.Failure(CarModelErrors.InvalidUrl(newUrl));
-        }
 
-        ImageUrl = newUrl;
+    public Result SetImagePath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return Result.Failure(CarModelErrors.InvalidPath(path));
+        }
+        ImagePath = path;
 
         RaiseDomainEvent(new CarModelImageUpdatedDomainEvent(Id));
-
-        return Result.Success();
-    }
-
-    public Result DeleteImage()
-    {
-        if (Id == Guid.Empty)
-        {
-            return Result.Failure(CarModelErrors.NotFound(Id));
-        }
-
-        ImageUrl = null;
-
-        RaiseDomainEvent(new CarModelImageDeletedDomainEvent(Id));
 
         return Result.Success();
     }

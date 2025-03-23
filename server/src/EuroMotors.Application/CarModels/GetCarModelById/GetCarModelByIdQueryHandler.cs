@@ -19,7 +19,7 @@ internal sealed class GetCarModelByIdQueryHandler(IDbConnectionFactory dbConnect
                     id AS {nameof(CarModelResponse.Id)},
                     brand AS {nameof(CarModelResponse.Brand)},
                     model AS {nameof(CarModelResponse.Model)},
-                    image_url AS {nameof(CarModelResponse.ImageUrl)}
+                    image_path AS {nameof(CarModelResponse.ImagePath)}
                 FROM car_models
                 WHERE id = @CarModelId
                 """;

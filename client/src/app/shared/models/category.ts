@@ -4,6 +4,6 @@ export type Category = {
   id: string;
   name: string;
   isArchived: boolean;
-  imageUrl?: string;
+  imagePath?: string;
   products: Product[];
 };

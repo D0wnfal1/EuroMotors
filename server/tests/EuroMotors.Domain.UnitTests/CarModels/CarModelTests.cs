@@ -43,32 +43,16 @@ public class CarModelTests : BaseTest
     {
         // Arrange
         var carModel = CarModel.Create(CarModelData.Brand, CarModelData.Model);
-        var newUrl = new Uri("https://example.com/image.jpg");
+        string newUrl = new("https://example.com/image.jpg");
 
         // Act
-        Result result = carModel.UpdateImage(newUrl);
+        Result result = carModel.SetImagePath(newUrl);
 
         // Assert
         Assert.True(result.IsSuccess);
-        Assert.Equal(newUrl, carModel.ImageUrl);
+        Assert.Equal(newUrl, carModel.ImagePath);
         CarModelImageUpdatedDomainEvent imageUpdatedEvent = AssertDomainEventWasPublished<CarModelImageUpdatedDomainEvent>(carModel);
         Assert.Equal(carModel.Id, imageUpdatedEvent.CarModelId);
     }
 
-    [Fact]
-    public void DeleteImage_ShouldReturn_Success_WhenImageIsDeleted()
-    {
-        // Arrange
-        var carModel = CarModel.Create(CarModelData.Brand, CarModelData.Model);
-        carModel.UpdateImage(new Uri("https://example.com/image.jpg"));
-
-        // Act
-        Result result = carModel.DeleteImage();
-
-        // Assert
-        Assert.True(result.IsSuccess);
-        Assert.Null(carModel.ImageUrl);
-        CarModelImageDeletedDomainEvent imageDeletedEvent = AssertDomainEventWasPublished<CarModelImageDeletedDomainEvent>(carModel);
-        Assert.Equal(carModel.Id, imageDeletedEvent.CarModelId);
-    }
 }

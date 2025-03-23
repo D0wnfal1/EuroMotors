@@ -35,6 +35,8 @@ export class CategoryFormComponent implements OnInit {
   categoryForm: FormGroup = new FormGroup({});
   isEditMode: boolean = false;
   categoryId: string | null = null;
+  imageInvalid: boolean = false;
+  selectedImage: File | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -78,33 +80,47 @@ export class CategoryFormComponent implements OnInit {
     }
   }
 
+  onImageSelected(event: any) {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      this.selectedImage = file;
+      this.imageInvalid = false;
+    } else {
+      this.selectedImage = null;
+      this.imageInvalid = true;
+    }
+  }
+
   onSubmit() {
     if (this.categoryForm.invalid) {
       return;
     }
 
-    const categoryData: Category = this.categoryForm.value;
+    const formData = new FormData();
+    formData.append('name', this.categoryForm.get('name')?.value);
+
+    if (this.selectedImage) {
+      formData.append('image', this.selectedImage, this.selectedImage.name);
+    }
 
     if (this.isEditMode && this.categoryId) {
-      this.categoryService
-        .updateCategory(this.categoryId, categoryData)
-        .subscribe({
-          next: () => {
-            this.snackBar.open('Category updated successfully!', 'Close', {
-              duration: 3000,
-              panelClass: ['snack-success'],
-            });
-            this.router.navigate(['/admin/categories']);
-          },
-          error: () => {
-            this.snackBar.open('Failed to update category', 'Close', {
-              duration: 3000,
-              panelClass: ['snack-error'],
-            });
-          },
-        });
+      this.categoryService.updateCategory(this.categoryId, formData).subscribe({
+        next: () => {
+          this.snackBar.open('Category updated successfully!', 'Close', {
+            duration: 3000,
+            panelClass: ['snack-success'],
+          });
+          this.router.navigate(['/admin/categories']);
+        },
+        error: () => {
+          this.snackBar.open('Failed to update category', 'Close', {
+            duration: 3000,
+            panelClass: ['snack-error'],
+          });
+        },
+      });
     } else {
-      this.categoryService.createCategory(categoryData).subscribe({
+      this.categoryService.createCategory(formData).subscribe({
         next: (newCategoryId) => {
           this.snackBar.open('Category created successfully!', 'Close', {
             duration: 3000,

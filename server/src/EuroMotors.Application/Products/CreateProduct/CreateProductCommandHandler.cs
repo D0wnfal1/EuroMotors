@@ -1,5 +1,4 @@
-﻿
-using EuroMotors.Application.Abstractions.Messaging;
+﻿using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Categories;
@@ -7,10 +6,7 @@ using EuroMotors.Domain.Products;
 
 namespace EuroMotors.Application.Products.CreateProduct;
 
-internal sealed class CreateProductCommandHandler(IProductRepository productRepository,
-    ICategoryRepository categoryRepository,
-    ICarModelRepository carModelRepository,
-    IUnitOfWork unitOfWork) : ICommandHandler<CreateProductCommand, Guid>
+internal sealed class CreateProductCommandHandler(IProductRepository productRepository, ICategoryRepository categoryRepository, ICarModelRepository carModelRepository, IUnitOfWork unitOfWork) : ICommandHandler<CreateProductCommand, Guid>
 {
     public async Task<Result<Guid>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
     {

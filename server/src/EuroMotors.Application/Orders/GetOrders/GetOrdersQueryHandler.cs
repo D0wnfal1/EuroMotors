@@ -3,7 +3,7 @@ using System.Text;
 using Dapper;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
-using EuroMotors.Application.Products.GetProducts;
+using EuroMotors.Application.Abstractions.Pagination;
 using EuroMotors.Domain.Abstractions;
 
 namespace EuroMotors.Application.Orders.GetOrders;

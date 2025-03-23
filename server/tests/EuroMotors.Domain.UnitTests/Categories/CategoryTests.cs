@@ -55,32 +55,16 @@ public class CategoryTests : BaseTest
     {
         // Arrange
         var category = Category.Create(CategoryData.Name);
-        var newUrl = new Uri("https://example.com/Category-image.jpg");
+        string newUrl = "https://example.com/Category-image.jpg";
 
         // Act
-        Result result = category.UpdateImage(newUrl);
+        Result result = category.SetImagePath(newUrl);
 
         // Assert
         Assert.True(result.IsSuccess);
-        Assert.Equal(newUrl, category.ImageUrl);
+        Assert.Equal(newUrl, category.ImagePath);
         CategoryImageUpdatedDomainEvent imageUpdatedEvent = AssertDomainEventWasPublished<CategoryImageUpdatedDomainEvent>(category);
         Assert.Equal(category.Id, imageUpdatedEvent.CategoryId);
     }
 
-    [Fact]
-    public void DeleteImage_ShouldReturn_Success_WhenImageIsDeleted()
-    {
-        // Arrange
-        var category = Category.Create(CategoryData.Name);
-        category.UpdateImage(new Uri("https://example.com/Category-image.jpg"));
-
-        // Act
-        Result result = category.DeleteImage();
-
-        // Assert
-        Assert.True(result.IsSuccess);
-        Assert.Null(category.ImageUrl);
-        CategoryImageDeletedDomainEvent imageDeletedEvent = AssertDomainEventWasPublished<CategoryImageDeletedDomainEvent>(category);
-        Assert.Equal(category.Id, imageDeletedEvent.CategoryId);
-    }
 }

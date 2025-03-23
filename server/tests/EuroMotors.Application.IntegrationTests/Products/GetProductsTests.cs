@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using EuroMotors.Application.Abstractions.Pagination;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Application.Products.GetProductById;
 using EuroMotors.Application.Products.GetProducts;

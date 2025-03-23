@@ -1,4 +1,5 @@
-﻿using EuroMotors.Application.Products.CreateProduct;
+﻿using EuroMotors.Application.Abstractions.Pagination;
+using EuroMotors.Application.Products.CreateProduct;
 using EuroMotors.Application.Products.DeleteProduct;
 using EuroMotors.Application.Products.GetProductById;
 using EuroMotors.Application.Products.GetProducts;
@@ -7,6 +8,7 @@ using EuroMotors.Application.Products.UpdateProduct;
 using EuroMotors.Application.Products.UpdateProduct.UpdateProductStock;
 using EuroMotors.Domain.Abstractions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EuroMotors.Api.Controllers.Products;
@@ -50,6 +52,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> CreateProduct([FromBody] ProductRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateProductCommand(request.Name, request.Description, request.VendorCode, request.CategoryId, request.CarModelId, request.Price, request.Discount, request.Stock);
@@ -62,6 +65,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateProductCommand(id, request.Name, request.Description, request.VendorCode, request.CategoryId, request.CarModelId, request.Price, request.Discount, request.Stock);
@@ -92,6 +96,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> DeleteProduct(Guid id, CancellationToken cancellationToken)
     {
         var command = new DeleteProductCommand(id);

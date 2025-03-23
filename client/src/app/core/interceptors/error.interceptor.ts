@@ -1,6 +1,6 @@
-import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { NavigationExtras, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { SnackbarService } from '../services/snackbar.service';
 
@@ -11,27 +11,29 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
       if (err.status === 400) {
-        if (err.error.errors) {
-          const modelStateErrors = [];
-          for (const key in err.error.errors) {
-            if (err.error.errors[key]) {
-              modelStateErrors.push(err.error.errors[key]);
-            }
-          }
-          throw modelStateErrors.flat();
-        } else {
-          snackbar.error(err.error.title || err.error);
+        let errorBody;
+
+        try {
+          errorBody =
+            typeof err.error === 'string' ? JSON.parse(err.error) : err.error;
+        } catch (e) {
+          console.error('Error parsing response:', e);
+          snackbar.error('Bad Request');
+          return throwError(() => err);
         }
-      }
-      if (err.status === 401) {
-        snackbar.error(err.error.title || err.error);
-      }
-      if (err.status === 403) {
-        snackbar.error('Forbiden');
-      }
-      if (err.status === 404) {
+
+        const errorDescription =
+          errorBody.description || 'Something went wrong';
+
+        snackbar.error(`${errorDescription}`);
+      } else if (err.status === 401) {
+        snackbar.error(err.error?.description || 'Unauthorized');
+      } else if (err.status === 403) {
+        snackbar.error('Forbidden');
+      } else if (err.status === 404) {
         router.navigateByUrl('/not-found');
       }
+
       return throwError(() => err);
     })
   );
