@@ -17,6 +17,5 @@ export const authInterceptor: HttpInterceptorFn = (
     });
     return next(clonedRequest);
   }
-
   return next(req);
 };

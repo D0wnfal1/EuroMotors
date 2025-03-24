@@ -23,11 +23,11 @@ export class ImageService {
   uploadProductImage(
     productId: string,
     file: File
-  ): Observable<{ id: string; imageUrl: string }> {
+  ): Observable<{ id: string; imagePath: string }> {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('productId', productId);
-    return this.http.post<{ id: string; imageUrl: string }>(
+    return this.http.post<{ id: string; imagePath: string }>(
       `${this.baseUrl}/productImages/upload`,
       formData
     );

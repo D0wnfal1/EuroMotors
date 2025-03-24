@@ -72,7 +72,7 @@ export class CheckoutComponent implements AfterViewInit {
     });
   }
 
-  get checkoutForm(): FormGroup {
+  get informationForm(): FormGroup {
     return this.checkoutInformationComponent?.checkoutForm || this.fb.group({});
   }
 
@@ -104,7 +104,7 @@ export class CheckoutComponent implements AfterViewInit {
 
   completeCheckout(): void {
     if (
-      !this.checkoutForm.valid ||
+      !this.informationForm.valid ||
       !this.deliveryGroup.valid ||
       !this.paymentForm.valid
     ) {
@@ -125,7 +125,7 @@ export class CheckoutComponent implements AfterViewInit {
 
     const shippingAddress =
       this.selectedDeliveryMethod === 'delivery'
-        ? this.selectedWarehouseName
+        ? this.selectedCity + this.selectedWarehouseName
         : null;
 
     const paymentMethodValue = this.paymentForm.get('paymentMethod')?.value;
@@ -133,32 +133,48 @@ export class CheckoutComponent implements AfterViewInit {
     const orderData = {
       CartId: cartId,
       UserId: this.currentUser ? this.currentUser.id : null,
+      BuyerName:
+        this.informationForm.get('firstName')?.value +
+        ' ' +
+        this.informationForm.get('lastName')?.value,
+      BuyerPhoneNumber: this.informationForm.get('phoneNumber')?.value,
+      BuyerEmail: this.informationForm.get('email')?.value,
       DeliveryMethod: deliveryMethodValue,
       ShippingAddress: shippingAddress,
       PaymentMethod: paymentMethodValue,
     };
 
-    this.orderService.createOrder(orderData).subscribe((orderResponse) => {
-      const orderId = orderResponse?.orderId;
-      if (orderId) {
-        if (paymentMethodValue === PaymentMethod.Prepaid) {
-          this.paymentService.createPayment(orderId).subscribe({
-            next: (paymentResponse) => {
-              this.isProcessing = false;
-              const { data, signature } = paymentResponse;
-              const paymentUrl = `https://www.liqpay.ua/api/3/checkout?data=${data}&signature=${signature}`;
-              window.location.href = paymentUrl;
-            },
-          });
+    this.orderService.createOrder(orderData).subscribe({
+      next: (orderResponse) => {
+        const orderId = orderResponse?.orderId;
+        if (orderId) {
+          if (paymentMethodValue === PaymentMethod.Prepaid) {
+            this.paymentService.createPayment(orderId).subscribe({
+              next: (paymentResponse) => {
+                this.isProcessing = false;
+                const { data, signature } = paymentResponse;
+                const paymentUrl = `https://www.liqpay.ua/api/3/checkout?data=${data}&signature=${signature}`;
+                window.location.href = paymentUrl;
+              },
+              error: (paymentError) => {
+                console.error('Amend for the completed payment:', paymentError);
+                this.isProcessing = false;
+              },
+            });
+          } else {
+            this.isProcessing = false;
+            this.cartService.clearCart(cartId);
+            this.router.navigateByUrl(`/checkout/success/${orderId}`);
+          }
         } else {
+          console.error('Order ID is missing');
           this.isProcessing = false;
-          this.cartService.clearCart(cartId);
-          this.router.navigateByUrl(`/checkout/success/${orderId}`);
         }
-      } else {
-        console.error('Order ID is missing');
+      },
+      error: (orderError) => {
+        console.error('Amends upon completion of the agreement:', orderError);
         this.isProcessing = false;
-      }
+      },
     });
   }
 }

@@ -15,7 +15,7 @@ public class PaymentTests
     {
         // Arrange
         var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
-        var order = Order.Create(user.Id, DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
+        var order = Order.Create(user.Id, "BuyerName", "BuyerPhoneNumber", "BuyerEmail", DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
         var payment = Payment.Create(order.Id, Guid.NewGuid(), PaymentStatus.Pending, 100m);
 
         // Act
@@ -31,7 +31,7 @@ public class PaymentTests
     {
         // Arrange
         var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
-        var order = Order.Create(user.Id, DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
+        var order = Order.Create(user.Id, "BuyerName", "BuyerPhoneNumber", "BuyerEmail", DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
         var payment = Payment.Create(order.Id, Guid.NewGuid(), PaymentStatus.Success, 100m);
 
         // Act
@@ -47,7 +47,7 @@ public class PaymentTests
     {
         // Arrange
         var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
-        var order = Order.Create(user.Id, DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
+        var order = Order.Create(user.Id, "BuyerName", "BuyerPhoneNumber", "BuyerEmail", DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
         var payment = Payment.Create(order.Id, Guid.NewGuid(), PaymentStatus.Success, 100m);
 
         // Act
@@ -62,7 +62,7 @@ public class PaymentTests
     public void ChangeStatus_ShouldUpdatePaymentStatus()
     {
         var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
-        var order = Order.Create(user.Id, DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
+        var order = Order.Create(user.Id, "BuyerName", "BuyerPhoneNumber", "BuyerEmail", DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
         var payment = Payment.Create(order.Id, Guid.NewGuid(), PaymentStatus.Pending, 100m);
 
         payment.ChangeStatus(PaymentStatus.Success);
@@ -74,7 +74,7 @@ public class PaymentTests
     public void Refund_ShouldReturnFailure_WhenAlreadyFullyRefunded()
     {
         var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
-        var order = Order.Create(user.Id, DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
+        var order = Order.Create(user.Id, "BuyerName", "BuyerPhoneNumber", "BuyerEmail", DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
         var payment = Payment.Create(order.Id, Guid.NewGuid(), PaymentStatus.Success, 100m);
         payment.Refund(100m);
 
@@ -88,7 +88,7 @@ public class PaymentTests
     public void Refund_ShouldRaisePaymentRefundedDomainEvent_WhenFullyRefunded()
     {
         var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
-        var order = Order.Create(user.Id, DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
+        var order = Order.Create(user.Id, "BuyerName", "BuyerPhoneNumber", "BuyerEmail", DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
         var payment = Payment.Create(order.Id, Guid.NewGuid(), PaymentStatus.Success, 100m);
 
         payment.Refund(100m);

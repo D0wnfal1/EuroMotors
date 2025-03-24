@@ -62,7 +62,7 @@ public class OrderController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request, CancellationToken cancellationToken)
     {
-        var command = new CreateOrderCommand(request.CartId, request.UserId, request.DeliveryMethod, request.ShippingAddress, request.PaymentMethod);
+        var command = new CreateOrderCommand(request.CartId, request.UserId, request.BuyerName, request.BuyerPhoneNumber, request.BuyerEmail, request.DeliveryMethod, request.ShippingAddress, request.PaymentMethod);
 
         Result<Guid> result = await _sender.Send(command, cancellationToken);
 

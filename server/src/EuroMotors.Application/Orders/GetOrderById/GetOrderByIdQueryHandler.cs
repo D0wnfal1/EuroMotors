@@ -19,6 +19,9 @@ internal sealed class GetOrderByIdQueryHandler(IDbConnectionFactory dbConnection
              SELECT
                  o.id AS {nameof(OrderResponse.Id)},
                  o.user_id AS {nameof(OrderResponse.UserId)},
+                 o.buyer_name AS {nameof(OrderResponse.BuyerName)},
+                 o.buyer_phone_number AS {nameof(OrderResponse.BuyerPhoneNumber)},
+                 o.buyer_email AS {nameof(OrderResponse.BuyerEmail)},
                  o.status AS {nameof(OrderResponse.Status)},
                  o.total_price AS {nameof(OrderResponse.TotalPrice)},
                  o.delivery_method AS {nameof(OrderResponse.DeliveryMethod)},

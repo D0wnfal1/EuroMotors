@@ -2,23 +2,10 @@
   <div class="max-w-screen-2xl mx-auto w-full px-6 flex justify-between gap-6">
     <div>
       <h3 class="text-2xl font-semibold uppercase">EuroMotors</h3>
-      <div class="flex gap-3 mt-3">
-        <a href="https://facebook.com" target="_blank">
-          <mat-icon class="text-blue-600 hover:text-blue-700"
-            >facebook</mat-icon
-          >
-        </a>
-        <a href="https://twitter.com" target="_blank">
-          <mat-icon class="text-blue-400 hover:text-blue-500">twitter</mat-icon>
-        </a>
-        <a href="https://instagram.com" target="_blank">
-          <mat-icon class="text-pink-500 hover:text-pink-600"
-            >instagram</mat-icon
-          >
-        </a>
-      </div>
     </div>
-
+    <p class="text-sm text-gray-500">
+      &copy; 2025 EuroMotors. All rights reserved.
+    </p>
     <div class="flex flex-col">
       <h4 class="font-semibold text-xl">Quick Links</h4>
       <a routerLink="/" routerLinkActive="active" class="hover:underline"
@@ -35,18 +22,5 @@
         >Admin</a
       >
     </div>
-  </div>
-
-  <mat-divider class="my-4"></mat-divider>
-
-  <div
-    class="max-w-screen-2xl mx-auto w-full px-6 flex justify-between items-center py-3"
-  >
-    <p class="text-sm text-gray-500">
-      &copy; 2025 EuroMotors. All rights reserved.
-    </p>
-    <button mat-stroked-button class="px-4 py-2" (click)="scrollToTop()">
-      <mat-icon>arrow_upward</mat-icon> Go to Top
-    </button>
   </div>
 </footer>

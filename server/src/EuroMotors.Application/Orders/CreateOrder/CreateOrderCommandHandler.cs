@@ -16,7 +16,7 @@ internal sealed class CreateOrderCommandHandler(
     IUnitOfWork unitOfWork) : ICommandHandler<CreateOrderCommand, Guid>
 {
     public async Task<Result<Guid>> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
-    {
+        {
         await using DbTransaction transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
 
         User? user = null;
@@ -30,7 +30,7 @@ internal sealed class CreateOrderCommandHandler(
             }
         }
 
-        var order = Order.Create(user?.Id, request.DeliveryMethod, request.ShippingAddress, request.PaymentMethod);
+        var order = Order.Create(user?.Id, request.BuyerName, request.BuyerPhoneNumber, request.BuyerEmail, request.DeliveryMethod, request.ShippingAddress, request.PaymentMethod);
 
         Cart cart = await cartService.GetAsync(request.CartId, cancellationToken);
 

@@ -64,30 +64,9 @@ export class ShopComponent {
     this.productService.getProducts(this.shopParams).subscribe({
       next: (response) => {
         this.products = response;
-        this.loadProductImages();
       },
       error: (error) => console.error(error),
     });
-  }
-
-  loadProductImages() {
-    if (this.products?.data) {
-      this.products.data.forEach((product) => {
-        this.imageService.getProductImages(product.id).subscribe({
-          next: (images) => {
-            product.images = images;
-          },
-          error: (error) => {
-            console.error(
-              'Error loading images for product:',
-              product.id,
-              error
-            );
-            product.images = [];
-          },
-        });
-      });
-    }
   }
 
   onSearchChange() {

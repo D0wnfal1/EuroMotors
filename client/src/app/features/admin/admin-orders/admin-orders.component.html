@@ -16,9 +16,9 @@
       <mat-form-field appearance="outline" class="mt-2">
         <mat-label>Filter by status</mat-label>
         <mat-select (selectionChange)="onFilterSelect($event)">
-          @for (status of statusOptions; track $index) {
-          <mat-option [value]="status">{{ status }}</mat-option>
-          }
+          <mat-option *ngFor="let status of statusOptions" [value]="status">{{
+            status
+          }}</mat-option>
         </mat-select>
       </mat-form-field>
     </div>
@@ -43,23 +43,6 @@
             </td>
           </ng-container>
 
-          <ng-container matColumnDef="userId">
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              class="px-4 py-2 text-left text-gray-600"
-            >
-              User ID
-            </th>
-            <td
-              mat-cell
-              *matCellDef="let order"
-              class="px-4 py-2 text-gray-800"
-            >
-              {{ order.userId }}
-            </td>
-          </ng-container>
-
           <ng-container matColumnDef="orderDate">
             <th
               mat-header-cell
@@ -73,7 +56,7 @@
               *matCellDef="let order"
               class="px-4 py-2 text-gray-800"
             >
-              {{ order.createdAtUtc | date : "short" }}
+              {{ order.createdAtUtc | date : "d MMMM yyyy HH:mm" }}
             </td>
           </ng-container>
 

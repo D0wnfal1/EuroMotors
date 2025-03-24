@@ -96,11 +96,6 @@ export class CheckoutDeliveryComponent implements OnInit, OnChanges {
       methodControl.valueChanges.subscribe((value: string | null) => {
         const method = value ?? 'pickup';
         this.deliveryMethodChanged.emit(method);
-        // if (method === 'delivery') {
-        //   const city = this.cityControl.value ?? '';
-        //   const query = this.queryControl.value ?? '';
-        //   this.loadWarehouses(city, query);
-        // }
       });
     }
 

@@ -1,6 +1,9 @@
 export type Order = {
   id: string;
   userId?: string;
+  buyerName: string;
+  buyerPhoneNumber: string;
+  buyerEmail: string;
   status: OrderStatus;
   totalPrice: number;
   orderItems: OrderItem[];

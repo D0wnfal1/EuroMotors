@@ -18,7 +18,7 @@ internal sealed class GetProductImageByIdQueryHandler(IDbConnectionFactory dbCon
             $"""
              SELECT
                  id AS {nameof(ProductImageResponse.Id)},
-                 url AS {nameof(ProductImageResponse.Url)},
+                 path AS {nameof(ProductImageResponse.Path)},
                  product_id AS {nameof(ProductImageResponse.ProductId)}
              FROM product_images
              WHERE id = @ProductImageId

@@ -26,7 +26,7 @@ public class ProductImageTests : BaseTest
         var productImage = ProductImage.Create(new string("https://example.com/image.png"), Guid.NewGuid());
 
         // Assert
-        productImage.Url.ShouldBe(new string("https://example.com/image.png"));
+        productImage.Path.ShouldBe(new string("https://example.com/image.png"));
         productImage.ProductId.ShouldNotBe(Guid.Empty);
     }
 

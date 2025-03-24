@@ -20,15 +20,15 @@ internal sealed class GetProductImagesByProductIdQueryHandler(IDbConnectionFacto
         const string sql =
             $"""
              SELECT
-                 id AS Id,
-                 url AS Url,
-                 product_id AS ProductId
+                 id AS {nameof(ProductImageResponse.Id)},
+                 path AS {nameof(ProductImageResponse.Path)},
+                 product_id AS {nameof(ProductImageResponse.ProductId)}
              FROM product_images
              WHERE product_id = @ProductId
              """;
 
         var productImages = (await connection.QueryAsync<ProductImageResponse>(sql, new { request.ProductId }))
-            .Select(img => new ProductImageResponse(img.Id, img.Url, img.ProductId))
+            .Select(img => new ProductImageResponse(img.Id, img.Path, img.ProductId))
             .ToList();
 
         if (!productImages.Any())

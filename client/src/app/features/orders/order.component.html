@@ -12,14 +12,16 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          @for (order of orders; track order.id) {
-          <tr routerLink="/orders/{{ order.id }}" class="hover:bg-gray-100">
-            <th class="px-6 py-3"># {{ order.id }}</th>
-            <td>{{ order.createdAtUtc | date : "medium" }}</td>
+          <tr
+            *ngFor="let order of orders; let i = index"
+            routerLink="/orders/{{ order.id }}"
+            class="hover:bg-gray-100"
+          >
+            <th class="px-6 py-3"># {{ i + 1 }}</th>
+            <td>{{ order.createdAtUtc | date : "d MMMM yyyy HH:mm" }}</td>
             <td>{{ order.totalPrice | currency }}</td>
-            <td>{{ getStatusName(order.status) }}</td>
+            <td>{{ order.status | status }}</td>
           </tr>
-          }
         </tbody>
       </table>
     </div>

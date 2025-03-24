@@ -5,7 +5,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { OrderService } from '../../../core/services/order.service';
 import { Order } from '../../../shared/models/order';
 import { OrderParams } from '../../../shared/models/orderParams';
-import { DatePipe, CurrencyPipe } from '@angular/common';
+import { DatePipe, CurrencyPipe, CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -25,19 +25,13 @@ import { StatusPipe } from '../../../shared/pipes/status.pipe';
     MatTabsModule,
     RouterLink,
     StatusPipe,
+    CommonModule,
   ],
   templateUrl: './admin-orders.component.html',
   styleUrl: './admin-orders.component.scss',
 })
 export class AdminOrdersComponent implements OnInit {
-  displayedColumns: string[] = [
-    'id',
-    'userId',
-    'orderDate',
-    'total',
-    'status',
-    'action',
-  ];
+  displayedColumns: string[] = ['id', 'orderDate', 'total', 'status', 'action'];
   dataSource = new MatTableDataSource<Order>([]);
   private orderService = inject(OrderService);
   orderParams = new OrderParams();

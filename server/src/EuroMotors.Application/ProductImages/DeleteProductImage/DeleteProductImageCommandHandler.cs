@@ -18,7 +18,7 @@ internal sealed class DeleteProductImageCommandHandler(IProductImageRepository p
 
         string projectRoot = Path.GetFullPath(Directory.GetCurrentDirectory());
         string basePath = Path.Combine(projectRoot, "wwwroot", "images", "products");
-        string filePath = Path.Combine(basePath, Path.GetFileName(productImage.Url));
+        string filePath = Path.Combine(basePath, Path.GetFileName(productImage.Path));
 
         if (File.Exists(filePath))
         {

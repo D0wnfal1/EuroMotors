@@ -8,7 +8,7 @@
     <img
       mat-card-image
       *ngIf="product.images && product.images.length > 0; else noImage"
-      [src]="getImageUrl(product.images[0].url)"
+      [src]="getImageUrl(product.images[0])"
       alt="Product image"
       class="product-image"
     />

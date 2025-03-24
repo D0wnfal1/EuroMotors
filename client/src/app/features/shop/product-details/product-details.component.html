@@ -5,7 +5,7 @@
         <div class="image-container">
           <img
             *ngIf="productImages.length > 0; else noImage"
-            [src]="getImageUrl(productImages[activeIndex].url)"
+            [src]="getImageUrl(productImages[activeIndex].path)"
             alt="Product Image"
             class="product-image"
           />

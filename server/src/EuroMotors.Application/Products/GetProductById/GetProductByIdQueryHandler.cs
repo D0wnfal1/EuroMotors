@@ -17,18 +17,21 @@ internal sealed class GetProductByIdQueryHandler(IDbConnectionFactory dbConnecti
         const string sql =
             $"""
              SELECT
-                 id AS {nameof(ProductResponse.Id)},
-                 category_id AS {nameof(ProductResponse.CategoryId)},
-                 car_model_id AS {nameof(ProductResponse.CarModelId)},
-                 name AS {nameof(ProductResponse.Name)},
-                 description AS {nameof(ProductResponse.Description)},
-                 vendor_code AS {nameof(ProductResponse.VendorCode)},
-                 price AS {nameof(ProductResponse.Price)},
-                 discount AS {nameof(ProductResponse.Discount)},
-                 stock AS {nameof(ProductResponse.Stock)},
-                 is_available AS {nameof(ProductResponse.IsAvailable)}
-             FROM products
-             WHERE id = @ProductId
+                 p.id AS {nameof(ProductResponse.Id)},
+                 p.category_id AS {nameof(ProductResponse.CategoryId)},
+                 p.car_model_id AS {nameof(ProductResponse.CarModelId)},
+                 p.name AS {nameof(ProductResponse.Name)},
+                 p.description AS {nameof(ProductResponse.Description)},
+                 p.vendor_code AS {nameof(ProductResponse.VendorCode)},
+                 p.price AS {nameof(ProductResponse.Price)},
+                 p.discount AS {nameof(ProductResponse.Discount)},
+                 p.stock AS {nameof(ProductResponse.Stock)},
+                 p.is_available AS {nameof(ProductResponse.IsAvailable)},
+                 COALESCE(array_agg(pi.path) FILTER (WHERE pi.path IS NOT NULL), ARRAY[]::text[]) AS {nameof(ProductResponse.Images)}
+             FROM products p
+             LEFT JOIN product_images pi ON pi.product_id = p.id
+             WHERE p.id = @ProductId
+             GROUP BY p.id
              """;
 
         ProductResponse? product = await connection.QuerySingleOrDefaultAsync<ProductResponse>(sql, request);

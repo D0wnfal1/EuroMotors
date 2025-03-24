@@ -1,5 +1,4 @@
 ﻿using EuroMotors.Application.ProductImages.DeleteProductImage;
-using EuroMotors.Application.ProductImages.DeleteProductImagesByProductId;
 using EuroMotors.Application.ProductImages.GetProductImageById;
 using EuroMotors.Application.ProductImages.GetProductImagesByProductId;
 using EuroMotors.Application.ProductImages.UpdateProductImage;
@@ -73,16 +72,6 @@ public class ProductImageController : ControllerBase
     public async Task<IActionResult> DeleteProductImage(Guid id, CancellationToken cancellationToken)
     {
         var command = new DeleteProductImageCommand(id);
-
-        Result result = await _sender.Send(command, cancellationToken);
-
-        return result.IsSuccess ? NoContent() : NotFound(result.Error);
-    }
-
-    [HttpDelete("{id}/product")]
-    public async Task<IActionResult> DeleteProductImageByProductId(Guid id, CancellationToken cancellationToken)
-    {
-        var command = new DeleteProductImageByProductIdCommand(id);
 
         Result result = await _sender.Send(command, cancellationToken);
 

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250323121104_Create_Database")]
+    [Migration("20250324110108_Create_Database")]
     partial class Create_Database
     {
         /// <inheritdoc />
@@ -88,6 +88,21 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<string>("BuyerEmail")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("buyer_email");
+
+                    b.Property<string>("BuyerName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("buyer_name");
+
+                    b.Property<string>("BuyerPhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("buyer_phone_number");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone")
@@ -222,14 +237,14 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("path");
+
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid")
                         .HasColumnName("product_id");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("url");
 
                     b.HasKey("Id")
                         .HasName("pk_product_images");

@@ -5,7 +5,7 @@
       [linear]="true"
       class="bg-white border border-gray-200 shadow-sm"
     >
-      <mat-step label="Information" [stepControl]="checkoutForm">
+      <mat-step label="Information" [stepControl]="informationForm">
         <app-checkout-information
           (cityChange)="onCityChanged($event)"
         ></app-checkout-information>

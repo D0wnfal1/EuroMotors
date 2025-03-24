@@ -50,22 +50,25 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
         });
 
         string sql = $"""
-                     SELECT
-                         p.id AS {nameof(ProductResponse.Id)},
-                         p.category_id AS {nameof(ProductResponse.CategoryId)},
-                         p.car_model_id AS {nameof(ProductResponse.CarModelId)},
-                         p.name AS {nameof(ProductResponse.Name)},
-                         p.description AS {nameof(ProductResponse.Description)},
-                         p.vendor_code AS {nameof(ProductResponse.VendorCode)},
-                         p.price AS {nameof(ProductResponse.Price)},
-                         p.discount AS {nameof(ProductResponse.Discount)},
-                         p.stock AS {nameof(ProductResponse.Stock)},
-                         p.is_available AS {nameof(ProductResponse.IsAvailable)}
-                     FROM products p
-                     {whereClause}
-                     ORDER BY {orderBy}
-                     LIMIT @Limit OFFSET @Offset
-                 """;
+                          SELECT
+                              p.id AS {nameof(ProductResponse.Id)},
+                              p.category_id AS {nameof(ProductResponse.CategoryId)},
+                              p.car_model_id AS {nameof(ProductResponse.CarModelId)},
+                              p.name AS {nameof(ProductResponse.Name)},
+                              p.description AS {nameof(ProductResponse.Description)},
+                              p.vendor_code AS {nameof(ProductResponse.VendorCode)},
+                              p.price AS {nameof(ProductResponse.Price)},
+                              p.discount AS {nameof(ProductResponse.Discount)},
+                              p.stock AS {nameof(ProductResponse.Stock)},
+                              p.is_available AS {nameof(ProductResponse.IsAvailable)},
+                              COALESCE(array_agg(pi.path) FILTER (WHERE pi.path IS NOT NULL), ARRAY[]::text[]) AS {nameof(ProductResponse.Images)}
+                          FROM products p
+                          LEFT JOIN product_images pi ON pi.product_id = p.id
+                          {whereClause}
+                          GROUP BY p.id
+                          ORDER BY {orderBy}
+                          LIMIT @Limit OFFSET @Offset
+                      """;
 
         var parameters = new
         {

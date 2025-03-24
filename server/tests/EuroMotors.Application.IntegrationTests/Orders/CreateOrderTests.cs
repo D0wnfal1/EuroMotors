@@ -18,7 +18,7 @@ public class CreateOrderTests : BaseIntegrationTest
     public async Task Should_ReturnFailure_WhenUserDoesNotExist()
     {
         //Arrange
-        var command = new CreateOrderCommand(Guid.NewGuid(), Guid.NewGuid(), DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
+        var command = new CreateOrderCommand(Guid.NewGuid(), Guid.NewGuid(), "", "", "", DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
 
         //Act
         Result result = await Sender.Send(command);

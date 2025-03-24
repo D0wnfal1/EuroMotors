@@ -5,8 +5,8 @@ namespace EuroMotors.Domain.ProductImages;
 
 public static class ProductImageErrors
 {
-    public static Error InvalidUrl(string url) =>
-        Error.Failure("ProductImage.InvalidUrl", $"The URL '{url}' provided for the product image is invalid.");
+    public static Error InvalidPath(string path) =>
+        Error.Failure("ProductImage.InvalidUrl", $"The URL '{path}' provided for the product image is invalid.");
 
     public static Error InvalidFile(IFormFile file) =>
         Error.Failure("ProductImage.InvalidFile", $"The file '{file}' provided for the product image is invalid.");

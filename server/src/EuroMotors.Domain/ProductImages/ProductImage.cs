@@ -10,16 +10,16 @@ public class ProductImage : Entity
     {
     }
 
-    public string Url { get; private set; }
+    public string Path { get; private set; }
     public Guid ProductId { get; private set; }
     public Product Product { get; }
 
-    public static ProductImage Create(string url, Guid productId)
+    public static ProductImage Create(string path, Guid productId)
     {
         var productImage = new ProductImage
         {
             Id = Guid.NewGuid(),
-            Url = url,
+            Path = path,
             ProductId = productId
         };
 
@@ -28,14 +28,14 @@ public class ProductImage : Entity
         return productImage;
     }
 
-    public Result UpdateImage(string newImageUrl, Guid productId)
+    public Result UpdateImage(string newImagePath, Guid productId)
     {
-        if (string.IsNullOrWhiteSpace(newImageUrl))
+        if (string.IsNullOrWhiteSpace(newImagePath))
         {
-            return Result.Failure(ProductImageErrors.InvalidUrl(newImageUrl));
+            return Result.Failure(ProductImageErrors.InvalidPath(newImagePath));
         }
 
-        Url = newImageUrl;
+        Path  = newImagePath;
         ProductId = productId;
 
         RaiseDomainEvent(new ProductImageUpdatedDomainEvent(Id));

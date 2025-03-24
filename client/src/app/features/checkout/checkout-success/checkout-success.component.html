@@ -1,31 +1,57 @@
-<div class="checkout-success container mx-auto p-4">
-  <h1 class="text-2xl font-bold mb-4">Thank you for your order!</h1>
+<div class="checkout-success container mx-auto p-6">
+  <h1 class="text-3xl font-bold mb-6 text-center text-indigo-600">
+    Thank you for your order!
+  </h1>
 
-  <div *ngIf="isLoading" class="flex justify-center my-4">
-    <mat-spinner></mat-spinner>
+  <div *ngIf="isLoading" class="flex justify-center my-6">
+    <mat-spinner color="primary" diameter="50"></mat-spinner>
   </div>
 
-  <div *ngIf="error && !isLoading" class="my-4">
-    <p class="text-red-500">{{ error }}</p>
+  <div *ngIf="error && !isLoading" class="my-6 text-center">
+    <p class="text-red-600 text-lg">{{ error }}</p>
   </div>
 
-  <div *ngIf="order && !isLoading" class="bg-white shadow rounded p-4">
-    <h2 class="text-xl font-semibold mb-2">Order Details</h2>
-    <p><strong>Order Number:</strong> {{ order.id }}</p>
-    <p><strong>User:</strong> {{ order.userId || "Guest" }}</p>
-    <p><strong>Total Price:</strong> {{ order.totalPrice | currency }}</p>
-    <p><strong>Payment ID:</strong> {{ order.paymentId }}</p>
-    <p>
-      <strong>Delivery Method:</strong>
-      {{ order.deliveryMethod === 1 ? "Pickup" : "Delivery" }}
-    </p>
-    <p><strong>Shipping Address:</strong> {{ order.shippingAddress }}</p>
-    <p>
-      <strong>Payment Method:</strong>
-      {{ order.paymentMethod === 1 ? "Prepaid" : "Cash on Delivery" }}
-    </p>
-    <p><strong>Created:</strong> {{ order.createdAtUtc | date : "short" }}</p>
-    <p><strong>Updated:</strong> {{ order.updatedAtUtc | date : "short" }}</p>
+  <div *ngIf="order && !isLoading" class="bg-white shadow-xl rounded-lg p-6">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Order Details</h2>
+
+    <div class="space-y-4">
+      <p>
+        <strong class="font-semibold text-gray-700">Buyer:</strong>
+        {{ order.buyerName }}
+      </p>
+      <p>
+        <strong class="font-semibold text-gray-700">Total Price:</strong>
+        {{ order.totalPrice | currency }}
+      </p>
+      <p *ngIf="order.paymentId">
+        <strong class="font-semibold text-gray-700">Payment ID:</strong>
+        {{ order.paymentId }}
+      </p>
+
+      <p>
+        <strong class="font-semibold text-gray-700">Delivery Method:</strong>
+        {{ order.deliveryMethod | delivery }}
+      </p>
+
+      <p *ngIf="order.shippingAddress">
+        <strong class="font-semibold text-gray-700">Shipping Address:</strong>
+        {{ order.shippingAddress }}
+      </p>
+
+      <p>
+        <strong class="font-semibold text-gray-700">Payment Method:</strong>
+        {{ order.paymentMethod | payment }}
+      </p>
+
+      <p>
+        <strong class="font-semibold text-gray-700">Created At:</strong>
+        {{ order.createdAtUtc | date : "d MMMM yyyy HH:mm" }}
+      </p>
+      <p>
+        <strong class="font-semibold text-gray-700">Order Status:</strong>
+        {{ order.status | status }}
+      </p>
+    </div>
 
     <h3 class="text-lg font-semibold mt-4">Order Items</h3>
     <table class="min-w-full divide-y divide-gray-200 mt-2">
@@ -34,12 +60,7 @@
           <th
             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
           >
-            Product Code
-          </th>
-          <th
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-          >
-            Quantity
+            Product Name
           </th>
           <th
             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -49,30 +70,31 @@
           <th
             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
           >
-            Total Price
+            Quantity
           </th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
         <tr *ngFor="let item of order.orderItems">
-          <td class="px-6 py-4 whitespace-nowrap">{{ item.productId }}</td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ item.quantity }}</td>
           <td class="px-6 py-4 whitespace-nowrap">
-            {{ item.unitPrice | currency }}
+            {{ productNames[item.productId] }}
           </td>
           <td class="px-6 py-4 whitespace-nowrap">
             {{ item.price | currency }}
           </td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ item.quantity }}</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <button
-    mat-raised-button
-    routerLink="/"
-    class="mt-4 px-6 py-3 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-  >
-    Go to Home
-  </button>
+  <div class="mt-8">
+    <button
+      mat-raised-button
+      routerLink="/"
+      class="px-6 py-3 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-lg transition-colors duration-300"
+    >
+      Go to Home
+    </button>
+  </div>
 </div>

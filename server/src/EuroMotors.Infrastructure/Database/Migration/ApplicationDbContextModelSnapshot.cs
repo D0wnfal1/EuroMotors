@@ -86,6 +86,21 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<string>("BuyerEmail")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("buyer_email");
+
+                    b.Property<string>("BuyerName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("buyer_name");
+
+                    b.Property<string>("BuyerPhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("buyer_phone_number");
+
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at_utc");
@@ -219,14 +234,14 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("path");
+
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid")
                         .HasColumnName("product_id");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("url");
 
                     b.HasKey("Id")
                         .HasName("pk_product_images");

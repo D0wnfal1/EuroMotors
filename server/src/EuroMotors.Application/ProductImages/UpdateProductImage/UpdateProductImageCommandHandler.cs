@@ -39,9 +39,9 @@ internal sealed class UpdateProductImageCommandHandler(
             await request.File.CopyToAsync(stream, cancellationToken);
         }
 
-        string imageUrl = $"/images/products/{fileName}";
+        string imagePath = $"/images/products/{fileName}";
 
-        existingImage.UpdateImage(imageUrl, request.ProductId);
+        existingImage.UpdateImage(imagePath, request.ProductId);
         productImageRepository.Update(existingImage);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);

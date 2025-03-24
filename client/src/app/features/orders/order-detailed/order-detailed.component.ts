@@ -11,7 +11,10 @@ import { MatButton } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { StatusPipe } from '../../../shared/pipes/status.pipe';
 import { AccountService } from '../../../core/services/account.service';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { PaymentPipe } from '../../../shared/pipes/payment.pipe';
+import { DeliveryPipe } from '../../../shared/pipes/delivery.pipe';
+import { ProductService } from '../../../core/services/product.service';
+import { Product } from '../../../shared/models/product';
 
 @Component({
   selector: 'app-order-detailed',
@@ -22,7 +25,8 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
     NgIf,
     NgFor,
     StatusPipe,
-    MatProgressSpinner,
+    PaymentPipe,
+    DeliveryPipe,
   ],
   templateUrl: './order-detailed.component.html',
   styleUrl: './order-detailed.component.scss',
@@ -32,13 +36,15 @@ export class OrderDetailedComponent implements OnInit {
   public PaymentMethod = PaymentMethod;
 
   private orderService = inject(OrderService);
-  private activatedRoute = inject(ActivatedRoute);
   accountService = inject(AccountService);
+  private productService = inject(ProductService);
+  private activatedRoute = inject(ActivatedRoute);
   order?: Order;
   private router = inject(Router);
   buttonText: string | undefined;
   nextStatus: string = '';
   isLoading: boolean = true;
+  productNames: { [key: string]: string } = {};
 
   constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
@@ -52,6 +58,7 @@ export class OrderDetailedComponent implements OnInit {
             this.isLoading = false;
             this.setNextStatus();
             this.updateButtonText();
+            this.loadProductNames();
             this.changeDetectorRef.detectChanges();
           }
         },
@@ -60,6 +67,22 @@ export class OrderDetailedComponent implements OnInit {
           console.error('Failed to load order', error);
           this.changeDetectorRef.detectChanges();
         },
+      });
+    }
+  }
+
+  loadProductNames(): void {
+    if (this.order) {
+      this.order.orderItems.forEach((item) => {
+        this.productService.getProductById(item.productId).subscribe({
+          next: (product: Product) => {
+            this.productNames[item.productId] = product.name; // Assuming `name` is the property for the product name
+            this.changeDetectorRef.detectChanges();
+          },
+          error: (error) => {
+            console.error('Failed to fetch product name', error);
+          },
+        });
       });
     }
   }

@@ -3,7 +3,7 @@ import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../../shared/models/user';
 import { CookieService } from 'ngx-cookie-service';
-import { catchError, map, of, tap } from 'rxjs';
+import { catchError, map, of, switchMap, tap, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -22,20 +22,24 @@ export class AccountService {
     return this.http
       .post(this.baseUrl + '/users/login', values, { responseType: 'text' })
       .pipe(
-        map((token: string) => {
+        switchMap((token: string) => {
           if (token) {
-            this.cookieService.set('AuthToken', token, {
-              secure: true,
-              sameSite: 'Strict',
-              expires: 30,
-            });
+            this.cookieService.set(
+              'AuthToken',
+              token,
+              30,
+              '/',
+              undefined,
+              true,
+              'Strict'
+            );
             return this.getUserInfo();
           }
-          return '';
+          return of(null);
         }),
         catchError((error) => {
           console.error('Login error:', error);
-          return [];
+          return throwError(() => new Error(error));
         })
       );
   }
@@ -76,7 +80,7 @@ export class AccountService {
   }
 
   logout() {
-    this.cookieService.delete('AuthToken');
+    this.cookieService.delete('AuthToken', '/');
     this.currentUser.set(null);
   }
 

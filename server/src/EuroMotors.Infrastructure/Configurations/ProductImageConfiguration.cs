@@ -10,7 +10,7 @@ internal sealed class ProductImageConfiguration : IEntityTypeConfiguration<Produ
     {
         builder.HasKey(pi => pi.Id);
 
-        builder.Property(pi => pi.Url)
+        builder.Property(pi => pi.Path)
             .IsRequired();
 
         builder.HasOne(pi => pi.Product)

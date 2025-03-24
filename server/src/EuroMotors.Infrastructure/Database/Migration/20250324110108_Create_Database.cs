@@ -55,6 +55,9 @@ namespace EuroMotors.Infrastructure.Database.Migration
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     user_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    buyer_name = table.Column<string>(type: "text", nullable: false),
+                    buyer_phone_number = table.Column<string>(type: "text", nullable: false),
+                    buyer_email = table.Column<string>(type: "text", nullable: false),
                     status = table.Column<string>(type: "text", nullable: false),
                     total_price = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     payment_id = table.Column<Guid>(type: "uuid", nullable: true),
@@ -219,7 +222,7 @@ namespace EuroMotors.Infrastructure.Database.Migration
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    url = table.Column<string>(type: "text", nullable: false),
+                    path = table.Column<string>(type: "text", nullable: false),
                     product_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
