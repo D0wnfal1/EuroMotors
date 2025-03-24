@@ -10,14 +10,9 @@ import { HttpClient } from '@angular/common/http';
 export class ImageService {
   baseUrl = environment.apiUrl;
   private http = inject(HttpClient);
+
   getImageUrl(imagePath: string): string {
     return `${this.baseUrl.replace('/api', '')}${imagePath}`;
-  }
-
-  getProductImages(productId: string): Observable<ProductImage[]> {
-    return this.http.get<ProductImage[]>(
-      `${this.baseUrl}/productImages/${productId}/product`
-    );
   }
 
   uploadProductImage(
@@ -35,7 +30,7 @@ export class ImageService {
 
   updateProductImage(image: ProductImage): Observable<void> {
     return this.http.put<void>(
-      `${this.baseUrl}/productImages/${image.id}`,
+      `${this.baseUrl}/productImages/${image.productImageId}`,
       image
     );
   }

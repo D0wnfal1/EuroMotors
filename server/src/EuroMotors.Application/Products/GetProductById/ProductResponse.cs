@@ -12,8 +12,9 @@ public sealed class ProductResponse
     public decimal Discount { get; set; }
     public int Stock { get; set; }
     public bool IsAvailable { get; set; }
-    public string[]? Images { get; set; }
+    public List<ProductImageResponse> Images { get; set; } = new();
 
     public ProductResponse() { }
 
 }
+

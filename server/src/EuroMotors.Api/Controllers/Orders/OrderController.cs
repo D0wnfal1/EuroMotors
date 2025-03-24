@@ -25,6 +25,7 @@ public class OrderController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize]
     public async Task<IActionResult> GetOrderById(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetOrderByIdQuery(id);
@@ -35,6 +36,7 @@ public class OrderController : ControllerBase
     }
 
     [HttpGet("{userId}/user")]
+    [Authorize]
     public async Task<IActionResult> GetUserOrders(Guid userId, CancellationToken cancellationToken)
     {
         var query = new GetUserOrdersQuery(userId);
@@ -60,6 +62,7 @@ public class OrderController : ControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateOrderCommand(request.CartId, request.UserId, request.BuyerName, request.BuyerPhoneNumber, request.BuyerEmail, request.DeliveryMethod, request.ShippingAddress, request.PaymentMethod);

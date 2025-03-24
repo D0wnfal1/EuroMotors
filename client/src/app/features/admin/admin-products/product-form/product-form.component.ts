@@ -86,11 +86,8 @@ export class ProductFormComponent implements OnInit {
         .getProductById(this.productId!)
         .subscribe((product: Product) => {
           this.productForm.patchValue(product);
+          this.productImages = product.images;
         });
-      this.imageService.getProductImages(this.productId!).subscribe({
-        next: (images) => (this.productImages = images),
-        error: (err) => console.error('Error loading images', err),
-      });
     }
   }
 
@@ -116,7 +113,7 @@ export class ProductFormComponent implements OnInit {
     this.imageService.deleteProductImage(imageId).subscribe({
       next: () => {
         this.productImages = this.productImages.filter(
-          (img) => img.id !== imageId
+          (img) => img.productImageId !== imageId
         );
       },
       error: (err) => console.error('Error deleting image', err),

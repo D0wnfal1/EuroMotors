@@ -49,26 +49,27 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
             SearchPattern = $"%{request.SearchTerm}%"
         });
 
-        string sql = $"""
-                          SELECT
-                              p.id AS {nameof(ProductResponse.Id)},
-                              p.category_id AS {nameof(ProductResponse.CategoryId)},
-                              p.car_model_id AS {nameof(ProductResponse.CarModelId)},
-                              p.name AS {nameof(ProductResponse.Name)},
-                              p.description AS {nameof(ProductResponse.Description)},
-                              p.vendor_code AS {nameof(ProductResponse.VendorCode)},
-                              p.price AS {nameof(ProductResponse.Price)},
-                              p.discount AS {nameof(ProductResponse.Discount)},
-                              p.stock AS {nameof(ProductResponse.Stock)},
-                              p.is_available AS {nameof(ProductResponse.IsAvailable)},
-                              COALESCE(array_agg(pi.path) FILTER (WHERE pi.path IS NOT NULL), ARRAY[]::text[]) AS {nameof(ProductResponse.Images)}
-                          FROM products p
-                          LEFT JOIN product_images pi ON pi.product_id = p.id
-                          {whereClause}
-                          GROUP BY p.id
-                          ORDER BY {orderBy}
-                          LIMIT @Limit OFFSET @Offset
-                      """;
+        string sql = $@"
+            SELECT
+                p.id AS {nameof(ProductResponse.Id)},
+                p.category_id AS {nameof(ProductResponse.CategoryId)},
+                p.car_model_id AS {nameof(ProductResponse.CarModelId)},
+                p.name AS {nameof(ProductResponse.Name)},
+                p.description AS {nameof(ProductResponse.Description)},
+                p.vendor_code AS {nameof(ProductResponse.VendorCode)},
+                p.price AS {nameof(ProductResponse.Price)},
+                p.discount AS {nameof(ProductResponse.Discount)},
+                p.stock AS {nameof(ProductResponse.Stock)},
+                p.is_available AS {nameof(ProductResponse.IsAvailable)},
+                pi.id AS {nameof(ProductImageResponse.ProductImageId)},
+                pi.path AS {nameof(ProductImageResponse.Path)},
+                pi.product_id AS {nameof(ProductImageResponse.ProductId)}
+            FROM products p
+            LEFT JOIN product_images pi ON pi.product_id = p.id
+            {whereClause}
+            ORDER BY {orderBy}
+            LIMIT @Limit OFFSET @Offset
+        ";
 
         var parameters = new
         {
@@ -79,7 +80,29 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
             Offset = offset
         };
 
-        List<ProductResponse> products = (await connection.QueryAsync<ProductResponse>(sql, parameters)).AsList();
+        var productDictionary = new Dictionary<Guid, ProductResponse>();
+
+        await connection.QueryAsync<ProductResponse, ProductImageResponse, ProductResponse>(
+            sql,
+            (product, image) =>
+            {
+                if (!productDictionary.TryGetValue(product.Id, out ProductResponse? productEntry))
+                {
+                    productEntry = product;
+                    productEntry.Images = new List<ProductImageResponse>();
+                    productDictionary.Add(productEntry.Id, productEntry);
+                }
+                if (image != null && image.ProductImageId != Guid.Empty)
+                {
+                    productEntry.Images.Add(image);
+                }
+                return productEntry;
+            },
+            parameters,
+            splitOn: "ProductImageId"
+        );
+
+        var products = productDictionary.Values.ToList();
 
         var paginatedResult = new Pagination<ProductResponse>
         {

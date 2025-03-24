@@ -36,7 +36,6 @@ export class ProductDetailsComponent implements OnInit {
   private imageService = inject(ImageService);
   private cartService = inject(CartService);
   product?: Product;
-  productImages: ProductImage[] = [];
   activeIndex: number = 0;
   quantityInCart = 0;
   quantity = 1;
@@ -48,8 +47,8 @@ export class ProductDetailsComponent implements OnInit {
   nextImage() {
     if (
       this.product &&
-      this.productImages.length > 0 &&
-      this.activeIndex < this.productImages.length - 1
+      this.product.images.length > 0 &&
+      this.activeIndex < this.product.images.length - 1
     ) {
       this.activeIndex++;
     }
@@ -72,15 +71,6 @@ export class ProductDetailsComponent implements OnInit {
     this.productService.getProductById(id).subscribe({
       next: (product) => {
         this.product = product;
-        this.imageService.getProductImages(id).subscribe({
-          next: (images) => {
-            this.productImages = images;
-            if (this.productImages.length) {
-              this.activeIndex = 0;
-            }
-          },
-          error: (error) => console.log('Failed to load product images', error),
-        });
       },
       error: (error) => console.log(error),
     });

@@ -1,6 +1,7 @@
 ﻿using EuroMotors.Application.Delivery.GetWarehouse;
 using EuroMotors.Domain.Abstractions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EuroMotors.Api.Controllers.Delivery;
@@ -15,6 +16,7 @@ public class DeliveryController : ControllerBase
         _sender = sender;
     }
     [HttpPost("warehouses")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetWarehouses([FromBody] GetWareHousesRequest request)
     {
         var query = new GetWarehousesQuery(request.City, request.Query);

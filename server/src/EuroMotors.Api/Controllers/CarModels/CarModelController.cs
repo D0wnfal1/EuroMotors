@@ -34,6 +34,7 @@ public class CarModelController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> GetCarModelById(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetCarModelByIdQuery(id);

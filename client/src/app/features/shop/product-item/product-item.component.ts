@@ -11,6 +11,7 @@ import { MatButton } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { CartService } from '../../../core/services/cart.service';
 import { ImageService } from '../../../core/services/image.service';
+import { ProductImage } from '../../../shared/models/productImage';
 
 @Component({
   selector: 'app-product-item',
@@ -33,7 +34,7 @@ export class ProductItemComponent {
   cartService = inject(CartService);
   imageService = inject(ImageService);
 
-  getImageUrl(imagePath: string): string {
-    return this.imageService.getImageUrl(imagePath);
+  getImageUrl(image: ProductImage): string {
+    return this.imageService.getImageUrl(image.path);
   }
 }

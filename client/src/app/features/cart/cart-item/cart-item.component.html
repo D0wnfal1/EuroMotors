@@ -3,8 +3,8 @@
     <a routerLink="/shop/{{ item?.productId }}" class="shrink order-1">
       <div class="image-container">
         <img
-          *ngIf="productImage; else noImage"
-          [src]="getImageUrl(productImage.path)"
+          *ngIf="product; else noImage"
+          [src]="getImageUrl(product.images[0].path)"
           alt="product image"
           class="h-40 w-40"
         />

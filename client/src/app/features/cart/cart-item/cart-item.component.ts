@@ -25,27 +25,18 @@ export class CartItemComponent implements OnInit {
   productService = inject(ProductService);
   imageService = inject(ImageService);
 
-  getImageUrl(imagePath: string): string {
-    return this.imageService.getImageUrl(imagePath);
-  }
-
   ngOnInit() {
     if (this.item?.productId) {
       this.productService
         .getProductById(this.item.productId)
         .subscribe((product) => {
           this.product = product;
-          this.getProductImage(product.id);
         });
     }
   }
 
-  getProductImage(productId: string) {
-    this.imageService.getProductImages(productId).subscribe((images) => {
-      if (images.length > 0) {
-        this.productImage = images[0];
-      }
-    });
+  getImageUrl(imagePath: string): string {
+    return this.imageService.getImageUrl(imagePath);
   }
 
   incrementQuantity() {

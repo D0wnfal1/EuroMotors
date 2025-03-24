@@ -35,6 +35,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> GetCategoryById(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetCategoryByIdQuery(id);

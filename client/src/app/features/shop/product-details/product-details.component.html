@@ -4,8 +4,8 @@
       <div>
         <div class="image-container">
           <img
-            *ngIf="productImages.length > 0; else noImage"
-            [src]="getImageUrl(productImages[activeIndex].path)"
+            *ngIf="product.images.length > 0; else noImage"
+            [src]="getImageUrl(product.images[activeIndex].path)"
             alt="Product Image"
             class="product-image"
           />
@@ -32,8 +32,8 @@
             mat-button
             (click)="nextImage()"
             [disabled]="
-              productImages.length === 0 ||
-              activeIndex === productImages.length - 1
+              product.images.length === 0 ||
+              activeIndex === product.images.length - 1
             "
             class="flex items-center"
           >

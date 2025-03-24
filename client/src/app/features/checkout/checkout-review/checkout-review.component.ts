@@ -38,25 +38,21 @@ export class CheckoutReviewComponent {
         .getProductById(item.productId)
         .subscribe((product) => {
           this.products.push(product);
-          this.loadProductImage(product.id);
         });
     });
   }
 
-  loadProductImage(productId: string) {
-    this.imageService.getProductImages(productId).subscribe((images) => {
-      if (images.length > 0) {
-        this.productImages[productId] = images[0];
-      }
-    });
+  getProductImages(productId: string) {
+    const product = this.products.find((p) => p.id === productId);
+    return product ? product.images : 'Product not found';
   }
 
-  getImageUrl(imagePath: string): string {
-    return this.imageService.getImageUrl(imagePath);
-  }
-
-  getProductImage(productId: string) {
-    return this.productImages[productId];
+  getImageUrl(image: string | ProductImage): string {
+    if (typeof image === 'string') {
+      return this.imageService.getImageUrl(image);
+    } else {
+      return this.imageService.getImageUrl(image.path);
+    }
   }
 
   getProductName(productId: string) {
