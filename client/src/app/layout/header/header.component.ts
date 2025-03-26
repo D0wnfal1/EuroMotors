@@ -38,8 +38,14 @@ export class HeaderComponent {
   private router = inject(Router);
 
   logout() {
-    this.accountService.logout();
-    this.accountService.currentUser.set(null);
-    this.router.navigateByUrl('/');
+    this.accountService.logout().subscribe({
+      next: () => {
+        this.accountService.currentUser.set(null);
+        this.router.navigateByUrl('/');
+      },
+      error: (err) => {
+        console.error('Logout failed', err);
+      },
+    });
   }
 }

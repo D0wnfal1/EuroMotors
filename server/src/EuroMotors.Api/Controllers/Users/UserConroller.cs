@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using EuroMotors.Application.Users.GetByEmail;
 using EuroMotors.Application.Users.Login;
+using EuroMotors.Application.Users.Logout;
 using EuroMotors.Application.Users.Register;
 using EuroMotors.Application.Users.Update;
 using EuroMotors.Domain.Abstractions;
@@ -71,6 +72,17 @@ public class UsersController : ControllerBase
         Result<Guid> result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+    }
+
+    [HttpPost("logout")]
+    [Authorize]
+    public async Task<IActionResult> Logout(CancellationToken cancellationToken)
+    {
+        var command = new LogoutUserCommand();
+
+        Result result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess ? NoContent() : BadRequest(result.Error);
     }
 
     [HttpPut]

@@ -5,6 +5,7 @@
   <!-- .NET 9 packages -->
   <ItemGroup>
     <!-- Static code analysis -->
+    <PackageVersion Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.7.0.110445" />
     <!-- Domain -->
     <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />

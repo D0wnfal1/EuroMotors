@@ -76,7 +76,7 @@ export class OrderDetailedComponent implements OnInit {
       this.order.orderItems.forEach((item) => {
         this.productService.getProductById(item.productId).subscribe({
           next: (product: Product) => {
-            this.productNames[item.productId] = product.name; // Assuming `name` is the property for the product name
+            this.productNames[item.productId] = product.name;
             this.changeDetectorRef.detectChanges();
           },
           error: (error) => {

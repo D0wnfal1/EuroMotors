@@ -20,7 +20,6 @@ export class CheckoutPaymentComponent implements OnInit {
   PaymentMethod = PaymentMethod;
 
   ngOnInit() {
-    // Можно задать значение по умолчанию, например, Prepaid
     this.paymentForm = new FormGroup({
       paymentMethod: new FormControl(
         PaymentMethod.Postpaid,

@@ -7,7 +7,6 @@ export const checkoutRourtes: Route[] = [
   {
     path: '',
     component: CheckoutComponent,
-    // canActivate: [authGuard, emptyCartGuard],
     canActivate: [emptyCartGuard],
   },
   { path: 'success/:orderId', component: CheckoutSuccessComponent },

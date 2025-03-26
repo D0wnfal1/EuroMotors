@@ -1,32 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <PackageReference Include="Dapper" />
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
-    <PackageReference Include="MediatR" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Features" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
-    <PackageReference Include="Serilog" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Dapper" />
+		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+		<PackageReference Include="MediatR" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Features" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+		<PackageReference Include="Serilog" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\EuroMotors.Domain\EuroMotors.Domain.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\EuroMotors.Domain\EuroMotors.Domain.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-	<InternalsVisibleTo Include="Application.UnitTests" />
-  </ItemGroup>
+	<ItemGroup>
+		<InternalsVisibleTo Include="Application.UnitTests" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Update="SonarAnalyzer.CSharp">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Update="SonarAnalyzer.CSharp">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
 
-    <ItemGroup>
-        <InternalsVisibleTo Include="EuroMotors.Application.UnitTests" />
-    </ItemGroup>
+	<ItemGroup>
+		<InternalsVisibleTo Include="EuroMotors.Application.UnitTests" />
+	</ItemGroup>
 
 </Project>

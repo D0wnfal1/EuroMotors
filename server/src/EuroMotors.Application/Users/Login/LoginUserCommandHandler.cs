@@ -2,13 +2,14 @@
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Users;
+using Microsoft.AspNetCore.Http;
 
 namespace EuroMotors.Application.Users.Login;
 
 internal sealed class LoginUserCommandHandler(
     IUserRepository userRepository,
     IPasswordHasher passwordHasher,
-    ITokenProvider tokenProvider) : ICommandHandler<LoginUserCommand, string>
+    ITokenProvider tokenProvider, IHttpContextAccessor httpContextAccessor) : ICommandHandler<LoginUserCommand, string>
 {
     public async Task<Result<string>> Handle(LoginUserCommand command, CancellationToken cancellationToken)
     {
@@ -28,6 +29,16 @@ internal sealed class LoginUserCommandHandler(
 
         string token = tokenProvider.Create(user);
 
-        return token;
+        HttpResponse? response = httpContextAccessor.HttpContext?.Response;
+
+        response?.Cookies.Append("AuthToken", token, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.None, 
+            Expires = DateTimeOffset.UtcNow.AddDays(30) 
+        });
+
+        return Result.Success(token);
     }
 }

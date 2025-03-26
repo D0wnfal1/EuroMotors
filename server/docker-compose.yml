@@ -11,30 +11,6 @@ services:
     networks:
       - server-network
 
- # euromotors.client:
- #   build:
- #     context: ../client
- #     dockerfile: Dockerfile
- #   container_name: euromotors.Client
- #   ports:
- #     - "4200:4200"
- #   volumes:
- #     - ../client:/app 
- #   depends_on:
- #     - euromotors.api
-
- # euromotors.nginx:
- #   build:
- #     context: ./nginx
- #   container_name: euromotors.Nginx
- #   ports:
- #     - "80:80"
- #   depends_on:
- #     - euromotors.client
- #     - euromotors.api
- #   networks:
- #     - server-network
-
   euromotors.db:
     image: postgres:17
     container_name: Euromotors.Db

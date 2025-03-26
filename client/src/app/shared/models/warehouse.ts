@@ -1,10 +1,6 @@
 export type Warehouse = {
   description: any;
   Ref: string;
-  // При необходимости можно добавить дополнительные поля, например:
-  // Address?: string;
-  // City?: string;
-  // Phone?: string;
 };
 
 export interface WarehousesResponse {
