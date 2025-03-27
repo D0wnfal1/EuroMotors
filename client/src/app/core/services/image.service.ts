@@ -24,18 +24,26 @@ export class ImageService {
     formData.append('productId', productId);
     return this.http.post<{ id: string; imagePath: string }>(
       `${this.baseUrl}/productImages/upload`,
-      formData
+      formData,
+      {
+        withCredentials: true,
+      }
     );
   }
 
   updateProductImage(image: ProductImage): Observable<void> {
     return this.http.put<void>(
       `${this.baseUrl}/productImages/${image.productImageId}`,
-      image
+      image,
+      {
+        withCredentials: true,
+      }
     );
   }
 
   deleteProductImage(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/productImages/${id}`);
+    return this.http.delete<void>(`${this.baseUrl}/productImages/${id}`, {
+      withCredentials: true,
+    });
   }
 }

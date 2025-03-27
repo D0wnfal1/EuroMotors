@@ -51,14 +51,20 @@ export class ProductService {
   }
 
   createProduct(product: Product): Observable<string> {
-    return this.http.post<string>(`${this.baseUrl}/products`, product);
+    return this.http.post<string>(`${this.baseUrl}/products`, product, {
+      withCredentials: true,
+    });
   }
 
   updateProduct(id: string, product: Product): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/products/${id}`, product);
+    return this.http.put<void>(`${this.baseUrl}/products/${id}`, product, {
+      withCredentials: true,
+    });
   }
 
   deleteProduct(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/products/${id}`);
+    return this.http.delete<void>(`${this.baseUrl}/products/${id}`, {
+      withCredentials: true,
+    });
   }
 }

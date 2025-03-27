@@ -18,7 +18,19 @@ import { ImageService } from '../../../core/services/image.service';
 })
 export class CartItemComponent implements OnInit {
   @Input() item: CartItem | undefined;
-  product: Product | undefined;
+  product: Product = {
+    id: '',
+    name: '',
+    description: '',
+    price: 0,
+    images: [],
+    categoryId: '',
+    carModelId: '',
+    vendorCode: '',
+    discount: 0,
+    stock: 0,
+    isAvailable: false,
+  };
   productImage: ProductImage | undefined;
 
   cartService = inject(CartService);
@@ -30,7 +42,9 @@ export class CartItemComponent implements OnInit {
       this.productService
         .getProductById(this.item.productId)
         .subscribe((product) => {
-          this.product = product;
+          if (product) {
+            this.product = product;
+          }
         });
     }
   }

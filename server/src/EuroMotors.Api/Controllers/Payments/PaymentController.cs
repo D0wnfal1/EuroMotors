@@ -5,6 +5,7 @@ using EuroMotors.Application.Payments.GetPaymentByStatus;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Payments;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EuroMotors.Api.Controllers.Payments;
@@ -21,6 +22,7 @@ public class PaymentController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> GetPaymentById(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetPaymentByIdQuery(id);
@@ -31,6 +33,7 @@ public class PaymentController : ControllerBase
     }
 
     [HttpGet("{id}/order")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> GetPaymentByOrderId(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetPaymentByOrderIdQuery(id);
@@ -41,6 +44,7 @@ public class PaymentController : ControllerBase
     }
 
     [HttpGet("status")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> GetPaymentByStatus(PaymentStatus status, CancellationToken cancellationToken)
     {
         var query = new GetPaymentByStatusQuery(status);

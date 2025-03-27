@@ -30,6 +30,7 @@ export class OrderService {
     }
     return this.http.get<Pagination<Order>>(this.baseUrl + '/orders', {
       params,
+      withCredentials: true,
     });
   }
 
@@ -38,24 +39,32 @@ export class OrderService {
   }
 
   getUserOrders(userId: string): Observable<Order[]> {
-    return this.http.get<Order[]>(`${this.baseUrl}/orders/${userId}/user`);
+    return this.http.get<Order[]>(`${this.baseUrl}/orders/${userId}/user`, {
+      withCredentials: true,
+    });
   }
 
   changeOrderStatus(orderId: string, status: string): Observable<void> {
     return this.http.patch<void>(
       `${this.baseUrl}/orders?id=${orderId}&status=${status}`,
-      {}
+      {
+        withCredentials: true,
+      }
     );
   }
 
   deleteOrder(orderId: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/orders?id=${orderId}`);
+    return this.http.delete<void>(`${this.baseUrl}/orders?id=${orderId}`, {
+      withCredentials: true,
+    });
   }
 
   updateOrderStatus(orderId: string, newStatus: number) {
     return this.http.patch<Order>(
       `${this.baseUrl}/orders/${orderId}?status=${newStatus}`,
-      {}
+      {
+        withCredentials: true,
+      }
     );
   }
 }

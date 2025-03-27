@@ -50,9 +50,10 @@ export class CheckoutReviewComponent {
   getImageUrl(image: string | ProductImage): string {
     if (typeof image === 'string') {
       return this.imageService.getImageUrl(image);
-    } else {
+    } else if (image && image.path) {
       return this.imageService.getImageUrl(image.path);
     }
+    return 'images/no-image.jpeg';
   }
 
   getProductName(productId: string) {

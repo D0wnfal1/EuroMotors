@@ -19,6 +19,8 @@ export class PaymentService {
   }
 
   getPaymentById(id: string): Observable<Payment> {
-    return this.http.get<Payment>(`${this.baseUrl}/payments/${id}`);
+    return this.http.get<Payment>(`${this.baseUrl}/payments/${id}`, {
+      withCredentials: true,
+    });
   }
 }

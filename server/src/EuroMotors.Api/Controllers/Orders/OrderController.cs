@@ -25,7 +25,7 @@ public class OrderController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [Authorize]
+    [AllowAnonymous]
     public async Task<IActionResult> GetOrderById(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetOrderByIdQuery(id);

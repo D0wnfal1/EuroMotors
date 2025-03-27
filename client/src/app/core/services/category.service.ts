@@ -36,18 +36,26 @@ export class CategoryService {
   }
 
   getCategoryById(id: string): Observable<Category> {
-    return this.http.get<Category>(`${this.baseUrl}/categories/${id}`);
+    return this.http.get<Category>(`${this.baseUrl}/categories/${id}`, {
+      withCredentials: true,
+    });
   }
 
   createCategory(formData: FormData): Observable<string> {
-    return this.http.post<string>(`${this.baseUrl}/categories`, formData);
+    return this.http.post<string>(`${this.baseUrl}/categories`, formData, {
+      withCredentials: true,
+    });
   }
 
   updateCategory(id: string, formData: FormData): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/categories/${id}`, formData);
+    return this.http.put<void>(`${this.baseUrl}/categories/${id}`, formData, {
+      withCredentials: true,
+    });
   }
 
   deleteCategory(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/categories/${id}`);
+    return this.http.delete<void>(`${this.baseUrl}/categories/${id}`, {
+      withCredentials: true,
+    });
   }
 }

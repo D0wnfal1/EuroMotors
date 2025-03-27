@@ -35,18 +35,26 @@ export class CarmodelService {
   }
 
   getCarModelById(id: string): Observable<CarModel> {
-    return this.http.get<CarModel>(`${this.baseUrl}/carModels/${id}`);
+    return this.http.get<CarModel>(`${this.baseUrl}/carModels/${id}`, {
+      withCredentials: true,
+    });
   }
 
   createCarModel(formData: FormData): Observable<string> {
-    return this.http.post<string>(`${this.baseUrl}/carModels`, formData);
+    return this.http.post<string>(`${this.baseUrl}/carModels`, formData, {
+      withCredentials: true,
+    });
   }
 
   updateCarModel(id: string, formData: FormData): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/carModels/${id}`, formData);
+    return this.http.put<void>(`${this.baseUrl}/carModels/${id}`, formData, {
+      withCredentials: true,
+    });
   }
 
   deleteCarModel(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/carModels/${id}`);
+    return this.http.delete<void>(`${this.baseUrl}/carModels/${id}`, {
+      withCredentials: true,
+    });
   }
 }

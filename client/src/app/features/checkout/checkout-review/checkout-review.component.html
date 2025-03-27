@@ -31,7 +31,11 @@
           <td class="py-4">
             <div class="flex items-center gap-4">
               <img
-                *ngIf="getProductImages(item.productId); else noImage"
+                *ngIf="
+                  getProductImages(item.productId) &&
+                    getProductImages(item.productId).length > 0;
+                  else noImage
+                "
                 [src]="getImageUrl(getProductImages(item.productId)[0])"
                 alt="product image"
                 class="w-10 h-10"

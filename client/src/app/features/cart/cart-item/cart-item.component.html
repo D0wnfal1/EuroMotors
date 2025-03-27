@@ -3,7 +3,7 @@
     <a routerLink="/shop/{{ item?.productId }}" class="shrink order-1">
       <div class="image-container">
         <img
-          *ngIf="product; else noImage"
+          *ngIf="product.images.length > 0; else noImage"
           [src]="getImageUrl(product.images[0].path)"
           alt="product image"
           class="h-40 w-40"
@@ -34,7 +34,7 @@
 
     <div class="w-full flex-1 space-y-4 order-2 max-w-md">
       <a routerLink="/shop/{{ item?.productId }}" class="font-medium">
-        {{ product?.name }}
+        {{ product.name }}
       </a>
 
       <div class="flex items-center gap-4">
