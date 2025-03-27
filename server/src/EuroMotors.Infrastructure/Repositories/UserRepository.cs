@@ -16,6 +16,11 @@ internal sealed class UserRepository : Repository<User>, IUserRepository
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
     }
+    public async Task<User?> GetByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
+    {
+        return await _dbContext.Users
+            .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken, cancellationToken);
+    }
 
     public void Update(User user)
     {

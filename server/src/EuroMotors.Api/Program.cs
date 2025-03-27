@@ -1,6 +1,7 @@
 using EuroMotors.Api;
 using EuroMotors.Api.Extensions;
 using EuroMotors.Application;
+using EuroMotors.Application.Abstractions.Authentication;
 using EuroMotors.Infrastructure;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -32,8 +33,8 @@ if (app.Environment.IsDevelopment())
 
     app.ApplyMigrations();
 
-    //IPasswordHasher passwordHasher = app.Services.GetRequiredService<IPasswordHasher>();
-    //app.SeedData(passwordHasher);
+    IPasswordHasher passwordHasher = app.Services.GetRequiredService<IPasswordHasher>();
+    app.SeedData(passwordHasher);
 }
 
 app.MapHealthChecks("health", new HealthCheckOptions

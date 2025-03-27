@@ -26,7 +26,6 @@ internal sealed class CustomClaimsTransformation : IClaimsTransformation
         }
 
         using IServiceScope scope = _serviceProvider.CreateScope();
-
         AuthorizationService authorizationService = scope.ServiceProvider.GetRequiredService<AuthorizationService>();
 
         Guid id = principal.GetUserId();

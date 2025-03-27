@@ -53,13 +53,12 @@ public class UsersController : ControllerBase
         return Ok(new { IsAuthenticated = User.Identity?.IsAuthenticated ?? false });
     }
 
-
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
     {
         var command = new LoginUserCommand(request.Email, request.Password);
 
-        Result<string> result = await _sender.Send(command, cancellationToken);
+        Result<AuthenticationResponse> result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }

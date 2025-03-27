@@ -2,7 +2,15 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../../shared/models/user';
-import { catchError, map, switchMap, tap, throwError } from 'rxjs';
+import {
+  catchError,
+  map,
+  Subject,
+  switchMap,
+  take,
+  tap,
+  throwError,
+} from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -11,6 +19,8 @@ export class AccountService {
   baseUrl = environment.apiUrl;
   private http = inject(HttpClient);
   currentUser = signal<User | null>(null);
+  isRefreshing = signal<boolean>(false);
+  private refreshTokenSubject = new Subject<void>();
   isAdmin = computed(() => {
     const roles = this.currentUser()?.roles;
     return Array.isArray(roles) ? roles.includes('Admin') : roles === 'Admin';
@@ -19,7 +29,6 @@ export class AccountService {
   login(values: any) {
     return this.http
       .post(this.baseUrl + '/users/login', values, {
-        responseType: 'text',
         withCredentials: true,
       })
       .pipe(
@@ -33,6 +42,42 @@ export class AccountService {
       );
   }
 
+  refreshToken() {
+    if (this.isRefreshing()) {
+      return this.refreshTokenSubject.pipe(
+        take(1),
+        switchMap(() => {
+          return this.http
+            .post(this.baseUrl + '/auth/refresh', {}, { withCredentials: true })
+            .pipe(
+              catchError((error) => {
+                console.error('Refresh token error:', error);
+                return throwError(() => new Error(error));
+              })
+            );
+        })
+      );
+    }
+
+    this.isRefreshing.set(true);
+    this.refreshTokenSubject.next();
+
+    return this.http
+      .post(this.baseUrl + '/auth/refresh', {}, { withCredentials: true })
+      .pipe(
+        switchMap(() => {
+          this.isRefreshing.set(false);
+          this.refreshTokenSubject.next();
+          return this.getUserInfo();
+        }),
+        catchError((error) => {
+          this.isRefreshing.set(false);
+          this.refreshTokenSubject.next();
+          console.error('Refresh token error:', error);
+          return throwError(() => new Error(error));
+        })
+      );
+  }
   register(values: any) {
     return this.http.post(this.baseUrl + '/users/register', values, {
       withCredentials: true,
@@ -80,7 +125,7 @@ export class AccountService {
       .pipe(
         tap(() => {
           this.currentUser.set(null);
-          this.deleteCookie('AuthToken');
+          this.deleteCookie('AccessToken');
         }),
         catchError((error) => {
           console.error('Logout error:', error);

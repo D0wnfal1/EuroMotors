@@ -15,7 +15,7 @@ internal sealed class UpdateUserInformationCommandHandler(IApplicationDbContext 
 
         if (user is null)
         {
-            return Result.Failure<string>(UserErrors.NotFoundByEmail);
+            return Result.Failure<string>(UserErrors.InvalidCredentials);
         }
 
         user.UpdateContactInfo(command.Email, command.FirstName, command.LastName, command.PhoneNumber, command.City);

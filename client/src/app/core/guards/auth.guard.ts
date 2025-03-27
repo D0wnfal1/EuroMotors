@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
+import { of, switchMap, map, catchError } from 'rxjs';
 import { AccountService } from '../services/account.service';
-import { catchError, map, of } from 'rxjs';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const accountService = inject(AccountService);
@@ -11,14 +11,32 @@ export const authGuard: CanActivateFn = (route, state) => {
     return of(true);
   } else {
     return accountService.getAuthState().pipe(
-      map((auth) => {
+      switchMap((auth) => {
         if (auth.isAuthenticated) {
-          return true;
+          return of(true);
         } else {
-          router.navigate(['/account/login'], {
-            queryParams: { returnUrl: state.url },
-          });
-          return false;
+          return accountService.refreshToken().pipe(
+            switchMap(() => {
+              return accountService.getAuthState().pipe(
+                map((authAfterRefresh) => {
+                  if (authAfterRefresh.isAuthenticated) {
+                    return true;
+                  } else {
+                    router.navigate(['/account/login'], {
+                      queryParams: { returnUrl: state.url },
+                    });
+                    return false;
+                  }
+                })
+              );
+            }),
+            catchError(() => {
+              router.navigate(['/account/login'], {
+                queryParams: { returnUrl: state.url },
+              });
+              return of(false);
+            })
+          );
         }
       }),
       catchError(() => {

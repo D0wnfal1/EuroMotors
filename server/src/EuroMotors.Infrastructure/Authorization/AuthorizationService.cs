@@ -15,15 +15,15 @@ internal sealed class AuthorizationService
 
     public async Task<UserRolesResponse> GetRolesForUserAsync(Guid id)
     {
-        UserRolesResponse roles = await _dbContext.Set<User>()
+        UserRolesResponse? roles = await _dbContext.Set<User>()
             .Where(u => u.Id == id)
             .Select(u => new UserRolesResponse
             {
                 UserId = u.Id,
                 Roles = u.Roles.ToList()
             })
-            .FirstAsync();
+            .FirstOrDefaultAsync();
 
-        return roles;
+        return roles ?? new UserRolesResponse { UserId = id, Roles = [] };
     }
 }

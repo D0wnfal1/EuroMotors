@@ -12,15 +12,12 @@ public static class UserErrors
         "Users.Unauthorized",
         "You are not authorized to perform this action.");
 
-    public static readonly Error NotFoundByEmail = Error.NotFound(
-        "Users.NotFoundByEmail",
-        "The user with the specified email was not found");
 
     public static readonly Error EmailNotUnique = Error.Conflict(
         "Users.EmailNotUnique",
         "The provided email is not unique");
 
-    public static readonly Error InvalidPassword = Error.Failure(
-        "Users.InvalidPassword",
-        "The provided password is incorrect.");
+    public static readonly Error InvalidCredentials = Error.Failure(
+        "Users.InvalidCredentials",
+        "The provided credentials is incorrect.");
 }

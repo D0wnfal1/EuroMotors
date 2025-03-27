@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using EuroMotors.Application.Abstractions.Authentication;
 using EuroMotors.Domain.Users;
@@ -19,21 +20,30 @@ internal sealed class TokenProvider(IConfiguration configuration) : ITokenProvid
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(
-            [
+            Subject = new ClaimsIdentity([
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email)
             ]),
-            Expires = DateTime.UtcNow.AddDays(configuration.GetValue<int>("Jwt:ExpirationInDays")),
+            Expires = DateTime.UtcNow.AddMinutes(configuration.GetValue<int>("Jwt:ExpirationInMinutes")),
             SigningCredentials = credentials,
             Issuer = configuration["Jwt:Issuer"],
             Audience = configuration["Jwt:Audience"]
         };
 
         var handler = new JsonWebTokenHandler();
-
         string token = handler.CreateToken(tokenDescriptor);
 
         return token;
+    }
+
+
+    public (string RefreshToken, DateTime Expires) CreateRefreshToken()
+    {
+        byte[] randomNumber = new byte[32];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomNumber);
+        string refreshToken = Convert.ToBase64String(randomNumber);
+        DateTime expires = DateTime.UtcNow.AddDays(configuration.GetValue<int>("Jwt:RefreshTokenExpirationInDays"));
+        return (refreshToken, expires);
     }
 }

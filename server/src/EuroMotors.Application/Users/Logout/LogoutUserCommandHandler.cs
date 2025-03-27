@@ -8,7 +8,8 @@ internal sealed class LogoutUserCommandHandler(IHttpContextAccessor httpContextA
 {
     public Task<Result> Handle(LogoutUserCommand command, CancellationToken cancellationToken)
     {
-        if (httpContextAccessor.HttpContext?.Request.Cookies["AuthToken"] == null)
+        if (httpContextAccessor.HttpContext?.Request.Cookies["AccessToken"] == null &&
+            httpContextAccessor.HttpContext?.Request.Cookies["RefreshToken"] == null)
         {
             return Task.FromResult(Result.Success());
         }
@@ -21,7 +22,8 @@ internal sealed class LogoutUserCommandHandler(IHttpContextAccessor httpContextA
             SameSite = SameSiteMode.None
         };
 
-        httpContextAccessor.HttpContext.Response.Cookies.Append("AuthToken", string.Empty, cookieOptions);
+        httpContextAccessor.HttpContext.Response.Cookies.Append("AccessToken", string.Empty, cookieOptions);
+        httpContextAccessor.HttpContext.Response.Cookies.Append("RefreshToken", string.Empty, cookieOptions);
 
         return Task.FromResult(Result.Success());
     }

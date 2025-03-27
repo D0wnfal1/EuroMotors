@@ -24,15 +24,12 @@ using EuroMotors.Infrastructure.Payments;
 using EuroMotors.Infrastructure.Repositories;
 using EuroMotors.Infrastructure.Time;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
 
@@ -180,7 +177,7 @@ public static class DependencyInjection
                 {
                     OnMessageReceived = context =>
                     {
-                        string? token = context.Request.Cookies["AuthToken"];
+                        string? token = context.Request.Cookies["AccessToken"];
                         if (!string.IsNullOrEmpty(token))
                         {
                             context.Token = token; 

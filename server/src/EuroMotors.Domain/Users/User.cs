@@ -19,6 +19,9 @@ public sealed class User : Entity
     public string? PhoneNumber { get; private set; }
     public string? City { get; private set; }
 
+    public string? RefreshToken { get; private set; }
+    public DateTime? RefreshTokenExpiryTime { get; private set; }
+
     public IReadOnlyCollection<Role> Roles => _roles.ToList();
 
     public static User Create(string email, string firstName, string lastName, string passwordHash)
@@ -46,5 +49,11 @@ public sealed class User : Entity
         LastName = lastName;
         PhoneNumber = phoneNumber;
         City = city;
+    }
+
+    public void SetRefreshToken(string refreshToken, DateTime expiryTime)
+    {
+        RefreshToken = refreshToken;
+        RefreshTokenExpiryTime = expiryTime;
     }
 }

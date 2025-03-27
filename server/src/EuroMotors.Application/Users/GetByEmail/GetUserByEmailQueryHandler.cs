@@ -16,7 +16,7 @@ internal sealed class GetUserByEmailQueryHandler(IUserRepository userRepository,
 
         if (user is null)
         {
-            return Result.Failure<UserResponse>(UserErrors.NotFoundByEmail);
+            return Result.Failure<UserResponse>(UserErrors.InvalidCredentials);
         }
 
         if (user.Id != userContext.UserId)

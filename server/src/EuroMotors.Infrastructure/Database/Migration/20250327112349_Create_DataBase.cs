@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migration
 {
     /// <inheritdoc />
-    public partial class Create_Database : Microsoft.EntityFrameworkCore.Migrations.Migration
+    public partial class Create_DataBase : Microsoft.EntityFrameworkCore.Migrations.Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -97,7 +97,9 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     last_name = table.Column<string>(type: "text", nullable: false),
                     password_hash = table.Column<string>(type: "text", nullable: false),
                     phone_number = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
-                    city = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
+                    city = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    refresh_token = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    refresh_token_expiry_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
