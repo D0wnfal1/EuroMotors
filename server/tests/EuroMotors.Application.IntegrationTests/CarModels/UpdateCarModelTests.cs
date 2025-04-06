@@ -17,8 +17,8 @@ public class UpdateCarModelTests : BaseIntegrationTest
     public static readonly TheoryData<UpdateCarModelCommand> InvalidCommands =
     [
         new(Guid.Empty, new Faker().Vehicle.Manufacturer(),
-            new Faker().Vehicle.Model(), null),
-        new(Guid.NewGuid(), string.Empty, string.Empty, null)
+            new Faker().Vehicle.Model(), null, null, null, null),
+        new(Guid.NewGuid(), string.Empty, string.Empty, null, null, null, null)
     ];
 
 
@@ -40,7 +40,7 @@ public class UpdateCarModelTests : BaseIntegrationTest
         // Arrange
         var faker = new Faker();
         var command = new UpdateCarModelCommand(Guid.NewGuid(), faker.Vehicle.Manufacturer(),
-            faker.Vehicle.Model(), null);
+            faker.Vehicle.Model(), null, null, null, null);
 
         // Act
         Result result = await Sender.Send(command);
@@ -54,11 +54,18 @@ public class UpdateCarModelTests : BaseIntegrationTest
     {
         // Arrange
         var faker = new Faker();
-        Guid carModelId = await Sender.CreateCarModelAsync(faker.Vehicle.Manufacturer(),
-            faker.Vehicle.Model());
+        Guid carModelId = await Sender.CreateCarModelAsync(
+            faker.Vehicle.Manufacturer(),
+            faker.Vehicle.Model(),
+            2020, 
+            null, 
+            BodyType.Sedan, 
+            new EngineSpec(6, FuelType.Diesel, 6), 
+            null 
+        );
 
         var command = new UpdateCarModelCommand(carModelId, faker.Vehicle.Manufacturer(),
-            faker.Vehicle.Model(), null);
+            faker.Vehicle.Model(), 2020, null, BodyType.Sedan, null);
 
         // Act
         Result result = await Sender.Send(command);

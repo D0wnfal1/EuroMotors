@@ -5,6 +5,7 @@ using EuroMotors.Application.CarModels.GetCarModelById;
 using EuroMotors.Application.CarModels.GetCarModels;
 using EuroMotors.Application.CarModels.UpdateCarModel;
 using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.CarModels;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,7 +35,7 @@ public class CarModelController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = Roles.Admin)]
+    //[Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> GetCarModelById(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetCarModelByIdQuery(id);
@@ -45,10 +46,20 @@ public class CarModelController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = Roles.Admin)]
-    public async Task<IActionResult> CreateCarModel([FromForm] CarModelRequest request, CancellationToken cancellationToken)
+    //[Authorize(Roles = Roles.Admin)]
+    public async Task<IActionResult> CreateCarModel([FromForm] CreateCarModelRequest request, CancellationToken cancellationToken)
     {
-        var command = new CreateCarModelCommand(request.Brand, request.Model, request.Image);
+        var engineSpec = new EngineSpec(request.EngineSpecVolumeLiters, request.EngineSpecFuelType, request.EngineSpecHorsePower);
+
+        var command = new CreateCarModelCommand(
+            request.Brand,
+            request.Model,
+            request.StartYear,
+            request.EndYear,
+            request.BodyType,
+            engineSpec,
+            request.ImagePath
+        );
 
         Result<Guid> result = await _sender.Send(command, cancellationToken);
 
@@ -58,13 +69,13 @@ public class CarModelController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    [Authorize(Roles = Roles.Admin)]
+    //[Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> UpdateCarModel(
         Guid id,
-        [FromForm] CarModelRequest request,
+        [FromForm] UpdateCarModelRequest request,
         CancellationToken cancellationToken)
     {
-        var command = new UpdateCarModelCommand(id, request.Brand, request.Model, request.Image);
+        var command = new UpdateCarModelCommand(id, request.Brand, request.Model, request.StartYear, request.EndYear, request.BodyType, request.ImagePath);
 
         Result result = await _sender.Send(command, cancellationToken);
 
@@ -72,7 +83,7 @@ public class CarModelController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = Roles.Admin)]
+    //[Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> DeleteCarModel(Guid id, CancellationToken cancellationToken)
     {
         var command = new DeleteCarModelCommand(id);

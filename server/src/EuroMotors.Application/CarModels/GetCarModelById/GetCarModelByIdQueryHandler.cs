@@ -19,6 +19,13 @@ internal sealed class GetCarModelByIdQueryHandler(IDbConnectionFactory dbConnect
                     id AS {nameof(CarModelResponse.Id)},
                     brand AS {nameof(CarModelResponse.Brand)},
                     model AS {nameof(CarModelResponse.Model)},
+                    start_year AS {nameof(CarModelResponse.StartYear)},
+                    end_year AS {nameof(CarModelResponse.EndYear)},
+                    body_type AS {nameof(CarModelResponse.BodyType)},
+                    engine_spec_volume_liters AS {nameof(CarModelResponse.VolumeLiters)},
+                    engine_spec_fuel_type AS {nameof(CarModelResponse.FuelType)},
+                    engine_spec_horse_power AS {nameof(CarModelResponse.HorsePower)},
+                    slug AS {nameof(CarModelResponse.Slug)},
                     image_path AS {nameof(CarModelResponse.ImagePath)}
                 FROM car_models
                 WHERE id = @CarModelId

@@ -5,9 +5,11 @@ using EuroMotors.Application.ProductImages.UploadProductImage;
 using EuroMotors.Application.Products.CreateProduct;
 using EuroMotors.Application.Users.Register;
 using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.CarModels;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace EuroMotors.Application.IntegrationTests.Abstractions;
 
@@ -30,15 +32,15 @@ internal static class CommandHelpers
 
     public static async Task<Guid> CreateCategoryAsync(this ISender sender, string CategoryName)
     {
-        var createCategoryCommand = new CreateCategoryCommand(CategoryName, null);
+        var createCategoryCommand = new CreateCategoryCommand(CategoryName, null, null, null);
         Result<Guid> result = await sender.Send(createCategoryCommand);
         result.IsSuccess.ShouldBeTrue();
         return result.Value;
     }
 
-    public static async Task<Guid> CreateCarModelAsync(this ISender sender, string brand, string model)
+    public static async Task<Guid> CreateCarModelAsync(this ISender sender, string brand, string model, int startYear, int? endYear, BodyType bodyType, EngineSpec engineSpec, IFormFile? image = null)
     {
-        var createCarModelCommand = new CreateCarModelCommand(brand, model, null);
+        var createCarModelCommand = new CreateCarModelCommand(brand, model, startYear, endYear, bodyType, engineSpec, image);
         Result<Guid> result = await sender.Send(createCarModelCommand);
         result.IsSuccess.ShouldBeTrue();
         return result.Value;

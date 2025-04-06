@@ -2,6 +2,7 @@
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Application.Products.DeleteProduct;
 using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Products;
 using Shouldly;
 
@@ -34,7 +35,15 @@ public class DeleteProductTests : BaseIntegrationTest
     {
         var faker = new Faker();
         Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
-        Guid carModelId = await Sender.CreateCarModelAsync(faker.Vehicle.Manufacturer(), faker.Vehicle.Model());
+        Guid carModelId = await Sender.CreateCarModelAsync(
+            faker.Vehicle.Manufacturer(),
+            faker.Vehicle.Model(),
+            2020, 
+            null, 
+            BodyType.Sedan, 
+            new EngineSpec (6, FuelType.Diesel, 6), 
+            null 
+        );
 
         // Arrange
         Guid productId = await Sender.CreateProductAsync(

@@ -1,0 +1,13 @@
+﻿using EuroMotors.Domain.CarModels;
+
+namespace EuroMotors.Api.Controllers.CarModels;
+
+public sealed class UpdateCarModelRequest
+{
+    public string Brand { get; set; }
+    public string Model { get; set; }
+    public int? StartYear { get; set; }
+    public int? EndYear { get; set; }
+    public BodyType? BodyType { get; set; }
+    public IFormFile? ImagePath { get; set; }
+}

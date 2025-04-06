@@ -20,7 +20,9 @@ internal sealed class GetCategoryByIdQueryHandler(IDbConnectionFactory dbConnect
                  id AS {nameof(CategoryResponse.Id)},
                  name AS {nameof(CategoryResponse.Name)},
                  is_archived AS {nameof(CategoryResponse.IsArchived)},
-                 image_path AS {nameof(CategoryResponse.ImagePath)}
+                 image_path AS {nameof(CategoryResponse.ImagePath)},
+                 parent_category_id AS {nameof(CategoryResponse.ParentCategoryId)},
+                 slug AS {nameof(CategoryResponse.Slug)}
              FROM categories
              WHERE id = @CategoryId
              """;

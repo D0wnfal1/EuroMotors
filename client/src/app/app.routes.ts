@@ -3,7 +3,6 @@ import { HomeComponent } from './features/home/home.component';
 import { ShopComponent } from './features/shop/shop.component';
 import { ProductDetailsComponent } from './features/shop/product-details/product-details.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
-import { ServerErrorComponent } from './shared/components/server-error/server-error.component';
 import { CartComponent } from './features/cart/cart.component';
 
 export const routes: Routes = [
@@ -32,6 +31,5 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/admin/routes').then((c) => c.adminRourtes),
   },
-  { path: 'server-error', component: ServerErrorComponent },
   { path: '**', redirectTo: 'not-found', pathMatch: 'full' },
 ];

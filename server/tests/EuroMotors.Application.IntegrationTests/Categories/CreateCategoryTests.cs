@@ -16,7 +16,7 @@ public class CreateCategoryTests : BaseIntegrationTest
     public async Task Should_CreateCategory_WhenCommandIsValid()
     {
         // Arrange
-        var command = new CreateCategoryCommand("Category name", null);
+        var command = new CreateCategoryCommand("Category name", null, null, null);
 
         // Act
         Result<Guid> result = await Sender.Send(command);
@@ -30,7 +30,7 @@ public class CreateCategoryTests : BaseIntegrationTest
     public async Task Should_ReturnFailure_WhenCommandIsNotValid()
     {
         // Arrange
-        var command = new CreateCategoryCommand("", null);
+        var command = new CreateCategoryCommand("", null, null, null);
 
         // Act
         Result<Guid> result = await Sender.Send(command);

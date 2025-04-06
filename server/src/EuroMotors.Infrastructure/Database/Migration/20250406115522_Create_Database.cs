@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migration
 {
     /// <inheritdoc />
-    public partial class Create_DataBase : Microsoft.EntityFrameworkCore.Migrations.Migration
+    public partial class Create_Database : Microsoft.EntityFrameworkCore.Migrations.Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -26,6 +26,13 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     brand = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     model = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    start_year = table.Column<int>(type: "integer", nullable: false),
+                    end_year = table.Column<int>(type: "integer", nullable: true),
+                    body_type = table.Column<string>(type: "text", nullable: false),
+                    engine_spec_volume_liters = table.Column<float>(type: "real", nullable: false),
+                    engine_spec_fuel_type = table.Column<string>(type: "text", nullable: false),
+                    engine_spec_horse_power = table.Column<int>(type: "integer", nullable: false),
+                    slug = table.Column<string>(type: "text", nullable: false),
                     image_path = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
@@ -41,11 +48,20 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     is_archived = table.Column<bool>(type: "boolean", nullable: false),
-                    image_path = table.Column<string>(type: "text", nullable: true)
+                    image_path = table.Column<string>(type: "text", nullable: true),
+                    parent_category_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    slug = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_categories", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_categories_categories_parent_category_id",
+                        column: x => x.parent_category_id,
+                        principalSchema: "public",
+                        principalTable: "categories",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -248,6 +264,26 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     { 1, "Admin" },
                     { 2, "Customer" }
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_car_models_slug",
+                schema: "public",
+                table: "car_models",
+                column: "slug",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_categories_parent_category_id",
+                schema: "public",
+                table: "categories",
+                column: "parent_category_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_categories_slug",
+                schema: "public",
+                table: "categories",
+                column: "slug",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_order_items_order_id",

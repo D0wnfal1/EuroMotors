@@ -6,6 +6,7 @@ using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Application.Products.CreateProduct;
 using EuroMotors.Application.Users.Register;
 using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Products;
 using Shouldly;
 
@@ -26,8 +27,15 @@ public class AddItemToCartTests : BaseIntegrationTest
         // Arrange
         var faker = new Faker();
         Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
-        Guid carModelId = await Sender.CreateCarModelAsync(faker.Vehicle.Manufacturer(), faker.Vehicle.Model());
-
+        Guid carModelId = await Sender.CreateCarModelAsync(
+            faker.Vehicle.Manufacturer(),
+            faker.Vehicle.Model(),
+            faker.Date.Past(10).Year,
+            null, 
+            BodyType.Sedan, 
+            new EngineSpec(6, FuelType.Diesel, 300), 
+            null 
+        );
         Guid productId = await Sender.CreateProductAsync(
             "Product Name",
             "Product Description",
@@ -81,7 +89,15 @@ public class AddItemToCartTests : BaseIntegrationTest
 
         var faker = new Faker();
         Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
-        Guid carModelId = await Sender.CreateCarModelAsync(faker.Vehicle.Manufacturer(), faker.Vehicle.Model());
+        Guid carModelId = await Sender.CreateCarModelAsync(
+            faker.Vehicle.Manufacturer(),
+            faker.Vehicle.Model(),
+            faker.Date.Past(10).Year,
+            null,
+            BodyType.Sedan,
+            new EngineSpec(6, FuelType.Diesel, 300),
+            null
+        );
 
         Guid productId = await Sender.CreateProductAsync(
             "Product Name",
@@ -114,8 +130,15 @@ public class AddItemToCartTests : BaseIntegrationTest
 
         var faker = new Faker();
         Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
-        Guid carModelId = await Sender.CreateCarModelAsync(faker.Vehicle.Manufacturer(), faker.Vehicle.Model());
-
+        Guid carModelId = await Sender.CreateCarModelAsync(
+            faker.Vehicle.Manufacturer(),
+            faker.Vehicle.Model(),
+            faker.Date.Past(10).Year,
+            null,
+            BodyType.Sedan,
+            new EngineSpec(6, FuelType.Diesel, 300),
+            null
+        );
         Guid productId = await Sender.CreateProductAsync(
             "Product Name",
             "Product Description",
@@ -143,12 +166,21 @@ public class AddItemToCartTests : BaseIntegrationTest
     public async Task User_ShouldBeAbleTo_AddProductToCart()
     {
         var faker = new Faker();
-        var createcategoryCommand = new CreateCategoryCommand(faker.Commerce.Categories(1)[0], null);
-        Result<Guid> createCategoryResult = await Sender.Send(createcategoryCommand);
+        var createCategoryCommand = new CreateCategoryCommand(faker.Commerce.Categories(1)[0], null, null, null);
+        Result<Guid> createCategoryResult = await Sender.Send(createCategoryCommand);
         createCategoryResult.IsSuccess.ShouldBeTrue();
         Guid categoryId = createCategoryResult.Value;
 
-        var createCarModelCommand = new CreateCarModelCommand(faker.Vehicle.Manufacturer(), faker.Vehicle.Model(), null);
+        var createCarModelCommand = new CreateCarModelCommand(
+            faker.Vehicle.Manufacturer(),
+            faker.Vehicle.Model(),
+            faker.Date.Past(10).Year, 
+            null, 
+            BodyType.Sedan,
+            new EngineSpec(6, FuelType.Diesel, 300), 
+            null 
+        );
+
         Result<Guid> createCarModelResult = await Sender.Send(createCarModelCommand);
         createCarModelResult.IsSuccess.ShouldBeTrue();
         Guid carModelId = createCarModelResult.Value;

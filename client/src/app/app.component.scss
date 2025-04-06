@@ -1,8 +1,10 @@
 html,
 body {
-  @apply h-full;
+  height: 100%;
 }
 
 app-root {
-  @apply flex flex-col min-h-screen;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }

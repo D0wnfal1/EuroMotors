@@ -12,7 +12,8 @@ import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { MatIcon } from '@angular/material/icon';
 import { NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatButton } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { FiltersDialogComponent } from '../../../features/shop/filters-dialog/filters-dialog.component';
 
 @Component({
   selector: 'app-product-list',
@@ -27,7 +28,6 @@ import { MatButton } from '@angular/material/button';
     ReactiveFormsModule,
     FormsModule,
     MatMenuTrigger,
-    MatButton,
   ],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss',
@@ -41,6 +41,9 @@ export class ProductListComponent {
   @Output() pageChanged = new EventEmitter<PageEvent>();
   @Output() searchChanged = new EventEmitter<void>();
   @Output() sortChanged = new EventEmitter<MatSelectionListChange>();
+  @Output() filterChanged = new EventEmitter<any>();
+
+  constructor(private dialogService: MatDialog) {}
 
   handlePageEvent(event: PageEvent): void {
     this.pageChanged.emit(event);
@@ -52,5 +55,24 @@ export class ProductListComponent {
 
   onSortChange(event: MatSelectionListChange): void {
     this.sortChanged.emit(event);
+  }
+
+  openFiltersDialog(): void {
+    const dialogRef = this.dialogService.open(FiltersDialogComponent, {
+      minWidth: '500px',
+      data: {
+        selectedCategoryIds: this.shopParams.categoryIds ?? [],
+        selectedCarModelIds: this.shopParams.carModelIds ?? [],
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.shopParams.categoryIds = result.selectedCategories;
+        this.shopParams.carModelIds = result.selectedCarModels;
+        this.shopParams.pageNumber = 1;
+        this.filterChanged.emit(result);
+      }
+    });
   }
 }

@@ -26,46 +26,71 @@ public static class SeedDataExtensions
         SeedUsers(connection, passwordHasher);
     }
 
-    private static void SeedCarModels(IDbConnection connection)
-    {
+	private static void SeedCarModels(IDbConnection connection)
+	{
         Faker<CarModel>? faker = new Faker<CarModel>()
-            .CustomInstantiator(f => CarModel.Create(
-                f.Vehicle.Manufacturer(),
-                f.Vehicle.Model()
-            ));
+            .CustomInstantiator(f =>
+                CarModel.Create(
+                    f.Vehicle.Manufacturer(), 
+                    f.Vehicle.Model(), 
+                    f.Date.Past(20).Year,
+                    f.Random.Bool() ? (int?)f.Date.Past(10).Year : null, 
+                    f.PickRandom<BodyType>(),
+                    new EngineSpec(f.Random.Number(1, 5), f.PickRandom<FuelType>(), f.Random.Number(100, 500)) 
+                )
+            );
 
         List<CarModel>? carModels = faker.Generate(10);
 
-        const string sql = @"INSERT INTO car_models (id, brand, model, image_path) 
-                         VALUES (@Id, @Brand, @Model, @ImagePath);";
+
+        const string sql = @"INSERT INTO car_models (id, brand, model, start_year, end_year, body_type, engine_spec_volume_liters, engine_spec_fuel_type, engine_spec_horse_power, slug, image_path) 
+                         VALUES (@Id, @Brand, @Model, @StartYear, @EndYear, @BodyType, @VolumeLiters, @FuelType, @HorsePower, @Slug, @ImagePath);";
 
         connection.Execute(sql, carModels.Select(c => new
         {
             c.Id,
             c.Brand,
             c.Model,
+            c.StartYear,
+            c.EndYear,
+            BodyType = c.BodyType.ToString(),
+            c.EngineSpec.VolumeLiters,
+            FuelType = c.EngineSpec.FuelType.ToString(),
+            c.EngineSpec.HorsePower,
+            Slug = c.Slug.Value,
             c.ImagePath
         }));
     }
 
     private static void SeedCategories(IDbConnection connection)
     {
-        Faker<Category>? faker = new Faker<Category>()
-            .CustomInstantiator(f => Category.Create(
-                f.Commerce.Categories(1)[0]
-            ));
+        var uniqueCategories = new HashSet<string>();
+
+        Faker<Category> faker = new Faker<Category>()
+            .CustomInstantiator(f =>
+            {
+                string? categoryName = f.Commerce.Categories(1)[0];
+
+                while (!uniqueCategories.Add(categoryName))
+                {
+                    categoryName = f.Commerce.Categories(1)[0]; 
+                }
+
+                return Category.Create(categoryName);
+            });
 
         List<Category>? categories = faker.Generate(10);
 
-        const string sql = @"INSERT INTO categories (id, name, is_archived, image_path) 
-                         VALUES (@Id, @Name, @IsArchived, @ImagePath);";
+        const string sql = @"INSERT INTO categories (id, name, is_archived, image_path, slug) 
+                         VALUES (@Id, @Name, @IsArchived, @ImagePath, @Slug);";
 
         connection.Execute(sql, categories.Select(c => new
         {
             c.Id,
             c.Name,
             c.IsArchived,
-            c.ImagePath
+            c.ImagePath,
+            Slug = c.Slug.Value
         }));
     }
 

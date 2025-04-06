@@ -1,31 +1,34 @@
 @use "@angular/material" as mat;
+@use "./_theme-colors" as my-theme;
+@import "./tailwind.css";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-$customTheme: mat.define-theme();
-
-@include mat.core();
-
-.custom-theme {
-  @include mat.all-component-themes($customTheme);
-
-  // override the button styles
-  .mdc-button,
-  .mdc-raised-button,
-  .mdc-stroked-button,
-  .mdc-flat-button {
-    @apply rounded-md;
-  }
+html {
+  @include mat.theme(
+    (
+      color: (
+        primary: my-theme.$primary-palette,
+        tertiary: my-theme.$tertiary-palette,
+      ),
+      typography: (
+        plain-family: Roboto,
+        brand-family: Open Sans,
+        bold-weight: 900,
+        medium-weight: 500,
+        regular-weight: 300,
+      ),
+      density: 0,
+    )
+  );
 }
 
 .container {
-  @apply mx-auto max-w-screen-2xl;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 96rem;
 }
 
 .text-primary {
-  color: #7d00fa;
+  color: #9cde33;
 }
 
 button.match-input-height {

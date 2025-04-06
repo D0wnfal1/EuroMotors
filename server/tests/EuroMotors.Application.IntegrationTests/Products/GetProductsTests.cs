@@ -4,6 +4,7 @@ using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Application.Products.GetProductById;
 using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.CarModels;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.Products;
@@ -40,8 +41,15 @@ public class GetProductsTests : BaseIntegrationTest
         var faker = new Faker();
 
         Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
-        Guid carModelId = await Sender.CreateCarModelAsync(faker.Vehicle.Manufacturer(), faker.Vehicle.Model());
-
+        Guid carModelId = await Sender.CreateCarModelAsync(
+            faker.Vehicle.Manufacturer(),
+            faker.Vehicle.Model(),
+            2020,
+            null,
+            BodyType.Sedan,
+            new EngineSpec (6, FuelType.Diesel, 6), 
+            null 
+        );
         await Sender.CreateProductAsync(
             "Product1",
             "Description1",

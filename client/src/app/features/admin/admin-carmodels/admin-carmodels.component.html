@@ -18,13 +18,13 @@
               *ngIf="carModel.imagePath; else defaultImage"
               [src]="getCarModelImage(carModel.imagePath)"
               alt="Car Model Image"
-              class="w-16 h-16 object-cover rounded"
+              class="w-16 h-16 object-cover rounded-sm"
             />
             <ng-template #defaultImage>
               <img
                 [src]="getCarModelImage('')"
                 alt="Default Car Model Image"
-                class="w-16 h-16 object-cover rounded"
+                class="w-16 h-16 object-cover rounded-sm"
               />
             </ng-template>
           </td>
@@ -35,7 +35,7 @@
               mat-button
               color="primary"
               [routerLink]="['/admin/carmodels/edit', carModel.id]"
-              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm"
             >
               Edit
             </button>
@@ -43,7 +43,7 @@
               mat-button
               color="warn"
               (click)="deleteCarModel(carModel.id)"
-              class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2"
+              class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-sm ml-2"
             >
               Delete
             </button>
@@ -56,7 +56,7 @@
         mat-button
         color="accent"
         [routerLink]="['/admin/carmodels/create']"
-        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded m-4"
+        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-sm m-4"
       >
         Create
       </button>

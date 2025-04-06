@@ -10,8 +10,14 @@ public class CarModelTests : BaseTest
     [Fact]
     public void Create_ShouldReturn_CarModelCreatedEvent()
     {
+        // Arrange
+        int startYear = 2020;
+        int? endYear = null;
+        BodyType bodyType = BodyType.Sedan;
+        var engineSpec = new EngineSpec(6, FuelType.Diesel, 300);
+
         // Act
-        var carModel = CarModel.Create(CarModelData.Brand, CarModelData.Model);
+        var carModel = CarModel.Create(CarModelData.Brand, CarModelData.Model, startYear, endYear, bodyType, engineSpec);
 
         // Assert
         CarModelCreatedDomainEvent domainEvent = AssertDomainEventWasPublished<CarModelCreatedDomainEvent>(carModel);
@@ -22,7 +28,14 @@ public class CarModelTests : BaseTest
     public void Update_ShouldChangeBrand_AndRaiseDomainEvent()
     {
         // Arrange
-        var carModel = CarModel.Create(CarModelData.Brand, CarModelData.Model);
+        int startYear = 2020;
+        int? endYear = null;
+        BodyType bodyType = BodyType.Sedan;
+        var engineSpec = new EngineSpec(6, FuelType.Diesel, 300);
+
+        // Act
+        var carModel = CarModel.Create(CarModelData.Brand, CarModelData.Model, startYear, endYear, bodyType, engineSpec);
+
         string newBrand = "Honda";
         string newModel = "Civic";
 
@@ -42,7 +55,14 @@ public class CarModelTests : BaseTest
     public void UpdateImage_ShouldReturn_Success_WhenValidUrl()
     {
         // Arrange
-        var carModel = CarModel.Create(CarModelData.Brand, CarModelData.Model);
+        int startYear = 2020;
+        int? endYear = null;
+        BodyType bodyType = BodyType.Sedan;
+        var engineSpec = new EngineSpec(6, FuelType.Diesel, 300);
+
+        // Act
+        var carModel = CarModel.Create(CarModelData.Brand, CarModelData.Model, startYear, endYear, bodyType, engineSpec);
+
         string newUrl = new("https://example.com/image.jpg");
 
         // Act

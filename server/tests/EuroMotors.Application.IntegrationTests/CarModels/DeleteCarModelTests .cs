@@ -3,6 +3,7 @@ using EuroMotors.Application.CarModels.GetCarModelById;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
+using Microsoft.AspNetCore.Http;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.CarModels;
@@ -34,9 +35,15 @@ public class DeleteCarModelTests : BaseIntegrationTest
         // Arrange
         string brand = "Test Brand";
         string model = "Test Model";
-        Guid CarModelId = await Sender.CreateCarModelAsync(brand, model);
+        int startYear = 2020; // Example start year
+        int? endYear = null; // Example end year
+        BodyType bodyType = BodyType.Sedan; // Example body type
+        var engineSpec = new EngineSpec(6, FuelType.Diesel, 6); // Example engine spec
+        IFormFile? image = null; // Example image
 
-        var command = new DeleteCarModelCommand(CarModelId);
+        Guid carModelId = await Sender.CreateCarModelAsync(brand, model, startYear, endYear, bodyType, engineSpec, image);
+
+        var command = new DeleteCarModelCommand(carModelId);
 
         // Act
         Result result = await Sender.Send(command);
@@ -44,10 +51,10 @@ public class DeleteCarModelTests : BaseIntegrationTest
         // Assert
         result.IsSuccess.ShouldBeTrue();
 
-        var getCarModelQuery = new GetCarModelByIdQuery(CarModelId);
+        var getCarModelQuery = new GetCarModelByIdQuery(carModelId);
         Result<CarModelResponse> getResult = await Sender.Send(getCarModelQuery);
 
         getResult.IsFailure.ShouldBeTrue();
-        getResult.Error.ShouldBe(CarModelErrors.NotFound(CarModelId));
+        getResult.Error.ShouldBe(CarModelErrors.NotFound(carModelId));
     }
 }

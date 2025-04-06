@@ -10,24 +10,15 @@
         (pageChanged)="handlePageEvent($event)"
         (searchChanged)="onSearchChange()"
         (sortChanged)="onSortChange($event)"
+        (filterChanged)="onFilterChange($event)"
       >
-        <div class="grid grid-cols-5 gap-4">
-          @for (product of products.data; track product.id) {
-          <app-product-item [product]="product"></app-product-item>
-          }
-        </div>
       </app-product-list>
-    </div>
 
-    <div class="flex items-center ml-4">
-      <button
-        class="match-input-height"
-        mat-stroked-button
-        (click)="openFiltersDialog()"
-      >
-        <mat-icon>filter_list</mat-icon>
-        Filters
-      </button>
+      <div class="grid grid-cols-5 gap-4 mt-4">
+        @for (product of products.data; track product.id) {
+        <app-product-item [product]="product"></app-product-item>
+        }
+      </div>
     </div>
   </div>
 </div>

@@ -1,6 +1,6 @@
 ﻿using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
-using EuroMotors.Domain.CarModels;
+
 using EuroMotors.Domain.Categories;
 
 namespace EuroMotors.Application.Categories.CreateCategory;
@@ -10,7 +10,16 @@ internal sealed class CreateCategoryCommandHandler(ICategoryRepository categoryR
 {
     public async Task<Result<Guid>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
     {
-        var category = Category.Create(request.Name);
+        var category = Category.Create(request.Name, request.ParentCategoryId);
+
+        if (request.SubcategoryNames != null)
+        {
+            foreach (string subcategoryName in request.SubcategoryNames)
+            {
+                var subcategory = Category.Create(subcategoryName, category.Id);
+                category.AddSubcategory(subcategory); 
+            }
+        }
 
         if (request.Image is { Length: > 0 })
         {

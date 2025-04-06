@@ -1,4 +1,5 @@
-﻿using EuroMotors.Domain.Categories;
+﻿using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.Categories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,6 +14,23 @@ internal sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
         builder.Property(c => c.Name)
             .IsRequired()
             .HasMaxLength(100);
+
+        builder.HasOne(c => c.ParentCategory)
+            .WithMany(c => c.Subcategories)
+            .HasForeignKey(c => c.ParentCategoryId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Property(c => c.Slug)
+            .HasConversion(
+                slug => slug.Value,
+                value => Slug.GenerateSlug(value));
+
+        builder.Property(c => c.Slug)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.HasIndex(c => c.Slug)
+            .IsUnique();
 
         builder.Property(c => c.IsArchived)
             .IsRequired();

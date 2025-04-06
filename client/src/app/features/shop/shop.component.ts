@@ -1,36 +1,20 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatButton } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
-import { MatIcon } from '@angular/material/icon';
-import {
-  MatSelectionList,
-  MatListOption,
-  MatSelectionListChange,
-} from '@angular/material/list';
-import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSelectionListChange } from '@angular/material/list';
+import { PageEvent } from '@angular/material/paginator';
 import { Pagination } from '../../shared/models/pagination';
 import { Product } from '../../shared/models/product';
 import { ProductImage } from '../../shared/models/productImage';
 import { ShopParams } from '../../shared/models/shopParams';
-import { FiltersDialogComponent } from './filters-dialog/filters-dialog.component';
 import { ProductItemComponent } from './product-item/product-item.component';
 import { ProductService } from '../../core/services/product.service';
 import { ProductListComponent } from '../../shared/components/product-list/product-list.component';
-import { ImageService } from '../../core/services/image.service';
 import { CarmodelService } from '../../core/services/carmodel.service';
 import { CategoryService } from '../../core/services/category.service';
 
 @Component({
   selector: 'app-shop',
-  imports: [
-    MatButton,
-    MatIcon,
-    FormsModule,
-    ProductItemComponent,
-    ProductListComponent,
-  ],
+  imports: [FormsModule, ProductItemComponent, ProductListComponent],
   templateUrl: './shop.component.html',
   styleUrl: './shop.component.scss',
 })
@@ -38,8 +22,6 @@ export class ShopComponent {
   private productService = inject(ProductService);
   private categoryService = inject(CategoryService);
   private carModelService = inject(CarmodelService);
-  private imageService = inject(ImageService);
-  private dialogService = inject(MatDialog);
   products?: Pagination<Product>;
   productImages: { [key: string]: ProductImage[] } = {};
   sortOptions = [
@@ -88,29 +70,13 @@ export class ShopComponent {
       this.getProducts();
     }
   }
-  openFiltersDialog() {
-    const dialogRef = this.dialogService.open(FiltersDialogComponent, {
-      minWidth: '500px',
-      data: {
-        selectedCategoryIds: this.shopParams.categoryIds ?? [],
-        selectedCarModelIds: this.shopParams.carModelIds ?? [],
-      },
-    });
 
-    dialogRef.afterClosed().subscribe({
-      next: (result) => {
-        if (
-          result &&
-          Array.isArray(result.selectedCategories) &&
-          Array.isArray(result.selectedCarModels)
-        ) {
-          this.shopParams.categoryIds = result.selectedCategories;
-          this.shopParams.carModelIds = result.selectedCarModels;
-          this.shopParams.pageNumber = 1;
-          this.getProducts();
-        }
-      },
-      error: (err) => console.error('Dialog closed with error:', err),
-    });
+  onFilterChange(filters: any) {
+    if (filters) {
+      this.shopParams.categoryIds = filters.selectedCategories;
+      this.shopParams.carModelIds = filters.selectedCarModels;
+      this.shopParams.pageNumber = 1;
+      this.getProducts();
+    }
   }
 }

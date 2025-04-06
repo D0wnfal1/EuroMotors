@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250327112349_Create_DataBase")]
-    partial class Create_DataBase
+    [Migration("20250406115522_Create_Database")]
+    partial class Create_Database
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,11 +33,20 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<string>("BodyType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("body_type");
+
                     b.Property<string>("Brand")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("brand");
+
+                    b.Property<int?>("EndYear")
+                        .HasColumnType("integer")
+                        .HasColumnName("end_year");
 
                     b.Property<string>("ImagePath")
                         .HasColumnType("text")
@@ -49,8 +58,21 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnType("character varying(100)")
                         .HasColumnName("model");
 
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("slug");
+
+                    b.Property<int>("StartYear")
+                        .HasColumnType("integer")
+                        .HasColumnName("start_year");
+
                     b.HasKey("Id")
                         .HasName("pk_car_models");
+
+                    b.HasIndex("Slug")
+                        .IsUnique()
+                        .HasDatabaseName("ix_car_models_slug");
 
                     b.ToTable("car_models", "public");
                 });
@@ -76,8 +98,25 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnType("character varying(100)")
                         .HasColumnName("name");
 
+                    b.Property<Guid?>("ParentCategoryId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("parent_category_id");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("slug");
+
                     b.HasKey("Id")
                         .HasName("pk_categories");
+
+                    b.HasIndex("ParentCategoryId")
+                        .HasDatabaseName("ix_categories_parent_category_id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique()
+                        .HasDatabaseName("ix_categories_slug");
 
                     b.ToTable("categories", "public");
                 });
@@ -423,6 +462,51 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     b.ToTable("role_user", "public");
                 });
 
+            modelBuilder.Entity("EuroMotors.Domain.CarModels.CarModel", b =>
+                {
+                    b.OwnsOne("EuroMotors.Domain.CarModels.EngineSpec", "EngineSpec", b1 =>
+                        {
+                            b1.Property<Guid>("CarModelId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("id");
+
+                            b1.Property<string>("FuelType")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("engine_spec_fuel_type");
+
+                            b1.Property<int>("HorsePower")
+                                .HasColumnType("integer")
+                                .HasColumnName("engine_spec_horse_power");
+
+                            b1.Property<float>("VolumeLiters")
+                                .HasColumnType("real")
+                                .HasColumnName("engine_spec_volume_liters");
+
+                            b1.HasKey("CarModelId");
+
+                            b1.ToTable("car_models", "public");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CarModelId")
+                                .HasConstraintName("fk_car_models_car_models_id");
+                        });
+
+                    b.Navigation("EngineSpec")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EuroMotors.Domain.Categories.Category", b =>
+                {
+                    b.HasOne("EuroMotors.Domain.Categories.Category", "ParentCategory")
+                        .WithMany("Subcategories")
+                        .HasForeignKey("ParentCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("fk_categories_categories_parent_category_id");
+
+                    b.Navigation("ParentCategory");
+                });
+
             modelBuilder.Entity("EuroMotors.Domain.Orders.OrderItem", b =>
                 {
                     b.HasOne("EuroMotors.Domain.Orders.Order", null)
@@ -497,6 +581,8 @@ namespace EuroMotors.Infrastructure.Database.Migration
             modelBuilder.Entity("EuroMotors.Domain.Categories.Category", b =>
                 {
                     b.Navigation("Products");
+
+                    b.Navigation("Subcategories");
                 });
 
             modelBuilder.Entity("EuroMotors.Domain.Orders.Order", b =>

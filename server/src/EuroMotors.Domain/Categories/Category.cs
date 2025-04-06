@@ -1,6 +1,4 @@
 ﻿using EuroMotors.Domain.Abstractions;
-using EuroMotors.Domain.CarModels.Events;
-using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Categories.Events;
 using EuroMotors.Domain.Products;
 
@@ -19,20 +17,56 @@ public class Category : Entity
 
     public string? ImagePath { get; private set; }
 
-    public List<Product> Products { get; private set; } = [];
+    public Guid? ParentCategoryId { get; private set; }
 
-    public static Category Create(string name)
+    public Category? ParentCategory { get; private set; }
+
+    private readonly List<Category> _subcategories = [];
+
+    public Slug Slug { get; private set; }
+
+    public IReadOnlyCollection<Category> Subcategories => _subcategories.AsReadOnly();
+
+
+    private readonly List<Product> _products = [];
+    public IReadOnlyCollection<Product> Products => _products.AsReadOnly();
+
+
+    public static Category Create(string name, Guid? parentCategoryId = null)
     {
         var category = new Category()
         {
             Id = Guid.NewGuid(),
             Name = name,
-            IsArchived = false
+         
+            IsArchived = false,
+            ParentCategoryId = parentCategoryId
         };
+
+        category.Slug = category.GenerateSlug();
 
         category.RaiseDomainEvent(new CategoryCreatedDomainEvent(category.Id));
 
         return category;
+    }
+
+    public void AddSubcategory(Category subcategory)
+    {
+        if (_subcategories.Contains(subcategory))
+        {
+            return;
+        }
+
+        _subcategories.Add(subcategory);
+        subcategory.SetParent(this);
+
+        subcategory.Slug = subcategory.GenerateSlug();
+    }
+
+    private void SetParent(Category parent)
+    {
+        ParentCategoryId = parent.Id;
+        ParentCategory = parent;
     }
 
     public void Archive()
@@ -55,6 +89,7 @@ public class Category : Entity
         }
 
         Name = name;
+        Slug = GenerateSlug();
 
         RaiseDomainEvent(new CategoryNameChangedDomainEvent(Id, Name));
     }
@@ -70,5 +105,11 @@ public class Category : Entity
         RaiseDomainEvent(new CategoryImageUpdatedDomainEvent(Id));
 
         return Result.Success();
+    }
+
+    private Slug GenerateSlug()
+    {
+        return Slug.GenerateSlug(ParentCategory != null ? $"{ParentCategory.Slug.Value}/{Name}" :
+            Name);
     }
 }

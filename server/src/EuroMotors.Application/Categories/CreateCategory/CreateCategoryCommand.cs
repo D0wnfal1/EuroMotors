@@ -3,4 +3,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace EuroMotors.Application.Categories.CreateCategory;
 
-public sealed record CreateCategoryCommand(string Name, IFormFile? Image) : ICommand<Guid>;
+public sealed record CreateCategoryCommand(
+    string Name,
+    Guid? ParentCategoryId,
+    List<string>? SubcategoryNames,
+    IFormFile? Image
+) : ICommand<Guid>;
