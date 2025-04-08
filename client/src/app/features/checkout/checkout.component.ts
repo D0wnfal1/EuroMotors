@@ -21,6 +21,7 @@ import { NgIf } from '@angular/common';
 import { DeliveryMethod, PaymentMethod } from '../../shared/models/order';
 import { AccountService } from '../../core/services/account.service';
 import { User } from '../../shared/models/user';
+import { MatButton } from '@angular/material/button';
 
 @Component({
   selector: 'app-checkout',
@@ -35,6 +36,7 @@ import { User } from '../../shared/models/user';
     CheckoutPaymentComponent,
     RouterLink,
     NgIf,
+    MatButton,
   ],
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.scss'],

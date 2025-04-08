@@ -17,6 +17,13 @@ internal sealed class OrderRepository : Repository<Order>, IOrderRepository
             .FirstOrDefaultAsync(order => order.UserId == userId, cancellationToken);
     }
 
+    public async Task<Order?> GetByIdWithOderItemsAsync(Guid orderId, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Set<Order>()
+            .Include(c => c.OrderItems)
+            .FirstOrDefaultAsync(order => order.Id == orderId, cancellationToken);
+    }
+
     public async Task AddItemsToOrder(Order order, CancellationToken cancellationToken = default)
     {
         await _dbContext.OrderItems.AddRangeAsync(order.OrderItems, cancellationToken);

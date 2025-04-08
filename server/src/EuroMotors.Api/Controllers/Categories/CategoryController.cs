@@ -8,6 +8,7 @@ using EuroMotors.Application.Categories.GetSubcategories;
 using EuroMotors.Application.Categories.UpdateCategory;
 using EuroMotors.Domain.Abstractions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EuroMotors.Api.Controllers.Categories;
@@ -35,7 +36,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    //[Authorize(Roles = Roles.Admin)]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> GetCategoryById(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetCategoryByIdQuery(id);
@@ -56,7 +57,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPost]
-    //[Authorize(Roles = Roles.Admin)]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> CreateCategory([FromForm] CreateCategoryRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateCategoryCommand(request.Name, request.ParentCategoryId, request.SubcategoryNames, request.Image);
@@ -69,7 +70,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    //[Authorize(Roles = Roles.Admin)]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> UpdateCategory(Guid id, [FromForm] UpdateCategoryRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateCategoryCommand(id, request.Name, request.ParentCategoryId, request.Image);
@@ -80,7 +81,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPut("{id}/archive")]
-    //[Authorize(Roles = Roles.Admin)]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> ArchiveCategory(Guid id, CancellationToken cancellationToken)
     {
         var command = new ArchiveCategoryCommand(id);
@@ -91,7 +92,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    //[Authorize(Roles = Roles.Admin)]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> DeleteCategory(Guid id, CancellationToken cancellationToken)
     {
         var command = new DeleteCategoryCommand(id);

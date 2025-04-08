@@ -51,6 +51,8 @@ internal sealed class CreateOrderCommandHandler(
                 return Result.Failure<Guid>(ProductErrors.NotFound(cartItem.ProductId));
             }
 
+            product.SubtractProductQuantity(cartItem.Quantity);
+
             order.AddItem(product, cartItem.Quantity, cartItem.UnitPrice);
         }
 

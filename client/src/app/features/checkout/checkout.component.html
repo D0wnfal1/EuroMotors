@@ -10,13 +10,13 @@
           (cityChange)="onCityChanged($event)"
         ></app-checkout-information>
         <div class="flex justify-between mt-6">
-          <button routerLink="/shop" mat-stroked-button class="btn">
+          <button routerLink="/shop" mat-stroked-button mat-button>
             Continue shopping
           </button>
           <button
             type="submit"
             matStepperNext
-            class="btn"
+            mat-flat-button
             (click)="saveInformation()"
           >
             Next
@@ -31,20 +31,16 @@
           (deliveryMethodChanged)="onDeliveryMethodChanged($event)"
         ></app-checkout-delivery>
         <div class="flex justify-between mt-6">
-          <button matStepperPrevious mat-stroked-button class="btn">
-            Back
-          </button>
-          <button matStepperNext class="btn">Next</button>
+          <button matStepperPrevious mat-stroked-button mat-button>Back</button>
+          <button matStepperNext mat-flat-button>Next</button>
         </div>
       </mat-step>
 
       <mat-step label="Payment" [stepControl]="paymentForm">
         <app-checkout-payment></app-checkout-payment>
         <div class="flex justify-between mt-6">
-          <button matStepperPrevious mat-stroked-button class="btn">
-            Back
-          </button>
-          <button matStepperNext class="btn">Next</button>
+          <button matStepperPrevious mat-stroked-button mat-button>Back</button>
+          <button matStepperNext mat-flat-button>Next</button>
         </div>
       </mat-step>
 
@@ -56,11 +52,9 @@
           >></app-checkout-review
         >
         <div class="flex justify-between mt-6">
-          <button matStepperPrevious mat-stroked-button class="btn">
-            Back
-          </button>
+          <button matStepperPrevious mat-stroked-button mat-button>Back</button>
           <button
-            class="btn"
+            mat-flat-button
             (click)="completeCheckout()"
             [disabled]="isProcessing"
           >

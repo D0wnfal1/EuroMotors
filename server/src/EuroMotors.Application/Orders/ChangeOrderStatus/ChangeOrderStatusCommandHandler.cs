@@ -9,7 +9,7 @@ internal sealed class ChangeOrderStatusCommandHandler(IOrderRepository orderRepo
 {
     public async Task<Result> Handle(ChangeOrderStatusCommand request, CancellationToken cancellationToken)
     {
-        Order? order = await orderRepository.GetByIdAsync(request.OrderId, cancellationToken);
+        Order? order = await orderRepository.GetByIdWithOderItemsAsync(request.OrderId, cancellationToken);
         if (order is null)
         {
             return Result.Failure(OrderErrors.NotFound(request.OrderId));
@@ -17,7 +17,7 @@ internal sealed class ChangeOrderStatusCommandHandler(IOrderRepository orderRepo
 
         order.ChangeStatus(request.Status);
 
-        if (order.Status is OrderStatus.Shipped or OrderStatus.Canceled)
+        if (order.Status is OrderStatus.Canceled)
         {
             Result result = await HandleOrderItemsAsync(order, cancellationToken);
             if (result.IsFailure)
@@ -42,7 +42,7 @@ internal sealed class ChangeOrderStatusCommandHandler(IOrderRepository orderRepo
                 return Result.Failure(ProductErrors.NotFound(orderItem.ProductId));
             }
 
-            Result result = product.SubtractProductQuantity(orderItem.Quantity);
+            Result result = product.AddProductQuantity(orderItem.Quantity);
             if (result.IsFailure)
             {
                 return result;

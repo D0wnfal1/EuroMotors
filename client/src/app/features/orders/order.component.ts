@@ -5,16 +5,25 @@ import { AccountService } from '../../core/services/account.service';
 import { RouterLink } from '@angular/router';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { StatusPipe } from '../../shared/pipes/status.pipe';
+import { MatTableModule } from '@angular/material/table';
 
 @Component({
   selector: 'app-order',
-  imports: [RouterLink, CurrencyPipe, DatePipe, StatusPipe, CommonModule],
+  imports: [
+    RouterLink,
+    CurrencyPipe,
+    DatePipe,
+    StatusPipe,
+    CommonModule,
+    MatTableModule,
+  ],
   templateUrl: './order.component.html',
   styleUrl: './order.component.scss',
 })
 export class OrderComponent implements OnInit {
   private orderService = inject(OrderService);
   private accountService = inject(AccountService);
+  displayedColumns: string[] = ['order', 'date', 'total', 'status'];
 
   orders: Order[] = [];
   ngOnInit(): void {

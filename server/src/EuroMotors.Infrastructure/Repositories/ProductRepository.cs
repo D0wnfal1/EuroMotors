@@ -16,7 +16,7 @@ public class ProductRepository : Repository<Product>, IProductRepository
             .Products
             .FromSql(
                 $"""
-                 SELECT id, category_id, car_model_id, name, description, vendor_code, price, discount, stock, is_available
+                 SELECT id, category_id, car_model_id, name, description, vendor_code, price, discount, stock, is_available, slug
                  FROM products
                  WHERE id = {id}
                  FOR UPDATE NOWAIT

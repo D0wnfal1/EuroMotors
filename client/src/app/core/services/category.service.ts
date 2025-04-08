@@ -17,17 +17,22 @@ export class CategoryService {
   private totalItemsSubject = new BehaviorSubject<number>(0);
   totalItems$ = this.totalItemsSubject.asObservable();
 
-  getCategories(
-    paginationParams: PaginationParams
-  ): Observable<{ count: number; data: Category[] }> {
-    const params = new HttpParams()
-      .append('pageSize', paginationParams.pageSize.toString())
-      .append('pageNumber', paginationParams.pageNumber.toString());
+  getCategories(paginationParams: PaginationParams) {
+    let params = new HttpParams();
+    params = params.append('pageSize', paginationParams.pageSize);
+    params = params.append('pageNumber', paginationParams.pageNumber);
 
-    return this.http.get<{ count: number; data: Category[] }>(
-      `${this.baseUrl}/categories`,
-      { params }
-    );
+    this.http
+      .get<{ count: number; data: Category[] }>(this.baseUrl + '/categories', {
+        params,
+      })
+      .subscribe({
+        next: (response) => {
+          this.categoriesSubject.next(response.data);
+          this.totalItemsSubject.next(response.count);
+        },
+        error: (err) => console.error('Failed to load categories', err),
+      });
   }
 
   getCategoryById(id: string): Observable<Category> {

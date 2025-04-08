@@ -7,6 +7,7 @@ using EuroMotors.Application.CarModels.UpdateCarModel;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EuroMotors.Api.Controllers.CarModels;
@@ -34,7 +35,7 @@ public class CarModelController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    //[Authorize(Roles = Roles.Admin)]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> GetCarModelById(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetCarModelByIdQuery(id);
@@ -45,7 +46,7 @@ public class CarModelController : ControllerBase
     }
 
     [HttpPost]
-    //[Authorize(Roles = Roles.Admin)]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> CreateCarModel([FromForm] CreateCarModelRequest request, CancellationToken cancellationToken)
     {
         var engineSpec = new EngineSpec(request.VolumeLiters, request.FuelType, request.HorsePower);
@@ -68,7 +69,7 @@ public class CarModelController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    //[Authorize(Roles = Roles.Admin)]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> UpdateCarModel(
         Guid id,
         [FromForm] UpdateCarModelRequest request,
@@ -91,7 +92,7 @@ public class CarModelController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    //[Authorize(Roles = Roles.Admin)]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> DeleteCarModel(Guid id, CancellationToken cancellationToken)
     {
         var command = new DeleteCarModelCommand(id);

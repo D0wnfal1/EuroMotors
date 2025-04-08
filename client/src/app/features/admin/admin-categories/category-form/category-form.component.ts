@@ -59,17 +59,14 @@ export class CategoryFormComponent implements OnInit {
     private router: Router,
     private activatedRoute: ActivatedRoute
   ) {}
-
+  loadCategories() {}
   ngOnInit(): void {
     this.initializeForm();
 
-    this.categoryService
-      .getCategories({ pageNumber: 1, pageSize: 0 })
-      .subscribe({
-        next: (res) => {
-          this.allCategories = res.data;
-        },
-      });
+    this.categoryService.getCategories({ pageNumber: 1, pageSize: 0 });
+    this.categoryService.categories$.subscribe((data) => {
+      this.allCategories = data;
+    });
 
     this.categoryId = this.activatedRoute.snapshot.paramMap.get('id');
     if (this.categoryId) {

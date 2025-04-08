@@ -106,6 +106,8 @@ public sealed class Product : Entity
     {
         Stock += quantity;
 
+        IsAvailable = Stock > 0;
+
         RaiseDomainEvent(new ProductStockUpdatedDomainEvent(Id, Stock));
 
         return Result.Success();

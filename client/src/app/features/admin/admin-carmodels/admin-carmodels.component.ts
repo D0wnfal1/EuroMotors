@@ -9,6 +9,7 @@ import { ShopParams } from '../../../shared/models/shopParams';
 import { CarmodelService } from '../../../core/services/carmodel.service';
 import { CarModel } from '../../../shared/models/carModel';
 import { ImageService } from '../../../core/services/image.service';
+import { MatTableModule } from '@angular/material/table';
 
 @Component({
   selector: 'app-admin-carmodels',
@@ -16,10 +17,10 @@ import { ImageService } from '../../../core/services/image.service';
     ReactiveFormsModule,
     MatPaginator,
     RouterLink,
-    NgFor,
     MatButton,
     CommonModule,
     FormsModule,
+    MatTableModule,
   ],
   templateUrl: './admin-carmodels.component.html',
   styleUrl: './admin-carmodels.component.scss',
@@ -32,6 +33,19 @@ export class AdminCarmodelsComponent implements OnInit {
   shopParams = new ShopParams();
   pageSizeOptions = [5, 10, 15, 20];
   count = 0;
+
+  displayedColumns: string[] = [
+    'image',
+    'brand',
+    'model',
+    'startYear',
+    'endYear',
+    'bodyType',
+    'volumeLiters',
+    'fuelType',
+    'horsePower',
+    'actions',
+  ];
 
   ngOnInit() {
     this.getCarModels();

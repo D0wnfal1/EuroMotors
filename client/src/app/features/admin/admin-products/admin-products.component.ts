@@ -16,18 +16,19 @@ import { Category } from '../../../shared/models/category';
 import { MatIcon } from '@angular/material/icon';
 import { CarmodelService } from '../../../core/services/carmodel.service';
 import { CategoryService } from '../../../core/services/category.service';
+import { MatTableModule } from '@angular/material/table';
 
 @Component({
   selector: 'app-admin-products',
   imports: [
     ReactiveFormsModule,
     RouterLink,
-    NgFor,
     CurrencyPipe,
     MatButton,
     ProductListComponent,
     MatIcon,
     CommonModule,
+    MatTableModule,
   ],
   templateUrl: './admin-products.component.html',
   styleUrl: './admin-products.component.scss',
@@ -48,6 +49,18 @@ export class AdminProductsComponent implements OnInit {
   shopParams = new ShopParams();
   pageSizeOptions = [5, 10, 15, 20];
 
+  displayedColumns: string[] = [
+    'name',
+    'category',
+    'carModel',
+    'vendorCode',
+    'price',
+    'discount',
+    'stock',
+    'isAvailable',
+    'actions',
+  ];
+
   ngOnInit() {
     this.getProducts();
     this.loadCategories();
@@ -63,11 +76,10 @@ export class AdminProductsComponent implements OnInit {
   }
 
   loadCategories() {
-    this.categoryService
-      .getCategories({ pageNumber: 1, pageSize: 0 })
-      .subscribe((response) => {
-        this.categories = response.data;
-      });
+    this.categoryService.getCategories({ pageNumber: 1, pageSize: 0 });
+    this.categoryService.categories$.subscribe((data) => {
+      this.categories = data;
+    });
   }
 
   loadCarModels() {
