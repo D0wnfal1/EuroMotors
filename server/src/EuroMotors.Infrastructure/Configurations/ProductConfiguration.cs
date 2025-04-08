@@ -1,4 +1,5 @@
-﻿using EuroMotors.Domain.Products;
+﻿using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.Products;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -34,6 +35,14 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
             .IsRequired();
 
         builder.Property(p => p.IsAvailable)
+            .IsRequired();
+
+        builder.Property(c => c.Slug)
+            .HasConversion(
+                slug => slug.Value,
+                value => Slug.GenerateSlug(value));
+
+        builder.Property(cm => cm.Slug)
             .IsRequired();
 
         builder.HasMany(p => p.Images)

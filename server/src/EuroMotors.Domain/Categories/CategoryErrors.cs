@@ -13,4 +13,14 @@ public static class CategoryErrors
 
     public static Error InvalidPath(string path) =>
         Error.Failure("Category.InvalidPath", $"The URL '{path}' provided for the product image is invalid.");
+
+    public static Error CannotCreateSubcategoryForSubcategory() =>
+        Error.Failure("Category.CannotCreateSubcategoryForSubcategory",
+        "Subcategories cannot be created for a category that is already a subcategory.");
+
+    public static Error SubcategoryAlreadyExists() =>
+        Error.Failure("Category.SubcategoryAlreadyExists",
+        "This subcategory already exists.");
+
+
 }

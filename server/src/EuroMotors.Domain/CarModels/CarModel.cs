@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using EuroMotors.Domain.Abstractions;
+﻿using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels.Events;
 using EuroMotors.Domain.Products;
 
@@ -20,6 +19,7 @@ public class CarModel : Entity
     public int? EndYear { get; private set; }
 
     public BodyType BodyType { get; private set; }
+
     public EngineSpec EngineSpec { get; private set; }
 
     public Slug Slug { get; private set; }
@@ -53,22 +53,19 @@ public class CarModel : Entity
         return car;
     }
 
-    public string GetFullName()
-        => $"{Brand} {Model} ({StartYear}-{EndYear?.ToString(CultureInfo.InvariantCulture) ?? "present"})";
-
     public void Update(string brand, string model, int? startYear = null, int? endYear = null, BodyType? bodyType = null)
     {
         if (!string.IsNullOrWhiteSpace(brand) && Brand != brand)
         {
             Brand = brand;
-            Slug = Slug.GenerateSlug($"{Brand}-{Model}"); 
+            Slug = Slug.GenerateSlug($"{Brand}-{Model}");
             RaiseDomainEvent(new CarModelBrandChangedDomainEvent(Id, Brand));
         }
 
         if (!string.IsNullOrWhiteSpace(model) && Model != model)
         {
             Model = model;
-            Slug = Slug.GenerateSlug($"{Brand}-{Model}"); 
+            Slug = Slug.GenerateSlug($"{Brand}-{Model}");
             RaiseDomainEvent(new CarModelModelChangedDomainEvent(Id, Model));
         }
 
@@ -90,6 +87,42 @@ public class CarModel : Entity
             RaiseDomainEvent(new CarModelBodyTypeChangedDomainEvent(Id, BodyType));
         }
     }
+
+    public void UpdateEngineSpec(float? volumeLiters, FuelType? fuelType, int? horsePower)
+    {
+        bool shouldUpdate = false;
+
+        float newVolume = EngineSpec.VolumeLiters;
+        FuelType newFuel = EngineSpec.FuelType;
+        int newHorsePower = EngineSpec.HorsePower;
+
+        const float tolerance = 0.0001f;
+
+        if (volumeLiters.HasValue && Math.Abs(volumeLiters.Value - EngineSpec.VolumeLiters) > tolerance)
+        {
+            newVolume = volumeLiters.Value;
+            shouldUpdate = true;
+        }
+
+        if (fuelType.HasValue && fuelType.Value != EngineSpec.FuelType)
+        {
+            newFuel = fuelType.Value;
+            shouldUpdate = true;
+        }
+
+        if (horsePower.HasValue && horsePower.Value != EngineSpec.HorsePower)
+        {
+            newHorsePower = horsePower.Value;
+            shouldUpdate = true;
+        }
+
+        if (shouldUpdate)
+        {
+            EngineSpec = new EngineSpec(newVolume, newFuel, newHorsePower);
+            RaiseDomainEvent(new CarModelEngineSpecUpdatedDomainEvent(Id));
+        }
+    }
+
 
     public Result SetImagePath(string path)
     {

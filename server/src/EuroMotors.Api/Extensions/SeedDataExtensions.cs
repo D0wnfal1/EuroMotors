@@ -26,17 +26,17 @@ public static class SeedDataExtensions
         SeedUsers(connection, passwordHasher);
     }
 
-	private static void SeedCarModels(IDbConnection connection)
-	{
+    private static void SeedCarModels(IDbConnection connection)
+    {
         Faker<CarModel>? faker = new Faker<CarModel>()
             .CustomInstantiator(f =>
                 CarModel.Create(
-                    f.Vehicle.Manufacturer(), 
-                    f.Vehicle.Model(), 
+                    f.Vehicle.Manufacturer(),
+                    f.Vehicle.Model(),
                     f.Date.Past(20).Year,
-                    f.Random.Bool() ? (int?)f.Date.Past(10).Year : null, 
+                    f.Random.Bool() ? (int?)f.Date.Past(10).Year : null,
                     f.PickRandom<BodyType>(),
-                    new EngineSpec(f.Random.Number(1, 5), f.PickRandom<FuelType>(), f.Random.Number(100, 500)) 
+                    new EngineSpec(f.Random.Number(1, 5), f.PickRandom<FuelType>(), f.Random.Number(100, 500))
                 )
             );
 
@@ -73,7 +73,7 @@ public static class SeedDataExtensions
 
                 while (!uniqueCategories.Add(categoryName))
                 {
-                    categoryName = f.Commerce.Categories(1)[0]; 
+                    categoryName = f.Commerce.Categories(1)[0];
                 }
 
                 return Category.Create(categoryName);
@@ -132,11 +132,24 @@ public static class SeedDataExtensions
 
         const string sql = """
                        INSERT INTO products 
-                       (id, category_id, car_model_id, name, description, vendor_code, price, discount, stock, is_available)
-                        VALUES (@Id, @CategoryId, @CarModelId, @Name, @Description, @VendorCode, @Price, @Discount, @Stock, @IsAvailable);
+                       (id, category_id, car_model_id, name, description, vendor_code, price, discount, stock, is_available, slug)
+                        VALUES (@Id, @CategoryId, @CarModelId, @Name, @Description, @VendorCode, @Price, @Discount, @Stock, @IsAvailable, @Slug);
                        """;
 
-        connection.Execute(sql, products);
+        connection.Execute(sql, products.Select(p => new
+        {
+            p.Id,
+            p.CategoryId,
+            p.CarModelId,
+            p.Name,
+            p.Description,
+            p.VendorCode,
+            p.Price,
+            p.Discount,
+            p.Stock,
+            p.IsAvailable,
+            Slug = p.Slug.Value
+        }));
     }
 
     private static void SeedUsers(IDbConnection connection, IPasswordHasher passwordHasher)

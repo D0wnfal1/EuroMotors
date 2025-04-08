@@ -14,13 +14,14 @@ public sealed class CreateCarModelRequest
     public int? EndYear { get; set; }
     [JsonRequired]
     public BodyType BodyType { get; set; }
-    [JsonRequired]
-    public float EngineSpecVolumeLiters { get; set; }
-    
-    [JsonRequired]
-    public FuelType EngineSpecFuelType { get; set; }
 
-    [JsonRequired] public int EngineSpecHorsePower { get; set; }
+    [JsonRequired]
+    public float VolumeLiters { get; set; }
+    [JsonRequired]
+    public FuelType FuelType { get; set; }
+    [JsonRequired] 
+    public int HorsePower { get; set; }
+
     public IFormFile? ImagePath { get; set; }
 
 }

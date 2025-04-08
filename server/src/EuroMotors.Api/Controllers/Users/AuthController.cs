@@ -5,20 +5,20 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EuroMotors.Api.Controllers.Users;
-    [Route("api/auth")]
-    [ApiController]
+[Route("api/auth")]
+[ApiController]
 public class AuthController : ControllerBase
 {
-	private readonly ISender _sender;
+    private readonly ISender _sender;
 
-	public AuthController(ISender sender)
-	{
-		_sender = sender;
-	}
+    public AuthController(ISender sender)
+    {
+        _sender = sender;
+    }
 
-	[HttpPost("refresh")]
-	public async Task<IActionResult> RefreshToken(CancellationToken cancellationToken)
-	{
+    [HttpPost("refresh")]
+    public async Task<IActionResult> RefreshToken(CancellationToken cancellationToken)
+    {
         string? refreshToken = Request.Cookies["RefreshToken"];
 
         if (string.IsNullOrEmpty(refreshToken))
@@ -28,7 +28,7 @@ public class AuthController : ControllerBase
 
         var query = new RefreshTokenCommand(refreshToken);
 
-		Result<AuthenticationResponse> result = await _sender.Send(query, cancellationToken);
+        Result<AuthenticationResponse> result = await _sender.Send(query, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }

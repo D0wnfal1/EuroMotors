@@ -31,10 +31,10 @@ public class AddItemToCartTests : BaseIntegrationTest
             faker.Vehicle.Manufacturer(),
             faker.Vehicle.Model(),
             faker.Date.Past(10).Year,
-            null, 
-            BodyType.Sedan, 
-            new EngineSpec(6, FuelType.Diesel, 300), 
-            null 
+            null,
+            BodyType.Sedan,
+            new EngineSpec(6, FuelType.Diesel, 300),
+            null
         );
         Guid productId = await Sender.CreateProductAsync(
             "Product Name",
@@ -174,11 +174,11 @@ public class AddItemToCartTests : BaseIntegrationTest
         var createCarModelCommand = new CreateCarModelCommand(
             faker.Vehicle.Manufacturer(),
             faker.Vehicle.Model(),
-            faker.Date.Past(10).Year, 
-            null, 
+            faker.Date.Past(10).Year,
+            null,
             BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel, 300), 
-            null 
+            new EngineSpec(6, FuelType.Diesel, 300),
+            null
         );
 
         Result<Guid> createCarModelResult = await Sender.Send(createCarModelCommand);

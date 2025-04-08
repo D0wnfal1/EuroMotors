@@ -7,7 +7,6 @@ using EuroMotors.Application.CarModels.UpdateCarModel;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EuroMotors.Api.Controllers.CarModels;
@@ -49,7 +48,7 @@ public class CarModelController : ControllerBase
     //[Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> CreateCarModel([FromForm] CreateCarModelRequest request, CancellationToken cancellationToken)
     {
-        var engineSpec = new EngineSpec(request.EngineSpecVolumeLiters, request.EngineSpecFuelType, request.EngineSpecHorsePower);
+        var engineSpec = new EngineSpec(request.VolumeLiters, request.FuelType, request.HorsePower);
 
         var command = new CreateCarModelCommand(
             request.Brand,
@@ -75,7 +74,16 @@ public class CarModelController : ControllerBase
         [FromForm] UpdateCarModelRequest request,
         CancellationToken cancellationToken)
     {
-        var command = new UpdateCarModelCommand(id, request.Brand, request.Model, request.StartYear, request.EndYear, request.BodyType, request.ImagePath);
+            var command = new UpdateCarModelCommand(id,
+            request.Brand,
+            request.Model,
+            request.StartYear,
+            request.EndYear,
+            request.BodyType,
+            request.VolumeLiters,
+            request.FuelType,
+            request.HorsePower,
+            request.ImagePath);
 
         Result result = await _sender.Send(command, cancellationToken);
 

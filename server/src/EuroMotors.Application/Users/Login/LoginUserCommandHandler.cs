@@ -9,37 +9,37 @@ using Microsoft.Extensions.Configuration;
 namespace EuroMotors.Application.Users.Login;
 
 internal sealed class LoginUserCommandHandler(
-	IUserRepository userRepository,
-	IPasswordHasher passwordHasher,
-	ITokenProvider tokenProvider,
-	IHttpContextAccessor httpContextAccessor,
-	IUnitOfWork unitOfWork,
-	IConfiguration configuration) : ICommandHandler<LoginUserCommand, AuthenticationResponse>
+    IUserRepository userRepository,
+    IPasswordHasher passwordHasher,
+    ITokenProvider tokenProvider,
+    IHttpContextAccessor httpContextAccessor,
+    IUnitOfWork unitOfWork,
+    IConfiguration configuration) : ICommandHandler<LoginUserCommand, AuthenticationResponse>
 {
-	public async Task<Result<AuthenticationResponse>> Handle(LoginUserCommand command, CancellationToken cancellationToken)
-	{
-		User? user = await userRepository.GetByEmailAsync(command.Email, cancellationToken);
+    public async Task<Result<AuthenticationResponse>> Handle(LoginUserCommand command, CancellationToken cancellationToken)
+    {
+        User? user = await userRepository.GetByEmailAsync(command.Email, cancellationToken);
 
-		if (user is null)
-		{
-			return Result.Failure<AuthenticationResponse>(UserErrors.InvalidCredentials);
-		}
+        if (user is null)
+        {
+            return Result.Failure<AuthenticationResponse>(UserErrors.InvalidCredentials);
+        }
 
-		bool verified = passwordHasher.Verify(command.Password, user.PasswordHash);
+        bool verified = passwordHasher.Verify(command.Password, user.PasswordHash);
 
-		if (!verified)
-		{
-			return Result.Failure<AuthenticationResponse>(UserErrors.InvalidCredentials);
-		}
+        if (!verified)
+        {
+            return Result.Failure<AuthenticationResponse>(UserErrors.InvalidCredentials);
+        }
 
-		string accessToken = tokenProvider.Create(user);
-		(string refreshToken, DateTime refreshTokenExpiry) = tokenProvider.CreateRefreshToken();
+        string accessToken = tokenProvider.Create(user);
+        (string refreshToken, DateTime refreshTokenExpiry) = tokenProvider.CreateRefreshToken();
 
-		user.SetRefreshToken(refreshToken, refreshTokenExpiry);
-		userRepository.Update(user);
-		await unitOfWork.SaveChangesAsync(cancellationToken);
+        user.SetRefreshToken(refreshToken, refreshTokenExpiry);
+        userRepository.Update(user);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
-		HttpResponse? response = httpContextAccessor.HttpContext?.Response;
+        HttpResponse? response = httpContextAccessor.HttpContext?.Response;
         if (response is not null)
         {
             int expirationInMinutes = Convert.ToInt32(configuration["Jwt:ExpirationInMinutes"], CultureInfo.InvariantCulture);
@@ -63,11 +63,11 @@ internal sealed class LoginUserCommandHandler(
         }
 
         var result = new AuthenticationResponse
-		{
-			AccessToken = accessToken,
-			RefreshToken = refreshToken
-		};
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
+        };
 
-		return Result.Success(result);
-	}
+        return Result.Success(result);
+    }
 }

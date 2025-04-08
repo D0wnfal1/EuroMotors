@@ -38,7 +38,7 @@ public class Category : Entity
         {
             Id = Guid.NewGuid(),
             Name = name,
-         
+
             IsArchived = false,
             ParentCategoryId = parentCategoryId
         };
@@ -50,20 +50,26 @@ public class Category : Entity
         return category;
     }
 
-    public void AddSubcategory(Category subcategory)
+    public Result AddSubcategory(Category subcategory)
     {
+        if (ParentCategoryId != null)
+        {
+            return Result.Failure(CategoryErrors.CannotCreateSubcategoryForSubcategory());
+        }
+
         if (_subcategories.Contains(subcategory))
         {
-            return;
+            return Result.Failure(CategoryErrors.SubcategoryAlreadyExists());
         }
 
         _subcategories.Add(subcategory);
         subcategory.SetParent(this);
 
         subcategory.Slug = subcategory.GenerateSlug();
+        return Result.Success();
     }
 
-    private void SetParent(Category parent)
+    public void SetParent(Category parent)
     {
         ParentCategoryId = parent.Id;
         ParentCategory = parent;

@@ -18,6 +18,16 @@ internal sealed class UpdateCategoryCommandHandler(ICategoryRepository categoryR
 
         category.ChangeName(request.Name);
 
+        if (request.ParentCategoryId.HasValue)
+        {
+            Category parentCategory = await categoryRepository.GetByIdAsync(request.ParentCategoryId.Value, cancellationToken);
+            if (parentCategory is null)
+            {
+                return Result.Failure(CategoryErrors.NotFound(request.ParentCategoryId.Value));
+            }
+            category.SetParent(parentCategory);
+        }
+
         if (request.Image is not null && request.Image.Length > 0)
         {
             string projectRoot = Path.GetFullPath(Directory.GetCurrentDirectory());

@@ -102,11 +102,11 @@ public class CreateProductTests : BaseIntegrationTest
         Guid carModelId = await Sender.CreateCarModelAsync(
             faker.Vehicle.Manufacturer(),
             faker.Vehicle.Model(),
-            2020, 
+            2020,
             null,
-            BodyType.Sedan, 
+            BodyType.Sedan,
             new EngineSpec(6, FuelType.Diesel, 6),
-            null 
+            null
         );
         var command = new CreateProductCommand(
             faker.Commerce.ProductName(),

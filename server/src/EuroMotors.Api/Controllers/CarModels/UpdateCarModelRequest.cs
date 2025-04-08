@@ -9,5 +9,8 @@ public sealed class UpdateCarModelRequest
     public int? StartYear { get; set; }
     public int? EndYear { get; set; }
     public BodyType? BodyType { get; set; }
+    public float? VolumeLiters { get; set; }
+    public FuelType? FuelType { get; set; }
+    public int? HorsePower { get; set; }
     public IFormFile? ImagePath { get; set; }
 }

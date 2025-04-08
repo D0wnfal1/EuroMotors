@@ -38,7 +38,7 @@ internal sealed class CarModelConfiguration : IEntityTypeConfiguration<CarModel>
 
         builder.Property(c => c.Slug)
             .HasConversion(
-                slug => slug.Value,  
+                slug => slug.Value,
                 value => Slug.GenerateSlug(value));
 
         builder.Property(cm => cm.Slug)

@@ -10,6 +10,16 @@ internal sealed class CreateCategoryCommandHandler(ICategoryRepository categoryR
 {
     public async Task<Result<Guid>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
     {
+        if (request.ParentCategoryId != null)
+        {
+            Category? parentCategory = await categoryRepository.GetByIdAsync(request.ParentCategoryId.Value, cancellationToken);
+
+            if (parentCategory?.ParentCategoryId != null)
+            {
+                return Result.Failure<Guid>(new Error("ParentCategoryError", "The parent category cannot be a subcategory.", ErrorType.Conflict));
+            }
+        }
+
         var category = Category.Create(request.Name, request.ParentCategoryId);
 
         if (request.SubcategoryNames != null)
@@ -17,7 +27,7 @@ internal sealed class CreateCategoryCommandHandler(ICategoryRepository categoryR
             foreach (string subcategoryName in request.SubcategoryNames)
             {
                 var subcategory = Category.Create(subcategoryName, category.Id);
-                category.AddSubcategory(subcategory); 
+                category.AddSubcategory(subcategory);
             }
         }
 

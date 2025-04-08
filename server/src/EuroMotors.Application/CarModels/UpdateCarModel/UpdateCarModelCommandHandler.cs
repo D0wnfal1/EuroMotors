@@ -17,6 +17,8 @@ internal sealed class UpdateCarModelCommandHandler(ICarModelRepository carModelR
 
         carModel.Update(request.Brand, request.Model, request.StartYear, request.EndYear, request.BodyType);
 
+        carModel.UpdateEngineSpec(request.VolumeLiters, request.FuelType, request.HorsePower);
+
         if (request.Image is not null && request.Image.Length > 0)
         {
             string projectRoot = Path.GetFullPath(Directory.GetCurrentDirectory());

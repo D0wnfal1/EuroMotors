@@ -1,6 +1,25 @@
 <div class="p-4">
   <h1 class="text-2xl font-bold text-center mb-6">Admin Categories</h1>
+  <div class="flex justify-between">
+    <button
+      mat-button
+      color="accent"
+      [routerLink]="['/admin/categories/create']"
+      class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-sm m-4"
+    >
+      Create
+    </button>
 
+    <mat-paginator
+      class="bg-white m-2"
+      [pageSizeOptions]="pageSizeOptions"
+      [length]="totalItems"
+      [pageSize]="shopParams.pageSize"
+      (page)="handlePageEvent($event)"
+      showFirstLastButtons
+    >
+    </mat-paginator>
+  </div>
   <div class="overflow-x-auto">
     <table class="min-w-full bg-white shadow-md rounded-lg">
       <thead>
@@ -12,64 +31,107 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let category of categories" class="border-b">
-          <td class="py-2 px-4">
-            <img
-              *ngIf="category.imagePath; else defaultImage"
-              [src]="getCarModelImage(category.imagePath)"
-              alt="Car Model Image"
-              class="w-16 h-16 object-cover rounded-sm"
-            />
-            <ng-template #defaultImage>
+        <ng-container *ngFor="let category of categories">
+          <tr *ngIf="!category.parentCategoryId" class="border-b bg-gray-50">
+            <td class="py-2 px-4">
               <img
-                [src]="getCarModelImage('')"
-                alt="Default Car Model Image"
+                *ngIf="category.imagePath; else defaultImage"
+                [src]="getCarModelImage(category.imagePath)"
+                alt="Image"
                 class="w-16 h-16 object-cover rounded-sm"
               />
-            </ng-template>
-          </td>
-          <td class="py-2 px-4">{{ category.name }}</td>
-          <td class="py-2 px-4">{{ category.isArchived ? "Yes" : "No" }}</td>
-          <td class="border p-2 text-center">
-            <button
-              mat-button
-              color="primary"
-              [routerLink]="['/admin/categories/edit', category.id]"
-              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm"
-            >
-              Edit
-            </button>
-            <button
-              mat-button
-              color="warn"
-              (click)="deleteCategory(category.id)"
-              class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-sm ml-2"
-            >
-              Delete
-            </button>
-          </td>
-        </tr>
+              <ng-template #defaultImage>
+                <img
+                  [src]="getCarModelImage('')"
+                  alt="Default"
+                  class="w-16 h-16 object-cover rounded-sm"
+                />
+              </ng-template>
+            </td>
+
+            <td class="py-2 px-4 font-bold flex items-center gap-2">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="toggleSubcategoriesVisibility(category.id)"
+                title="Toggle Subcategories"
+              >
+                <mat-icon>
+                  {{
+                    visibleSubcategories[category.id]
+                      ? "expand_more"
+                      : "chevron_right"
+                  }}
+                </mat-icon>
+              </button>
+              {{ category.name }}
+            </td>
+
+            <td class="py-2 px-4">{{ category.isArchived ? "Yes" : "No" }}</td>
+
+            <td class="py-2 px-4 text-center">
+              <button
+                [routerLink]="['/admin/categories/edit', category.id]"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm"
+              >
+                Edit
+              </button>
+              <button
+                (click)="deleteCategory(category.id)"
+                class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-sm ml-2"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+
+          <tr
+            *ngFor="let subcategory of subcategoriesMap[category.id]"
+            class="border-b bg-gray-300"
+            [hidden]="!visibleSubcategories[category.id]"
+          >
+            <td class="py-2 px-4">
+              <img
+                *ngIf="subcategory.imagePath; else defaultImage"
+                [src]="getCarModelImage(subcategory.imagePath)"
+                alt="Subcategory Image"
+                class="w-16 h-16 object-cover rounded-sm"
+              />
+              <ng-template #defaultImage>
+                <img
+                  [src]="getCarModelImage('')"
+                  alt="Default Image"
+                  class="w-16 h-16 object-cover rounded-sm"
+                />
+              </ng-template>
+            </td>
+
+            <td class="py-2 px-4 font-bold flex items-center gap-2">
+              <mat-icon inline>subdirectory_arrow_right</mat-icon>
+              {{ subcategory.name }}
+            </td>
+
+            <td class="py-2 px-4">
+              {{ subcategory.isArchived ? "Yes" : "No" }}
+            </td>
+
+            <td class="py-2 px-4 text-center">
+              <button
+                [routerLink]="['/admin/categories/edit', subcategory.id]"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm"
+              >
+                Edit
+              </button>
+              <button
+                (click)="deleteCategory(subcategory.id)"
+                class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-sm ml-2"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        </ng-container>
       </tbody>
     </table>
-    <div class="flex justify-between">
-      <button
-        mat-button
-        color="accent"
-        [routerLink]="['/admin/categories/create']"
-        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-sm m-4"
-      >
-        Create
-      </button>
-
-      <mat-paginator
-        class="bg-white m-2"
-        [pageSizeOptions]="pageSizeOptions"
-        [length]="totalItems"
-        [pageSize]="shopParams.pageSize"
-        (page)="handlePageEvent($event)"
-        showFirstLastButtons
-      >
-      </mat-paginator>
-    </div>
   </div>
 </div>

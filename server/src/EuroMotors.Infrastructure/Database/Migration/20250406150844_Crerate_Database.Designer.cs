@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250406115522_Create_Database")]
-    partial class Create_Database
+    [Migration("20250406150844_Crerate_Database")]
+    partial class Crerate_Database
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -332,6 +332,11 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)")
                         .HasColumnName("price");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("slug");
 
                     b.Property<int>("Stock")
                         .HasColumnType("integer")

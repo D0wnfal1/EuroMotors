@@ -4,10 +4,10 @@ using EuroMotors.Application.Categories.CreateCategory;
 using EuroMotors.Application.Categories.DeleteCategory;
 using EuroMotors.Application.Categories.GetByIdCategory;
 using EuroMotors.Application.Categories.GetCategories;
+using EuroMotors.Application.Categories.GetSubcategories;
 using EuroMotors.Application.Categories.UpdateCategory;
 using EuroMotors.Domain.Abstractions;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EuroMotors.Api.Controllers.Categories;
@@ -45,6 +45,16 @@ public class CategoryController : ControllerBase
         return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
     }
 
+    [HttpGet("{parentCategoryId:guid}/subcategories")]
+    public async Task<IActionResult> GetSubcategories(Guid parentCategoryId, CancellationToken cancellationToken)
+    {
+        var query = new GetSubcategoriesQuery(parentCategoryId);
+
+        Result<List<CategoryResponse>> result = await _sender.Send(query, cancellationToken);
+
+        return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
+    }
+
     [HttpPost]
     //[Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> CreateCategory([FromForm] CreateCategoryRequest request, CancellationToken cancellationToken)
@@ -62,7 +72,7 @@ public class CategoryController : ControllerBase
     //[Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> UpdateCategory(Guid id, [FromForm] UpdateCategoryRequest request, CancellationToken cancellationToken)
     {
-        var command = new UpdateCategoryCommand(id, request.Name, request.Image);
+        var command = new UpdateCategoryCommand(id, request.Name, request.ParentCategoryId, request.Image);
 
         Result result = await _sender.Send(command, cancellationToken);
 

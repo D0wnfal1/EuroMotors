@@ -47,8 +47,8 @@ public class GetProductsTests : BaseIntegrationTest
             2020,
             null,
             BodyType.Sedan,
-            new EngineSpec (6, FuelType.Diesel, 6), 
-            null 
+            new EngineSpec(6, FuelType.Diesel, 6),
+            null
         );
         await Sender.CreateProductAsync(
             "Product1",

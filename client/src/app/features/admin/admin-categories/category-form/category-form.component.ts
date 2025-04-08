@@ -14,6 +14,13 @@ import { MatButton } from '@angular/material/button';
 import { MatError, MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import {
+  MatChipEditedEvent,
+  MatChipInputEvent,
+  MatChipsModule,
+} from '@angular/material/chips';
+import { MatIcon } from '@angular/material/icon';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-category-form',
@@ -27,6 +34,8 @@ import { MatSelectModule } from '@angular/material/select';
     MatInputModule,
     MatError,
     RouterLink,
+    MatChipsModule,
+    MatIcon,
   ],
   templateUrl: './category-form.component.html',
   styleUrl: './category-form.component.scss',
@@ -35,8 +44,13 @@ export class CategoryFormComponent implements OnInit {
   categoryForm: FormGroup = new FormGroup({});
   isEditMode: boolean = false;
   categoryId: string | null = null;
+  allCategories: Category[] = [];
   imageInvalid: boolean = false;
   selectedImage: File | null = null;
+  isParentCategorySelected: boolean = false;
+  childCategoryNames: string[] = [];
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
+  addOnBlur = true;
 
   constructor(
     private fb: FormBuilder,
@@ -49,16 +63,30 @@ export class CategoryFormComponent implements OnInit {
   ngOnInit(): void {
     this.initializeForm();
 
+    this.categoryService
+      .getCategories({ pageNumber: 1, pageSize: 0 })
+      .subscribe({
+        next: (res) => {
+          this.allCategories = res.data;
+        },
+      });
+
     this.categoryId = this.activatedRoute.snapshot.paramMap.get('id');
     if (this.categoryId) {
       this.isEditMode = true;
       this.loadCategoryData();
     }
+
+    this.categoryForm.get('parentCategoryId')?.valueChanges.subscribe(() => {
+      this.onParentCategoryChange();
+    });
   }
 
   initializeForm() {
     this.categoryForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
+      parentCategoryId: [null],
+      childCategoryNames: [[]],
     });
   }
 
@@ -68,6 +96,7 @@ export class CategoryFormComponent implements OnInit {
         next: (category) => {
           this.categoryForm.patchValue({
             name: category.name,
+            parentCategoryId: category.parentCategoryId,
           });
         },
         error: (error) => {
@@ -91,6 +120,53 @@ export class CategoryFormComponent implements OnInit {
     }
   }
 
+  onParentCategoryChange(): void {
+    this.isParentCategorySelected =
+      !!this.categoryForm.get('parentCategoryId')?.value;
+
+    if (this.isParentCategorySelected) {
+      this.childCategoryNames = [];
+    }
+  }
+
+  trackByName(index: number, item: string): string {
+    return item;
+  }
+
+  addChildCategory(event: MatChipInputEvent): void {
+    const input = event.chipInput.inputElement;
+    const value = event.value;
+
+    if ((value || '').trim()) {
+      this.childCategoryNames.push(value.trim());
+    }
+
+    if (input) {
+      input.value = '';
+    }
+  }
+
+  removeChildCategory(name: string): void {
+    const index = this.childCategoryNames.indexOf(name);
+    if (index >= 0) {
+      this.childCategoryNames.splice(index, 1);
+    }
+  }
+
+  editChildCategory(name: string, event: MatChipEditedEvent): void {
+    const value = event.value.trim();
+
+    if (!value) {
+      this.removeChildCategory(name);
+      return;
+    }
+
+    const index = this.childCategoryNames.indexOf(name);
+    if (index >= 0) {
+      this.childCategoryNames[index] = value;
+    }
+  }
+
   onSubmit() {
     if (this.categoryForm.invalid) {
       return;
@@ -98,6 +174,15 @@ export class CategoryFormComponent implements OnInit {
 
     const formData = new FormData();
     formData.append('name', this.categoryForm.get('name')?.value);
+
+    const parentCategoryId = this.categoryForm.get('parentCategoryId')?.value;
+    if (parentCategoryId) {
+      formData.append('parentCategoryId', parentCategoryId);
+    }
+
+    this.childCategoryNames.forEach((name) => {
+      formData.append('subcategoryNames', name);
+    });
 
     if (this.selectedImage) {
       formData.append('image', this.selectedImage, this.selectedImage.name);
@@ -120,6 +205,9 @@ export class CategoryFormComponent implements OnInit {
         },
       });
     } else {
+      console.log('subcategoryNames:', this.childCategoryNames);
+      console.log('formData entries:', [...formData.entries()]);
+
       this.categoryService.createCategory(formData).subscribe({
         next: (newCategoryId) => {
           this.snackBar.open('Category created successfully!', 'Close', {

@@ -54,7 +54,9 @@
       </mat-form-field>
     </div>
 
-    <div class="col-span-1 space-y-4">
+    <div
+      class="col-span-1 space-y-4 bg-gray-100 border border-gray-300 rounded px-4 py-2"
+    >
       <mat-label class="text-lg font-semibold">Product Image(s)</mat-label>
 
       <div *ngIf="productImages.length > 0" class="space-y-4">
@@ -96,7 +98,7 @@
           (change)="onFileSelected($event)"
           accept="image/*"
           multiple
-          class="file-input w-full p-2 border-2 border-gray-300 rounded-md bg-gray-100 text-gray-800 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+          class="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 hover:file:bg-blue-100"
         />
       </div>
     </div>

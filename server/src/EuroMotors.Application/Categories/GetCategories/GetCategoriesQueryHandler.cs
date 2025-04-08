@@ -29,6 +29,7 @@ internal sealed class GetCategoriesQueryHandler(IDbConnectionFactory dbConnectio
                  parent_category_id AS {nameof(CategoryResponse.ParentCategoryId)},
                  slug AS {nameof(CategoryResponse.Slug)}
              FROM categories
+             WHERE parent_category_id IS NULL
              """);
 
         var parameters = new Dictionary<string, object>();
@@ -43,7 +44,7 @@ internal sealed class GetCategoriesQueryHandler(IDbConnectionFactory dbConnectio
         List<CategoryResponse> categories = (await connection.QueryAsync<CategoryResponse>(sql.ToString(), parameters)).AsList();
 
         var countSql = new StringBuilder();
-        countSql.Append("SELECT COUNT(*) FROM categories ");
+        countSql.Append("SELECT COUNT(*) FROM categories WHERE parent_category_id IS NULL");
 
         int totalCount = await connection.ExecuteScalarAsync<int>(countSql.ToString());
 

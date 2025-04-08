@@ -9,7 +9,6 @@ using EuroMotors.Domain.CarModels;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace EuroMotors.Application.IntegrationTests.Abstractions;
 

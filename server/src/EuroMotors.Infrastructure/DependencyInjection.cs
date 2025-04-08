@@ -180,7 +180,7 @@ public static class DependencyInjection
                         string? token = context.Request.Cookies["AccessToken"];
                         if (!string.IsNullOrEmpty(token))
                         {
-                            context.Token = token; 
+                            context.Token = token;
                         }
 
                         return Task.CompletedTask;
@@ -188,7 +188,7 @@ public static class DependencyInjection
                 };
             });
 
-        services.AddHttpContextAccessor();  
+        services.AddHttpContextAccessor();
         services.AddScoped<IUserContext, UserContext>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<ITokenProvider, TokenProvider>();

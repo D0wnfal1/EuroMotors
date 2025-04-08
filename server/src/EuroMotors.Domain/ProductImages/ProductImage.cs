@@ -35,7 +35,7 @@ public class ProductImage : Entity
             return Result.Failure(ProductImageErrors.InvalidPath(newImagePath));
         }
 
-        Path  = newImagePath;
+        Path = newImagePath;
         ProductId = productId;
 
         RaiseDomainEvent(new ProductImageUpdatedDomainEvent(Id));

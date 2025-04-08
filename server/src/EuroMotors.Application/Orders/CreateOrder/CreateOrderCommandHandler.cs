@@ -16,7 +16,7 @@ internal sealed class CreateOrderCommandHandler(
     IUnitOfWork unitOfWork) : ICommandHandler<CreateOrderCommand, Guid>
 {
     public async Task<Result<Guid>> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
-        {
+    {
         await using DbTransaction transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
 
         User? user = null;

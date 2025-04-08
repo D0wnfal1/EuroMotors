@@ -29,6 +29,8 @@ public sealed class Product : Entity
 
     public bool IsAvailable { get; private set; }
 
+    public Slug Slug { get; private set; }
+
     public List<ProductImage> Images { get; private set; } = [];
 
     public static Product Create(
@@ -52,7 +54,8 @@ public sealed class Product : Entity
             Price = price,
             Discount = discount,
             Stock = stock,
-            IsAvailable = stock > 0
+            IsAvailable = stock > 0,
+            Slug = Slug.GenerateSlug(name)
         };
 
 
@@ -69,6 +72,7 @@ public sealed class Product : Entity
         Discount = discount;
         Stock = stock;
         IsAvailable = stock > 0;
+        Slug = Slug.GenerateSlug(name);
 
         RaiseDomainEvent(new ProductUpdatedDomainEvent(Id));
     }

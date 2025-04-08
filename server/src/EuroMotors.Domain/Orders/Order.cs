@@ -11,7 +11,7 @@ public sealed class Order : Entity
     private Order() { }
 
     public Guid? UserId { get; private set; }
-    public string BuyerName { get; private set; } 
+    public string BuyerName { get; private set; }
     public string BuyerPhoneNumber { get; private set; }
     public string BuyerEmail { get; private set; }
     public OrderStatus Status { get; private set; }

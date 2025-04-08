@@ -11,5 +11,6 @@ export type Product = {
   discount: number;
   stock: number;
   isAvailable: boolean;
+  slug: string;
   images: ProductImage[];
 };

@@ -61,6 +61,7 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
                 p.discount AS {nameof(ProductResponse.Discount)},
                 p.stock AS {nameof(ProductResponse.Stock)},
                 p.is_available AS {nameof(ProductResponse.IsAvailable)},
+                p.slug AS {nameof(ProductResponse.Slug)},
                 pi.id AS {nameof(ProductImageResponse.ProductImageId)},
                 pi.path AS {nameof(ProductImageResponse.Path)},
                 pi.product_id AS {nameof(ProductImageResponse.ProductId)}
@@ -89,7 +90,7 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
                 if (!productDictionary.TryGetValue(product.Id, out ProductResponse? productEntry))
                 {
                     productEntry = product;
-                    productEntry.Images = new List<ProductImageResponse>();
+                    productEntry.Images = [];
                     productDictionary.Add(productEntry.Id, productEntry);
                 }
                 if (image != null && image.ProductImageId != Guid.Empty)

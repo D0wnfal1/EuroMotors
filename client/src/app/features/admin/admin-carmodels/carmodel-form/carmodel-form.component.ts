@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CarmodelService } from '../../../../core/services/carmodel.service';
-import { CarModel } from '../../../../shared/models/carModel';
+import { BodyType, FuelType } from '../../../../shared/models/carModel';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -37,7 +37,8 @@ export class CarmodelFormComponent implements OnInit {
   carModelId: string | null = null;
   imageInvalid: boolean = false;
   selectedImage: File | null = null;
-
+  bodyTypes = Object.values(BodyType);
+  fuelTypes = Object.values(FuelType);
   constructor(
     private fb: FormBuilder,
     private carModelService: CarmodelService,
@@ -60,6 +61,19 @@ export class CarmodelFormComponent implements OnInit {
     this.carModelForm = this.fb.group({
       brand: ['', [Validators.required, Validators.maxLength(100)]],
       model: ['', [Validators.required, Validators.maxLength(100)]],
+      startYear: [
+        '',
+        [
+          Validators.required,
+          Validators.min(1900),
+          Validators.max(new Date().getFullYear()),
+        ],
+      ],
+      endYear: ['', [Validators.max(new Date().getFullYear())]],
+      bodyType: ['', Validators.required],
+      volumeLiters: ['', [Validators.required, Validators.min(0.1)]],
+      fuelType: ['', Validators.required],
+      horsePower: ['', [Validators.required, Validators.min(1)]],
     });
   }
 
@@ -70,6 +84,12 @@ export class CarmodelFormComponent implements OnInit {
           this.carModelForm.patchValue({
             brand: carModel.brand,
             model: carModel.model,
+            startYear: carModel.startYear,
+            endYear: carModel.endYear,
+            bodyType: carModel.bodyType,
+            volumeLiters: carModel.volumeLiters,
+            fuelType: carModel.fuelType,
+            horsePower: carModel.horsePower,
           });
         },
         error: (error) => {
@@ -101,6 +121,15 @@ export class CarmodelFormComponent implements OnInit {
     const formData = new FormData();
     formData.append('brand', this.carModelForm.get('brand')?.value);
     formData.append('model', this.carModelForm.get('model')?.value);
+    formData.append('startYear', this.carModelForm.get('startYear')?.value);
+    formData.append('endYear', this.carModelForm.get('endYear')?.value);
+    formData.append('bodyType', this.carModelForm.get('bodyType')?.value);
+    formData.append(
+      'volumeLiters',
+      this.carModelForm.get('volumeLiters')?.value
+    );
+    formData.append('fuelType', this.carModelForm.get('fuelType')?.value);
+    formData.append('horsePower', this.carModelForm.get('horsePower')?.value);
 
     if (this.selectedImage) {
       formData.append('image', this.selectedImage, this.selectedImage.name);

@@ -330,6 +330,11 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnType("decimal(18,2)")
                         .HasColumnName("price");
 
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("slug");
+
                     b.Property<int>("Stock")
                         .HasColumnType("integer")
                         .HasColumnName("stock");

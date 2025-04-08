@@ -63,10 +63,11 @@ export class AdminProductsComponent implements OnInit {
   }
 
   loadCategories() {
-    this.categoryService.getCategories({ pageNumber: 1, pageSize: 0 });
-    this.categoryService.categories$.subscribe((data) => {
-      this.categories = data;
-    });
+    this.categoryService
+      .getCategories({ pageNumber: 1, pageSize: 0 })
+      .subscribe((response) => {
+        this.categories = response.data;
+      });
   }
 
   loadCarModels() {

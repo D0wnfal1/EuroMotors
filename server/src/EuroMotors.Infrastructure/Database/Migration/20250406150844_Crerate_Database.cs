@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migration
 {
     /// <inheritdoc />
-    public partial class Create_Database : Microsoft.EntityFrameworkCore.Migrations.Migration
+    public partial class Crerate_Database : Microsoft.EntityFrameworkCore.Migrations.Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -136,7 +136,8 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     price = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     discount = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     stock = table.Column<int>(type: "integer", nullable: false),
-                    is_available = table.Column<bool>(type: "boolean", nullable: false)
+                    is_available = table.Column<bool>(type: "boolean", nullable: false),
+                    slug = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {

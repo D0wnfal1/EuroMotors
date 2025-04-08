@@ -35,11 +35,11 @@ public class GetCarModelTests : BaseIntegrationTest
         Guid carModelId = await Sender.CreateCarModelAsync(
             faker.Vehicle.Manufacturer(),
             faker.Vehicle.Model(),
-            faker.Date.Past(10).Year, 
-            null, 
-            BodyType.Sedan, 
-            new EngineSpec (6, FuelType.Diesel, 6), 
-            null 
+            faker.Date.Past(10).Year,
+            null,
+            BodyType.Sedan,
+            new EngineSpec(6, FuelType.Diesel, 6),
+            null
         );
 
         var query = new GetCarModelByIdQuery(carModelId);

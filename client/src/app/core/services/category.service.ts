@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Category } from '../../shared/models/category';
 import { PaginationParams } from '../../shared/models/paginationParams';
@@ -17,28 +17,29 @@ export class CategoryService {
   private totalItemsSubject = new BehaviorSubject<number>(0);
   totalItems$ = this.totalItemsSubject.asObservable();
 
-  getCategories(paginationParams: PaginationParams) {
-    let params = new HttpParams();
-    params = params.append('pageSize', paginationParams.pageSize);
-    params = params.append('pageNumber', paginationParams.pageNumber);
+  getCategories(
+    paginationParams: PaginationParams
+  ): Observable<{ count: number; data: Category[] }> {
+    const params = new HttpParams()
+      .append('pageSize', paginationParams.pageSize.toString())
+      .append('pageNumber', paginationParams.pageNumber.toString());
 
-    this.http
-      .get<{ count: number; data: Category[] }>(this.baseUrl + '/categories', {
-        params,
-      })
-      .subscribe({
-        next: (response) => {
-          this.categoriesSubject.next(response.data);
-          this.totalItemsSubject.next(response.count);
-        },
-        error: (err) => console.error('Failed to load categories', err),
-      });
+    return this.http.get<{ count: number; data: Category[] }>(
+      `${this.baseUrl}/categories`,
+      { params }
+    );
   }
 
   getCategoryById(id: string): Observable<Category> {
     return this.http.get<Category>(`${this.baseUrl}/categories/${id}`, {
       withCredentials: true,
     });
+  }
+
+  getSubcategories(parentCategoryId: string): Observable<Category[]> {
+    return this.http.get<Category[]>(
+      `${this.baseUrl}/categories/${parentCategoryId}/subcategories`
+    );
   }
 
   createCategory(formData: FormData): Observable<string> {

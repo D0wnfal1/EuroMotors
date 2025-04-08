@@ -30,7 +30,7 @@ public class ProductImageController : ControllerBase
         Result<Guid> result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess
-            ? CreatedAtAction(nameof(UploadProductImage), new { id = result.Value }, new { id = result.Value })  
+            ? CreatedAtAction(nameof(UploadProductImage), new { id = result.Value }, new { id = result.Value })
             : BadRequest(result.Error);
     }
 

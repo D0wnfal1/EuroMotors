@@ -30,6 +30,7 @@ export class CartItemComponent implements OnInit {
     discount: 0,
     stock: 0,
     isAvailable: false,
+    slug: '',
   };
   productImage: ProductImage | undefined;
 
