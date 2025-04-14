@@ -64,10 +64,13 @@ public sealed class Product : Entity
         return product;
     }
 
-    public void Update(string name, string description, decimal price, decimal discount, int stock)
+    public void Update(string name, string description, string vendorCode, Guid categoryId, Guid carModelId, decimal price, decimal discount, int stock)
     {
         Name = name;
         Description = description;
+        VendorCode = vendorCode;
+        CategoryId = categoryId;
+        CarModelId = carModelId;
         Price = price;
         Discount = discount;
         Stock = stock;
@@ -113,15 +116,22 @@ public sealed class Product : Entity
         return Result.Success();
     }
 
-    public void MarkAsNotAvailable()
+    public void SetAvailability(bool isAvailable)
     {
-        if (!IsAvailable)
+        if (IsAvailable == isAvailable)
         {
             return;
         }
 
-        IsAvailable = false;
+        IsAvailable = isAvailable;
 
-        RaiseDomainEvent(new ProductIsNotAvailableDomainEvent(Id));
+        if (isAvailable)
+        {
+            RaiseDomainEvent(new ProductIsAvailableDomainEvent(Id));
+        }
+        else
+        {
+            RaiseDomainEvent(new ProductIsNotAvailableDomainEvent(Id));
+        }
     }
 }

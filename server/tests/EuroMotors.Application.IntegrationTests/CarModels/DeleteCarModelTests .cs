@@ -38,7 +38,7 @@ public class DeleteCarModelTests : BaseIntegrationTest
         int startYear = 2020; // Example start year
         int? endYear = null; // Example end year
         BodyType bodyType = BodyType.Sedan; // Example body type
-        var engineSpec = new EngineSpec(6, FuelType.Diesel, 6); // Example engine spec
+        var engineSpec = new EngineSpec(6, FuelType.Diesel); // Example engine spec
         IFormFile? image = null; // Example image
 
         Guid carModelId = await Sender.CreateCarModelAsync(brand, model, startYear, endYear, bodyType, engineSpec, image);

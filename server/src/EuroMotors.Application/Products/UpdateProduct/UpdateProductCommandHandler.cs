@@ -34,6 +34,9 @@ internal sealed class UpdateProductCommandHandler(IProductRepository productRepo
         product.Update(
             request.Name,
             request.Description,
+            request.VendorCode,
+            request.CategoryId,
+            request.CarModelId,
             request.Price,
             request.Discount,
             request.Stock);

@@ -42,21 +42,21 @@ public class GetCarModelsTests : BaseIntegrationTest
         await Sender.CreateCarModelAsync(
             faker.Vehicle.Manufacturer(),
             faker.Vehicle.Model(),
-            faker.Date.Past(10).Year, // startYear
-            null, // endYear
-            BodyType.Sedan, // Assuming BodyType is an enum
-            new EngineSpec(6, FuelType.Diesel, 6), // Assuming EngineSpec is a class
-            null // Assuming IFormFile is not needed for this test
+            faker.Date.Past(10).Year, 
+            null, 
+            BodyType.Sedan, 
+            new EngineSpec(6, FuelType.Diesel), 
+            null 
         );
 
         await Sender.CreateCarModelAsync(
             faker.Vehicle.Manufacturer(),
             faker.Vehicle.Model(),
-            faker.Date.Past(10).Year, // startYear
-            null, // endYear
-            BodyType.SUV, // Assuming BodyType is an enum
-            new EngineSpec(6, FuelType.Diesel, 6),  // Assuming EngineSpec is a class
-            null // Assuming IFormFile is not needed for this test
+            faker.Date.Past(10).Year,
+            null, 
+            BodyType.SUV, 
+            new EngineSpec(6, FuelType.Diesel),  
+            null 
         );
 
 

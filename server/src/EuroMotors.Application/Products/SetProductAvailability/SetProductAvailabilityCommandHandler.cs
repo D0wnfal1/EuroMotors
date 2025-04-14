@@ -2,11 +2,11 @@
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Products;
 
-namespace EuroMotors.Application.Products.MarkAsNotAvailable;
+namespace EuroMotors.Application.Products.SetProductAvailability;
 
-internal sealed class MarkAsNotAvailableCommandHandler(IProductRepository productRepository, IUnitOfWork unitOfWork) : ICommandHandler<MarkAsNotAvailableCommand>
+internal sealed class SetProductAvailabilityCommandHandler(IProductRepository productRepository, IUnitOfWork unitOfWork) : ICommandHandler<SetProductAvailabilityCommand>
 {
-    public async Task<Result> Handle(MarkAsNotAvailableCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(SetProductAvailabilityCommand request, CancellationToken cancellationToken)
     {
         Product? product = await productRepository.GetByIdAsync(request.ProductId, cancellationToken);
 
@@ -15,7 +15,7 @@ internal sealed class MarkAsNotAvailableCommandHandler(IProductRepository produc
             return Result.Failure(ProductErrors.NotFound(request.ProductId));
         }
 
-        product.MarkAsNotAvailable();
+        product.SetAvailability(request.IsAvailable);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

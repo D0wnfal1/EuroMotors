@@ -11,6 +11,7 @@ import { ImageService } from '../../../core/services/image.service';
 import { MatIcon } from '@angular/material/icon';
 import { Observable } from 'rxjs';
 import { MatTableModule } from '@angular/material/table';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-admin-categories',
@@ -23,6 +24,7 @@ import { MatTableModule } from '@angular/material/table';
     FormsModule,
     MatIcon,
     MatTableModule,
+    MatSlideToggleModule,
   ],
   templateUrl: './admin-categories.component.html',
   styleUrl: './admin-categories.component.scss',
@@ -39,11 +41,11 @@ export class AdminCategoriesComponent implements OnInit {
   visibleSubcategories: { [categoryId: string]: boolean } = {};
   subcategoriesLoaded: { [categoryId: string]: boolean } = {};
 
-  displayedColumns: string[] = ['image', 'name', 'isArchived', 'actions'];
+  displayedColumns: string[] = ['image', 'name', 'isAvailable', 'actions'];
   subDisplayedColumns: string[] = [
     'subImage',
     'subName',
-    'subIsArchived',
+    'subIsAvailable',
     'subActions',
   ];
 
@@ -102,4 +104,18 @@ export class AdminCategoriesComponent implements OnInit {
   isExpansionDetailRow = (_index: number, row: Category) => {
     return !!this.visibleSubcategories[row.id];
   };
+
+  toggleAvailability(category: Category) {
+    const newAvailability = !category.isAvailable;
+    this.categoryService
+      .setCategoryAvailability(category.id, newAvailability)
+      .subscribe({
+        next: () => {
+          category.isAvailable = newAvailability;
+        },
+        error: (err) => {
+          console.error(err);
+        },
+      });
+  }
 }

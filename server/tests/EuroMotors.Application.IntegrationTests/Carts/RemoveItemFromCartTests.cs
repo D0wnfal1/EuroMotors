@@ -63,7 +63,7 @@ public class RemoveItemFromCartTests : BaseIntegrationTest
             2020,
             null,
             BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel, 6),
+            new EngineSpec(6, FuelType.Diesel),
             null
         );
         Guid productId = await Sender.CreateProductAsync(

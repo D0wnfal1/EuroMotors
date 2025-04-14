@@ -1,16 +1,33 @@
 <section>
-  @if (cartService.cart()?.cartItems?.length! > 0) {
-  <div class="flex w-full items-start gap-6 mt-32">
-    <div class="w-3/4">
+  <div
+    *ngIf="cartService.cart()?.cartItems?.length! > 0; else emptyCart"
+    class="flex flex-col w-full gap-6"
+  >
+    <div class="w-full">
       @for (item of cartService.cart()?.cartItems; track item.productId) {
       <app-cart-item [item]="item"></app-cart-item>
       }
     </div>
-    <div class="w-1/4">
-      <app-order-summary></app-order-summary>
+
+    <div class="w-full flex justify-end">
+      <div class="w-full md:w-1/4">
+        <div class="space-y-4">
+          <dl
+            class="flex items-center justify-between gap-4 border-t border-gray-200 pt-2"
+          >
+            <dt class="font-medium text-3xl text-gray-500">Total:</dt>
+            <dd class="font-medium text-3xl text-gray-900">
+              {{ cartService.totals()?.total | currency }}
+            </dd>
+          </dl>
+        </div>
+      </div>
     </div>
   </div>
-  } @else {
-  <app-empty-state></app-empty-state>
-  }
+
+  <section *ngIf="cartService.cart()?.cartItems?.length! > 0" class="mt-8">
+    <app-checkout-form></app-checkout-form>
+  </section>
+
+  <ng-template #emptyCart> <app-empty-state></app-empty-state></ng-template>
 </section>

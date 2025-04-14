@@ -32,7 +32,7 @@ internal sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
         builder.HasIndex(c => c.Slug)
             .IsUnique();
 
-        builder.Property(c => c.IsArchived)
+        builder.Property(c => c.IsAvailable)
             .IsRequired();
 
         builder.Property(c => c.ImagePath);

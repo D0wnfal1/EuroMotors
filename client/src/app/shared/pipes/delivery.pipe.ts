@@ -10,7 +10,7 @@ export class DeliveryPipe implements PipeTransform {
       case DeliveryMethod.Pickup:
         return 'Pickup From Store';
       case DeliveryMethod.Delivery:
-        return 'Delivery By NovePoshta';
+        return 'Delivery By NovaPoshta';
       default:
         return 'Unknown';
     }

@@ -13,7 +13,7 @@ public class Category : Entity
 
     public string Name { get; private set; }
 
-    public bool IsArchived { get; private set; }
+    public bool IsAvailable { get; private set; }
 
     public string? ImagePath { get; private set; }
 
@@ -39,7 +39,7 @@ public class Category : Entity
             Id = Guid.NewGuid(),
             Name = name,
 
-            IsArchived = false,
+            IsAvailable = true,
             ParentCategoryId = parentCategoryId
         };
 
@@ -75,16 +75,23 @@ public class Category : Entity
         ParentCategory = parent;
     }
 
-    public void Archive()
+    public void SetAvailability(bool isAvailable)
     {
-        if (IsArchived)
+        if (IsAvailable == isAvailable)
         {
             return;
         }
 
-        IsArchived = true;
+        IsAvailable = isAvailable;
 
-        RaiseDomainEvent(new CategoryArchivedDomainEvent(Id));
+        if (isAvailable)
+        {
+            RaiseDomainEvent(new CategoryIsAvailableDomainEvent(Id));
+        }
+        else
+        {
+            RaiseDomainEvent(new CategoryIsNotAvailableDomainEvent(Id));
+        }
     }
 
     public void ChangeName(string name)
@@ -110,7 +117,7 @@ public class Category : Entity
 
         RaiseDomainEvent(new CategoryImageUpdatedDomainEvent(Id));
 
-        return Result.Success();
+        return Result.Success();    
     }
 
     private Slug GenerateSlug()

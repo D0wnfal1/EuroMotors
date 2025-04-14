@@ -2,6 +2,7 @@
 using EuroMotors.Application.Users.RefreshToken;
 using EuroMotors.Domain.Abstractions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EuroMotors.Api.Controllers.Users;
@@ -31,5 +32,13 @@ public class AuthController : ControllerBase
         Result<AuthenticationResponse> result = await _sender.Send(query, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+    }
+
+    [HttpGet("auth-status")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(object), 200)]
+    public IActionResult GetAuthState()
+    {
+        return Ok(new { IsAuthenticated = User.Identity?.IsAuthenticated ?? false });
     }
 }

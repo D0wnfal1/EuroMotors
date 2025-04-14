@@ -33,7 +33,7 @@ public class AddItemToCartTests : BaseIntegrationTest
             faker.Date.Past(10).Year,
             null,
             BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel, 300),
+            new EngineSpec(6, FuelType.Diesel),
             null
         );
         Guid productId = await Sender.CreateProductAsync(
@@ -95,7 +95,7 @@ public class AddItemToCartTests : BaseIntegrationTest
             faker.Date.Past(10).Year,
             null,
             BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel, 300),
+            new EngineSpec(6, FuelType.Diesel),
             null
         );
 
@@ -136,7 +136,7 @@ public class AddItemToCartTests : BaseIntegrationTest
             faker.Date.Past(10).Year,
             null,
             BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel, 300),
+            new EngineSpec(6, FuelType.Diesel),
             null
         );
         Guid productId = await Sender.CreateProductAsync(
@@ -177,7 +177,7 @@ public class AddItemToCartTests : BaseIntegrationTest
             faker.Date.Past(10).Year,
             null,
             BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel, 300),
+            new EngineSpec(6, FuelType.Diesel),
             null
         );
 

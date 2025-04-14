@@ -11,6 +11,5 @@ public sealed class UpdateCarModelRequest
     public BodyType? BodyType { get; set; }
     public float? VolumeLiters { get; set; }
     public FuelType? FuelType { get; set; }
-    public int? HorsePower { get; set; }
     public IFormFile? ImagePath { get; set; }
 }

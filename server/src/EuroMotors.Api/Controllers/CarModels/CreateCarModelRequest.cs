@@ -19,8 +19,6 @@ public sealed class CreateCarModelRequest
     public float VolumeLiters { get; set; }
     [JsonRequired]
     public FuelType FuelType { get; set; }
-    [JsonRequired] 
-    public int HorsePower { get; set; }
 
     public IFormFile? ImagePath { get; set; }
 

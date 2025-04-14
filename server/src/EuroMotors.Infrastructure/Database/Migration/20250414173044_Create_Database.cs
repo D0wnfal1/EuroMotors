@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migration
 {
     /// <inheritdoc />
-    public partial class Crerate_Database : Microsoft.EntityFrameworkCore.Migrations.Migration
+    public partial class Create_Database : Microsoft.EntityFrameworkCore.Migrations.Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,7 +31,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     body_type = table.Column<string>(type: "text", nullable: false),
                     engine_spec_volume_liters = table.Column<float>(type: "real", nullable: false),
                     engine_spec_fuel_type = table.Column<string>(type: "text", nullable: false),
-                    engine_spec_horse_power = table.Column<int>(type: "integer", nullable: false),
                     slug = table.Column<string>(type: "text", nullable: false),
                     image_path = table.Column<string>(type: "text", nullable: true)
                 },
@@ -47,7 +46,7 @@ namespace EuroMotors.Infrastructure.Database.Migration
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    is_archived = table.Column<bool>(type: "boolean", nullable: false),
+                    is_available = table.Column<bool>(type: "boolean", nullable: false),
                     image_path = table.Column<string>(type: "text", nullable: true),
                     parent_category_id = table.Column<Guid>(type: "uuid", nullable: true),
                     slug = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)

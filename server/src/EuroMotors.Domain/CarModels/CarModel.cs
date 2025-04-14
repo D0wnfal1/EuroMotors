@@ -88,13 +88,12 @@ public class CarModel : Entity
         }
     }
 
-    public void UpdateEngineSpec(float? volumeLiters, FuelType? fuelType, int? horsePower)
+    public void UpdateEngineSpec(float? volumeLiters, FuelType? fuelType)
     {
         bool shouldUpdate = false;
 
         float newVolume = EngineSpec.VolumeLiters;
         FuelType newFuel = EngineSpec.FuelType;
-        int newHorsePower = EngineSpec.HorsePower;
 
         const float tolerance = 0.0001f;
 
@@ -110,15 +109,10 @@ public class CarModel : Entity
             shouldUpdate = true;
         }
 
-        if (horsePower.HasValue && horsePower.Value != EngineSpec.HorsePower)
-        {
-            newHorsePower = horsePower.Value;
-            shouldUpdate = true;
-        }
 
         if (shouldUpdate)
         {
-            EngineSpec = new EngineSpec(newVolume, newFuel, newHorsePower);
+            EngineSpec = new EngineSpec(newVolume, newFuel);
             RaiseDomainEvent(new CarModelEngineSpecUpdatedDomainEvent(Id));
         }
     }

@@ -24,11 +24,11 @@ public class ProductTests : BaseTest
     public void Update_ShouldRaiseProductUpdatedEvent()
     {
         // Arrange
-        var product = Product.Create(ProductData.Name, ProductData.Description, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
+        var product = Product.Create(ProductData.Name, ProductData.Description, ProductData.VendorCode, ProductData.CategoryId, ProductData.CarModelId, ProductData.Price,
             ProductData.Discount, ProductData.Stock);
 
         // Act
-        product.Update("Updated Name", "Updated Description", 150m, 5m, 100);
+        product.Update("Updated Name", "Updated Description", "Updated vendorCode", ProductData.CategoryId, ProductData.CarModelId ,150m, 5m, 100);
 
         // Assert
         ProductUpdatedDomainEvent @event = AssertDomainEventWasPublished<ProductUpdatedDomainEvent>(product);
@@ -57,7 +57,7 @@ public class ProductTests : BaseTest
             ProductData.Discount, ProductData.Stock);
 
         // Act
-        product.MarkAsNotAvailable();
+        product.SetAvailability(false);
 
         // Assert
         Assert.False(product.IsAvailable);

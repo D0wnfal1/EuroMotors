@@ -45,14 +45,6 @@ public class UsersController : ControllerBase
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 
-    [HttpGet("auth-status")]
-    [AllowAnonymous]
-    [ProducesResponseType(typeof(object), 200)]
-    public IActionResult GetAuthState()
-    {
-        return Ok(new { IsAuthenticated = User.Identity?.IsAuthenticated ?? false });
-    }
-
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
     {

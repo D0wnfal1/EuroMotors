@@ -2,7 +2,7 @@
 
 namespace EuroMotors.Domain.Categories.Events;
 
-public sealed class CategoryArchivedDomainEvent(Guid categoryId) : IDomainEvent
+public class CategoryIsNotAvailableDomainEvent(Guid categoryId) : IDomainEvent
 {
     public Guid CategoryId { get; init; } = categoryId;
 }

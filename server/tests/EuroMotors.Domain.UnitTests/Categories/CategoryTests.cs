@@ -25,11 +25,11 @@ public class CategoryTests : BaseTest
         var category = Category.Create(CategoryData.Name);
 
         // Act
-        category.Archive();
+        category.SetAvailability(true);
 
         // Assert
-        Assert.True(category.IsArchived);
-        CategoryArchivedDomainEvent archivedEvent = AssertDomainEventWasPublished<CategoryArchivedDomainEvent>(category);
+        Assert.True(category.IsAvailable);
+        CategoryIsAvailableDomainEvent archivedEvent = AssertDomainEventWasPublished<CategoryIsAvailableDomainEvent>(category);
         Assert.Equal(category.Id, archivedEvent.CategoryId);
     }
 

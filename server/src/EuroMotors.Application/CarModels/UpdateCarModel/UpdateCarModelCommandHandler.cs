@@ -17,7 +17,7 @@ internal sealed class UpdateCarModelCommandHandler(ICarModelRepository carModelR
 
         carModel.Update(request.Brand, request.Model, request.StartYear, request.EndYear, request.BodyType);
 
-        carModel.UpdateEngineSpec(request.VolumeLiters, request.FuelType, request.HorsePower);
+        carModel.UpdateEngineSpec(request.VolumeLiters, request.FuelType);
 
         if (request.Image is not null && request.Image.Length > 0)
         {

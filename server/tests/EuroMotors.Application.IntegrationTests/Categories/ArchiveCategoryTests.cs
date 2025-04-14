@@ -1,5 +1,5 @@
 ﻿using Bogus;
-using EuroMotors.Application.Categories.ArchiveCategory;
+using EuroMotors.Application.Categories.SetCategoryAvailability;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Categories;
@@ -18,7 +18,7 @@ public class ArchiveCategoryTests : BaseIntegrationTest
     public async Task Should_ReturnFailure_WhenCategoryDoesNotExist()
     {
         // Arrange
-        var command = new ArchiveCategoryCommand(Guid.NewGuid());
+        var command = new SetCategoryAvailabilityCommand(Guid.NewGuid(), false);
 
         // Act
         Result result = await Sender.Send(command);
@@ -34,7 +34,7 @@ public class ArchiveCategoryTests : BaseIntegrationTest
         var faker = new Faker();
         Guid CategoryId = await Sender.CreateCategoryAsync(faker.Music.Genre());
 
-        var command = new ArchiveCategoryCommand(CategoryId);
+        var command = new SetCategoryAvailabilityCommand(CategoryId, false);
 
         // Act
         Result result = await Sender.Send(command);
@@ -50,7 +50,7 @@ public class ArchiveCategoryTests : BaseIntegrationTest
         var faker = new Faker();
         Guid CategoryId = await Sender.CreateCategoryAsync(faker.Music.Genre());
 
-        var command = new ArchiveCategoryCommand(CategoryId);
+        var command = new SetCategoryAvailabilityCommand(CategoryId, false);
 
         await Sender.Send(command);
 

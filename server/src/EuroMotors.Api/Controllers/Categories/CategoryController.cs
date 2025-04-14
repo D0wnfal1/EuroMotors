@@ -1,10 +1,10 @@
 ﻿using EuroMotors.Application.Abstractions.Pagination;
-using EuroMotors.Application.Categories.ArchiveCategory;
 using EuroMotors.Application.Categories.CreateCategory;
 using EuroMotors.Application.Categories.DeleteCategory;
 using EuroMotors.Application.Categories.GetByIdCategory;
 using EuroMotors.Application.Categories.GetCategories;
 using EuroMotors.Application.Categories.GetSubcategories;
+using EuroMotors.Application.Categories.SetCategoryAvailability;
 using EuroMotors.Application.Categories.UpdateCategory;
 using EuroMotors.Domain.Abstractions;
 using MediatR;
@@ -80,11 +80,11 @@ public class CategoryController : ControllerBase
         return result.IsSuccess ? NoContent() : BadRequest(result.Error);
     }
 
-    [HttpPut("{id}/archive")]
+    [HttpPatch("{id}")]
     [Authorize(Roles = Roles.Admin)]
-    public async Task<IActionResult> ArchiveCategory(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> ArchiveCategory(Guid id, [FromBody] SetCategoryAvailabilityRequest request, CancellationToken cancellationToken)
     {
-        var command = new ArchiveCategoryCommand(id);
+        var command = new SetCategoryAvailabilityCommand(id, request.IsAvailable);
 
         Result result = await _sender.Send(command, cancellationToken);
 

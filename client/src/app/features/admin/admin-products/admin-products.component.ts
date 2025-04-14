@@ -13,10 +13,10 @@ import { ProductListComponent } from '../../../shared/components/product-list/pr
 import { PageEvent } from '@angular/material/paginator';
 import { CarModel } from '../../../shared/models/carModel';
 import { Category } from '../../../shared/models/category';
-import { MatIcon } from '@angular/material/icon';
 import { CarmodelService } from '../../../core/services/carmodel.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { MatTableModule } from '@angular/material/table';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-admin-products',
@@ -26,9 +26,9 @@ import { MatTableModule } from '@angular/material/table';
     CurrencyPipe,
     MatButton,
     ProductListComponent,
-    MatIcon,
     CommonModule,
     MatTableModule,
+    MatSlideToggleModule,
   ],
   templateUrl: './admin-products.component.html',
   styleUrl: './admin-products.component.scss',
@@ -126,5 +126,19 @@ export class AdminProductsComponent implements OnInit {
       this.shopParams.pageNumber = 1;
       this.getProducts();
     }
+  }
+
+  toggleAvailability(product: Product) {
+    const newAvailability = !product.isAvailable;
+    this.productService
+      .setProductAvailability(product.id, newAvailability)
+      .subscribe({
+        next: () => {
+          product.isAvailable = newAvailability;
+        },
+        error: (err) => {
+          console.error(err);
+        },
+      });
   }
 }

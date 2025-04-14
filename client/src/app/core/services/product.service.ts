@@ -1,10 +1,8 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Product } from '../../shared/models/product';
-import { CarModel } from '../../shared/models/carModel';
-import { Category } from '../../shared/models/category';
 import { Pagination } from '../../shared/models/pagination';
 import { ShopParams } from '../../shared/models/shopParams';
 
@@ -66,5 +64,13 @@ export class ProductService {
     return this.http.delete<void>(`${this.baseUrl}/products/${id}`, {
       withCredentials: true,
     });
+  }
+
+  setProductAvailability(id: string, isAvailable: boolean): Observable<void> {
+    return this.http.patch<void>(
+      `${this.baseUrl}/products/${id}`,
+      { isAvailable },
+      { withCredentials: true }
+    );
   }
 }

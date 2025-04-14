@@ -33,7 +33,6 @@ internal sealed class CarModelConfiguration : IEntityTypeConfiguration<CarModel>
         {
             engineSpec.Property(es => es.VolumeLiters).IsRequired();
             engineSpec.Property(es => es.FuelType).HasConversion<string>().IsRequired();
-            engineSpec.Property(es => es.HorsePower).IsRequired();
         });
 
         builder.Property(c => c.Slug)

@@ -49,7 +49,7 @@ public class CarModelController : ControllerBase
     [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> CreateCarModel([FromForm] CreateCarModelRequest request, CancellationToken cancellationToken)
     {
-        var engineSpec = new EngineSpec(request.VolumeLiters, request.FuelType, request.HorsePower);
+        var engineSpec = new EngineSpec(request.VolumeLiters, request.FuelType);
 
         var command = new CreateCarModelCommand(
             request.Brand,
@@ -83,7 +83,6 @@ public class CarModelController : ControllerBase
             request.BodyType,
             request.VolumeLiters,
             request.FuelType,
-            request.HorsePower,
             request.ImagePath);
 
         Result result = await _sender.Send(command, cancellationToken);

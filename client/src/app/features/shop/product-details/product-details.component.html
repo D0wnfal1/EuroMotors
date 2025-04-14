@@ -2,55 +2,96 @@
   <div class="max-w-(--breakpoint-2xl) px-4 mx-auto">
     <div class="grid grid-cols-2 gap-8">
       <div>
-        <div class="image-container">
+        <div class="relative w-full max-w-xl mx-auto mt-4">
           <img
             *ngIf="product.images.length > 0; else noImage"
             [src]="getImageUrl(product.images[activeIndex].path)"
             alt="Product Image"
-            class="product-image"
+            class="product-image w-full h-auto rounded-md"
           />
 
           <ng-template #noImage>
             <img
-              mat-card-image
               src="images/no-image.jpeg"
               alt="No product image"
-              class="product-image"
+              class="product-image w-full h-auto rounded-md"
             />
           </ng-template>
-        </div>
-        <div class="flex justify-between mt-2">
+
           <button
-            mat-button
+            mat-icon-button
+            class="absolute -left-6 top-1/2 transform -translate-y-1/2 green-500"
             (click)="previousImage()"
             [disabled]="activeIndex === 0"
-            class="flex items-center"
           >
-            <mat-icon>arrow_back</mat-icon> Previous
+            <mat-icon>arrow_back</mat-icon>
           </button>
+
           <button
-            mat-button
+            mat-icon-button
+            class="absolute -right-6 top-1/2 transform -translate-y-1/2 green-500"
             (click)="nextImage()"
-            [disabled]="
-              product.images.length === 0 ||
-              activeIndex === product.images.length - 1
-            "
-            class="flex items-center"
+            [disabled]="activeIndex === product.images.length - 1"
           >
-            Next <mat-icon>arrow_forward</mat-icon>
+            <mat-icon>arrow_forward</mat-icon>
           </button>
+        </div>
+
+        <div class="flex justify-center mt-4 space-x-2">
+          <button
+            *ngFor="let img of product.images; let i = index"
+            class="w-3 h-3 rounded-full transition-all duration-300"
+            [ngClass]="{
+              'bg-gray-400': activeIndex !== i,
+              'bg-green-600': activeIndex === i
+            }"
+            (click)="activeIndex = i"
+            aria-label="Image pagination dot"
+          ></button>
         </div>
       </div>
       <div>
-        <h1 class="text-2xl font-semibold text-gray-900">{{ product.name }}</h1>
-        <p>You have {{ quantityInCart }} of this item in your cart</p>
-        <div class="mt-4 flex items-center gap-4">
-          <p class="text-3xl font-extrabold text-gray-900">
-            {{ product.price | currency }}
-          </p>
+        <h1 class="text-3xl font-semibold text-gray-900">
+          {{ product.vendorCode }}
+        </h1>
+        <h2 class="text-2xl font-semibold text-gray-900">{{ product.name }}</h2>
+        <div *ngIf="product.isAvailable; else notAvailable">
+          <p>Is Available</p>
+          <p>{{ product.description }}</p>
         </div>
-        <div class="flex gap-4 mt-6">
+        <ng-template #notAvailable>
+          <p class="text-red-500">Not available</p>
+          <p>{{ product.description }}</p>
+        </ng-template>
+
+        <div
+          class="flex-col gap-4 mt-6"
+          *ngIf="product.isAvailable; else notAvailableBtn"
+        >
+          <mat-form-field appearance="outline" class="flex">
+            <mat-label>Quantity</mat-label>
+            <input matInput min="0" [(ngModel)]="quantity" type="number" />
+          </mat-form-field>
+          <div *ngIf="product.discount > 0; else noDiscount">
+            <div class="text-xl text-gray-500 line-through">
+              {{ product.price * quantity | currency }}
+            </div>
+            <div class="text-3xl font-extrabold text-red-600">
+              {{
+                product.price * quantity - product.discount * quantity
+                  | currency
+              }}
+            </div>
+          </div>
+
+          <ng-template #noDiscount>
+            <div class="text-xl font-semibold text-black">
+              {{ product.price | currency }}
+            </div>
+          </ng-template>
+
           <button
+            class="mt-4"
             [disabled]="quantity === quantityInCart"
             (click)="updateCart()"
             mat-flat-button
@@ -58,19 +99,36 @@
             <mat-icon>shopping_cart</mat-icon>
             {{ getButtonText() }}
           </button>
-
-          <mat-form-field appearance="outline" class="flex">
-            <mat-label>Quantity</mat-label>
-            <input matInput min="0" [(ngModel)]="quantity" type="number" />
-          </mat-form-field>
         </div>
 
-        <mat-divider></mat-divider>
+        <ng-template #notAvailableBtn>
+          <div class="flex-col gap-4 mt-6">
+            <mat-form-field appearance="outline" class="flex">
+              <mat-label>Quantity</mat-label>
+              <input
+                matInput
+                min="0"
+                disabled="true"
+                [(ngModel)]="quantity"
+                type="number"
+              />
+            </mat-form-field>
+            <div class="text-xl font-semibold text-green-200">
+              {{ product.price | currency }}
+            </div>
 
-        <p class="mt-6 text-gray-500">
-          {{ product.description }}
-        </p>
+            <button class="mt-4 bg-green-300" disabled="" mat-flat-button>
+              <mat-icon>shopping_cart</mat-icon>
+              {{ getButtonText() }}
+            </button>
+          </div>
+        </ng-template>
       </div>
     </div>
+    <app-related-products
+      [categoryId]="product.categoryId"
+      [currentProductId]="product.id"
+    >
+    </app-related-products>
   </div>
 </section>

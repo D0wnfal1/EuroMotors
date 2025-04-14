@@ -38,7 +38,7 @@ public class GetCarModelTests : BaseIntegrationTest
             faker.Date.Past(10).Year,
             null,
             BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel, 6),
+            new EngineSpec(6, FuelType.Diesel),
             null
         );
 

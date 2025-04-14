@@ -10,7 +10,6 @@ public sealed class CarModelResponse
     public string BodyType { get; set; }
     public float VolumeLiters { get; set; }
     public string FuelType { get; set; }
-    public int HorsePower { get; set; }
     public string Slug { get; set; }
     public string? ImagePath { get; set; }
     public CarModelResponse() { }

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250406150844_Crerate_Database")]
-    partial class Crerate_Database
+    [Migration("20250414173044_Create_Database")]
+    partial class Create_Database
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -88,9 +88,9 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnType("text")
                         .HasColumnName("image_path");
 
-                    b.Property<bool>("IsArchived")
+                    b.Property<bool>("IsAvailable")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_archived");
+                        .HasColumnName("is_available");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -479,10 +479,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
                                 .IsRequired()
                                 .HasColumnType("text")
                                 .HasColumnName("engine_spec_fuel_type");
-
-                            b1.Property<int>("HorsePower")
-                                .HasColumnType("integer")
-                                .HasColumnName("engine_spec_horse_power");
 
                             b1.Property<float>("VolumeLiters")
                                 .HasColumnType("real")

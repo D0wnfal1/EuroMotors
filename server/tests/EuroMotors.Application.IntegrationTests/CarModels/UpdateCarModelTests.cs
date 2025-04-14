@@ -17,8 +17,8 @@ public class UpdateCarModelTests : BaseIntegrationTest
     public static readonly TheoryData<UpdateCarModelCommand> InvalidCommands =
     [
         new(Guid.Empty, new Faker().Vehicle.Manufacturer(),
-            new Faker().Vehicle.Model(), null, null, null, null, null, null, null),
-        new(Guid.NewGuid(), string.Empty, string.Empty, null, null, null, null, null, null, null)
+            new Faker().Vehicle.Model(), null, null, null, null, null, null),
+        new(Guid.NewGuid(), string.Empty, string.Empty, null, null, null, null, null, null)
     ];
 
 
@@ -40,7 +40,7 @@ public class UpdateCarModelTests : BaseIntegrationTest
         // Arrange
         var faker = new Faker();
         var command = new UpdateCarModelCommand(Guid.NewGuid(), faker.Vehicle.Manufacturer(),
-            faker.Vehicle.Model(), null, null, null, null, null, null, null);
+            faker.Vehicle.Model(), null, null, null, null, null, null);
 
         // Act
         Result result = await Sender.Send(command);
@@ -60,12 +60,12 @@ public class UpdateCarModelTests : BaseIntegrationTest
             2020,
             null,
             BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel, 6),
+            new EngineSpec(6, FuelType.Diesel),
             null
         );
 
         var command = new UpdateCarModelCommand(carModelId, faker.Vehicle.Manufacturer(),
-            faker.Vehicle.Model(), 2020, null, BodyType.Sedan, null, null, null, null);
+            faker.Vehicle.Model(), 2020, null, BodyType.Sedan, null, null, null);
 
         // Act
         Result result = await Sender.Send(command);

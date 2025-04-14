@@ -140,7 +140,7 @@ export class AccountService {
 
   getAuthState() {
     return this.http.get<{ isAuthenticated: boolean }>(
-      this.baseUrl + '/users/auth-status',
+      this.baseUrl + '/auth/auth-status',
       { withCredentials: true }
     );
   }

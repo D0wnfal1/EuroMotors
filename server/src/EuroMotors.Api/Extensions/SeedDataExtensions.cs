@@ -36,15 +36,15 @@ public static class SeedDataExtensions
                     f.Date.Past(20).Year,
                     f.Random.Bool() ? (int?)f.Date.Past(10).Year : null,
                     f.PickRandom<BodyType>(),
-                    new EngineSpec(f.Random.Number(1, 5), f.PickRandom<FuelType>(), f.Random.Number(100, 500))
+                    new EngineSpec(f.Random.Number(1, 5), f.PickRandom<FuelType>())
                 )
             );
 
         List<CarModel>? carModels = faker.Generate(10);
 
 
-        const string sql = @"INSERT INTO car_models (id, brand, model, start_year, end_year, body_type, engine_spec_volume_liters, engine_spec_fuel_type, engine_spec_horse_power, slug, image_path) 
-                         VALUES (@Id, @Brand, @Model, @StartYear, @EndYear, @BodyType, @VolumeLiters, @FuelType, @HorsePower, @Slug, @ImagePath);";
+        const string sql = @"INSERT INTO car_models (id, brand, model, start_year, end_year, body_type, engine_spec_volume_liters, engine_spec_fuel_type, slug, image_path) 
+                         VALUES (@Id, @Brand, @Model, @StartYear, @EndYear, @BodyType, @VolumeLiters, @FuelType, @Slug, @ImagePath);";
 
         connection.Execute(sql, carModels.Select(c => new
         {
@@ -56,7 +56,6 @@ public static class SeedDataExtensions
             BodyType = c.BodyType.ToString(),
             c.EngineSpec.VolumeLiters,
             FuelType = c.EngineSpec.FuelType.ToString(),
-            c.EngineSpec.HorsePower,
             Slug = c.Slug.Value,
             c.ImagePath
         }));
@@ -81,14 +80,14 @@ public static class SeedDataExtensions
 
         List<Category>? categories = faker.Generate(10);
 
-        const string sql = @"INSERT INTO categories (id, name, is_archived, image_path, slug) 
-                         VALUES (@Id, @Name, @IsArchived, @ImagePath, @Slug);";
+        const string sql = @"INSERT INTO categories (id, name, is_available, image_path, slug) 
+                         VALUES (@Id, @Name, @IsAvailable, @ImagePath, @Slug);";
 
         connection.Execute(sql, categories.Select(c => new
         {
             c.Id,
             c.Name,
-            c.IsArchived,
+            c.IsAvailable,
             c.ImagePath,
             Slug = c.Slug.Value
         }));
@@ -128,7 +127,7 @@ public static class SeedDataExtensions
                 );
             });
 
-        List<Product> products = faker.Generate(10);
+        List<Product> products = faker.Generate(100);
 
         const string sql = """
                        INSERT INTO products 

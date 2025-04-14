@@ -3,7 +3,7 @@ using EuroMotors.Application.Products.CreateProduct;
 using EuroMotors.Application.Products.DeleteProduct;
 using EuroMotors.Application.Products.GetProductById;
 using EuroMotors.Application.Products.GetProducts;
-using EuroMotors.Application.Products.MarkAsNotAvailable;
+using EuroMotors.Application.Products.SetProductAvailability;
 using EuroMotors.Application.Products.UpdateProduct;
 using EuroMotors.Application.Products.UpdateProduct.UpdateProductStock;
 using EuroMotors.Domain.Abstractions;
@@ -86,9 +86,9 @@ public class ProductController : ControllerBase
     }
 
     [HttpPatch("{id}")]
-    public async Task<IActionResult> MarkAsNotAvailable(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> SetProductAvailability(Guid id, [FromBody] SetCategoryAvailabilityRequest request, CancellationToken cancellationToken)
     {
-        var command = new MarkAsNotAvailableCommand(id);
+        var command = new SetProductAvailabilityCommand(id, request.IsAvailable);
 
         Result result = await _sender.Send(command, cancellationToken);
 

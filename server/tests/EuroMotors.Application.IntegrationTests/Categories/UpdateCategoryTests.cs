@@ -16,8 +16,8 @@ public class UpdateCategoryTests : BaseIntegrationTest
 
     public static readonly TheoryData<UpdateCategoryCommand> InvalidCommands =
     [
-        new(Guid.Empty, new Faker().Music.Genre(), null),
-        new(Guid.NewGuid(), string.Empty, null),
+        new(Guid.Empty, new Faker().Music.Genre(), null, null),
+        new(Guid.NewGuid(), string.Empty, null, null),
         null
     ];
 
@@ -26,7 +26,7 @@ public class UpdateCategoryTests : BaseIntegrationTest
     {
         // Arrange
         var faker = new Faker();
-        var command = new UpdateCategoryCommand(Guid.NewGuid(), faker.Music.Genre(), null);
+        var command = new UpdateCategoryCommand(Guid.NewGuid(), faker.Music.Genre(), null, null);
 
         // Act
         Result result = await Sender.Send(command);
@@ -42,7 +42,7 @@ public class UpdateCategoryTests : BaseIntegrationTest
         var faker = new Faker();
         Guid CategoryId = await Sender.CreateCategoryAsync(faker.Music.Genre());
 
-        var command = new UpdateCategoryCommand(CategoryId, faker.Music.Genre(), null);
+        var command = new UpdateCategoryCommand(CategoryId, faker.Music.Genre(), null, null);
 
         // Act
         Result result = await Sender.Send(command);

@@ -73,7 +73,6 @@ export class CarmodelFormComponent implements OnInit {
       bodyType: ['', Validators.required],
       volumeLiters: ['', [Validators.required, Validators.min(0.1)]],
       fuelType: ['', Validators.required],
-      horsePower: ['', [Validators.required, Validators.min(1)]],
     });
   }
 
@@ -89,7 +88,6 @@ export class CarmodelFormComponent implements OnInit {
             bodyType: carModel.bodyType,
             volumeLiters: carModel.volumeLiters,
             fuelType: carModel.fuelType,
-            horsePower: carModel.horsePower,
           });
         },
         error: (error) => {
@@ -129,7 +127,6 @@ export class CarmodelFormComponent implements OnInit {
       this.carModelForm.get('volumeLiters')?.value
     );
     formData.append('fuelType', this.carModelForm.get('fuelType')?.value);
-    formData.append('horsePower', this.carModelForm.get('horsePower')?.value);
 
     if (this.selectedImage) {
       formData.append('image', this.selectedImage, this.selectedImage.name);

@@ -1,0 +1,142 @@
+<section class="max-w-lg mx-auto">
+  <h2 class="text-xl font-bold text-center mb-6 uppercase">
+    ENTER YOUR DELIVERY DETAILS
+  </h2>
+
+  <form [formGroup]="checkoutForm" (ngSubmit)="submitOrder()">
+    <div class="flex">
+      <mat-form-field appearance="outline" class="w-1/2 mr-2 mb-3">
+        <mat-label>First Name</mat-label>
+        <input matInput formControlName="firstName" placeholder="First Name" />
+        <mat-error *ngIf="checkoutForm.get('firstName')?.hasError('required')">
+          This field is required.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-1/2 ml-2 mb-3">
+        <mat-label>Last Name</mat-label>
+        <input matInput formControlName="lastName" placeholder="Last Name" />
+        <mat-error *ngIf="checkoutForm.get('lastName')?.hasError('required')">
+          This field is required.
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="w-full mb-3">
+      <mat-label>CITY</mat-label>
+      <input
+        matInput
+        formControlName="city"
+        placeholder="Select a city"
+        (input)="onCityInput()"
+      />
+      <mat-error *ngIf="checkoutForm.get('city')?.hasError('required')">
+        Select a city
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full mb-3">
+      <mat-label>DELIVERY METHOD</mat-label>
+      <mat-select
+        formControlName="deliveryMethod"
+        (selectionChange)="onDeliveryMethodChange($event.value)"
+      >
+        <mat-option *ngFor="let method of deliveryMethods" [value]="method">
+          {{ method | delivery }}
+        </mat-option>
+      </mat-select>
+      <mat-error
+        *ngIf="checkoutForm.get('deliveryMethod')?.hasError('required')"
+      >
+        Choose a delivery method
+      </mat-error>
+    </mat-form-field>
+
+    <ng-container
+      *ngIf="checkoutForm.get('deliveryMethod')?.value === deliveryMethods[1]"
+    >
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>SELECT DELIVERY METHOD</mat-label>
+        <input
+          type="text"
+          matInput
+          formControlName="warehouseQuery"
+          [matAutocomplete]="auto"
+          placeholder="Enter the Delivery Method"
+        />
+        <mat-autocomplete
+          #auto="matAutocomplete"
+          [displayWith]="displayWarehouse"
+        >
+          <mat-option
+            *ngFor="let warehouse of filteredWarehouses | async"
+            [value]="warehouse"
+            (onSelectionChange)="onWarehouseSelected(warehouse)"
+          >
+            {{ warehouse.description }}
+          </mat-option>
+          <mat-option *ngIf="isLoading" disabled>Loading...</mat-option>
+        </mat-autocomplete>
+        <mat-error
+          *ngIf="
+            checkoutForm.get('warehouseQuery')?.hasError('required') &&
+            checkoutForm.get('deliveryMethod')?.value === 'delivery'
+          "
+        >
+          Select warehouse
+        </mat-error>
+      </mat-form-field>
+
+      <p class="mb-6 text-sm text-gray-600">
+        Delivery cost according to Nova Poshta tariffs
+      </p>
+    </ng-container>
+
+    <mat-form-field appearance="outline" class="w-full mb-3">
+      <mat-label>PHONE NUMBER</mat-label>
+      <input matInput formControlName="phoneNumber" placeholder="+380" />
+      <mat-error *ngIf="checkoutForm.get('phoneNumber')?.hasError('required')">
+        Enter a phone number
+      </mat-error>
+      <mat-error *ngIf="checkoutForm.get('phoneNumber')?.hasError('pattern')">
+        Please enter a valid phone number.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full mb-3">
+      <mat-label>E-MAIL</mat-label>
+      <input matInput formControlName="email" placeholder="example@mail.com" />
+      <mat-error *ngIf="checkoutForm.get('email')?.hasError('required')">
+        Enter email
+      </mat-error>
+      <mat-error *ngIf="checkoutForm.get('email')?.hasError('email')">
+        Please enter a valid email address.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full mb-4">
+      <mat-label>PAYMENT METHOD</mat-label>
+      <mat-select formControlName="paymentMethod">
+        <mat-option *ngFor="let method of paymentMethods" [value]="method">
+          {{ method | payment }}
+        </mat-option>
+      </mat-select>
+      <mat-error
+        *ngIf="checkoutForm.get('paymentMethod')?.hasError('required')"
+      >
+        Choose a payment method
+      </mat-error>
+    </mat-form-field>
+
+    <div class="flex justify-center">
+      <button
+        mat-raised-button
+        type="submit"
+        [disabled]="checkoutForm.invalid"
+        class="bg-green-500 text-white px-8 py-2 rounded-full w-32 uppercase font-medium"
+      >
+        BUY
+      </button>
+    </div>
+  </form>
+</section>

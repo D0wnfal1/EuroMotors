@@ -21,7 +21,7 @@ public class CreateProductTests : BaseIntegrationTest
         // Arrange
         var faker = new Faker();
         Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
-        Guid carModelId = await Sender.CreateCarModelAsync(faker.Vehicle.Manufacturer(), faker.Vehicle.Model(), 2020, null, BodyType.Sedan, new EngineSpec(6, FuelType.Diesel, 6), null);
+        Guid carModelId = await Sender.CreateCarModelAsync(faker.Vehicle.Manufacturer(), faker.Vehicle.Model(), 2020, null, BodyType.Sedan, new EngineSpec(6, FuelType.Diesel), null);
 
         var command = new CreateProductCommand(
             faker.Commerce.ProductName(),
@@ -48,7 +48,7 @@ public class CreateProductTests : BaseIntegrationTest
         // Arrange
         var faker = new Faker();
         var categoryId = Guid.NewGuid();
-        Guid carModelId = await Sender.CreateCarModelAsync(faker.Vehicle.Manufacturer(), faker.Vehicle.Model(), 2020, null, BodyType.Sedan, new EngineSpec(6, FuelType.Diesel, 6), null);
+        Guid carModelId = await Sender.CreateCarModelAsync(faker.Vehicle.Manufacturer(), faker.Vehicle.Model(), 2020, null, BodyType.Sedan, new EngineSpec(6, FuelType.Diesel), null);
 
         var command = new CreateProductCommand(
             faker.Commerce.ProductName(),
@@ -105,7 +105,7 @@ public class CreateProductTests : BaseIntegrationTest
             2020,
             null,
             BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel, 6),
+            new EngineSpec(6, FuelType.Diesel),
             null
         );
         var command = new CreateProductCommand(

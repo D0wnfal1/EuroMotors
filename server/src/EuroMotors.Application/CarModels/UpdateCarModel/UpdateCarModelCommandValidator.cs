@@ -31,10 +31,5 @@ internal sealed class UpdateCarModelCommandValidator : AbstractValidator<UpdateC
         RuleFor(c => c.FuelType)
             .IsInEnum()
             .When(c => c.FuelType.HasValue);
-
-        RuleFor(c => c.HorsePower)
-            .GreaterThan(0)
-            .LessThanOrEqualTo(2000)
-            .When(c => c.HorsePower.HasValue);
     }
 }

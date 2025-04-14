@@ -14,7 +14,7 @@ public class CarModelTests : BaseTest
         int startYear = 2020;
         int? endYear = null;
         BodyType bodyType = BodyType.Sedan;
-        var engineSpec = new EngineSpec(6, FuelType.Diesel, 300);
+        var engineSpec = new EngineSpec(6, FuelType.Diesel);
 
         // Act
         var carModel = CarModel.Create(CarModelData.Brand, CarModelData.Model, startYear, endYear, bodyType, engineSpec);
@@ -31,7 +31,7 @@ public class CarModelTests : BaseTest
         int startYear = 2020;
         int? endYear = null;
         BodyType bodyType = BodyType.Sedan;
-        var engineSpec = new EngineSpec(6, FuelType.Diesel, 300);
+        var engineSpec = new EngineSpec(6, FuelType.Diesel);
 
         // Act
         var carModel = CarModel.Create(CarModelData.Brand, CarModelData.Model, startYear, endYear, bodyType, engineSpec);
@@ -58,7 +58,7 @@ public class CarModelTests : BaseTest
         int startYear = 2020;
         int? endYear = null;
         BodyType bodyType = BodyType.Sedan;
-        var engineSpec = new EngineSpec(6, FuelType.Diesel, 300);
+        var engineSpec = new EngineSpec(6, FuelType.Diesel);
 
         // Act
         var carModel = CarModel.Create(CarModelData.Brand, CarModelData.Model, startYear, endYear, bodyType, engineSpec);

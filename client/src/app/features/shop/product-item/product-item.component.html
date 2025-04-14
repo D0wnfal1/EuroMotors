@@ -1,9 +1,24 @@
 <mat-card
   *ngIf="product"
-  appearance="raised"
+  appearance="outlined"
   routerLink="/shop/{{ product.id }}"
-  class="product-card"
+  class="border border-green-300 rounded-xl shadow-sm p-4 flex flex-col items-center gap-2 w-full sm:w-64 transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg h-full"
 >
+  <mat-card-content
+    class="mt-2 flex flex-col items-center min-h-[80px] justify-between"
+  >
+    <div
+      class="text-center w-full text-xs text-gray-500 tracking-wider uppercase"
+    >
+      {{ product.vendorCode }}
+    </div>
+    <div
+      class="text-center w-full text-base font-bold uppercase text-gray-800 line-clamp-2 leading-tight"
+    >
+      {{ product.name }}
+    </div>
+  </mat-card-content>
+
   <div class="image-container">
     <img
       mat-card-image
@@ -22,19 +37,68 @@
     />
   </ng-template>
 
-  <mat-card-content class="mt-2">
-    <h2 class="text-sm font-semibold uppercase">{{ product.name }}</h2>
-    <p class="font-light">{{ product.price | currency }}</p>
-  </mat-card-content>
-
-  <mat-card-actions (click)="$event.stopPropagation()">
-    <button
-      mat-stroked-button
-      class="w-full"
-      (click)="cartService.addItemToCart(product.id)"
+  <div
+    class="flex flex-col justify-between items-center flex-grow w-full min-h-[150px]"
+  >
+    <div
+      *ngIf="product.isAvailable; else isNotAvailable"
+      class="flex flex-col items-center text-center justify-center gap-2 mt-2 min-h-[100px]"
     >
-      <mat-icon>add_shopping_cart</mat-icon>
-      Add to cart
-    </button>
-  </mat-card-actions>
+      <div class="text-sm text-green-700">Is Available</div>
+
+      <div
+        *ngIf="product.discount > 0; else noDiscount"
+        class="flex flex-col items-center"
+      >
+        <div class="text-sm text-gray-500 line-through">
+          {{ product.price | currency }}
+        </div>
+        <div class="text-xl font-semibold text-red-600">
+          {{ product.price - product.discount | currency }}
+        </div>
+      </div>
+
+      <ng-template #noDiscount>
+        <div class="flex flex-col items-center -mt-2">
+          <div class="text-sm text-transparent line-through select-none">
+            {{ product.price | currency }}
+          </div>
+          <div class="text-xl font-semibold text-black">
+            {{ product.price | currency }}
+          </div>
+        </div>
+      </ng-template>
+
+      <mat-card-actions
+        class="w-full mt-auto"
+        (click)="$event.stopPropagation()"
+      >
+        <button
+          mat-stroked-button
+          class="w-full bg-lime-500 hover:bg-lime-600 text-white font-semibold rounded-lg py-2"
+          (click)="cartService.addItemToCart(product.id)"
+        >
+          <mat-icon>add_shopping_cart</mat-icon>
+          Add to cart
+        </button>
+      </mat-card-actions>
+    </div>
+
+    <ng-template #isNotAvailable>
+      <div class="text-sm text-red-700 mt-2 translate-y-[-2px]">
+        Is Not Available
+      </div>
+      <div class="text-xl font-semibold text-green-200">
+        {{ product.price | currency }}
+      </div>
+      <button
+        mat-stroked-button
+        class="w-8/12 text-green-200 bg-lime-500 hover:bg-lime-600 font-semibold mt-3 rounded-lg py-3 my-2"
+        disabled
+      >
+        <mat-icon>add_shopping_cart</mat-icon>
+        Add to cart
+      </button>
+    </ng-template>
+  </div>
 </mat-card>

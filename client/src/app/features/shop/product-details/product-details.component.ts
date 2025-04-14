@@ -6,11 +6,11 @@ import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { MatDivider } from '@angular/material/divider';
 import { CartService } from '../../../core/services/cart.service';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../../core/services/product.service';
 import { ImageService } from '../../../core/services/image.service';
+import { RelatedProductsComponent } from '../related-products/related-products.component';
 
 @Component({
   selector: 'app-product-details',
@@ -23,8 +23,8 @@ import { ImageService } from '../../../core/services/image.service';
     MatFormField,
     MatInput,
     MatLabel,
-    MatDivider,
     FormsModule,
+    RelatedProductsComponent,
   ],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.scss',

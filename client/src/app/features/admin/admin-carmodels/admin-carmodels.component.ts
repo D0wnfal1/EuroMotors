@@ -43,7 +43,6 @@ export class AdminCarmodelsComponent implements OnInit {
     'bodyType',
     'volumeLiters',
     'fuelType',
-    'horsePower',
     'actions',
   ];
 

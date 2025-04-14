@@ -85,9 +85,9 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnType("text")
                         .HasColumnName("image_path");
 
-                    b.Property<bool>("IsArchived")
+                    b.Property<bool>("IsAvailable")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_archived");
+                        .HasColumnName("is_available");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -476,10 +476,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
                                 .IsRequired()
                                 .HasColumnType("text")
                                 .HasColumnName("engine_spec_fuel_type");
-
-                            b1.Property<int>("HorsePower")
-                                .HasColumnType("integer")
-                                .HasColumnName("engine_spec_horse_power");
 
                             b1.Property<float>("VolumeLiters")
                                 .HasColumnType("real")
