@@ -34,17 +34,16 @@ public static class SeedDataExtensions
                     f.Vehicle.Manufacturer(),
                     f.Vehicle.Model(),
                     f.Date.Past(20).Year,
-                    f.Random.Bool() ? (int?)f.Date.Past(10).Year : null,
                     f.PickRandom<BodyType>(),
                     new EngineSpec(f.Random.Number(1, 5), f.PickRandom<FuelType>())
                 )
             );
 
-        List<CarModel>? carModels = faker.Generate(10);
+        List<CarModel>? carModels = faker.Generate(30);
 
 
-        const string sql = @"INSERT INTO car_models (id, brand, model, start_year, end_year, body_type, engine_spec_volume_liters, engine_spec_fuel_type, slug, image_path) 
-                         VALUES (@Id, @Brand, @Model, @StartYear, @EndYear, @BodyType, @VolumeLiters, @FuelType, @Slug, @ImagePath);";
+        const string sql = @"INSERT INTO car_models (id, brand, model, start_year, body_type, engine_spec_volume_liters, engine_spec_fuel_type, slug, image_path) 
+                         VALUES (@Id, @Brand, @Model, @StartYear, @BodyType, @VolumeLiters, @FuelType, @Slug, @ImagePath);";
 
         connection.Execute(sql, carModels.Select(c => new
         {
@@ -52,7 +51,6 @@ public static class SeedDataExtensions
             c.Brand,
             c.Model,
             c.StartYear,
-            c.EndYear,
             BodyType = c.BodyType.ToString(),
             c.EngineSpec.VolumeLiters,
             FuelType = c.EngineSpec.FuelType.ToString(),
@@ -120,7 +118,7 @@ public static class SeedDataExtensions
         ])
     };
 
-        foreach (var (name, subcategories) in parentCategories)
+        foreach ((string name, List<string> subcategories) in parentCategories)
         {
             var parent = Category.Create(name);
             allCategories.Add(parent);

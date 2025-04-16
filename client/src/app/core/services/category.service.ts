@@ -4,7 +4,6 @@ import { BehaviorSubject, Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Category } from '../../shared/models/category';
 import { PaginationParams } from '../../shared/models/paginationParams';
-import { Pagination } from '../../shared/models/pagination';
 
 @Injectable({
   providedIn: 'root',
@@ -39,6 +38,12 @@ export class CategoryService {
     return this.http.get<Category>(`${this.baseUrl}/categories/${id}`, {
       withCredentials: true,
     });
+  }
+
+  getParentCategories(): Observable<Category[]> {
+    return this.http.get<Category[]>(
+      `${this.baseUrl}/categories/parentCategories`
+    );
   }
 
   getSubcategories(parentCategoryId: string): Observable<Category[]> {

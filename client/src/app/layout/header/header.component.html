@@ -12,7 +12,29 @@
       <a routerLink="/shop" routerLinkActive="active">Shop</a>
     </nav>
 
-    <div class="flex gap-3 align-middle">
+    <div class="flex gap-3">
+      <mat-card *ngIf="selectedCar">
+        <div class="flex items-center justify-between">
+          <div class="flex flex-col p-2">
+            <span class="font-medium leading-tight text-sm">
+              {{ selectedCar.brand }} {{ selectedCar.model }}
+            </span>
+            <span class="text-gray-600 text-xs leading-tight">
+              {{ selectedCar.year }} | {{ selectedCar.engineSpec }}
+            </span>
+          </div>
+          <button
+            mat-icon-button
+            color="warn"
+            (click)="clearCarSelection()"
+            matTooltip="Remove car selection"
+            class="-mb-0.5"
+          >
+            <mat-icon class="mb-1">close</mat-icon>
+          </button>
+        </div>
+      </mat-card>
+
       <ng-container *ngIf="accountService.isAdmin()">
         <button mat-stroked-button routerLink="/admin">Admin</button>
       </ng-container>
@@ -99,6 +121,15 @@
   <button mat-menu-item class="px-3" routerLink="/orders">
     <mat-icon>history</mat-icon>
     My orders
+  </button>
+  <button
+    *ngIf="selectedCar"
+    mat-menu-item
+    class="px-3"
+    routerLink="/car-selection"
+  >
+    <mat-icon>directions_car</mat-icon>
+    My car
   </button>
   <mat-divider></mat-divider>
   <button mat-menu-item class="px-3" (click)="logout()">

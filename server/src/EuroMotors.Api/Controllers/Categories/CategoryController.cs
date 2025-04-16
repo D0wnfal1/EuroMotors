@@ -3,6 +3,7 @@ using EuroMotors.Application.Categories.CreateCategory;
 using EuroMotors.Application.Categories.DeleteCategory;
 using EuroMotors.Application.Categories.GetByIdCategory;
 using EuroMotors.Application.Categories.GetCategories;
+using EuroMotors.Application.Categories.GetParentCategories;
 using EuroMotors.Application.Categories.GetSubcategories;
 using EuroMotors.Application.Categories.SetCategoryAvailability;
 using EuroMotors.Application.Categories.UpdateCategory;
@@ -42,6 +43,16 @@ public class CategoryController : ControllerBase
         var query = new GetCategoryByIdQuery(id);
 
         Result<CategoryResponse> result = await _sender.Send(query, cancellationToken);
+
+        return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
+    }
+
+    [HttpGet("parentCategories")]
+    public async Task<IActionResult> GetParentCategories(CancellationToken cancellationToken)
+    {
+        var query = new GetParentCategoriesQuery();
+
+        Result<List<CategoryResponse>> result = await _sender.Send(query, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
     }

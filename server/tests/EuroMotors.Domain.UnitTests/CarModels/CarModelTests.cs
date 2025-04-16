@@ -12,12 +12,11 @@ public class CarModelTests : BaseTest
     {
         // Arrange
         int startYear = 2020;
-        int? endYear = null;
         BodyType bodyType = BodyType.Sedan;
         var engineSpec = new EngineSpec(6, FuelType.Diesel);
 
         // Act
-        var carModel = CarModel.Create(CarModelData.Brand, CarModelData.Model, startYear, endYear, bodyType, engineSpec);
+        var carModel = CarModel.Create(CarModelData.Brand, CarModelData.Model, startYear, bodyType, engineSpec);
 
         // Assert
         CarModelCreatedDomainEvent domainEvent = AssertDomainEventWasPublished<CarModelCreatedDomainEvent>(carModel);
@@ -29,12 +28,11 @@ public class CarModelTests : BaseTest
     {
         // Arrange
         int startYear = 2020;
-        int? endYear = null;
         BodyType bodyType = BodyType.Sedan;
         var engineSpec = new EngineSpec(6, FuelType.Diesel);
 
         // Act
-        var carModel = CarModel.Create(CarModelData.Brand, CarModelData.Model, startYear, endYear, bodyType, engineSpec);
+        var carModel = CarModel.Create(CarModelData.Brand, CarModelData.Model, startYear, bodyType, engineSpec);
 
         string newBrand = "Honda";
         string newModel = "Civic";
@@ -56,12 +54,11 @@ public class CarModelTests : BaseTest
     {
         // Arrange
         int startYear = 2020;
-        int? endYear = null;
         BodyType bodyType = BodyType.Sedan;
         var engineSpec = new EngineSpec(6, FuelType.Diesel);
 
         // Act
-        var carModel = CarModel.Create(CarModelData.Brand, CarModelData.Model, startYear, endYear, bodyType, engineSpec);
+        var carModel = CarModel.Create(CarModelData.Brand, CarModelData.Model, startYear, bodyType, engineSpec);
 
         string newUrl = new("https://example.com/image.jpg");
 

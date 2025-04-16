@@ -6,12 +6,12 @@ using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Categories.GetByIdCategory;
 using EuroMotors.Domain.Abstractions;
 
-namespace EuroMotors.Application.Categories.GetSubcategories;
+namespace EuroMotors.Application.Categories.GetParentCategories;
 
-internal sealed class GetSubcategoriesQueryQueryHandler(IDbConnectionFactory dbConnectionFactory)
-    : IQueryHandler<GetSubcategoriesQuery, List<CategoryResponse>>
+internal sealed class GetParentCategoriesQueryHandler(IDbConnectionFactory dbConnectionFactory)
+    : IQueryHandler<GetParentCategoriesQuery, List<CategoryResponse>>
 {
-    public async Task<Result<List<CategoryResponse>>> Handle(GetSubcategoriesQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<CategoryResponse>>> Handle(GetParentCategoriesQuery request, CancellationToken cancellationToken)
     {
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
@@ -25,15 +25,10 @@ internal sealed class GetSubcategoriesQueryQueryHandler(IDbConnectionFactory dbC
                                 parent_category_id AS {nameof(CategoryResponse.ParentCategoryId)},
                                 slug AS {nameof(CategoryResponse.Slug)}
                             FROM categories
-                            WHERE parent_category_id = @ParentCategoryId
+                            WHERE parent_category_id IS NULL
                         """);
 
-        var parameters = new Dictionary<string, object>
-        {
-            { "ParentCategoryId", request.ParentCategoryId }
-        };
-
-        List<CategoryResponse> categories = (await connection.QueryAsync<CategoryResponse>(sql.ToString(), parameters)).AsList();
+        List<CategoryResponse> categories = (await connection.QueryAsync<CategoryResponse>(sql.ToString())).AsList();
 
         return Result.Success(categories);
     }

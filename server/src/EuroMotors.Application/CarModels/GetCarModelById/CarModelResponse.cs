@@ -6,7 +6,6 @@ public sealed class CarModelResponse
     public string Brand { get; set; }
     public string Model { get; set; }
     public int StartYear { get; set; }
-    public int? EndYear { get; set; }
     public string BodyType { get; set; }
     public float VolumeLiters { get; set; }
     public string FuelType { get; set; }

@@ -11,7 +11,7 @@ public sealed class CreateCarModelRequest
     public string Model { get; set; }
     [JsonRequired]
     public int StartYear { get; set; }
-    public int? EndYear { get; set; }
+
     [JsonRequired]
     public BodyType BodyType { get; set; }
 

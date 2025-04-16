@@ -39,7 +39,6 @@ public class DeleteProductTests : BaseIntegrationTest
             faker.Vehicle.Manufacturer(),
             faker.Vehicle.Model(),
             2020,
-            null,
             BodyType.Sedan,
             new EngineSpec(6, FuelType.Diesel),
             null

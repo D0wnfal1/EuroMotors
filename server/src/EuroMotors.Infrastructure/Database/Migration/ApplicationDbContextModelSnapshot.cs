@@ -41,10 +41,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnType("character varying(100)")
                         .HasColumnName("brand");
 
-                    b.Property<int?>("EndYear")
-                        .HasColumnType("integer")
-                        .HasColumnName("end_year");
-
                     b.Property<string>("ImagePath")
                         .HasColumnType("text")
                         .HasColumnName("image_path");

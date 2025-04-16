@@ -36,7 +36,6 @@ public class GetCarModelTests : BaseIntegrationTest
             faker.Vehicle.Manufacturer(),
             faker.Vehicle.Model(),
             faker.Date.Past(10).Year,
-            null,
             BodyType.Sedan,
             new EngineSpec(6, FuelType.Diesel),
             null

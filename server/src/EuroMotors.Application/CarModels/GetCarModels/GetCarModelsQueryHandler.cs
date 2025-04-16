@@ -23,7 +23,6 @@ internal sealed class GetCarModelsQueryHandler(IDbConnectionFactory dbConnection
                 brand AS {nameof(CarModelResponse.Brand)},
                 model AS {nameof(CarModelResponse.Model)},
                 start_year AS {nameof(CarModelResponse.StartYear)},
-                end_year AS {nameof(CarModelResponse.EndYear)},
                 body_type AS {nameof(CarModelResponse.BodyType)},
                 engine_spec_volume_liters AS {nameof(CarModelResponse.VolumeLiters)},
                 engine_spec_fuel_type AS {nameof(CarModelResponse.FuelType)},

@@ -27,7 +27,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     brand = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     model = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     start_year = table.Column<int>(type: "integer", nullable: false),
-                    end_year = table.Column<int>(type: "integer", nullable: true),
                     body_type = table.Column<string>(type: "text", nullable: false),
                     engine_spec_volume_liters = table.Column<float>(type: "real", nullable: false),
                     engine_spec_fuel_type = table.Column<string>(type: "text", nullable: false),

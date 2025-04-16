@@ -17,7 +17,7 @@ public class CreateCarModelTests : BaseIntegrationTest
     public async Task Should_CreateCarModel_WhenCommandIsValid()
     {
         // Arrange
-        var command = new CreateCarModelCommand("Car Brand", "Car Model", 2020, null, BodyType.Sedan, new EngineSpec(6, FuelType.Diesel), null);
+        var command = new CreateCarModelCommand("Car Brand", "Car Model", 2020, BodyType.Sedan, new EngineSpec(6, FuelType.Diesel), null);
 
         // Act
         Result<Guid> result = await Sender.Send(command);
@@ -31,7 +31,7 @@ public class CreateCarModelTests : BaseIntegrationTest
     public async Task Should_ReturnFailure_WhenCommandIsNotValid()
     {
         // Arrange
-        var command = new CreateCarModelCommand("Car Brand", "Car Model", 0, null, BodyType.Sedan, new EngineSpec(6, FuelType.Diesel), null);
+        var command = new CreateCarModelCommand("Car Brand", "Car Model", 0, BodyType.Sedan, new EngineSpec(6, FuelType.Diesel), null);
 
         // Act
         Result<Guid> result = await Sender.Send(command);

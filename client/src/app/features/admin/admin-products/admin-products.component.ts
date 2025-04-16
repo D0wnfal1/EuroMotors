@@ -90,7 +90,8 @@ export class AdminProductsComponent implements OnInit {
   }
 
   getCategoryName(categoryId: string): string {
-    return this.categories.find((c) => c.id === categoryId)?.name || '—';
+    const category = this.categories.find((cm) => cm.id === categoryId);
+    return category ? `${category.name}` : '—';
   }
 
   getCarModelName(carModelId: string): string {

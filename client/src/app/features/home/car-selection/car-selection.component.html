@@ -1,0 +1,192 @@
+<div class="container mx-auto p-4 max-w-2xl">
+  <mat-card class="mb-6">
+    <mat-card-header>
+      <mat-card-title class="text-xl font-bold mb-4">
+        Car Selection
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="carSelectionForm" (ngSubmit)="saveSelection()">
+        <mat-stepper linear #stepper class="mb-4">
+          <mat-step
+            [stepControl]="carSelectionForm.get('brand')!"
+            label="Select Brand"
+          >
+            <div class="p-4">
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-label>Brand</mat-label>
+                <mat-select formControlName="brand">
+                  <mat-option *ngFor="let brand of brands" [value]="brand">
+                    {{ brand }}
+                  </mat-option>
+                </mat-select>
+                <mat-error
+                  *ngIf="carSelectionForm.get('brand')?.hasError('required')"
+                >
+                  Brand is required
+                </mat-error>
+              </mat-form-field>
+              <div class="flex justify-end mt-4">
+                <button
+                  mat-button
+                  matStepperNext
+                  [disabled]="!carSelectionForm.get('brand')?.valid"
+                  type="button"
+                  class="bg-blue-500 text-white"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </mat-step>
+
+          <mat-step
+            [stepControl]="carSelectionForm.get('model')!"
+            label="Select Model"
+          >
+            <div class="p-4">
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-label>Model</mat-label>
+                <mat-select formControlName="model">
+                  <mat-option *ngFor="let model of models" [value]="model">
+                    {{ model }}
+                  </mat-option>
+                </mat-select>
+                <mat-error
+                  *ngIf="carSelectionForm.get('model')?.hasError('required')"
+                >
+                  Model is required
+                </mat-error>
+              </mat-form-field>
+              <div class="flex justify-between mt-4">
+                <button mat-button matStepperPrevious type="button">
+                  Back
+                </button>
+                <button
+                  mat-button
+                  matStepperNext
+                  [disabled]="!carSelectionForm.get('model')?.valid"
+                  type="button"
+                  class="bg-blue-500 text-white"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </mat-step>
+
+          <mat-step
+            [stepControl]="carSelectionForm.get('year')!"
+            label="Select Year"
+          >
+            <div class="p-4">
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-label>Year</mat-label>
+                <mat-select formControlName="year">
+                  <mat-option *ngFor="let year of years" [value]="year">
+                    {{ year }}
+                  </mat-option>
+                </mat-select>
+                <mat-error
+                  *ngIf="carSelectionForm.get('year')?.hasError('required')"
+                >
+                  Year is required
+                </mat-error>
+              </mat-form-field>
+              <div class="flex justify-between mt-4">
+                <button mat-button matStepperPrevious type="button">
+                  Back
+                </button>
+                <button
+                  mat-button
+                  matStepperNext
+                  [disabled]="!carSelectionForm.get('year')?.valid"
+                  type="button"
+                  class="bg-blue-500 text-white"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </mat-step>
+
+          <mat-step
+            [stepControl]="carSelectionForm.get('bodyType')!"
+            label="Select Body Type"
+          >
+            <div class="p-4">
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-label>Body Type</mat-label>
+                <mat-select formControlName="bodyType">
+                  <mat-option
+                    *ngFor="let bodyType of bodyTypes"
+                    [value]="bodyType"
+                  >
+                    {{ bodyType }}
+                  </mat-option>
+                </mat-select>
+                <mat-error
+                  *ngIf="carSelectionForm.get('bodyType')?.hasError('required')"
+                >
+                  Body type is required
+                </mat-error>
+              </mat-form-field>
+              <div class="flex justify-between mt-4">
+                <button mat-button matStepperPrevious type="button">
+                  Back
+                </button>
+                <button
+                  mat-button
+                  matStepperNext
+                  [disabled]="!carSelectionForm.get('bodyType')?.valid"
+                  type="button"
+                  class="bg-blue-500 text-white"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </mat-step>
+
+          <mat-step
+            [stepControl]="carSelectionForm.get('engineSpec')!"
+            label="Engine Specifications"
+          >
+            <div class="p-4">
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-label>Engine Specification</mat-label>
+                <mat-select formControlName="engineSpec">
+                  <mat-option *ngFor="let spec of engineSpecs" [value]="spec">
+                    {{ spec }}
+                  </mat-option>
+                </mat-select>
+                <mat-error
+                  *ngIf="
+                    carSelectionForm.get('engineSpec')?.hasError('required')
+                  "
+                >
+                  Engine specification is required
+                </mat-error>
+              </mat-form-field>
+
+              <div class="flex justify-between mt-4">
+                <button mat-button matStepperPrevious type="button">
+                  Back
+                </button>
+                <button
+                  mat-button
+                  type="submit"
+                  [disabled]="!carSelectionForm.valid"
+                  class="bg-green-500 text-white"
+                >
+                  Save Selection
+                </button>
+              </div>
+            </div>
+          </mat-step>
+        </mat-stepper>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

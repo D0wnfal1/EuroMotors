@@ -3,6 +3,7 @@ using EuroMotors.Application.CarModels.CreateCarModel;
 using EuroMotors.Application.CarModels.DeleteCarModel;
 using EuroMotors.Application.CarModels.GetCarModelById;
 using EuroMotors.Application.CarModels.GetCarModels;
+using EuroMotors.Application.CarModels.GetCarModelSelection;
 using EuroMotors.Application.CarModels.UpdateCarModel;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
@@ -45,6 +46,16 @@ public class CarModelController : ControllerBase
         return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
 
+    [HttpGet("selection")]
+    public async Task<IActionResult> GetCarSelection([FromQuery] SelectCarModelRequest request, CancellationToken cancellationToken)
+    {
+        var query = new GetCarModelSelectionQuery(request.Brand, request.Model, request.StartYear, request.BodyType);
+
+        Result<CarModelSelectionResponse> result = await _sender.Send(query, cancellationToken);
+
+        return result.IsSuccess ? Ok(result.Value) : NotFound();
+    }
+
     [HttpPost]
     [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> CreateCarModel([FromForm] CreateCarModelRequest request, CancellationToken cancellationToken)
@@ -55,7 +66,6 @@ public class CarModelController : ControllerBase
             request.Brand,
             request.Model,
             request.StartYear,
-            request.EndYear,
             request.BodyType,
             engineSpec,
             request.ImagePath
@@ -79,7 +89,6 @@ public class CarModelController : ControllerBase
             request.Brand,
             request.Model,
             request.StartYear,
-            request.EndYear,
             request.BodyType,
             request.VolumeLiters,
             request.FuelType,

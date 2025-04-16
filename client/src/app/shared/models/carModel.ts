@@ -5,7 +5,6 @@ export type CarModel = {
   brand: string;
   model: string;
   startYear: number;
-  endYear?: number;
   bodyType: BodyType;
   volumeLiters: number;
   fuelType: FuelType;
@@ -32,3 +31,10 @@ export enum BodyType {
   Van = 'Van',
   Pickup = 'Pickup',
 }
+
+export type CarSelectionFilter = {
+  brand?: string;
+  model?: string;
+  startYear?: number;
+  bodyType?: BodyType;
+};

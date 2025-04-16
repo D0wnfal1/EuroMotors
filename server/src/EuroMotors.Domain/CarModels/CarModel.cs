@@ -16,7 +16,6 @@ public class CarModel : Entity
     public string Model { get; private set; } = null!;
 
     public int StartYear { get; private set; }
-    public int? EndYear { get; private set; }
 
     public BodyType BodyType { get; private set; }
 
@@ -32,7 +31,6 @@ public class CarModel : Entity
         string brand,
         string model,
         int startYear,
-        int? endYear,
         BodyType bodyType,
         EngineSpec engineSpec)
     {
@@ -42,7 +40,6 @@ public class CarModel : Entity
             Brand = brand,
             Model = model,
             StartYear = startYear,
-            EndYear = endYear,
             BodyType = bodyType,
             EngineSpec = engineSpec,
             Slug = Slug.GenerateSlug($"{brand}-{model}")
@@ -53,7 +50,7 @@ public class CarModel : Entity
         return car;
     }
 
-    public void Update(string brand, string model, int? startYear = null, int? endYear = null, BodyType? bodyType = null)
+    public void Update(string brand, string model, int? startYear = null, BodyType? bodyType = null)
     {
         if (!string.IsNullOrWhiteSpace(brand) && Brand != brand)
         {
@@ -73,12 +70,6 @@ public class CarModel : Entity
         {
             StartYear = startYear.Value;
             RaiseDomainEvent(new CarModelStartYearChangedDomainEvent(Id, StartYear));
-        }
-
-        if (endYear.HasValue && endYear != EndYear)
-        {
-            EndYear = endYear.Value;
-            RaiseDomainEvent(new CarModelEndYearChangedDomainEvent(Id, EndYear));
         }
 
         if (bodyType.HasValue && bodyType != BodyType)

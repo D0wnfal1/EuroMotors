@@ -83,7 +83,7 @@ public class CreateProductCommandHandlerTests
             50);
 
         _categoryRepository.GetByIdAsync(command.CategoryId, CancellationToken.None).Returns(Category.Create("Test Name"));
-        _carModelRepository.GetByIdAsync(command.CarModelId, CancellationToken.None).Returns(CarModel.Create("Test Brand", "Test CarModel", 2020, null, BodyType.Sedan, new EngineSpec(6, FuelType.Diesel)));
+        _carModelRepository.GetByIdAsync(command.CarModelId, CancellationToken.None).Returns(CarModel.Create("Test Brand", "Test CarModel", 2020, BodyType.Sedan, new EngineSpec(6, FuelType.Diesel)));
 
         Result<Guid> result = await _handler.Handle(command, default);
 

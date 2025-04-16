@@ -37,9 +37,9 @@ internal static class CommandHelpers
         return result.Value;
     }
 
-    public static async Task<Guid> CreateCarModelAsync(this ISender sender, string brand, string model, int startYear, int? endYear, BodyType bodyType, EngineSpec engineSpec, IFormFile? image = null)
+    public static async Task<Guid> CreateCarModelAsync(this ISender sender, string brand, string model, int startYear, BodyType bodyType, EngineSpec engineSpec, IFormFile? image = null)
     {
-        var createCarModelCommand = new CreateCarModelCommand(brand, model, startYear, endYear, bodyType, engineSpec, image);
+        var createCarModelCommand = new CreateCarModelCommand(brand, model, startYear, bodyType, engineSpec, image);
         Result<Guid> result = await sender.Send(createCarModelCommand);
         result.IsSuccess.ShouldBeTrue();
         return result.Value;

@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { CarModel } from '../../shared/models/carModel';
+import { CarModel, CarSelectionFilter } from '../../shared/models/carModel';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, map } from 'rxjs';
 import { PaginationParams } from '../../shared/models/paginationParams';
 
 @Injectable({
@@ -15,6 +15,20 @@ export class CarmodelService {
   carModels$ = this.carModelsSubject.asObservable();
   private totalItemsSubject = new BehaviorSubject<number>(0);
   totalItems$ = this.totalItemsSubject.asObservable();
+
+  private brandsSubject = new BehaviorSubject<string[]>([]);
+  private modelsSubject = new BehaviorSubject<string[]>([]);
+  private yearsSubject = new BehaviorSubject<number[]>([]);
+  private bodyTypesSubject = new BehaviorSubject<string[]>([]);
+  private engineSpecsSubject = new BehaviorSubject<string[]>([]);
+
+  public carSelectionChanged = new BehaviorSubject<boolean>(false);
+
+  public brands$ = this.brandsSubject.asObservable();
+  public models$ = this.modelsSubject.asObservable();
+  public years$ = this.yearsSubject.asObservable();
+  public bodyTypes$ = this.bodyTypesSubject.asObservable();
+  public engineSpecs$ = this.engineSpecsSubject.asObservable();
 
   getCarModels(paginationParams: PaginationParams) {
     let params = new HttpParams();
@@ -40,6 +54,36 @@ export class CarmodelService {
     });
   }
 
+  getCarSelection(filter?: CarSelectionFilter): Observable<void> {
+    let params = new HttpParams();
+
+    if (filter) {
+      if (filter.brand) params = params.append('brand', filter.brand);
+      if (filter.model) params = params.append('model', filter.model);
+      if (filter.startYear)
+        params = params.append('startYear', filter.startYear.toString());
+      if (filter.bodyType) params = params.append('bodyType', filter.bodyType);
+    }
+
+    return this.http
+      .get<{
+        brands: string[];
+        models: string[];
+        years: number[];
+        bodyTypes: string[];
+        engineSpecs: string[];
+      }>(`${this.baseUrl}/carModels/selection`, { params })
+      .pipe(
+        map((response) => {
+          this.brandsSubject.next(response.brands);
+          this.modelsSubject.next(response.models);
+          this.yearsSubject.next(response.years);
+          this.bodyTypesSubject.next(response.bodyTypes);
+          this.engineSpecsSubject.next(response.engineSpecs);
+        })
+      );
+  }
+
   createCarModel(formData: FormData): Observable<string> {
     return this.http.post<string>(`${this.baseUrl}/carModels`, formData, {
       withCredentials: true,
@@ -56,5 +100,20 @@ export class CarmodelService {
     return this.http.delete<void>(`${this.baseUrl}/carModels/${id}`, {
       withCredentials: true,
     });
+  }
+
+  getStoredCarSelection(): any {
+    const storedCar = localStorage.getItem('selectedCar');
+    return storedCar ? JSON.parse(storedCar) : null;
+  }
+
+  saveCarSelection(carSelection: any): void {
+    localStorage.setItem('selectedCar', JSON.stringify(carSelection));
+    this.carSelectionChanged.next(true);
+  }
+
+  clearCarSelection(): void {
+    localStorage.removeItem('selectedCar');
+    this.carSelectionChanged.next(true);
   }
 }

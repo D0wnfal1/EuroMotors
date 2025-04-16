@@ -22,9 +22,6 @@ internal sealed class CarModelConfiguration : IEntityTypeConfiguration<CarModel>
         builder.Property(cm => cm.StartYear)
             .IsRequired();
 
-        builder.Property(cm => cm.EndYear)
-            .IsRequired(false);
-
         builder.Property(cm => cm.BodyType)
             .HasConversion<string>()
             .IsRequired();

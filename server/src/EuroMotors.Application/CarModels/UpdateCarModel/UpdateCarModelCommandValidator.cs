@@ -16,10 +16,6 @@ internal sealed class UpdateCarModelCommandValidator : AbstractValidator<UpdateC
             .GreaterThanOrEqualTo(1900)
             .LessThanOrEqualTo(DateTime.Now.Year);
 
-        RuleFor(c => c.EndYear)
-            .GreaterThanOrEqualTo(c => c.StartYear).When(c => c.EndYear.HasValue)
-            .LessThanOrEqualTo(DateTime.Now.Year).When(c => c.EndYear.HasValue);
-
         RuleFor(c => c.BodyType)
             .IsInEnum();
 

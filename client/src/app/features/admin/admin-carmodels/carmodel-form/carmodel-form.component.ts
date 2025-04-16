@@ -69,7 +69,6 @@ export class CarmodelFormComponent implements OnInit {
           Validators.max(new Date().getFullYear()),
         ],
       ],
-      endYear: ['', [Validators.max(new Date().getFullYear())]],
       bodyType: ['', Validators.required],
       volumeLiters: ['', [Validators.required, Validators.min(0.1)]],
       fuelType: ['', Validators.required],
@@ -84,7 +83,6 @@ export class CarmodelFormComponent implements OnInit {
             brand: carModel.brand,
             model: carModel.model,
             startYear: carModel.startYear,
-            endYear: carModel.endYear,
             bodyType: carModel.bodyType,
             volumeLiters: carModel.volumeLiters,
             fuelType: carModel.fuelType,
@@ -120,7 +118,6 @@ export class CarmodelFormComponent implements OnInit {
     formData.append('brand', this.carModelForm.get('brand')?.value);
     formData.append('model', this.carModelForm.get('model')?.value);
     formData.append('startYear', this.carModelForm.get('startYear')?.value);
-    formData.append('endYear', this.carModelForm.get('endYear')?.value);
     formData.append('bodyType', this.carModelForm.get('bodyType')?.value);
     formData.append(
       'volumeLiters',

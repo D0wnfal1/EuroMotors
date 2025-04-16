@@ -29,7 +29,6 @@ internal sealed class GetCategoriesQueryHandler(IDbConnectionFactory dbConnectio
                  parent_category_id AS {nameof(CategoryResponse.ParentCategoryId)},
                  slug AS {nameof(CategoryResponse.Slug)}
              FROM categories
-             WHERE parent_category_id IS NULL
              """);
 
         var parameters = new Dictionary<string, object>();

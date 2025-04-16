@@ -8,7 +8,7 @@ internal sealed class CreateCarModelCommandHandler(ICarModelRepository carModelR
 {
     public async Task<Result<Guid>> Handle(CreateCarModelCommand request, CancellationToken cancellationToken)
     {
-        var carModel = CarModel.Create(request.Brand, request.Model, request.StartYear, request.EndYear, request.BodyType, request.EngineSpec);
+        var carModel = CarModel.Create(request.Brand, request.Model, request.StartYear, request.BodyType, request.EngineSpec);
 
         if (request.Image != null && request.Image.Length > 0)
         {

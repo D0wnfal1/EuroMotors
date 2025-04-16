@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250414173044_Create_Database")]
+    [Migration("20250416135340_Create_Database")]
     partial class Create_Database
     {
         /// <inheritdoc />
@@ -43,10 +43,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("brand");
-
-                    b.Property<int?>("EndYear")
-                        .HasColumnType("integer")
-                        .HasColumnName("end_year");
 
                     b.Property<string>("ImagePath")
                         .HasColumnType("text")
