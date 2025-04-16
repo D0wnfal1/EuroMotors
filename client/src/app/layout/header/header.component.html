@@ -1,6 +1,4 @@
-<header
-  class="border-b shadow-md p-3 w-full max-h-20 fixed top-0 z-50 bg-white"
->
+<header class="pt-4 w-full fixed top-0 z-50 bg-white">
   <div
     class="flex align-middle items-center justify-between max-w-(--breakpoint-2xl) mx-auto"
   >
@@ -13,6 +11,7 @@
       >
       <a routerLink="/shop" routerLinkActive="active">Shop</a>
     </nav>
+
     <div class="flex gap-3 align-middle">
       <ng-container *ngIf="accountService.isAdmin()">
         <button mat-stroked-button routerLink="/admin">Admin</button>
@@ -39,11 +38,56 @@
       }
     </div>
   </div>
+
+  <div class="max-w-(--breakpoint-2xl) mx-auto mt-2">
+    <mat-toolbar
+      color="primary"
+      class="flex overflow-x-auto rounded-t justify-between p-4"
+    >
+      @for (category of categories; track category.id) {
+      <div class="flex items-center">
+        <a
+          mat-button
+          [routerLink]="['/shop/category', category.id]"
+          [color]="activeCategory?.id === category.id ? 'accent' : 'primary'"
+          class="whitespace-nowrap font-medium"
+        >
+          {{ category.name }}
+        </a>
+        <button
+          mat-icon-button
+          [color]="activeCategory?.id === category.id ? 'accent' : 'primary'"
+          (click)="toggleSubcategories(category)"
+        >
+          <mat-icon>expand_more</mat-icon>
+        </button>
+      </div>
+      }
+    </mat-toolbar>
+
+    @if (subcategoriesVisible && subcategories.length > 0) {
+    <div
+      class="p-4 rounded-b grid grid-cols-4 absolute left-0 right-0 max-w-(--breakpoint-2xl) mx-auto bg-gray-400/40 backdrop-blur-sm"
+    >
+      @for (subcategory of subcategories; track subcategory.id) {
+      <a
+        mat-button
+        [routerLink]="['/shop/category', subcategory.id]"
+        class="text-center min-h-16 flex items-center justify-center text-primary-30"
+        (click)="closeSubcategories()"
+      >
+        {{ subcategory.name }}
+      </a>
+      }
+    </div>
+    }
+  </div>
 </header>
-> @if (busyService.loading) {
+
+@if (busyService.loading) {
 <mat-progress-bar
   mode="indeterminate"
-  class="fixed top-12 z-50"
+  class="fixed top-34 z-50"
 ></mat-progress-bar>
 }
 
@@ -55,30 +99,6 @@
   <button mat-menu-item class="px-3" routerLink="/orders">
     <mat-icon>history</mat-icon>
     My orders
-  </button>
-  <mat-divider></mat-divider>
-  <button mat-menu-item class="px-3" (click)="logout()">
-    <mat-icon>logout</mat-icon>
-    Logout
-  </button>
-</mat-menu>
-
-<mat-menu #adminMenu="matMenu" class="px-5">
-  <button mat-menu-item class="px-3" routerLink="/admin/orders">
-    <mat-icon>history</mat-icon>
-    Orders
-  </button>
-  <button mat-menu-item class="px-3" routerLink="/admin/products">
-    <mat-icon>inventory 2</mat-icon>
-    Products
-  </button>
-  <button mat-menu-item class="px-3" routerLink="/admin/categories">
-    <mat-icon>create_new_folder</mat-icon>
-    Categories
-  </button>
-  <button mat-menu-item class="px-3" routerLink="/admin/carmodels">
-    <mat-icon>directions_car</mat-icon>
-    Car Models
   </button>
   <mat-divider></mat-divider>
   <button mat-menu-item class="px-3" (click)="logout()">

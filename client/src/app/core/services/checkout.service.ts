@@ -26,4 +26,9 @@ export class CheckoutService {
         })
       );
   }
+
+  requestCallback(name: string, phone: string): Observable<any> {
+    const request = { name, phone };
+    return this.http.post(this.baseUrl + '/callback/request', request);
+  }
 }

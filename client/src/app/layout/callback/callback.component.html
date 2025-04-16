@@ -1,0 +1,57 @@
+<div class="p-6 max-w-md">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-xl font-semibold">Callback link</h2>
+    <button mat-icon-button (click)="close()" class="focus:outline-none">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form
+    [formGroup]="callbackForm"
+    (ngSubmit)="onSubmit()"
+    class="flex flex-col gap-6"
+  >
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Your name</mat-label>
+      <input matInput formControlName="name" required />
+      <mat-error *ngIf="callbackForm.get('name')?.invalid"
+        >Name is required.</mat-error
+      >
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Phone number</mat-label>
+      <input
+        matInput
+        formControlName="phone"
+        placeholder="+380 XX XXX XX XX"
+        required
+      />
+      <mat-error *ngIf="callbackForm.get('phone')?.hasError('required')">
+        Enter a phone number
+      </mat-error>
+      <mat-error *ngIf="callbackForm.get('phone')?.hasError('pattern')">
+        Please enter a valid phone number.
+      </mat-error>
+    </mat-form-field>
+
+    <button
+      type="submit"
+      mat-raised-button
+      color="primary"
+      class="py-3 bg-lime-400 hover:bg-lime-500 text-black font-medium rounded w-full"
+      [disabled]="callbackForm.invalid"
+    >
+      Call me back
+    </button>
+  </form>
+
+  <div class="flex justify-center gap-8 mt-8">
+    <a href="tel:+380951111111" class="text-gray-700 font-medium"
+      >+380 95 11 11 111</a
+    >
+    <a href="tel:+380672222222" class="text-gray-700 font-medium"
+      >+380 67 22 22 222</a
+    >
+  </div>
+</div>

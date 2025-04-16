@@ -58,6 +58,10 @@ export class AdminCategoriesComponent implements OnInit {
     this.categoryService.categories$.subscribe((response) => {
       this.categories = response;
     });
+
+    this.categoryService.totalItems$.subscribe((count) => {
+      this.totalItems = count;
+    });
   }
 
   toggleSubcategoriesVisibility(categoryId: string): void {
@@ -87,7 +91,7 @@ export class AdminCategoriesComponent implements OnInit {
     this.loadCategories();
   }
 
-  getCarModelImage(imagePath?: string): string {
+  getCategoryImage(imagePath?: string): string {
     return imagePath
       ? this.imageService.getImageUrl(imagePath)
       : '/images/no-image.jpeg';

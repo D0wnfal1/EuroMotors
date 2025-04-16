@@ -1,5 +1,7 @@
 <footer class="border-t shadow-md w-full bg-white mt-auto p-3">
-  <div class="max-w-(--breakpoint-2xl) mx-auto w-full px-6 flex justify-between gap-6">
+  <div
+    class="max-w-(--breakpoint-2xl) mx-auto w-full px-6 flex justify-between gap-6"
+  >
     <div>
       <h3 class="text-2xl font-semibold uppercase">EuroMotors</h3>
     </div>
@@ -21,6 +23,16 @@
         class="hover:underline"
         >Admin</a
       >
+    </div>
+    <div class="flex">
+      <button
+        mat-raised-button
+        (click)="openCallbackDialog()"
+        class="px-2 flex items-center gap-2 transition-colors"
+      >
+        <mat-icon class="text-xl">support_agent</mat-icon>
+        <span>Callback link</span>
+      </button>
     </div>
   </div>
 </footer>

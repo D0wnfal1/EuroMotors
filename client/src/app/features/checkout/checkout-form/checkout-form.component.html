@@ -5,7 +5,7 @@
 
   <form [formGroup]="checkoutForm" (ngSubmit)="submitOrder()">
     <div class="flex">
-      <mat-form-field appearance="outline" class="w-1/2 mr-2 mb-3">
+      <mat-form-field appearance="fill" class="w-1/2 mr-2 mb-3">
         <mat-label>First Name</mat-label>
         <input matInput formControlName="firstName" placeholder="First Name" />
         <mat-error *ngIf="checkoutForm.get('firstName')?.hasError('required')">
@@ -13,7 +13,7 @@
         </mat-error>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-1/2 ml-2 mb-3">
+      <mat-form-field appearance="fill" class="w-1/2 ml-2 mb-3">
         <mat-label>Last Name</mat-label>
         <input matInput formControlName="lastName" placeholder="Last Name" />
         <mat-error *ngIf="checkoutForm.get('lastName')?.hasError('required')">
@@ -22,7 +22,7 @@
       </mat-form-field>
     </div>
 
-    <mat-form-field appearance="outline" class="w-full mb-3">
+    <mat-form-field appearance="fill" class="w-full mb-3">
       <mat-label>CITY</mat-label>
       <input
         matInput
@@ -35,7 +35,7 @@
       </mat-error>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-full mb-3">
+    <mat-form-field appearance="fill" class="w-full mb-3">
       <mat-label>DELIVERY METHOD</mat-label>
       <mat-select
         formControlName="deliveryMethod"
@@ -55,7 +55,7 @@
     <ng-container
       *ngIf="checkoutForm.get('deliveryMethod')?.value === deliveryMethods[1]"
     >
-      <mat-form-field appearance="outline" class="w-full">
+      <mat-form-field appearance="fill" class="w-full">
         <mat-label>SELECT DELIVERY METHOD</mat-label>
         <input
           type="text"
@@ -92,7 +92,7 @@
       </p>
     </ng-container>
 
-    <mat-form-field appearance="outline" class="w-full mb-3">
+    <mat-form-field appearance="fill" class="w-full mb-3">
       <mat-label>PHONE NUMBER</mat-label>
       <input matInput formControlName="phoneNumber" placeholder="+380" />
       <mat-error *ngIf="checkoutForm.get('phoneNumber')?.hasError('required')">
@@ -103,7 +103,7 @@
       </mat-error>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-full mb-3">
+    <mat-form-field appearance="fill" class="w-full mb-3">
       <mat-label>E-MAIL</mat-label>
       <input matInput formControlName="email" placeholder="example@mail.com" />
       <mat-error *ngIf="checkoutForm.get('email')?.hasError('required')">
@@ -114,7 +114,7 @@
       </mat-error>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-full mb-4">
+    <mat-form-field appearance="fill" class="w-full mb-4">
       <mat-label>PAYMENT METHOD</mat-label>
       <mat-select formControlName="paymentMethod">
         <mat-option *ngFor="let method of paymentMethods" [value]="method">

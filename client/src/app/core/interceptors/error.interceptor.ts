@@ -11,15 +11,18 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
       if (err.status === 400) {
+        const isJson = err.headers
+          ?.get('content-type')
+          ?.includes('application/json');
+
         let errorBody;
 
-        try {
-          errorBody =
-            typeof err.error === 'string' ? JSON.parse(err.error) : err.error;
-        } catch (e) {
-          console.error('Error parsing response:', e);
-          snackbar.error('Bad Request');
-          return throwError(() => err);
+        if (isJson) {
+          errorBody = err.error;
+        } else if (typeof err.error === 'string') {
+          errorBody = { description: err.error };
+        } else {
+          errorBody = { description: 'Bad Request' };
         }
 
         const errorDescription =

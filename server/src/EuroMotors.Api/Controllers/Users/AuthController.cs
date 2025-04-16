@@ -24,7 +24,7 @@ public class AuthController : ControllerBase
 
         if (string.IsNullOrEmpty(refreshToken))
         {
-            return BadRequest("Refresh token not found.");
+            return NoContent();
         }
 
         var query = new RefreshTokenCommand(refreshToken);

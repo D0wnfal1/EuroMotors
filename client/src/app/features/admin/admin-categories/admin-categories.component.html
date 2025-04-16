@@ -30,13 +30,13 @@
         <td mat-cell *matCellDef="let category">
           <img
             *ngIf="category.imagePath; else defaultImage"
-            [src]="getCarModelImage(category.imagePath)"
+            [src]="getCategoryImage(category.imagePath)"
             alt="Image"
             class="w-16 h-16 object-cover rounded-sm"
           />
           <ng-template #defaultImage>
             <img
-              [src]="getCarModelImage('')"
+              [src]="getCategoryImage('')"
               alt="Default"
               class="w-16 h-16 object-cover rounded-sm"
             />
@@ -128,13 +128,13 @@
                 <td mat-cell *matCellDef="let subcategory">
                   <img
                     *ngIf="subcategory.imagePath; else defaultSubImage"
-                    [src]="getCarModelImage(subcategory.imagePath)"
+                    [src]="getCategoryImage(subcategory.imagePath)"
                     alt="Subcategory Image"
                     class="w-16 h-16 object-cover rounded-sm"
                   />
                   <ng-template #defaultSubImage>
                     <img
-                      [src]="getCarModelImage('')"
+                      [src]="getCategoryImage('')"
                       alt="Default Image"
                       class="w-16 h-16 object-cover rounded-sm"
                     />

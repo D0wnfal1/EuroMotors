@@ -63,35 +63,93 @@ public static class SeedDataExtensions
 
     private static void SeedCategories(IDbConnection connection)
     {
-        var uniqueCategories = new HashSet<string>();
+        var random = new Random();
+        var allCategories = new List<Category>();
 
-        Faker<Category> faker = new Faker<Category>()
-            .CustomInstantiator(f =>
+        var parentCategories = new List<(string Name, List<string> Subcategories)>
+    {
+        ("Electronics",
+        [
+            "Smartphones", "Laptops", "Tablets", "Cameras", "Drones", "Smartwatches", "Headphones", "Chargers",
+            "Power Banks", "TVs", "Monitors", "Speakers", "VR Headsets"
+        ]),
+        ("Fashion",
+        [
+            "Men's Clothing", "Women's Clothing", "Kids' Clothing", "Shoes", "Bags", "Accessories", "Hats", "Watches",
+            "Jewelry", "Sunglasses", "Belts", "Scarves", "Underwear"
+        ]),
+        ("Home & Kitchen",
+        [
+            "Furniture", "Bedding", "Cookware", "Small Appliances", "Cleaning Supplies", "Lighting", "Decor", "Tools",
+            "Storage", "Vacuum Cleaners", "Air Purifiers", "Curtains"
+        ]),
+        ("Sports & Outdoors",
+        [
+            "Fitness Equipment", "Bicycles", "Camping", "Hiking", "Running", "Swimming", "Yoga", "Fishing",
+            "Winter Sports", "Balls", "Backpacks", "Tents", "Water Bottles"
+        ]),
+        ("Toys & Games",
+        [
+            "Educational Toys", "Board Games", "Puzzles", "Building Sets", "Remote Control Toys", "Stuffed Animals",
+            "Dolls", "Outdoor Toys", "Musical Toys", "Action Figures", "LEGO", "Toy Vehicles"
+        ]),
+        ("Beauty & Health",
+        [
+            "Makeup", "Skincare", "Haircare", "Perfume", "Manicure", "Personal Hygiene", "Supplements", "Massagers",
+            "Toothbrushes", "Hair Dryers", "Razors", "Body Wash"
+        ]),
+        ("Automotive",
+        [
+            "Car Electronics", "Car Care", "Tires", "Motor Oils", "Interior Accessories", "Exterior Accessories",
+            "Tools", "Batteries", "Car Seats", "GPS Navigators", "Dash Cams", "Helmets"
+        ]),
+        ("Books",
+        [
+            "Fiction", "Non-Fiction", "Children's Books", "Comics", "Educational", "Science", "History", "Biography",
+            "Self-Help", "Mystery", "Fantasy", "Business", "Technology"
+        ]),
+        ("Groceries",
+        [
+            "Fruits", "Vegetables", "Dairy", "Meat", "Snacks", "Beverages", "Bakery", "Canned Goods", "Frozen Food",
+            "Pasta", "Sauces", "Grains", "Tea & Coffee"
+        ]),
+        ("Pets",
+        [
+            "Dog Food", "Cat Food", "Bird Supplies", "Aquarium", "Pet Toys", "Beds", "Leashes", "Bowls", "Litter",
+            "Pet Grooming", "Treats", "Cages", "Health Products"
+        ])
+    };
+
+        foreach (var (name, subcategories) in parentCategories)
+        {
+            var parent = Category.Create(name);
+            allCategories.Add(parent);
+
+#pragma warning disable CA5394
+            int subCount = random.Next(10, Math.Min(subcategories.Count, 30));
+#pragma warning restore CA5394
+            foreach (string subName in subcategories.Take(subCount))
             {
-                string? categoryName = f.Commerce.Categories(1)[0];
+                var subCategory = Category.Create(subName, parent.Id);
+                parent.AddSubcategory(subCategory);
+                allCategories.Add(subCategory);
+            }
+        }
 
-                while (!uniqueCategories.Add(categoryName))
-                {
-                    categoryName = f.Commerce.Categories(1)[0];
-                }
+        const string sql = @"INSERT INTO categories (id, name, is_available, image_path, parent_category_id, slug) 
+                         VALUES (@Id, @Name, @IsAvailable, @ImagePath, @ParentCategoryId, @Slug);";
 
-                return Category.Create(categoryName);
-            });
-
-        List<Category>? categories = faker.Generate(10);
-
-        const string sql = @"INSERT INTO categories (id, name, is_available, image_path, slug) 
-                         VALUES (@Id, @Name, @IsAvailable, @ImagePath, @Slug);";
-
-        connection.Execute(sql, categories.Select(c => new
+        connection.Execute(sql, allCategories.Select(c => new
         {
             c.Id,
             c.Name,
             c.IsAvailable,
             c.ImagePath,
+            c.ParentCategoryId,
             Slug = c.Slug.Value
         }));
     }
+
 
     private static void SeedProducts(IDbConnection connection)
     {

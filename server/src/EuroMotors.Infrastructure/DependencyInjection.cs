@@ -2,6 +2,7 @@
 using Dapper;
 using EuroMotors.Application.Abstractions.Authentication;
 using EuroMotors.Application.Abstractions.Caching;
+using EuroMotors.Application.Abstractions.Callback;
 using EuroMotors.Application.Abstractions.Clock;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Delivery;
@@ -18,6 +19,7 @@ using EuroMotors.Domain.Users;
 using EuroMotors.Infrastructure.Authentication;
 using EuroMotors.Infrastructure.Authorization;
 using EuroMotors.Infrastructure.Caching;
+using EuroMotors.Infrastructure.Callback;
 using EuroMotors.Infrastructure.Database;
 using EuroMotors.Infrastructure.Delivery;
 using EuroMotors.Infrastructure.Payments;
@@ -47,6 +49,7 @@ public static class DependencyInjection
             .AddHealthChecks(configuration)
             .AddPayment(configuration)
             .AddDelivery(configuration)
+            .AddCallback(configuration)
             .AddAuthenticationInternal(configuration)
             .AddAuthorizationInternal();
 
@@ -145,6 +148,18 @@ public static class DependencyInjection
         services.AddHttpClient<IDeliveryService, DeliveryService>();
 
         services.AddScoped<IDeliveryService, DeliveryService>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddCallback(this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.Configure<CallbackOptions>(configuration.GetSection("Callback"));
+
+        services.AddHttpClient<ICallbackService, CallbackService>();
+
+        services.AddScoped<ICallbackService, CallbackService>();
 
         return services;
     }
