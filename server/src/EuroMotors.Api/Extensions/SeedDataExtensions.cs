@@ -39,7 +39,7 @@ public static class SeedDataExtensions
                 )
             );
 
-        List<CarModel>? carModels = faker.Generate(30);
+        List<CarModel>? carModels = faker.Generate(100);
 
 
         const string sql = @"INSERT INTO car_models (id, brand, model, start_year, body_type, engine_spec_volume_liters, engine_spec_fuel_type, slug, image_path) 
@@ -147,8 +147,6 @@ public static class SeedDataExtensions
             Slug = c.Slug.Value
         }));
     }
-
-
     private static void SeedProducts(IDbConnection connection)
     {
         var categories = connection.Query<Category>("SELECT id FROM categories").ToList();
@@ -183,7 +181,7 @@ public static class SeedDataExtensions
                 );
             });
 
-        List<Product> products = faker.Generate(100);
+        List<Product> products = faker.Generate(500);
 
         const string sql = """
                        INSERT INTO products 

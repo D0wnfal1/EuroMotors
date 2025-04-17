@@ -1,3 +1,221 @@
-<div class="container">
+<div class="container mx-auto px-4">
   <app-car-selection></app-car-selection>
+
+  <div class="mt-4">
+    <h2 class="text-2xl font-bold mb-4 text-center">Car Brands</h2>
+
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-4"
+    >
+      <button
+        mat-raised-button
+        *ngFor="let brand of displayedBrands"
+        class="border border-gray-300 rounded hover:shadow-md transition-shadow cursor-pointer"
+      >
+        <div class="p-3 text-center">
+          SPARE PARTS FOR {{ brand | uppercase }}
+        </div>
+      </button>
+    </div>
+
+    <div class="flex justify-center mt-8">
+      <button
+        mat-raised-button
+        color="primary"
+        class="px-6 py-2"
+        (click)="viewAllBrands()"
+      >
+        {{ showAllBrands ? "Show less" : "All Brands" }}
+      </button>
+    </div>
+  </div>
+
+  <div class="mt-10">
+    <h2 class="text-2xl font-bold mb-8 text-center">Product Categories</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <mat-card
+        *ngFor="let category of mainCategories"
+        class="hover:shadow-lg transition-shadow"
+      >
+        <div class="relative">
+          <img
+            mat-card-image
+            [src]="category.imagePath || '/images/no-image.jpeg'"
+            [alt]="category.name"
+            class="h-48 w-full object-cover"
+          />
+          <div
+            class="absolute bottom-0 left-0 right-0 bg-green-700/80 bg-opacity-60 text-white p-3"
+          >
+            <h3 class="text-xl font-bold">{{ category.name }}</h3>
+          </div>
+        </div>
+
+        <mat-card-content class="p-4">
+          <div
+            *ngIf="
+              category.subcategoryNames && category.subcategoryNames.length > 0
+            "
+            class="mt-2"
+          >
+            <div class="grid grid-cols-2 gap-2">
+              <a
+                *ngFor="let subcat of category.subcategoryNames.slice(0, 6)"
+                class="text-sm text-gray-700 hover:text-green-600 hover:underline cursor-pointer"
+                [routerLink]="['/shop/category', category.id]"
+              >
+                {{ subcat }}
+              </a>
+            </div>
+
+            <div
+              *ngIf="category.subcategoryNames.length > 6"
+              class="mt-3 text-center"
+            >
+              <a
+                mat-button
+                color="primary"
+                class="text-sm"
+                [routerLink]="['/shop/category', category.id]"
+              >
+                View all subcategories
+              </a>
+            </div>
+          </div>
+
+          <div
+            *ngIf="
+              !category.subcategoryNames ||
+              category.subcategoryNames.length === 0
+            "
+            class="py-4 text-center text-gray-500"
+          >
+            No subcategories available
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions class="px-4 pb-4 flex justify-end">
+          <button
+            mat-raised-button
+            color="primary"
+            [routerLink]="['/shop/category', category.id]"
+          >
+            Explore Category
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+
+  <div class="mt-8">
+    <h2 class="text-2xl font-bold text-center">POPULAR PRODUCTS</h2>
+    <div class="relative flex justify-center">
+      <div class="h-1 bg-green-700 w-64 mt-2"></div>
+    </div>
+
+    <div class="flex justify-center mt-6 mb-8 gap-4">
+      <button
+        mat-raised-button
+        [class.bg-green-500]="selectedProductTab === 'new'"
+        [class.text-white]="selectedProductTab === 'new'"
+        class="px-8 py-2 rounded-full"
+        (click)="changeProductTab('new')"
+      >
+        NEW
+      </button>
+      <button
+        mat-raised-button
+        [class.bg-green-500]="selectedProductTab === 'discounts'"
+        [class.text-white]="selectedProductTab === 'discounts'"
+        class="px-8 py-2 rounded-full"
+        (click)="changeProductTab('discounts')"
+      >
+        DISCOUNT
+      </button>
+      <button
+        mat-raised-button
+        [class.bg-green-500]="selectedProductTab === 'popular'"
+        [class.text-white]="selectedProductTab === 'popular'"
+        class="px-8 py-2 rounded-full"
+        (click)="changeProductTab('popular')"
+      >
+        POPULAR
+      </button>
+    </div>
+
+    <div class="relative">
+      <button
+        mat-icon-button
+        class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-green-500 text-white"
+        (click)="prevProduct()"
+      >
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        class="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-green-500 text-white"
+        (click)="nextProduct()"
+      >
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+      <div class="overflow-hidden">
+        <div
+          class="flex transition-transform duration-300 ease-in-out"
+          [style.transform]="'translateX(' + slidePosition + 'px)'"
+        >
+          <div
+            *ngFor="let product of displayedProducts"
+            class="min-w-[280px] max-w-[280px] mx-2 border rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+          >
+            <div class="h-48 bg-gray-100 relative overflow-hidden">
+              <img
+                *ngIf="product.images && product.images.length > 0"
+                [src]="getImageUrl(product.images[0].path)"
+                [alt]="product.name"
+                class="w-full h-full object-contain"
+              />
+              <img
+                *ngIf="!product.images || product.images.length === 0"
+                src="/images/no-image.jpeg"
+                alt="No image available"
+                class="w-full h-full object-contain"
+              />
+
+              <div
+                *ngIf="product.discount > 0"
+                class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-sm"
+              >
+                -{{ product.discount }}%
+              </div>
+            </div>
+
+            <div class="p-4">
+              <h3 class="font-medium text-lg line-clamp-2 h-14">
+                {{ product.name }}
+              </h3>
+
+              <div class="mt-2 flex justify-between items-center">
+                <div>
+                  <p class="font-bold text-lg">
+                    {{ calculateDiscountedPrice(product) | currency : "USD" }}
+                  </p>
+                  <p
+                    *ngIf="product.discount > 0"
+                    class="text-gray-500 line-through text-sm"
+                  >
+                    {{ product.price | currency : "USD" }}
+                  </p>
+                </div>
+
+                <button mat-mini-fab color="primary" aria-label="Add to cart">
+                  <mat-icon>shopping_cart</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

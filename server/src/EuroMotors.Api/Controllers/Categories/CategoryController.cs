@@ -26,12 +26,11 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetCategories(CancellationToken cancellationToken, [FromQuery] int pageNumber = 1,
-        [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetCategories(CancellationToken cancellationToken)
     {
-        var query = new GetCategoriesQuery(pageNumber, pageSize);
+        var query = new GetCategoriesQuery();
 
-        Result<Pagination<CategoryResponse>> result = await _sender.Send(query, cancellationToken);
+        Result<List<CategoryResponse>> result = await _sender.Send(query, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
@@ -48,11 +47,12 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet("parentCategories")]
-    public async Task<IActionResult> GetParentCategories(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetParentCategories(CancellationToken cancellationToken, [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10)
     {
-        var query = new GetParentCategoriesQuery();
+        var query = new GetParentCategoriesQuery(pageNumber, pageSize);
 
-        Result<List<CategoryResponse>> result = await _sender.Send(query, cancellationToken);
+        Result<Pagination<CategoryResponse>> result = await _sender.Send(query, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
     }

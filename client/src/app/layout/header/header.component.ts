@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { MatBadge } from '@angular/material/badge';
-import { MatButton, MatButtonModule } from '@angular/material/button';
-import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { BusyService } from '../../core/services/busy.service';
 import { MatProgressBar } from '@angular/material/progress-bar';
@@ -17,15 +17,9 @@ import { CommonModule } from '@angular/common';
 import { CarmodelService } from '../../core/services/carmodel.service';
 import { Subscription } from 'rxjs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatCard, MatCardModule } from '@angular/material/card';
-
-interface SelectedCar {
-  brand: string;
-  model: string;
-  year: number;
-  bodyType: string;
-  engineSpec: string;
-}
+import { MatCardModule } from '@angular/material/card';
+import { ShopParams } from '../../shared/models/shopParams';
+import { SelectedCar } from '../../shared/models/carModel';
 
 @Component({
   selector: 'app-header',
@@ -64,14 +58,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
   subcategoriesVisible = false;
   selectedCar: SelectedCar | null = null;
 
+  shopParams = new ShopParams();
+  pageSize = 10;
+  pageNumber = 1;
+
   private subscriptions: Subscription[] = [];
 
   ngOnInit() {
-    this.categoryService.getParentCategories().subscribe((categories) => {
-      this.categories = categories;
-    });
+    this.shopParams.pageSize = this.pageSize;
+    this.shopParams.pageNumber = this.pageNumber;
+    this.categoryService
+      .getParentCategories(this.shopParams)
+      .subscribe((categories) => {
+        this.categories = categories;
+      });
 
-    // Подписываемся на изменения выбранного автомобиля
     this.loadSelectedCar();
     this.subscriptions.push(
       this.carModelService.carSelectionChanged.subscribe(() => {
@@ -81,12 +82,27 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // Отписываемся от всех подписок при уничтожении компонента
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
   loadSelectedCar() {
-    this.selectedCar = this.carModelService.getStoredCarSelection();
+    const carId = this.carModelService.getStoredCarId();
+    if (carId) {
+      this.carModelService.getSelectedCarDetails(carId).subscribe({
+        next: (carModel) => {
+          this.selectedCar = {
+            brand: carModel.brand,
+            model: carModel.model,
+          };
+        },
+        error: (err) => {
+          console.error('Failed to load selected car details', err);
+          this.clearCarSelection(); // Clear invalid selection
+        },
+      });
+    } else {
+      this.selectedCar = null;
+    }
   }
 
   clearCarSelection() {

@@ -37,7 +37,7 @@ export class ShopComponent {
   }
 
   initialiseShop() {
-    this.categoryService.getCategories({ pageNumber: 1, pageSize: 0 });
+    this.categoryService.getCategories();
     this.carModelService.getCarModels({ pageNumber: 1, pageSize: 0 });
     this.getProducts();
   }

@@ -53,8 +53,9 @@ export class AdminCategoriesComponent implements OnInit {
     this.loadCategories();
   }
 
-  loadCategories() {
-    this.categoryService.getCategories(this.shopParams);
+  loadCategories(): void {
+    this.categoryService.getParentCategories(this.shopParams);
+
     this.categoryService.categories$.subscribe((response) => {
       this.categories = response;
     });

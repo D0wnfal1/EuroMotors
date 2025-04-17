@@ -75,11 +75,12 @@ export class AdminProductsComponent implements OnInit {
     });
   }
 
-  loadCategories() {
-    this.categoryService.getCategories({ pageNumber: 1, pageSize: 0 });
+  loadCategories(): void {
+    this.categoryService.getCategories();
     this.categoryService.categories$.subscribe((data) => {
       this.categories = data;
     });
+    console.log(this.categories);
   }
 
   loadCarModels() {

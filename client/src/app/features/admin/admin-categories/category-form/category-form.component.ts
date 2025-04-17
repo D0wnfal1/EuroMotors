@@ -63,7 +63,7 @@ export class CategoryFormComponent implements OnInit {
   ngOnInit(): void {
     this.initializeForm();
 
-    this.categoryService.getCategories({ pageNumber: 1, pageSize: 0 });
+    this.categoryService.getCategories();
     this.categoryService.categories$.subscribe((data) => {
       this.allCategories = data;
     });

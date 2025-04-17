@@ -16,19 +16,26 @@ export class CarmodelService {
   private totalItemsSubject = new BehaviorSubject<number>(0);
   totalItems$ = this.totalItemsSubject.asObservable();
 
+  private carIdsSubject = new BehaviorSubject<string[]>([]);
   private brandsSubject = new BehaviorSubject<string[]>([]);
   private modelsSubject = new BehaviorSubject<string[]>([]);
   private yearsSubject = new BehaviorSubject<number[]>([]);
   private bodyTypesSubject = new BehaviorSubject<string[]>([]);
   private engineSpecsSubject = new BehaviorSubject<string[]>([]);
 
+  // Добавляем новый BehaviorSubject для всех брендов
+  private allBrandsSubject = new BehaviorSubject<string[]>([]);
+
   public carSelectionChanged = new BehaviorSubject<boolean>(false);
 
+  public carIds$ = this.carIdsSubject.asObservable();
   public brands$ = this.brandsSubject.asObservable();
   public models$ = this.modelsSubject.asObservable();
   public years$ = this.yearsSubject.asObservable();
   public bodyTypes$ = this.bodyTypesSubject.asObservable();
   public engineSpecs$ = this.engineSpecsSubject.asObservable();
+  // Добавляем Observable для всех брендов
+  public allBrands$ = this.allBrandsSubject.asObservable();
 
   getCarModels(paginationParams: PaginationParams) {
     let params = new HttpParams();
@@ -54,7 +61,23 @@ export class CarmodelService {
     });
   }
 
-  getCarSelection(filter?: CarSelectionFilter): Observable<void> {
+  getAllBrands(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.baseUrl}/carModels/brands`).pipe(
+      map((brands) => {
+        this.allBrandsSubject.next(brands);
+        return brands;
+      })
+    );
+  }
+
+  getCarSelectionWithIds(filter?: CarSelectionFilter): Observable<{
+    ids: string[];
+    brands: string[];
+    models: string[];
+    years: number[];
+    bodyTypes: string[];
+    engineSpecs: string[];
+  }> {
     let params = new HttpParams();
 
     if (filter) {
@@ -67,6 +90,7 @@ export class CarmodelService {
 
     return this.http
       .get<{
+        ids: string[];
         brands: string[];
         models: string[];
         years: number[];
@@ -75,11 +99,13 @@ export class CarmodelService {
       }>(`${this.baseUrl}/carModels/selection`, { params })
       .pipe(
         map((response) => {
+          this.carIdsSubject.next(response.ids);
           this.brandsSubject.next(response.brands);
           this.modelsSubject.next(response.models);
           this.yearsSubject.next(response.years);
           this.bodyTypesSubject.next(response.bodyTypes);
           this.engineSpecsSubject.next(response.engineSpecs);
+          return response;
         })
       );
   }
@@ -102,18 +128,22 @@ export class CarmodelService {
     });
   }
 
-  getStoredCarSelection(): any {
-    const storedCar = localStorage.getItem('selectedCar');
-    return storedCar ? JSON.parse(storedCar) : null;
-  }
-
-  saveCarSelection(carSelection: any): void {
-    localStorage.setItem('selectedCar', JSON.stringify(carSelection));
+  saveCarSelection(carSelectionId: string): void {
+    localStorage.setItem('selectedCarId', carSelectionId);
     this.carSelectionChanged.next(true);
   }
 
+  getStoredCarId(): string | null {
+    const storedCarId = localStorage.getItem('selectedCarId');
+    return storedCarId ? storedCarId : null;
+  }
+
+  getSelectedCarDetails(carId: string): Observable<CarModel> {
+    return this.getCarModelById(carId);
+  }
+
   clearCarSelection(): void {
-    localStorage.removeItem('selectedCar');
+    localStorage.removeItem('selectedCarId');
     this.carSelectionChanged.next(true);
   }
 }

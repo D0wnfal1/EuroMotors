@@ -78,7 +78,7 @@ export class ProductFormComponent implements OnInit {
       (carModels) => (this.carModels = carModels)
     );
 
-    this.categoryService.getCategories({ pageNumber: 1, pageSize: 0 });
+    this.categoryService.getCategories();
     this.carModelService.getCarModels({ pageNumber: 1, pageSize: 0 });
 
     if (this.isEditMode) {

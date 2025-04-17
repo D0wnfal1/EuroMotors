@@ -2,6 +2,7 @@
 
 public sealed class CarModelSelectionResponse
 {
+    public List<Guid> Ids { get; set; } = [];
     public List<string> Brands { get; set; } = [];
     public List<string> Models { get; set; } = [];
     public List<int> Years { get; set; } = [];

@@ -3,15 +3,16 @@ using System.Text;
 using Dapper;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
+using EuroMotors.Application.Abstractions.Pagination;
 using EuroMotors.Application.Categories.GetByIdCategory;
 using EuroMotors.Domain.Abstractions;
 
 namespace EuroMotors.Application.Categories.GetParentCategories;
 
 internal sealed class GetParentCategoriesQueryHandler(IDbConnectionFactory dbConnectionFactory)
-    : IQueryHandler<GetParentCategoriesQuery, List<CategoryResponse>>
+    : IQueryHandler<GetParentCategoriesQuery, Pagination<CategoryResponse>>
 {
-    public async Task<Result<List<CategoryResponse>>> Handle(GetParentCategoriesQuery request, CancellationToken cancellationToken)
+    public async Task<Result<Pagination<CategoryResponse>>> Handle(GetParentCategoriesQuery request, CancellationToken cancellationToken)
     {
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
@@ -28,9 +29,31 @@ internal sealed class GetParentCategoriesQueryHandler(IDbConnectionFactory dbCon
                             WHERE parent_category_id IS NULL
                         """);
 
-        List<CategoryResponse> categories = (await connection.QueryAsync<CategoryResponse>(sql.ToString())).AsList();
+        var parameters = new Dictionary<string, object>();
 
-        return Result.Success(categories);
+        if (request.PageSize > 0)
+        {
+            parameters.Add("PageSize", request.PageSize);
+            parameters.Add("Offset", (request.PageNumber - 1) * request.PageSize);
+            sql.AppendLine("LIMIT @PageSize OFFSET @Offset");
+        }
+
+        List<CategoryResponse> categories = (await connection.QueryAsync<CategoryResponse>(sql.ToString(), parameters)).AsList();
+
+        var countSql = new StringBuilder();
+        countSql.Append("SELECT COUNT(*) FROM categories WHERE parent_category_id IS NULL");
+
+        int totalCount = await connection.ExecuteScalarAsync<int>(countSql.ToString());
+
+        var paginatedResult = new Pagination<CategoryResponse>
+        {
+            PageIndex = request.PageNumber,
+            PageSize = request.PageSize,
+            Count = totalCount,
+            Data = categories
+        };
+
+        return Result.Success(paginatedResult);
     }
 }
 

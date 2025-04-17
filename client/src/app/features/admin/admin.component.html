@@ -1,36 +1,39 @@
-<div class="text-center py-10">
+<div class="text-center">
   <h1 class="text-3xl font-bold mb-8">Admin Panel</h1>
   <div class="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-    <a
-      routerLink="/admin/orders"
-      class="flex flex-col items-center justify-center p-6 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition"
-    >
-      <mat-icon>history</mat-icon>
-      <span class="text-lg font-medium">Orders</span>
+    <a routerLink="/admin/orders">
+      <mat-card
+        class="flex flex-col items-center justify-center p-6 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition"
+      >
+        <mat-icon>history</mat-icon>
+        <span class="text-lg font-medium">Orders</span>
+      </mat-card>
+    </a>
+    <a routerLink="/admin/products">
+      <mat-card
+        class="flex flex-col items-center justify-center p-6 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition"
+      >
+        <mat-icon>inventory_2</mat-icon>
+        <span class="text-lg font-medium">Products</span>
+      </mat-card>
     </a>
 
-    <a
-      routerLink="/admin/products"
-      class="flex flex-col items-center justify-center p-6 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition"
-    >
-      <mat-icon>inventory_2</mat-icon>
-      <span class="text-lg font-medium">Products</span>
+    <a routerLink="/admin/categories">
+      <mat-card
+        class="flex flex-col items-center justify-center p-6 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition"
+      >
+        <mat-icon>folder</mat-icon>
+        <span class="text-lg font-medium">Categories</span>
+      </mat-card>
     </a>
 
-    <a
-      routerLink="/admin/categories"
-      class="flex flex-col items-center justify-center p-6 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition"
-    >
-      <mat-icon>folder</mat-icon>
-      <span class="text-lg font-medium">Categories</span>
-    </a>
-
-    <a
-      routerLink="/admin/carmodels"
-      class="flex flex-col items-center justify-center p-6 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition"
-    >
-      <mat-icon>directions_car</mat-icon>
-      <span class="text-lg font-medium">Car Models</span>
+    <a routerLink="/admin/carmodels">
+      <mat-card
+        class="flex flex-col items-center justify-center p-6 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition"
+      >
+        <mat-icon>directions_car</mat-icon>
+        <span class="text-lg font-medium">Car Models</span>
+      </mat-card>
     </a>
   </div>
 </div>

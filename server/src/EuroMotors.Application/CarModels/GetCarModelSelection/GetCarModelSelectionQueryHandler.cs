@@ -12,6 +12,13 @@ internal sealed class GetCarModelSelectionQueryHandler(IDbConnectionFactory dbCo
     {
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
         string sql = @"
+            SELECT DISTINCT id 
+            FROM car_models 
+            WHERE (@Brand IS NULL OR brand = @Brand)
+                AND (@Model IS NULL OR model = @Model)
+                AND (@StartYear IS NULL OR start_year = @StartYear)
+                AND (@BodyType IS NULL OR body_type = @BodyType);
+
             SELECT DISTINCT brand 
             FROM car_models 
             WHERE (@Brand IS NULL OR brand = @Brand);
@@ -49,7 +56,8 @@ internal sealed class GetCarModelSelectionQueryHandler(IDbConnectionFactory dbCo
             request.StartYear,
             request.BodyType,
         });
-
+         
+        IEnumerable<Guid> ids = await multi.ReadAsync<Guid>();
         IEnumerable<string> brands = await multi.ReadAsync<string>();
         IEnumerable<string> models = await multi.ReadAsync<string>();
         IEnumerable<int> years = await multi.ReadAsync<int>();
@@ -58,6 +66,7 @@ internal sealed class GetCarModelSelectionQueryHandler(IDbConnectionFactory dbCo
 
         return new CarModelSelectionResponse()
         {
+            Ids = ids.ToList(),
             Brands = brands.ToList(),
             Models = models.ToList(),
             Years = years.ToList(),

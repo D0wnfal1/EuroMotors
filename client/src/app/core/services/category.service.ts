@@ -16,21 +16,11 @@ export class CategoryService {
   private totalItemsSubject = new BehaviorSubject<number>(0);
   totalItems$ = this.totalItemsSubject.asObservable();
 
-  getCategories(paginationParams: PaginationParams) {
-    let params = new HttpParams();
-    params = params.append('pageSize', paginationParams.pageSize);
-    params = params.append('pageNumber', paginationParams.pageNumber);
-
+  getCategories(): void {
     this.http
-      .get<{ count: number; data: Category[] }>(this.baseUrl + '/categories', {
-        params,
-      })
-      .subscribe({
-        next: (response) => {
-          this.categoriesSubject.next(response.data);
-          this.totalItemsSubject.next(response.count);
-        },
-        error: (err) => console.error('Failed to load categories', err),
+      .get<Category[]>(`${this.baseUrl}/categories`)
+      .subscribe((categories) => {
+        this.categoriesSubject.next(categories);
       });
   }
 
@@ -40,10 +30,25 @@ export class CategoryService {
     });
   }
 
-  getParentCategories(): Observable<Category[]> {
-    return this.http.get<Category[]>(
-      `${this.baseUrl}/categories/parentCategories`
-    );
+  getParentCategories(
+    paginationParams: PaginationParams
+  ): Observable<Category[]> {
+    let params = new HttpParams()
+      .set('pageSize', paginationParams.pageSize)
+      .set('pageNumber', paginationParams.pageNumber);
+
+    return this.http
+      .get<{ data: Category[]; totalCount: number }>(
+        `${this.baseUrl}/categories/parentCategories`,
+        { params }
+      )
+      .pipe(
+        map((res) => {
+          this.categoriesSubject.next(res.data);
+          this.totalItemsSubject.next(res.totalCount);
+          return res.data;
+        })
+      );
   }
 
   getSubcategories(parentCategoryId: string): Observable<Category[]> {

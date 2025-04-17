@@ -38,3 +38,11 @@ export type CarSelectionFilter = {
   startYear?: number;
   bodyType?: BodyType;
 };
+
+export interface SelectedCar {
+  brand: string;
+  model: string;
+  startYear?: number;
+  bodyType?: BodyType;
+  engineSpec?: string;
+}

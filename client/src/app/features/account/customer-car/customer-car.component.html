@@ -1,0 +1,33 @@
+<div class="container mx-auto px-4">
+  <app-car-selection></app-car-selection>
+  <mat-card *ngIf="selectedCar" class="p-4">
+    <mat-card-header>
+      <mat-card-title class="text-lg font-semibold"
+        >Your Selected Car</mat-card-title
+      >
+    </mat-card-header>
+
+    <mat-card-content class="p-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div class="font-medium">Brand:</div>
+        <div>{{ selectedCar.brand }}</div>
+
+        <div class="font-medium">Model:</div>
+        <div>{{ selectedCar.model }}</div>
+
+        <div class="font-medium">Year:</div>
+        <div>{{ selectedCar.startYear }}</div>
+
+        <div class="font-medium">Body Type:</div>
+        <div>{{ selectedCar.bodyType }}</div>
+
+        <div class="font-medium">Engine Specification:</div>
+        <div>{{ selectedCar.engineSpec }}</div>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions align="end" class="px-4 pb-4">
+      <button mat-button (click)="clearSelection()">Clear Selection</button>
+    </mat-card-actions>
+  </mat-card>
+</div>

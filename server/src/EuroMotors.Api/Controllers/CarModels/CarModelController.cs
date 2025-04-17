@@ -1,6 +1,7 @@
 ﻿using EuroMotors.Application.Abstractions.Pagination;
 using EuroMotors.Application.CarModels.CreateCarModel;
 using EuroMotors.Application.CarModels.DeleteCarModel;
+using EuroMotors.Application.CarModels.GetAllCarModelBrands;
 using EuroMotors.Application.CarModels.GetCarModelById;
 using EuroMotors.Application.CarModels.GetCarModels;
 using EuroMotors.Application.CarModels.GetCarModelSelection;
@@ -42,6 +43,14 @@ public class CarModelController : ControllerBase
         var query = new GetCarModelByIdQuery(id);
 
         Result<CarModelResponse> result = await _sender.Send(query, cancellationToken);
+
+        return result.IsSuccess ? Ok(result.Value) : NotFound();
+    }
+
+    [HttpGet("brands")]
+    public async Task<IActionResult> GetAllBrands()
+    {
+        Result<List<string>> result = await _sender.Send(new GetAllCarModelBrandsQuery());
 
         return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
