@@ -129,7 +129,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     category_id = table.Column<Guid>(type: "uuid", nullable: false),
                     car_model_id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     vendor_code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     price = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     discount = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
@@ -254,6 +253,27 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "product_specifications",
+                schema: "public",
+                columns: table => new
+                {
+                    specification_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    product_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    specification_value = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_product_specifications", x => new { x.product_id, x.specification_name });
+                    table.ForeignKey(
+                        name: "fk_product_specifications_products_product_id",
+                        column: x => x.product_id,
+                        principalSchema: "public",
+                        principalTable: "products",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 schema: "public",
                 table: "roles",
@@ -341,6 +361,10 @@ namespace EuroMotors.Infrastructure.Database.Migration
 
             migrationBuilder.DropTable(
                 name: "product_images",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "product_specifications",
                 schema: "public");
 
             migrationBuilder.DropTable(

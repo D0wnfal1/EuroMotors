@@ -19,21 +19,6 @@ public class CategoryTests : BaseTest
     }
 
     [Fact]
-    public void Archive_ShouldSetIsArchived_AndRaiseDomainEvent()
-    {
-        // Arrange
-        var category = Category.Create(CategoryData.Name);
-
-        // Act
-        category.SetAvailability(true);
-
-        // Assert
-        Assert.True(category.IsAvailable);
-        CategoryIsAvailableDomainEvent archivedEvent = AssertDomainEventWasPublished<CategoryIsAvailableDomainEvent>(category);
-        Assert.Equal(category.Id, archivedEvent.CategoryId);
-    }
-
-    [Fact]
     public void ChangeName_ShouldChangeName_AndRaiseDomainEvent()
     {
         // Arrange

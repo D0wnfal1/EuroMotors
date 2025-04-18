@@ -4,6 +4,7 @@ using EuroMotors.Application.Products.CreateProduct;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Categories;
+using EuroMotors.Domain.Products;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.Products;
@@ -23,9 +24,15 @@ public class CreateProductTests : BaseIntegrationTest
         Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
         Guid carModelId = await Sender.CreateCarModelAsync(faker.Vehicle.Manufacturer(), faker.Vehicle.Model(), 2020, BodyType.Sedan, new EngineSpec(6, FuelType.Diesel), null);
 
+        var specifications = new List<Specification>
+        {
+            new Specification ("Color", "Red" ),
+            new Specification ("Engine", "V8")
+        };
+
         var command = new CreateProductCommand(
             faker.Commerce.ProductName(),
-            faker.Commerce.ProductDescription(),
+            specifications,
             faker.Commerce.Ean13(),
             categoryId,
             carModelId,
@@ -50,9 +57,15 @@ public class CreateProductTests : BaseIntegrationTest
         var categoryId = Guid.NewGuid();
         Guid carModelId = await Sender.CreateCarModelAsync(faker.Vehicle.Manufacturer(), faker.Vehicle.Model(), 2020, BodyType.Sedan, new EngineSpec(6, FuelType.Diesel), null);
 
+        var specifications = new List<Specification>
+        {
+            new Specification ("Color", "Red" ),
+            new Specification ("Engine", "V8")
+        };
+
         var command = new CreateProductCommand(
             faker.Commerce.ProductName(),
-            faker.Commerce.ProductDescription(),
+            specifications,
             faker.Commerce.Ean13(),
             categoryId,
             carModelId,
@@ -75,9 +88,15 @@ public class CreateProductTests : BaseIntegrationTest
         Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
         var carModelId = Guid.NewGuid();
 
+        var specifications = new List<Specification>
+        {
+            new Specification ("Color", "Red" ),
+            new Specification ("Engine", "V8")
+        };
+
         var command = new CreateProductCommand(
             faker.Commerce.ProductName(),
-            faker.Commerce.ProductDescription(),
+            specifications,
             faker.Commerce.Ean13(),
             categoryId,
             carModelId,
@@ -107,9 +126,16 @@ public class CreateProductTests : BaseIntegrationTest
             new EngineSpec(6, FuelType.Diesel),
             null
         );
+
+        var specifications = new List<Specification>
+        {
+            new Specification ("Color", "Red" ),
+            new Specification ("Engine", "V8")
+        };
+
         var command = new CreateProductCommand(
             faker.Commerce.ProductName(),
-            faker.Commerce.ProductDescription(),
+            specifications,
             faker.Commerce.Ean13(),
             categoryId,
             carModelId,

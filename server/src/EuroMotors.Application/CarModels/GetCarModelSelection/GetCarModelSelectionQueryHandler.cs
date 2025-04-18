@@ -56,7 +56,7 @@ internal sealed class GetCarModelSelectionQueryHandler(IDbConnectionFactory dbCo
             request.StartYear,
             request.BodyType,
         });
-         
+
         IEnumerable<Guid> ids = await multi.ReadAsync<Guid>();
         IEnumerable<string> brands = await multi.ReadAsync<string>();
         IEnumerable<string> models = await multi.ReadAsync<string>();

@@ -12,7 +12,7 @@ public class ProductTests : BaseTest
     public void Create_ShouldRaiseProductCreatedEvent()
     {
         // Act
-        var product = Product.Create(ProductData.Name, ProductData.Description, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
+        var product = Product.Create(ProductData.Name, null, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
             ProductData.Discount, ProductData.Stock);
 
         // Assert
@@ -24,11 +24,11 @@ public class ProductTests : BaseTest
     public void Update_ShouldRaiseProductUpdatedEvent()
     {
         // Arrange
-        var product = Product.Create(ProductData.Name, ProductData.Description, ProductData.VendorCode, ProductData.CategoryId, ProductData.CarModelId, ProductData.Price,
+        var product = Product.Create(ProductData.Name, null, ProductData.VendorCode, ProductData.CategoryId, ProductData.CarModelId, ProductData.Price,
             ProductData.Discount, ProductData.Stock);
 
         // Act
-        product.Update("Updated Name", "Updated Description", "Updated vendorCode", ProductData.CategoryId, ProductData.CarModelId ,150m, 5m, 100);
+        product.Update("Updated Name", null, "Updated vendorCode", ProductData.CategoryId, ProductData.CarModelId, 150m, 5m, 100);
 
         // Assert
         ProductUpdatedDomainEvent @event = AssertDomainEventWasPublished<ProductUpdatedDomainEvent>(product);
@@ -39,7 +39,7 @@ public class ProductTests : BaseTest
     public void AddProductQuantity_ShouldRaiseProductStockUpdatedEvent()
     {
         // Arrange
-        var product = Product.Create(ProductData.Name, ProductData.Description, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
+        var product = Product.Create(ProductData.Name, null, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
             ProductData.Discount, ProductData.Stock);
 
         // Act
@@ -53,7 +53,7 @@ public class ProductTests : BaseTest
     public void MarkAsNotAvailable_ShouldRaiseProductIsNotAvailableDomainEvent()
     {
         // Arrange
-        var product = Product.Create(ProductData.Name, ProductData.Description, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
+        var product = Product.Create(ProductData.Name, null, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
             ProductData.Discount, ProductData.Stock);
 
         // Act
@@ -68,7 +68,7 @@ public class ProductTests : BaseTest
     public void AddProductQuantity_ShouldUpdateStockCorrectly()
     {
         // Arrange
-        var product = Product.Create(ProductData.Name, ProductData.Description, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
+        var product = Product.Create(ProductData.Name, null, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
             ProductData.Discount, ProductData.Stock);
 
         // Act
@@ -82,7 +82,7 @@ public class ProductTests : BaseTest
     public void SubtractProductQuantity_ShouldRaiseProductStockUpdatedEvent()
     {
         // Arrange
-        var product = Product.Create(ProductData.Name, ProductData.Description, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
+        var product = Product.Create(ProductData.Name, null, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
             ProductData.Discount, ProductData.Stock);
 
         // Act
@@ -98,7 +98,7 @@ public class ProductTests : BaseTest
     public void SubtractProductQuantity_ShouldFail_WhenNotEnoughStock()
     {
         // Arrange
-        var product = Product.Create(ProductData.Name, ProductData.Description, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
+        var product = Product.Create(ProductData.Name, null, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
             ProductData.Discount, 5);
 
         // Act
@@ -113,7 +113,7 @@ public class ProductTests : BaseTest
     public void UpdateStock_ShouldSetCorrectStock()
     {
         // Arrange
-        var product = Product.Create(ProductData.Name, ProductData.Description, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
+        var product = Product.Create(ProductData.Name, null, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
             ProductData.Discount, ProductData.Stock);
 
         // Act

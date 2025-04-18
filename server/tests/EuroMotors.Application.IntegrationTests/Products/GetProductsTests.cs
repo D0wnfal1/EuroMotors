@@ -5,6 +5,7 @@ using EuroMotors.Application.Products.GetProductById;
 using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
+using EuroMotors.Domain.Products;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.Products;
@@ -49,26 +50,31 @@ public class GetProductsTests : BaseIntegrationTest
             new EngineSpec(6, FuelType.Diesel),
             null
         );
+        var specifications = new List<Specification>
+        {
+            new Specification ( "Color", "Red" ),
+            new Specification ("Engine", "V8")
+        };
         await Sender.CreateProductAsync(
             "Product1",
-            "Description1",
             faker.Commerce.ProductName(),
             categoryId,
         carModelId,
             100m,
             10m,
-            5
+            5,
+            specifications
         );
 
         await Sender.CreateProductAsync(
             "Product2",
-            "Description2",
             faker.Commerce.ProductName(),
             categoryId,
             carModelId,
             150m,
             15m,
-            10
+            10,
+            specifications
         );
 
 

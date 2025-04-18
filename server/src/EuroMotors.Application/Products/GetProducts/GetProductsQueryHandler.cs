@@ -5,6 +5,7 @@ using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Abstractions.Pagination;
 using EuroMotors.Application.Products.GetProductById;
 using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.Products;
 
 namespace EuroMotors.Application.Products.GetProducts;
 
@@ -37,10 +38,10 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
         }
 
         string countSql = $"""
-        SELECT COUNT(*)
-        FROM products p
-        {whereClause}
-        """;
+                           SELECT COUNT(*)
+                           FROM products p
+                           {whereClause}
+                           """;
 
         int totalItems = await connection.ExecuteScalarAsync<int>(countSql, new
         {
@@ -49,13 +50,43 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
             SearchPattern = $"%{request.SearchTerm}%"
         });
 
+        string productIdsSql = $@"
+            SELECT p.id
+            FROM products p
+            {whereClause}
+            ORDER BY p.{orderBy}
+            LIMIT @Limit OFFSET @Offset
+        ";
+
+        IEnumerable<Guid> productIds = await connection.QueryAsync<Guid>(
+            productIdsSql,
+            new
+            {
+                request.CategoryIds,
+                request.CarModelIds,
+                SearchPattern = $"%{request.SearchTerm}%",
+                Limit = limit,
+                Offset = offset
+            }
+        );
+
+        if (!productIds.Any())
+        {
+            return Result.Success(new Pagination<ProductResponse>
+            {
+                PageIndex = request.PageNumber,
+                PageSize = request.PageSize,
+                Count = totalItems,
+                Data = new List<ProductResponse>()
+            });
+        }
+
         string sql = $@"
             SELECT
                 p.id AS {nameof(ProductResponse.Id)},
                 p.category_id AS {nameof(ProductResponse.CategoryId)},
                 p.car_model_id AS {nameof(ProductResponse.CarModelId)},
                 p.name AS {nameof(ProductResponse.Name)},
-                p.description AS {nameof(ProductResponse.Description)},
                 p.vendor_code AS {nameof(ProductResponse.VendorCode)},
                 p.price AS {nameof(ProductResponse.Price)},
                 p.discount AS {nameof(ProductResponse.Discount)},
@@ -64,43 +95,44 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
                 p.slug AS {nameof(ProductResponse.Slug)},
                 pi.id AS {nameof(ProductImageResponse.ProductImageId)},
                 pi.path AS {nameof(ProductImageResponse.Path)},
-                pi.product_id AS {nameof(ProductImageResponse.ProductId)}
+                pi.product_id AS {nameof(ProductImageResponse.ProductId)},
+                s.specification_name AS SpecificationName,
+                s.specification_value AS SpecificationValue
             FROM products p
             LEFT JOIN product_images pi ON pi.product_id = p.id
-            {whereClause}
-            ORDER BY {orderBy}
-            LIMIT @Limit OFFSET @Offset
+            LEFT JOIN product_specifications s ON s.product_id = p.id
+            WHERE p.id = ANY(@ProductIds)
+            ORDER BY p.{orderBy}
         ";
-
-        var parameters = new
-        {
-            request.CategoryIds,
-            request.CarModelIds,
-            SearchPattern = $"%{request.SearchTerm}%",
-            Limit = limit,
-            Offset = offset
-        };
 
         var productDictionary = new Dictionary<Guid, ProductResponse>();
 
-        await connection.QueryAsync<ProductResponse, ProductImageResponse, ProductResponse>(
+        await connection.QueryAsync<ProductResponse, ProductImageResponse, Specification, ProductResponse>(
             sql,
-            (product, image) =>
+            (product, image, specification) =>
             {
                 if (!productDictionary.TryGetValue(product.Id, out ProductResponse? productEntry))
                 {
                     productEntry = product;
-                    productEntry.Images = [];
-                    productDictionary.Add(productEntry.Id, productEntry);
+                    productEntry.Images = new List<ProductImageResponse>();
+                    productEntry.Specifications = new List<Specification>();
+                    productDictionary[product.Id] = productEntry;
                 }
-                if (image != null && image.ProductImageId != Guid.Empty)
+
+                if (image != null && image.ProductImageId != Guid.Empty && !productEntry.Images.Any(i => i.ProductImageId == image.ProductImageId))
                 {
                     productEntry.Images.Add(image);
                 }
+
+                if (!string.IsNullOrEmpty(specification?.SpecificationName) && !string.IsNullOrEmpty(specification.SpecificationValue) && !productEntry.Specifications.Any(s => s.SpecificationName == specification.SpecificationName && s.SpecificationValue == specification.SpecificationValue))
+                {
+                    productEntry.Specifications.Add(specification);
+                }
+
                 return productEntry;
             },
-            parameters,
-            splitOn: "ProductImageId"
+            new { ProductIds = productIds.ToArray() },
+            splitOn: "ProductImageId,SpecificationName"
         );
 
         var products = productDictionary.Values.ToList();

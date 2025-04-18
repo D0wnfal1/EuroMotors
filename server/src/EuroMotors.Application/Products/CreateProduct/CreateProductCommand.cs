@@ -1,8 +1,9 @@
 ﻿using EuroMotors.Application.Abstractions.Messaging;
+using EuroMotors.Domain.Products;
 
 namespace EuroMotors.Application.Products.CreateProduct;
 
-public sealed record CreateProductCommand(string Name, string Description, string VendorCode,
+public sealed record CreateProductCommand(string Name, List<Specification> Specifications, string VendorCode,
     Guid CategoryId, Guid CarModelId,
     decimal Price, decimal Discount,
     int Stock) : ICommand<Guid>;

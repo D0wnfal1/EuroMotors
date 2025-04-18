@@ -14,48 +14,59 @@ internal sealed class GetProductByIdQueryHandler(IDbConnectionFactory dbConnecti
     {
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
-        const string sql =
-            $"""
-              SELECT
-                  p.id AS {nameof(ProductResponse.Id)},
-                  p.category_id AS {nameof(ProductResponse.CategoryId)},
-                  p.car_model_id AS {nameof(ProductResponse.CarModelId)},
-                  p.name AS {nameof(ProductResponse.Name)},
-                  p.description AS {nameof(ProductResponse.Description)},
-                  p.vendor_code AS {nameof(ProductResponse.VendorCode)},
-                  p.price AS {nameof(ProductResponse.Price)},
-                  p.discount AS {nameof(ProductResponse.Discount)},
-                  p.stock AS {nameof(ProductResponse.Stock)},
-                  p.is_available AS {nameof(ProductResponse.IsAvailable)},
-                  p.slug AS {nameof(ProductResponse.Slug)},
-                  pi.id AS {nameof(ProductImageResponse.ProductImageId)},
-                  pi.path AS {nameof(ProductImageResponse.Path)},
-                  pi.product_id AS {nameof(ProductImageResponse.ProductId)}
-              FROM products p
-              LEFT JOIN product_images pi ON pi.product_id = p.id
-              WHERE p.id = @ProductId
-              """;
+        const string sql = """
+            SELECT
+                p.id AS Id,
+                p.category_id AS CategoryId,
+                p.car_model_id AS CarModelId,
+                p.name AS Name,
+                p.vendor_code AS VendorCode,
+                p.price AS Price,
+                p.discount AS Discount,
+                p.stock AS Stock,
+                p.is_available AS IsAvailable,
+                p.slug AS Slug,
+
+                pi.id AS ProductImageId,
+                pi.path AS Path,
+                pi.product_id AS ProductId,
+
+                s.specification_name AS SpecificationName,
+                s.specification_value AS SpecificationValue
+            FROM products p
+            LEFT JOIN product_images pi ON pi.product_id = p.id
+            LEFT JOIN product_specifications s ON s.product_id = p.id
+            WHERE p.id = @ProductId
+        """;
 
         var productDictionary = new Dictionary<Guid, ProductResponse>();
 
-        await connection.QueryAsync<ProductResponse, ProductImageResponse, ProductResponse>(
+        await connection.QueryAsync<ProductResponse, ProductImageResponse, Specification, ProductResponse>(
             sql,
-            (product, image) =>
+            (product, image, specification) =>
             {
                 if (!productDictionary.TryGetValue(product.Id, out ProductResponse? productEntry))
                 {
                     productEntry = product;
-                    productEntry.Images = [];
+                    productEntry.Images = new List<ProductImageResponse>();
+                    productEntry.Specifications = new List<Specification>();
                     productDictionary.Add(productEntry.Id, productEntry);
                 }
+
                 if (image != null && image.ProductImageId != Guid.Empty)
                 {
                     productEntry.Images.Add(image);
                 }
+
+                if (specification?.SpecificationName != null && specification.SpecificationValue != null)
+                {
+                    productEntry.Specifications.Add(specification);
+                }
+
                 return productEntry;
             },
             new { request.ProductId },
-            splitOn: "ProductImageId"
+            splitOn: "ProductImageId,SpecificationName"
         );
 
         if (!productDictionary.TryGetValue(request.ProductId, out ProductResponse? productResult))

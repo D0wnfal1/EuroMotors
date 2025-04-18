@@ -29,9 +29,15 @@ public class CreateProductCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldReturnFailure_WhenCategoryNotFound()
     {
+        var specifications = new List<Specification>
+        {
+            new Specification ("Color", "Red" ),
+            new Specification ("Engine", "V8")
+        };
+
         var command = new CreateProductCommand(
             "TestProduct",
-            "Description",
+            specifications,
             "VendorCode",
             Guid.NewGuid(),
             Guid.NewGuid(),
@@ -50,9 +56,15 @@ public class CreateProductCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldReturnFailure_WhenCarModelNotFound()
     {
+        var specifications = new List<Specification>
+        {
+            new Specification ("Color", "Red" ),
+            new Specification ("Engine", "V8")
+        };
+
         var command = new CreateProductCommand(
             "TestProduct",
-            "Description",
+            specifications,
             "VendorCode",
             Guid.NewGuid(),
             Guid.NewGuid(),
@@ -72,9 +84,15 @@ public class CreateProductCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldCreateProductSuccessfully()
     {
+        var specifications = new List<Specification>
+        {
+            new Specification ("Color", "Red" ),
+            new Specification ("Engine", "V8")
+        };
+
         var command = new CreateProductCommand(
             "TestProduct",
-            "Description",
+            specifications,
             "VendorCode",
             Guid.NewGuid(),
             Guid.NewGuid(),

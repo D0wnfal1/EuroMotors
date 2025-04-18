@@ -11,6 +11,6 @@ public sealed class CarModelSelectionResponse
 
     public CarModelSelectionResponse()
     {
-        
+
     }
 }

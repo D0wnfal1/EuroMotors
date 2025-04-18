@@ -5,7 +5,7 @@ namespace EuroMotors.Api.Controllers.Products;
 public sealed class ProductRequest()
 {
     public string Name { get; set; }
-    public string Description { get; set; }
+    public List<SpecificationRequest> Specifications { get; set; }
     public string VendorCode { get; set; }
     [JsonRequired]
     public Guid CategoryId { get; set; }

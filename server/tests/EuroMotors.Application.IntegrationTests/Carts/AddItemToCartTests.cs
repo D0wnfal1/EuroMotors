@@ -35,15 +35,22 @@ public class AddItemToCartTests : BaseIntegrationTest
             new EngineSpec(6, FuelType.Diesel),
             null
         );
+
+        var specifications = new List<Specification>
+        {
+            new Specification ("Color", "Red"),
+            new Specification ("Engine", "V8")
+        };
+
         Guid productId = await Sender.CreateProductAsync(
             "Product Name",
-            "Product Description",
             "VendorCode123",
             categoryId,
             carModelId,
             100m,
             10m,
-            10
+            10,
+            specifications
         );
 
         var command = new AddItemToCartCommand(
@@ -97,17 +104,22 @@ public class AddItemToCartTests : BaseIntegrationTest
             null
         );
 
+        var specifications = new List<Specification>
+        {
+            new Specification ("Color", "Red"),
+            new Specification ("Engine", "V8")
+        };
+
         Guid productId = await Sender.CreateProductAsync(
             "Product Name",
-            "Product Description",
             "VendorCode123",
             categoryId,
             carModelId,
             100m,
             10m,
-            10
+            10,
+            specifications
         );
-
         var command = new AddItemToCartCommand(
             userId,
             productId,
@@ -136,15 +148,21 @@ public class AddItemToCartTests : BaseIntegrationTest
             new EngineSpec(6, FuelType.Diesel),
             null
         );
+        var specifications = new List<Specification>
+        {
+            new Specification ("Color", "Red"),
+            new Specification ("Engine", "V8")
+        };
+
         Guid productId = await Sender.CreateProductAsync(
             "Product Name",
-            "Product Description",
             "VendorCode123",
             categoryId,
             carModelId,
             100m,
             10m,
-            10
+            10,
+            specifications
         );
 
         var command = new AddItemToCartCommand(
@@ -181,9 +199,16 @@ public class AddItemToCartTests : BaseIntegrationTest
         createCarModelResult.IsSuccess.ShouldBeTrue();
         Guid carModelId = createCarModelResult.Value;
 
+        var specifications = new List<Specification>
+        {
+            new Specification ("Color", "Red"),
+            new Specification ("Engine", "V8")
+        };
+
+
         var createProductCommand = new CreateProductCommand(
             faker.Commerce.ProductName(),
-            faker.Commerce.ProductDescription(),
+            specifications,
             faker.Commerce.Ean13(),
             categoryId,
             carModelId,

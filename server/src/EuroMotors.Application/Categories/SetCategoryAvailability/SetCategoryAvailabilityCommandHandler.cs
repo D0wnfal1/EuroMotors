@@ -16,7 +16,7 @@ internal sealed class SetCategoryAvailabilityCommandHandler(ICategoryRepository 
             return Result.Failure(CategoryErrors.NotFound(request.CategoryId));
         }
 
-    
+
 
         category.SetAvailability(request.IsAvailable);
 

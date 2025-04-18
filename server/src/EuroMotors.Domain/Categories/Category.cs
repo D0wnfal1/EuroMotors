@@ -117,7 +117,7 @@ public class Category : Entity
 
         RaiseDomainEvent(new CategoryImageUpdatedDomainEvent(Id));
 
-        return Result.Success();    
+        return Result.Success();
     }
 
     private Slug GenerateSlug()

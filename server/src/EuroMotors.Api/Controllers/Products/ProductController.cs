@@ -5,8 +5,8 @@ using EuroMotors.Application.Products.GetProductById;
 using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Application.Products.SetProductAvailability;
 using EuroMotors.Application.Products.UpdateProduct;
-using EuroMotors.Application.Products.UpdateProduct.UpdateProductStock;
 using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.Products;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -55,7 +55,16 @@ public class ProductController : ControllerBase
     [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> CreateProduct([FromBody] ProductRequest request, CancellationToken cancellationToken)
     {
-        var command = new CreateProductCommand(request.Name, request.Description, request.VendorCode, request.CategoryId, request.CarModelId, request.Price, request.Discount, request.Stock);
+        var command = new CreateProductCommand(
+            request.Name,
+            request.Specifications.Select(s => new Specification(s.SpecificationName, s.SpecificationValue)).ToList(),
+            request.VendorCode,
+            request.CategoryId,
+            request.CarModelId,
+            request.Price,
+            request.Discount,
+            request.Stock
+        );
 
         Result<Guid> result = await _sender.Send(command, cancellationToken);
 
@@ -68,22 +77,23 @@ public class ProductController : ControllerBase
     [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductRequest request, CancellationToken cancellationToken)
     {
-        var command = new UpdateProductCommand(id, request.Name, request.Description, request.VendorCode, request.CategoryId, request.CarModelId, request.Price, request.Discount, request.Stock);
+        var command = new UpdateProductCommand(
+            id,
+            request.Name,
+            request.Specifications.Select(s => new Specification(s.SpecificationName, s.SpecificationValue)).ToList(),
+            request.VendorCode,
+            request.CategoryId,
+            request.CarModelId,
+            request.Price,
+            request.Discount,
+            request.Stock
+        );
 
         Result result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess ? NoContent() : BadRequest(result.Error);
     }
 
-    [HttpPut("{id}/stock")]
-    public async Task<IActionResult> UpdateProductStock(Guid id, [FromBody] int stock, CancellationToken cancellationToken)
-    {
-        var command = new UpdateProductStockCommand(id, stock);
-
-        Result result = await _sender.Send(command, cancellationToken);
-
-        return result.IsSuccess ? NoContent() : BadRequest(result.Error);
-    }
 
     [HttpPatch("{id}")]
     public async Task<IActionResult> SetProductAvailability(Guid id, [FromBody] SetCategoryAvailabilityRequest request, CancellationToken cancellationToken)

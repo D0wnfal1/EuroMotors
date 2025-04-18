@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {
   FormGroup,
   FormBuilder,
   Validators,
   ReactiveFormsModule,
+  FormArray,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../../../core/services/product.service';
@@ -20,7 +21,11 @@ import { ProductImage } from '../../../../shared/models/productImage';
 import { ImageService } from '../../../../core/services/image.service';
 import { CategoryService } from '../../../../core/services/category.service';
 import { CarmodelService } from '../../../../core/services/carmodel.service';
-
+import { MatIcon } from '@angular/material/icon';
+import {
+  MatExpansionModule,
+  MatExpansionPanel,
+} from '@angular/material/expansion';
 @Component({
   selector: 'app-product-form',
   imports: [
@@ -32,11 +37,14 @@ import { CarmodelService } from '../../../../core/services/carmodel.service';
     MatButton,
     MatFormFieldModule,
     MatInputModule,
+    MatIcon,
+    MatExpansionModule,
   ],
   templateUrl: './product-form.component.html',
   styleUrl: './product-form.component.scss',
 })
 export class ProductFormComponent implements OnInit {
+  @ViewChild(MatExpansionPanel) specPanel!: MatExpansionPanel;
   productForm!: FormGroup;
   categories: Category[] = [];
   carModels: CarModel[] = [];
@@ -62,7 +70,7 @@ export class ProductFormComponent implements OnInit {
 
     this.productForm = this.fb.group({
       name: ['', Validators.required],
-      description: ['', Validators.required],
+      specifications: this.fb.array([], Validators.required),
       vendorCode: ['', Validators.required],
       categoryId: [null, Validators.required],
       carModelId: [null, Validators.required],
@@ -85,9 +93,53 @@ export class ProductFormComponent implements OnInit {
       this.productService
         .getProductById(this.productId!)
         .subscribe((product: Product) => {
-          this.productForm.patchValue(product);
+          this.specifications.clear();
+          product.specifications.forEach((spec) => {
+            this.specifications.push(
+              this.fb.group({
+                specificationName: [
+                  spec.specificationName,
+                  Validators.required,
+                ],
+                specificationValue: [
+                  spec.specificationValue,
+                  Validators.required,
+                ],
+              })
+            );
+          });
+          this.productForm.patchValue({
+            name: product.name,
+            vendorCode: product.vendorCode,
+            categoryId: product.categoryId,
+            carModelId: product.carModelId,
+            price: product.price,
+            discount: product.discount,
+            stock: product.stock,
+          });
           this.productImages = product.images;
         });
+    }
+  }
+
+  get specifications(): FormArray {
+    return this.productForm.get('specifications') as FormArray;
+  }
+
+  private createSpecification(): FormGroup {
+    return this.fb.group({
+      specificationName: ['', Validators.required],
+      specificationValue: ['', Validators.required],
+    });
+  }
+
+  addSpecification() {
+    this.specifications.push(this.createSpecification());
+  }
+
+  removeSpecification(index: number) {
+    if (this.specifications.length > 1) {
+      this.specifications.removeAt(index);
     }
   }
 

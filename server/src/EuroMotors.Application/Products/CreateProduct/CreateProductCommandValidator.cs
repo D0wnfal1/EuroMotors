@@ -8,8 +8,6 @@ internal sealed class CreateProductCommandValidator : AbstractValidator<CreatePr
     {
         RuleFor(x => x.Name).NotEmpty().Length(3, 100);
 
-        RuleFor(x => x.Description).NotEmpty().Length(10, 500);
-
         RuleFor(x => x.VendorCode).NotEmpty().Length(3, 50);
 
         RuleFor(x => x.CategoryId).NotEmpty().Must(x => x != Guid.Empty);

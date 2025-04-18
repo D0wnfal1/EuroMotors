@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250416135340_Create_Database")]
+    [Migration("20250418135329_Create_Database")]
     partial class Create_Database
     {
         /// <inheritdoc />
@@ -305,12 +305,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnType("uuid")
                         .HasColumnName("category_id");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("description");
-
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18,2)")
                         .HasColumnName("discount");
@@ -551,6 +545,35 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_products_categories_category_id");
+
+                    b.OwnsMany("EuroMotors.Domain.Products.Specification", "Specifications", b1 =>
+                        {
+                            b1.Property<Guid>("ProductId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("product_id");
+
+                            b1.Property<string>("SpecificationName")
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("specification_name");
+
+                            b1.Property<string>("SpecificationValue")
+                                .IsRequired()
+                                .HasMaxLength(500)
+                                .HasColumnType("character varying(500)")
+                                .HasColumnName("specification_value");
+
+                            b1.HasKey("ProductId", "SpecificationName")
+                                .HasName("pk_product_specifications");
+
+                            b1.ToTable("product_specifications", "public");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProductId")
+                                .HasConstraintName("fk_product_specifications_products_product_id");
+                        });
+
+                    b.Navigation("Specifications");
                 });
 
             modelBuilder.Entity("RoleUser", b =>

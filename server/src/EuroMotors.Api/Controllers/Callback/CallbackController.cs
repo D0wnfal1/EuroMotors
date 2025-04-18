@@ -21,6 +21,6 @@ public class CallbackController : ControllerBase
     {
         var command = new RequestCallbackCommand(request.Name, request.Phone);
         Result result = await _sender.Send(command);
-        return result.IsSuccess? Ok(result) : NotFound();
+        return result.IsSuccess ? Ok(result) : NotFound();
     }
 }

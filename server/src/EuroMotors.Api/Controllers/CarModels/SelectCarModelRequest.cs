@@ -1,6 +1,4 @@
-﻿using EuroMotors.Domain.CarModels;
-
-namespace EuroMotors.Api.Controllers.CarModels;
+﻿namespace EuroMotors.Api.Controllers.CarModels;
 
 public sealed class SelectCarModelRequest
 {

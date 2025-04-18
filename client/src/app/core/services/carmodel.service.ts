@@ -23,7 +23,6 @@ export class CarmodelService {
   private bodyTypesSubject = new BehaviorSubject<string[]>([]);
   private engineSpecsSubject = new BehaviorSubject<string[]>([]);
 
-  // Добавляем новый BehaviorSubject для всех брендов
   private allBrandsSubject = new BehaviorSubject<string[]>([]);
 
   public carSelectionChanged = new BehaviorSubject<boolean>(false);
@@ -34,7 +33,6 @@ export class CarmodelService {
   public years$ = this.yearsSubject.asObservable();
   public bodyTypes$ = this.bodyTypesSubject.asObservable();
   public engineSpecs$ = this.engineSpecsSubject.asObservable();
-  // Добавляем Observable для всех брендов
   public allBrands$ = this.allBrandsSubject.asObservable();
 
   getCarModels(paginationParams: PaginationParams) {

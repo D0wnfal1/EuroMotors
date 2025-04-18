@@ -65,26 +65,33 @@ public class RemoveItemFromCartTests : BaseIntegrationTest
             new EngineSpec(6, FuelType.Diesel),
             null
         );
+
+        var specifications = new List<Specification>
+        {
+            new Specification ( "Color", "Red" ),
+            new Specification ("Engine", "V8")
+        };
+
         Guid productId = await Sender.CreateProductAsync(
             "Product Name",
             "Product Description",
-            "VendorCode123",
             categoryId,
             carModelId,
             100m,
             10m,
-            Quantity
+            Quantity,
+            specifications
         );
 
         await Sender.CreateProductAsync(
             "Another Product",
-            "Another Description",
             "VendorCode456",
             categoryId,
             carModelId,
             200m,
             20m,
-            Quantity
+            Quantity,
+            specifications
         );
 
         var command = new RemoveItemFromCartCommand(

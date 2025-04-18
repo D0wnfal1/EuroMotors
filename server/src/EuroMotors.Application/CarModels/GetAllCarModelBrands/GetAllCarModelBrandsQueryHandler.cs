@@ -1,8 +1,8 @@
-﻿using EuroMotors.Application.Abstractions.Data;
+﻿using System.Data;
+using Dapper;
+using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
-using System.Data;
-using Dapper;
 
 namespace EuroMotors.Application.CarModels.GetAllCarModelBrands;
 

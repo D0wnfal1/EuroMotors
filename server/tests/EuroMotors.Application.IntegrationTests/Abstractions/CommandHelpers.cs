@@ -6,6 +6,7 @@ using EuroMotors.Application.Products.CreateProduct;
 using EuroMotors.Application.Users.Register;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
+using EuroMotors.Domain.Products;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
@@ -45,20 +46,32 @@ internal static class CommandHelpers
         return result.Value;
     }
 
-    public static async Task<Guid> CreateProductAsync(this ISender sender, string productName, string productDescription, string ean13, Guid categoryId, Guid carModelId, decimal price, decimal discount, int quantity)
+    public static async Task<Guid> CreateProductAsync(
+        this ISender sender,
+        string productName,
+        string ean13,
+        Guid categoryId,
+        Guid carModelId,
+        decimal price,
+        decimal discount,
+        int quantity,
+        List<Specification> specifications)
     {
         var createProductCommand = new CreateProductCommand(
             productName,
-            productDescription,
+            specifications,
             ean13,
             categoryId,
             carModelId,
             price,
             discount,
-            quantity);
+            quantity
+        );
 
         Result<Guid> result = await sender.Send(createProductCommand);
+
         result.IsSuccess.ShouldBeTrue();
+
         return result.Value;
     }
 

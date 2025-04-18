@@ -23,7 +23,7 @@ public class DeleteProductCommandHandlerTests
         var productId = Guid.NewGuid();
         var product = Product.Create(
             "TestProduct",
-            "Description",
+            null,
             "VendorCode",
             Guid.NewGuid(),
             Guid.NewGuid(),

@@ -32,7 +32,7 @@ public class OrderTests
         var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
         var order = Order.Create(user.Id, "BuyerName", "BuyerPhoneNumber", "BuyerEmail", DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
 
-        var product = Product.Create(ProductData.Name, ProductData.Description, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
+        var product = Product.Create(ProductData.Name, null, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
             ProductData.Discount, ProductData.Stock);
 
         // Act

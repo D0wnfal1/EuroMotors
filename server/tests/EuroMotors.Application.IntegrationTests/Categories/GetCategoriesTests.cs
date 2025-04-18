@@ -1,5 +1,4 @@
 ﻿using Bogus;
-using EuroMotors.Application.Abstractions.Pagination;
 using EuroMotors.Application.Categories.GetByIdCategory;
 using EuroMotors.Application.Categories.GetCategories;
 using EuroMotors.Application.IntegrationTests.Abstractions;
@@ -21,14 +20,14 @@ public class GetCategoriesTests : BaseIntegrationTest
         // Arrange
         await CleanDatabaseAsync();
 
-        var query = new GetCategoriesQuery(1, 10);
+        var query = new GetCategoriesQuery();
 
         // Act
-        Result<Pagination<CategoryResponse>> result = await Sender.Send(query);
+        Result<List<CategoryResponse>> result = await Sender.Send(query);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
-        result.Value.Data.ShouldBeEmpty();
+        result.Value.ShouldBeEmpty();
     }
 
     [Fact]
@@ -41,10 +40,10 @@ public class GetCategoriesTests : BaseIntegrationTest
         await Sender.CreateCategoryAsync(faker.Music.Genre());
         await Sender.CreateCategoryAsync(faker.Music.Genre());
 
-        var query = new GetCategoriesQuery(1, 10);
+        var query = new GetCategoriesQuery();
 
         // Act
-        Result<Pagination<CategoryResponse>> result = await Sender.Send(query);
+        Result<List<CategoryResponse>> result = await Sender.Send(query);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();

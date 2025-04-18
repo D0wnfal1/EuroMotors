@@ -94,14 +94,14 @@ public class CarModelController : ControllerBase
         [FromForm] UpdateCarModelRequest request,
         CancellationToken cancellationToken)
     {
-            var command = new UpdateCarModelCommand(id,
-            request.Brand,
-            request.Model,
-            request.StartYear,
-            request.BodyType,
-            request.VolumeLiters,
-            request.FuelType,
-            request.ImagePath);
+        var command = new UpdateCarModelCommand(id,
+        request.Brand,
+        request.Model,
+        request.StartYear,
+        request.BodyType,
+        request.VolumeLiters,
+        request.FuelType,
+        request.ImagePath);
 
         Result result = await _sender.Send(command, cancellationToken);
 

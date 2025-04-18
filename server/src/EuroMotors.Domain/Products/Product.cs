@@ -17,7 +17,8 @@ public sealed class Product : Entity
 
     public string Name { get; private set; }
 
-    public string Description { get; private set; }
+    private readonly List<Specification> _specifications = [];
+    public IReadOnlyCollection<Specification> Specifications => _specifications.AsReadOnly();
 
     public string VendorCode { get; private set; }
 
@@ -35,7 +36,7 @@ public sealed class Product : Entity
 
     public static Product Create(
         string name,
-        string description,
+        IEnumerable<(string Name, string Value)>? specifications,
         string vendorCode,
         Guid categoryId,
         Guid carModelId,
@@ -47,7 +48,6 @@ public sealed class Product : Entity
         {
             Id = Guid.NewGuid(),
             Name = name,
-            Description = description,
             VendorCode = vendorCode,
             CategoryId = categoryId,
             CarModelId = carModelId,
@@ -57,17 +57,31 @@ public sealed class Product : Entity
             IsAvailable = stock > 0,
             Slug = Slug.GenerateSlug(name)
         };
-
+        if (specifications is not null)
+        {
+            foreach ((string specName, string specValue) in specifications)
+            {
+                product.AddSpecification(specName, specValue);
+            }
+        }
 
         product.RaiseDomainEvent(new ProductCreatedDomainEvent(product.Id));
 
         return product;
     }
 
-    public void Update(string name, string description, string vendorCode, Guid categoryId, Guid carModelId, decimal price, decimal discount, int stock)
+    public void Update(
+        string name,
+        IEnumerable<(string Name, string Value)>? specifications,
+        string vendorCode,
+        Guid categoryId,
+        Guid carModelId,
+        decimal price,
+        decimal discount,
+        int stock
+       )
     {
         Name = name;
-        Description = description;
         VendorCode = vendorCode;
         CategoryId = categoryId;
         CarModelId = carModelId;
@@ -77,7 +91,28 @@ public sealed class Product : Entity
         IsAvailable = stock > 0;
         Slug = Slug.GenerateSlug(name);
 
+        if (specifications is not null)
+        {
+            UpdateSpecifications(specifications);
+        }
+
         RaiseDomainEvent(new ProductUpdatedDomainEvent(Id));
+    }
+
+    public void AddSpecification(string name, string value)
+    {
+        var spec = new Specification(name, value);
+        _specifications.Add(spec);
+    }
+
+    public void UpdateSpecifications(IEnumerable<(string Name, string Value)> specifications)
+    {
+        _specifications.Clear();
+
+        foreach ((string name, string value) in specifications)
+        {
+            _specifications.Add(new Specification(name, value));
+        }
     }
 
     public Result UpdateStock(int stock)

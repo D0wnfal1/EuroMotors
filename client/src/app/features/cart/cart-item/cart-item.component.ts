@@ -21,7 +21,7 @@ export class CartItemComponent implements OnInit {
   product: Product = {
     id: '',
     name: '',
-    description: '',
+    specifications: [],
     price: 0,
     images: [],
     categoryId: '',

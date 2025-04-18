@@ -31,9 +31,12 @@ internal sealed class UpdateProductCommandHandler(IProductRepository productRepo
             return Result.Failure(ProductErrors.NotFound(request.CarModelId));
         }
 
+        IEnumerable<(string SpecificationName, string SpecificationValue)> specs = request.Specifications
+            .Select(s => (s.SpecificationName, s.SpecificationValue));
+
         product.Update(
             request.Name,
-            request.Description,
+            specs,
             request.VendorCode,
             request.CategoryId,
             request.CarModelId,

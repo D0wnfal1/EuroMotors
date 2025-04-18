@@ -10,12 +10,52 @@
         <input matInput formControlName="name" type="text" required />
       </mat-form-field>
 
-      <mat-form-field class="w-full">
-        <mat-label>Description</mat-label>
-        <textarea matInput formControlName="description"></textarea>
-      </mat-form-field>
+      <mat-accordion class="w-full">
+        <mat-expansion-panel #specPanel="matExpansionPanel">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Specifications</mat-panel-title>
+          </mat-expansion-panel-header>
 
-      <mat-form-field class="w-full">
+          <div formArrayName="specifications" class="space-y-4 p-4">
+            <div
+              *ngFor="let spec of specifications.controls; let i = index"
+              [formGroupName]="i"
+              class="flex flex-row w-full items-center space-x-4"
+            >
+              <mat-form-field class="flex-1">
+                <mat-label>Specification Name</mat-label>
+                <input matInput formControlName="specificationName" required />
+              </mat-form-field>
+
+              <mat-form-field class="flex-1">
+                <mat-label>Specification Value</mat-label>
+                <input matInput formControlName="specificationValue" required />
+              </mat-form-field>
+
+              <button
+                mat-icon-button
+                type="button"
+                (click)="removeSpecification(i)"
+                [disabled]="specifications.length <= 1"
+              >
+                <mat-icon>remove_circle</mat-icon>
+              </button>
+            </div>
+
+            <div class="flex justify-end">
+              <button
+                mat-icon-button
+                type="button"
+                (click)="addSpecification()"
+              >
+                <mat-icon>add_circle</mat-icon>
+              </button>
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+
+      <mat-form-field class="w-full pt-6">
         <mat-label>Vendor Code</mat-label>
         <input matInput formControlName="vendorCode" type="text" required />
       </mat-form-field>

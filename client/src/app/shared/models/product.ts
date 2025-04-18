@@ -5,7 +5,6 @@ export type Product = {
   categoryId: string;
   carModelId: string;
   name: string;
-  description: string;
   vendorCode: string;
   price: number;
   discount: number;
@@ -13,4 +12,10 @@ export type Product = {
   isAvailable: boolean;
   slug: string;
   images: ProductImage[];
+  specifications: ProductSpecification[];
+};
+
+export type ProductSpecification = {
+  specificationName: string;
+  specificationValue: string;
 };
