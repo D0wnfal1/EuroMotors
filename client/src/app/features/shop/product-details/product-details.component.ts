@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Product } from '../../../shared/models/product';
 import { CommonModule, CurrencyPipe } from '@angular/common';
@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../../core/services/product.service';
 import { ImageService } from '../../../core/services/image.service';
 import { RelatedProductsComponent } from '../related-products/related-products.component';
+import { MatTabGroup, MatTabsModule } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-product-details',
@@ -25,6 +26,7 @@ import { RelatedProductsComponent } from '../related-products/related-products.c
     MatLabel,
     FormsModule,
     RelatedProductsComponent,
+    MatTabsModule,
   ],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.scss',
@@ -38,6 +40,8 @@ export class ProductDetailsComponent implements OnInit {
   activeIndex: number = 0;
   quantityInCart = 0;
   quantity = 1;
+
+  @ViewChild('tabGroup') tabGroup!: MatTabGroup;
 
   getImageUrl(imagePath: string): string {
     return this.imageService.getImageUrl(imagePath);

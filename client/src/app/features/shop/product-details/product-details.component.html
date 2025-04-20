@@ -2,7 +2,7 @@
   <div class="max-w-(--breakpoint-2xl) px-4 mx-auto">
     <div class="grid grid-cols-2 gap-8">
       <div>
-        <div class="relative w-full max-w-xl mx-auto mt-4">
+        <div class="relative w-full max-w-xs mx-auto mt-4">
           <img
             *ngIf="product.images.length > 0; else noImage"
             [src]="getImageUrl(product.images[activeIndex].path)"
@@ -20,7 +20,7 @@
 
           <button
             mat-icon-button
-            class="absolute -left-6 top-1/2 transform -translate-y-1/2 green-500"
+            class="absolute -left-6 top-1/2 transform -translate-y-1/2 blue-500"
             (click)="previousImage()"
             [disabled]="activeIndex === 0"
           >
@@ -29,7 +29,7 @@
 
           <button
             mat-icon-button
-            class="absolute -right-6 top-1/2 transform -translate-y-1/2 green-500"
+            class="absolute -right-6 top-1/2 transform -translate-y-1/2 blue-500"
             (click)="nextImage()"
             [disabled]="activeIndex === product.images.length - 1"
           >
@@ -43,7 +43,7 @@
             class="w-3 h-3 rounded-full transition-all duration-300"
             [ngClass]="{
               'bg-gray-400': activeIndex !== i,
-              'bg-green-600': activeIndex === i
+              'bg-blue-600': activeIndex === i
             }"
             (click)="activeIndex = i"
             aria-label="Image pagination dot"
@@ -57,16 +57,9 @@
         <h2 class="text-2xl font-semibold text-gray-900">{{ product.name }}</h2>
         <div *ngIf="product.isAvailable; else notAvailable">
           <p>Is Available</p>
-
-          <p *ngFor="let spec of product.specifications">
-            {{ spec.specificationName }}: {{ spec.specificationValue }}
-          </p>
         </div>
         <ng-template #notAvailable>
           <p class="text-red-500">Not available</p>
-          <p *ngFor="let spec of product.specifications">
-            {{ spec.specificationName }}: {{ spec.specificationValue }}
-          </p>
         </ng-template>
 
         <div
@@ -118,11 +111,11 @@
                 type="number"
               />
             </mat-form-field>
-            <div class="text-xl font-semibold text-green-200">
+            <div class="text-xl font-semibold text-blue-200">
               {{ product.price | currency }}
             </div>
 
-            <button class="mt-4 bg-green-300" disabled="" mat-flat-button>
+            <button class="mt-4 bg-blue-300" disabled="" mat-flat-button>
               <mat-icon>shopping_cart</mat-icon>
               {{ getButtonText() }}
             </button>
@@ -130,6 +123,100 @@
         </ng-template>
       </div>
     </div>
+
+    <div class="max-w-7xl mx-auto my-8">
+      <mat-tab-group
+        #tabGroup
+        mat-stretch-tabs="true"
+        mat-align-tabs="center"
+        class="specification-tabs"
+      >
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <div
+              class="px-4 py-2 font-medium text-sm"
+              [ngClass]="{
+                'text-blue-700': tabGroup.selectedIndex === 0,
+                'text-gray-700': tabGroup.selectedIndex !== 0
+              }"
+            >
+              SPECIFICATION
+            </div>
+          </ng-template>
+          <div class="p-4 border border-gray-300 border-t-0 rounded-b-lg">
+            <p
+              class="text-sm text-gray-700"
+              *ngFor="let spec of product.specifications"
+            >
+              {{ spec.specificationName }}: {{ spec.specificationValue }}
+            </p>
+          </div>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <div
+              class="px-4 py-2 font-medium text-sm"
+              [ngClass]="{
+                'text-blue-700': tabGroup.selectedIndex === 1,
+                'text-gray-700': tabGroup.selectedIndex !== 1
+              }"
+            >
+              PAYMENT
+            </div>
+          </ng-template>
+          <div class="p-4 border border-gray-300 border-t-0 rounded-b-lg">
+            <p class="text-sm text-gray-700">
+              Lorem ipsum is simply dummy text of the printing and typesetting
+              industry. Lorem Ipsum has been the industry's standard dummy text
+              ever since the 1500s, when an unknown printer took a galley of
+              type and scrambled it to make a type specimen book.
+            </p>
+          </div>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <div
+              class="px-4 py-2 font-medium text-sm"
+              [ngClass]="{
+                'text-blue-700': tabGroup.selectedIndex === 2,
+                'text-gray-700': tabGroup.selectedIndex !== 2
+              }"
+            >
+              DELIVERY
+            </div>
+          </ng-template>
+          <div class="p-4 border border-gray-300 border-t-0 rounded-b-lg">
+            <p class="text-sm text-gray-700">
+              Lorem ipsum is simply dummy text of the printing and typesetting
+              industry. Lorem Ipsum has been the industry's standard dummy text
+              ever since the 1500s.
+            </p>
+          </div>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <div
+              class="px-4 py-2 font-medium text-sm"
+              [ngClass]="{
+                'text-blue-700': tabGroup.selectedIndex === 3,
+                'text-gray-700': tabGroup.selectedIndex !== 3
+              }"
+            >
+              WARRANTY
+            </div>
+          </ng-template>
+          <div class="p-4 border border-gray-300 border-t-0 rounded-b-lg">
+            <p class="text-sm text-gray-700">
+              Lorem ipsum is simply dummy text of the printing and typesetting
+              industry. Lorem Ipsum has been the industry's standard dummy text
+              ever since the 1500s, when an unknown printer took a galley of
+              type.
+            </p>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+
     <app-related-products
       [categoryId]="product.categoryId"
       [currentProductId]="product.id"

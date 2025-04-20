@@ -74,7 +74,7 @@ public class RemoveItemFromCartTests : BaseIntegrationTest
 
         Guid productId = await Sender.CreateProductAsync(
             "Product Name",
-            "Product Description",
+            "VendorCode456",
             categoryId,
             carModelId,
             100m,

@@ -34,7 +34,7 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
         }
         if (!string.IsNullOrEmpty(request.SearchTerm))
         {
-            whereClause += " AND (LOWER(p.name) LIKE LOWER(@SearchPattern) OR LOWER(p.description) LIKE LOWER(@SearchPattern) OR LOWER(p.vendor_code) LIKE LOWER(@SearchPattern))";
+            whereClause += " AND (LOWER(p.name) LIKE LOWER(@SearchPattern) OR LOWER(p.vendor_code) LIKE LOWER(@SearchPattern))";
         }
 
         string countSql = $"""

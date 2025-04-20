@@ -53,6 +53,6 @@ public class ProductImageController : ControllerBase
 
         Result result = await _sender.Send(command, cancellationToken);
 
-        return result.IsSuccess ? NoContent() : NotFound(result.Error);
+        return result.IsSuccess ? NoContent() : BadRequest(result.Error);
     }
 }

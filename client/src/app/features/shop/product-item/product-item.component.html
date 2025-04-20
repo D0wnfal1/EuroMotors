@@ -2,7 +2,7 @@
   *ngIf="product"
   appearance="outlined"
   routerLink="/shop/{{ product.id }}"
-  class="border border-green-300 rounded-xl shadow-sm p-4 flex flex-col items-center gap-2 w-full sm:w-64 transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg h-full"
+  class="border border-blue-300 rounded-xl shadow-sm p-4 flex flex-col items-center gap-2 w-full sm:w-64 transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg h-full"
 >
   <mat-card-content
     class="mt-2 flex flex-col items-center min-h-[80px] justify-between"
@@ -88,12 +88,12 @@
       <div class="text-sm text-red-700 mt-2 translate-y-[-2px]">
         Is Not Available
       </div>
-      <div class="text-xl font-semibold text-green-200">
+      <div class="text-xl font-semibold text-blue-200">
         {{ product.price | currency }}
       </div>
       <button
         mat-stroked-button
-        class="w-8/12 text-green-200 bg-lime-500 hover:bg-lime-600 font-semibold mt-3 rounded-lg py-3 my-2"
+        class="w-8/12 text-blue-200 bg-lime-500 hover:bg-lime-600 font-semibold mt-3 rounded-lg py-3 my-2"
         disabled
       >
         <mat-icon>add_shopping_cart</mat-icon>

@@ -11,6 +11,7 @@ import { ProductService } from '../../core/services/product.service';
 import { ProductListComponent } from '../../shared/components/product-list/product-list.component';
 import { CarmodelService } from '../../core/services/carmodel.service';
 import { CategoryService } from '../../core/services/category.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-shop',
@@ -22,6 +23,7 @@ export class ShopComponent {
   private productService = inject(ProductService);
   private categoryService = inject(CategoryService);
   private carModelService = inject(CarmodelService);
+  private route = inject(ActivatedRoute);
   products?: Pagination<Product>;
   productImages: { [key: string]: ProductImage[] } = {};
   sortOptions = [
@@ -33,7 +35,13 @@ export class ShopComponent {
   pageSizeOptions = [5, 10, 15, 20];
 
   ngOnInit() {
-    this.initialiseShop();
+    this.route.queryParams.subscribe((params) => {
+      const carModelId = params['carModelId'];
+      if (carModelId) {
+        this.shopParams.carModelIds = [carModelId];
+      }
+      this.initialiseShop();
+    });
   }
 
   initialiseShop() {

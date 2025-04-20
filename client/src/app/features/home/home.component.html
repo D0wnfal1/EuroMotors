@@ -46,7 +46,7 @@
             class="h-48 w-full object-cover"
           />
           <div
-            class="absolute bottom-0 left-0 right-0 bg-green-700/80 bg-opacity-60 text-white p-3"
+            class="absolute bottom-0 left-0 right-0 bg-blue-700/80 bg-opacity-60 text-white p-3"
           >
             <h3 class="text-xl font-bold">{{ category.name }}</h3>
           </div>
@@ -62,7 +62,7 @@
             <div class="grid grid-cols-2 gap-2">
               <a
                 *ngFor="let subcat of category.subcategoryNames.slice(0, 6)"
-                class="text-sm text-gray-700 hover:text-green-600 hover:underline cursor-pointer"
+                class="text-sm text-gray-700 hover:text-blue-600 hover:underline cursor-pointer"
                 [routerLink]="['/shop/category', category.id]"
               >
                 {{ subcat }}
@@ -110,14 +110,11 @@
 
   <div class="mt-8">
     <h2 class="text-2xl font-bold text-center">POPULAR PRODUCTS</h2>
-    <div class="relative flex justify-center">
-      <div class="h-1 bg-green-700 w-64 mt-2"></div>
-    </div>
 
     <div class="flex justify-center mt-6 mb-8 gap-4">
       <button
         mat-raised-button
-        [class.bg-green-500]="selectedProductTab === 'new'"
+        [class.bg-blue-500]="selectedProductTab === 'new'"
         [class.text-white]="selectedProductTab === 'new'"
         class="px-8 py-2 rounded-full"
         (click)="changeProductTab('new')"
@@ -126,7 +123,7 @@
       </button>
       <button
         mat-raised-button
-        [class.bg-green-500]="selectedProductTab === 'discounts'"
+        [class.bg-blue-500]="selectedProductTab === 'discounts'"
         [class.text-white]="selectedProductTab === 'discounts'"
         class="px-8 py-2 rounded-full"
         (click)="changeProductTab('discounts')"
@@ -135,7 +132,7 @@
       </button>
       <button
         mat-raised-button
-        [class.bg-green-500]="selectedProductTab === 'popular'"
+        [class.bg-blue-500]="selectedProductTab === 'popular'"
         [class.text-white]="selectedProductTab === 'popular'"
         class="px-8 py-2 rounded-full"
         (click)="changeProductTab('popular')"
@@ -147,14 +144,14 @@
     <div class="relative">
       <button
         mat-icon-button
-        class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-green-500 text-white"
+        class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-blue-500 text-white"
         (click)="prevProduct()"
       >
         <mat-icon>chevron_left</mat-icon>
       </button>
       <button
         mat-icon-button
-        class="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-green-500 text-white"
+        class="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-blue-500 text-white"
         (click)="nextProduct()"
       >
         <mat-icon>chevron_right</mat-icon>

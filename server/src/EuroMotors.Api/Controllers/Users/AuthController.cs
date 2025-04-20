@@ -39,6 +39,6 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(object), 200)]
     public IActionResult GetAuthState()
     {
-        return Ok(new { IsAuthenticated = User.Identity?.IsAuthenticated ?? false });
+        return Ok(new AuthState { IsAuthenticated = User.Identity?.IsAuthenticated ?? false });
     }
 }

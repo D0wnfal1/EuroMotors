@@ -21,6 +21,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\..\src\EuroMotors.Api\EuroMotors.Api.csproj" />
 	  <ProjectReference Include="..\..\src\EuroMotors.Application\EuroMotors.Application.csproj" />
 	</ItemGroup>
 

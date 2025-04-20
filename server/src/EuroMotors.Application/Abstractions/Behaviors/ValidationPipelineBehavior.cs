@@ -19,7 +19,7 @@ internal sealed class ValidationPipelineBehavior<TRequest, TResponse>(IEnumerabl
 
         if (validationFailures.Length == 0)
         {
-            return await next();
+            return await next(cancellationToken);
         }
 
         var validationError = ValidationError.FromResults(validationFailures.Select(f => Result.Failure(Error.Problem(f.ErrorCode, f.ErrorMessage))));

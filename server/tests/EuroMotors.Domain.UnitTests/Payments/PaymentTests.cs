@@ -5,98 +5,152 @@ using EuroMotors.Domain.Payments.Events;
 using EuroMotors.Domain.UnitTests.Infrastructure;
 using EuroMotors.Domain.UnitTests.Users;
 using EuroMotors.Domain.Users;
+using Shouldly;
 
 namespace EuroMotors.Domain.UnitTests.Payments;
 
-public class PaymentTests
+public class PaymentTests : BaseTest
 {
-    [Fact]
-    public void CreatePayment_ShouldRaisePaymentCreatedDomainEvent()
-    {
-        // Arrange
-        var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
-        var order = Order.Create(user.Id, "BuyerName", "BuyerPhoneNumber", "BuyerEmail", DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
-        var payment = Payment.Create(order.Id, Guid.NewGuid(), PaymentStatus.Pending, 100m);
+    private static readonly Guid OrderId = Guid.NewGuid();
+    private static readonly Guid TransactionId = Guid.NewGuid();
+    private const PaymentStatus Status = PaymentStatus.Pending;
+    private const decimal Amount = 299.99m;
 
+    [Fact]
+    public void Create_Should_SetPropertyValues()
+    {
         // Act
-        PaymentCreatedDomainEvent domainEvent = BaseTest.AssertDomainEventWasPublished<PaymentCreatedDomainEvent>(payment);
+        var payment = Payment.Create(
+            OrderId,
+            TransactionId,
+            Status,
+            Amount);
 
         // Assert
-        Assert.NotNull(domainEvent);
-        Assert.Equal(payment.Id, domainEvent.PaymentId);
+        payment.Id.ShouldNotBe(Guid.Empty);
+        payment.OrderId.ShouldBe(OrderId);
+        payment.TransactionId.ShouldBe(TransactionId);
+        payment.Status.ShouldBe(Status);
+        payment.Amount.ShouldBe(Amount);
+        payment.AmountRefunded.ShouldBe(0m);
+        payment.CreatedAtUtc.ShouldNotBe(DateTime.MinValue);
+        payment.RefundedAtUtc.ShouldBeNull();
     }
 
     [Fact]
-    public void Refund_ShouldReturnSuccess_WhenValidRefundAmount()
+    public void Create_Should_RaisePaymentCreatedDomainEvent()
     {
-        // Arrange
-        var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
-        var order = Order.Create(user.Id, "BuyerName", "BuyerPhoneNumber", "BuyerEmail", DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
-        var payment = Payment.Create(order.Id, Guid.NewGuid(), PaymentStatus.Success, 100m);
-
         // Act
-        Result result = payment.Refund(50m);
+        var payment = Payment.Create(
+            OrderId,
+            TransactionId,
+            Status,
+            Amount);
 
         // Assert
-        Assert.True(result.IsSuccess);
-        Assert.Equal(50m, payment.AmountRefunded);
+        PaymentCreatedDomainEvent domainEvent = AssertDomainEventWasPublished<PaymentCreatedDomainEvent>(payment);
+        domainEvent.PaymentId.ShouldBe(payment.Id);
     }
 
     [Fact]
-    public void Refund_ShouldReturnFailure_WhenRefundAmountExceedsTotalAmount()
+    public void Refund_Should_UpdateAmountRefundedAndRaisePartialRefundEvent_WhenPartialRefund()
     {
         // Arrange
-        var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
-        var order = Order.Create(user.Id, "BuyerName", "BuyerPhoneNumber", "BuyerEmail", DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
-        var payment = Payment.Create(order.Id, Guid.NewGuid(), PaymentStatus.Success, 100m);
+        var payment = Payment.Create(
+            OrderId,
+            TransactionId,
+            PaymentStatus.Success,
+            Amount);
+
+        decimal refundAmount = Amount / 2;
 
         // Act
-        Result result = payment.Refund(150m);
+        Result result = payment.Refund(refundAmount);
 
         // Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(PaymentErrors.NotEnoughFunds, result.Error);
+        result.IsSuccess.ShouldBeTrue();
+        payment.AmountRefunded.ShouldBe(refundAmount);
+        
+        PaymentPartiallyRefundedDomainEvent domainEvent = AssertDomainEventWasPublished<PaymentPartiallyRefundedDomainEvent>(payment);
+        domainEvent.PaymentId.ShouldBe(payment.Id);
+        domainEvent.TransactionId.ShouldBe(TransactionId);
     }
 
     [Fact]
-    public void ChangeStatus_ShouldUpdatePaymentStatus()
+    public void Refund_Should_UpdateAmountRefundedAndRaiseFullRefundEvent_WhenFullRefund()
     {
-        var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
-        var order = Order.Create(user.Id, "BuyerName", "BuyerPhoneNumber", "BuyerEmail", DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
-        var payment = Payment.Create(order.Id, Guid.NewGuid(), PaymentStatus.Pending, 100m);
+        // Arrange
+        var payment = Payment.Create(
+            OrderId,
+            TransactionId,
+            PaymentStatus.Success,
+            Amount);
 
+        // Act
+        Result result = payment.Refund(Amount);
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+        payment.AmountRefunded.ShouldBe(Amount);
+        
+        PaymentRefundedDomainEvent domainEvent = AssertDomainEventWasPublished<PaymentRefundedDomainEvent>(payment);
+        domainEvent.PaymentId.ShouldBe(payment.Id);
+        domainEvent.TransactionId.ShouldBe(TransactionId);
+    }
+
+    [Fact]
+    public void Refund_Should_ReturnFailure_WhenAlreadyRefunded()
+    {
+        // Arrange
+        var payment = Payment.Create(
+            OrderId,
+            TransactionId,
+            PaymentStatus.Success,
+            Amount);
+
+        payment.Refund(Amount);
+
+        // Act
+        Result result = payment.Refund(1m);
+
+        // Assert
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(PaymentErrors.AlreadyRefunded);
+    }
+
+    [Fact]
+    public void Refund_Should_ReturnFailure_WhenRefundAmountExceedsPaymentAmount()
+    {
+        // Arrange
+        var payment = Payment.Create(
+            OrderId,
+            TransactionId,
+            PaymentStatus.Success,
+            Amount);
+
+        // Act
+        Result result = payment.Refund(Amount + 1m);
+
+        // Assert
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(PaymentErrors.NotEnoughFunds);
+    }
+
+    [Fact]
+    public void ChangeStatus_Should_UpdatePaymentStatus()
+    {
+        // Arrange
+        var payment = Payment.Create(
+            OrderId,
+            TransactionId,
+            PaymentStatus.Pending,
+            Amount);
+
+        // Act
         payment.ChangeStatus(PaymentStatus.Success);
 
-        Assert.Equal(PaymentStatus.Success, payment.Status);
-    }
-
-    [Fact]
-    public void Refund_ShouldReturnFailure_WhenAlreadyFullyRefunded()
-    {
-        var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
-        var order = Order.Create(user.Id, "BuyerName", "BuyerPhoneNumber", "BuyerEmail", DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
-        var payment = Payment.Create(order.Id, Guid.NewGuid(), PaymentStatus.Success, 100m);
-        payment.Refund(100m);
-
-        Result result = payment.Refund(50m);
-
-        Assert.False(result.IsSuccess);
-        Assert.Equal(PaymentErrors.AlreadyRefunded, result.Error);
-    }
-
-    [Fact]
-    public void Refund_ShouldRaisePaymentRefundedDomainEvent_WhenFullyRefunded()
-    {
-        var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
-        var order = Order.Create(user.Id, "BuyerName", "BuyerPhoneNumber", "BuyerEmail", DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
-        var payment = Payment.Create(order.Id, Guid.NewGuid(), PaymentStatus.Success, 100m);
-
-        payment.Refund(100m);
-
-        PaymentRefundedDomainEvent domainEvent = BaseTest.AssertDomainEventWasPublished<PaymentRefundedDomainEvent>(payment);
-
-        Assert.NotNull(domainEvent);
-        Assert.Equal(payment.Id, domainEvent.PaymentId);
+        // Assert
+        payment.Status.ShouldBe(PaymentStatus.Success);
     }
 }
 

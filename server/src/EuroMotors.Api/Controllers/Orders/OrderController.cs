@@ -69,7 +69,7 @@ public class OrderController : ControllerBase
 
         Result<Guid> result = await _sender.Send(command, cancellationToken);
 
-        return result.IsSuccess ? Ok(new { orderId = result.Value }) : BadRequest();
+        return result.IsSuccess ? Ok(new { orderId = result.Value }) : BadRequest(result.Error);
     }
 
     [HttpPatch("{id}")]

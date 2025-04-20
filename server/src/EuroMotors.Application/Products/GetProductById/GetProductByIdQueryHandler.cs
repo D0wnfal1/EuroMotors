@@ -14,66 +14,61 @@ internal sealed class GetProductByIdQueryHandler(IDbConnectionFactory dbConnecti
     {
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
-        const string sql = """
+        const string productSql = """
             SELECT
-                p.id AS Id,
-                p.category_id AS CategoryId,
-                p.car_model_id AS CarModelId,
-                p.name AS Name,
-                p.vendor_code AS VendorCode,
-                p.price AS Price,
-                p.discount AS Discount,
-                p.stock AS Stock,
-                p.is_available AS IsAvailable,
-                p.slug AS Slug,
-
-                pi.id AS ProductImageId,
-                pi.path AS Path,
-                pi.product_id AS ProductId,
-
-                s.specification_name AS SpecificationName,
-                s.specification_value AS SpecificationValue
-            FROM products p
-            LEFT JOIN product_images pi ON pi.product_id = p.id
-            LEFT JOIN product_specifications s ON s.product_id = p.id
-            WHERE p.id = @ProductId
+                id AS Id,
+                category_id AS CategoryId,
+                car_model_id AS CarModelId,
+                name AS Name,
+                vendor_code AS VendorCode,
+                price AS Price,
+                discount AS Discount,
+                stock AS Stock,
+                is_available AS IsAvailable,
+                slug AS Slug
+            FROM products
+            WHERE id = @ProductId
         """;
 
-        var productDictionary = new Dictionary<Guid, ProductResponse>();
-
-        await connection.QueryAsync<ProductResponse, ProductImageResponse, Specification, ProductResponse>(
-            sql,
-            (product, image, specification) =>
-            {
-                if (!productDictionary.TryGetValue(product.Id, out ProductResponse? productEntry))
-                {
-                    productEntry = product;
-                    productEntry.Images = new List<ProductImageResponse>();
-                    productEntry.Specifications = new List<Specification>();
-                    productDictionary.Add(productEntry.Id, productEntry);
-                }
-
-                if (image != null && image.ProductImageId != Guid.Empty)
-                {
-                    productEntry.Images.Add(image);
-                }
-
-                if (specification?.SpecificationName != null && specification.SpecificationValue != null)
-                {
-                    productEntry.Specifications.Add(specification);
-                }
-
-                return productEntry;
-            },
-            new { request.ProductId },
-            splitOn: "ProductImageId,SpecificationName"
+        ProductResponse? product = await connection.QueryFirstOrDefaultAsync<ProductResponse>(
+            productSql,
+            new { request.ProductId }
         );
 
-        if (!productDictionary.TryGetValue(request.ProductId, out ProductResponse? productResult))
+        if (product == null)
         {
             return Result.Failure<ProductResponse>(ProductErrors.NotFound(request.ProductId));
         }
 
-        return Result.Success(productResult);
+        const string imagesSql = """
+            SELECT
+                id AS ProductImageId,
+                path AS Path,
+                product_id AS ProductId
+            FROM product_images
+            WHERE product_id = @ProductId
+        """;
+
+        IEnumerable<ProductImageResponse> images = await connection.QueryAsync<ProductImageResponse>(
+            imagesSql,
+            new { request.ProductId }
+        );
+        product.Images = images.ToList();
+
+        const string specificationsSql = """
+            SELECT
+                specification_name AS SpecificationName,
+                specification_value AS SpecificationValue
+            FROM product_specifications
+            WHERE product_id = @ProductId
+        """;
+
+        IEnumerable<Specification> specifications = await connection.QueryAsync<Specification>(
+            specificationsSql,
+            new { request.ProductId }
+        );
+        product.Specifications = specifications.ToList();
+
+        return Result.Success(product);
     }
 }

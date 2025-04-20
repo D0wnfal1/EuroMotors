@@ -2,3 +2,18 @@
   object-fit: contain;
   border-radius: 0.5rem;
 }
+
+.specification-tabs ::ng-deep .mat-mdc-tab {
+  background-color: #e5e7eb;
+  border: 1px solid #d1d5db;
+  height: 2.5rem;
+  min-width: 120px;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.specification-tabs ::ng-deep .mat-mdc-tab-header {
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  overflow: hidden;
+}

@@ -3,12 +3,10 @@
 internal static class ProductData
 {
     public static readonly string Name = new("Test Product");
-    public static readonly string Description = new("Description");
     public static readonly string VendorCode = new("VENDOR123");
     public static readonly Guid CategoryId = Guid.NewGuid();
     public static readonly Guid CarModelId = Guid.NewGuid();
     public const decimal Price = 100m;
     public const decimal Discount = 10m;
     public const int Stock = 50;
-    public const bool IsAvailable = true;
 }

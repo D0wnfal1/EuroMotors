@@ -1,4 +1,4 @@
-<section class="py-6 mt-8 border-t border-gray-200">
+<section class="py-3 mt-4">
   <div class="max-w-[var(--breakpoint-2xl)] px-4 mx-auto">
     <h2 class="text-xl font-medium text-center uppercase text-gray-800 mb-6">
       OTHER PRODUCTS IN THE SECTION
@@ -7,7 +7,7 @@
     <div class="relative flex items-center">
       <button
         mat-icon-button
-        class="absolute left-[-24px] top-1/2 -translate-y-1/2 text-green-500 bg-white shadow-md rounded-full z-10"
+        class="absolute left-[-24px] top-1/2 -translate-y-1/2 text-blue-500 bg-white shadow-md rounded-full z-10"
         (click)="previousSlide()"
         [disabled]="currentSlide === 0"
       >
@@ -17,7 +17,7 @@
       <div class="w-full grid grid-cols-3 gap-4 overflow-hidden mt-4">
         <div
           *ngFor="let product of visibleProducts"
-          class="border border-green-200 rounded-md p-4 flex flex-col items-center relative"
+          class="border border-blue-200 rounded-md p-4 flex flex-col items-center relative"
         >
           <app-product-item [product]="product"></app-product-item>
         </div>
@@ -25,7 +25,7 @@
 
       <button
         mat-icon-button
-        class="absolute right-[-24px] top-1/2 -translate-y-1/2 text-green-500 bg-white shadow-md rounded-full z-10"
+        class="absolute right-[-24px] top-1/2 -translate-y-1/2 text-blue-500 bg-white shadow-md rounded-full z-10"
         (click)="nextSlide()"
         [disabled]="currentSlide >= maxSlide"
       >

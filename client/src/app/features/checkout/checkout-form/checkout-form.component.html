@@ -56,13 +56,13 @@
       *ngIf="checkoutForm.get('deliveryMethod')?.value === deliveryMethods[1]"
     >
       <mat-form-field appearance="fill" class="w-full">
-        <mat-label>SELECT DELIVERY METHOD</mat-label>
+        <mat-label>SELECT WAREHOUSE*</mat-label>
         <input
           type="text"
           matInput
           formControlName="warehouseQuery"
           [matAutocomplete]="auto"
-          placeholder="Enter the Delivery Method"
+          placeholder="Select Warehouse"
         />
         <mat-autocomplete
           #auto="matAutocomplete"
@@ -133,7 +133,7 @@
         mat-raised-button
         type="submit"
         [disabled]="checkoutForm.invalid"
-        class="bg-green-500 text-white px-8 py-2 rounded-full w-32 uppercase font-medium"
+        class="bg-blue-500 text-white px-8 py-2 rounded-full w-32 uppercase font-medium"
       >
         BUY
       </button>

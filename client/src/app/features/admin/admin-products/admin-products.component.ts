@@ -81,7 +81,6 @@ export class AdminProductsComponent implements OnInit {
     this.categoryService.categories$.subscribe((data) => {
       this.categories = data;
     });
-    console.log(this.categories);
   }
 
   loadCarModels() {

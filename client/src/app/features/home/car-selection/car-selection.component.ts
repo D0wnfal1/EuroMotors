@@ -9,6 +9,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { CarmodelService } from '../../../core/services/carmodel.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 interface SelectedCar {
   brand: string;
@@ -58,7 +59,8 @@ export class CarSelectionComponent implements OnInit, OnDestroy {
 
   constructor(
     private carModelService: CarmodelService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private router: Router
   ) {
     this.carSelectionForm = this.fb.group({
       brand: ['', Validators.required],
@@ -156,8 +158,12 @@ export class CarSelectionComponent implements OnInit, OnDestroy {
 
   saveSelection(): void {
     if (this.carSelectionForm.valid) {
+      let selectedCarId: string | null = null;
+
       if (this.availableCarIds.length === 1) {
-        this.carModelService.saveCarSelection(this.availableCarIds[0]);
+        selectedCarId = this.availableCarIds[0];
+        this.carModelService.saveCarSelection(selectedCarId);
+        this.navigateToShop(selectedCarId);
       } else if (this.availableCarIds.length > 1) {
         const formValues = this.carSelectionForm.value;
         const filter = {
@@ -171,7 +177,9 @@ export class CarSelectionComponent implements OnInit, OnDestroy {
         this.carModelService.getCarSelectionWithIds(filter).subscribe({
           next: (response: CarSelectionResponse) => {
             if (response.ids.length === 1) {
-              this.carModelService.saveCarSelection(response.ids[0]);
+              selectedCarId = response.ids[0];
+              this.carModelService.saveCarSelection(selectedCarId);
+              this.navigateToShop(selectedCarId);
             } else {
               console.error(
                 'Multiple car IDs still match after all filters',
@@ -187,6 +195,10 @@ export class CarSelectionComponent implements OnInit, OnDestroy {
         console.error('No car IDs match the current selection');
       }
     }
+  }
+
+  navigateToShop(carId: string): void {
+    this.router.navigate(['/shop'], { queryParams: { carModelId: carId } });
   }
 
   clearSelection(): void {
