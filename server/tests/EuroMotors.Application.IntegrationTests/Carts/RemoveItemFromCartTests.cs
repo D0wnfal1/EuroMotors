@@ -56,14 +56,14 @@ public class RemoveItemFromCartTests : BaseIntegrationTest
         Guid userId = await Sender.CreateUserAsync();
 
         var faker = new Faker();
-        Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
+        var brandId = Guid.NewGuid();
+        Guid categoryId = await Sender.CreateCategoryAsync("CategoryName2");
         Guid carModelId = await Sender.CreateCarModelAsync(
-            faker.Vehicle.Manufacturer(),
+            brandId,
             faker.Vehicle.Model(),
             2020,
             BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel),
-            null
+            new EngineSpec(6, FuelType.Diesel)
         );
 
         var specifications = new List<Specification>

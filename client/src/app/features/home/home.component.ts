@@ -13,6 +13,8 @@ import { Category } from '../../shared/models/category';
 import { Product } from '../../shared/models/product';
 import { ShopParams } from '../../shared/models/shopParams';
 import { Subscription } from 'rxjs';
+import { CarbrandService } from '../../core/services/carbrand.service';
+import { CarBrand } from '../../shared/models/carBrand';
 
 @Component({
   selector: 'app-home',
@@ -29,16 +31,13 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  // Car brands properties
   uniqueBrands: string[] = [];
-  allBrands: string[] = [];
-  displayedBrands: string[] = [];
+  allBrands: CarBrand[] = [];
+  displayedBrands: CarBrand[] = [];
   showAllBrands: boolean = false;
 
-  // Categories properties
   mainCategories: Category[] = [];
 
-  // Products properties
   shopParams = new ShopParams();
   allProducts: Product[] = [];
   displayedProducts: Product[] = [];
@@ -47,15 +46,15 @@ export class HomeComponent implements OnInit, OnDestroy {
   popularProducts: Product[] = [];
   selectedProductTab: string = 'new';
 
-  // Slider properties
   slidePosition: number = 0;
   itemsPerView: number = 4;
-  slideWidth: number = 290; // 280px item width + 2*5px margins
+  slideWidth: number = 290;
 
   private subscriptions: Subscription[] = [];
 
   constructor(
     private carmodelService: CarmodelService,
+    private carBrandService: CarbrandService,
     private categoryService: CategoryService,
     private productService: ProductService,
     private imageService: ImageService,
@@ -63,22 +62,17 @@ export class HomeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Load car brands - используем новый метод для загрузки всех брендов
     this.loadAllBrands();
 
-    // Load main categories
     this.loadMainCategories();
 
-    // Load products
     this.loadProducts();
 
-    // Set responsive items per view based on window width
     this.setItemsPerView();
     window.addEventListener('resize', this.setItemsPerView.bind(this));
   }
 
   ngOnDestroy(): void {
-    // Clean up subscriptions to prevent memory leaks
     this.subscriptions.forEach((sub) => sub.unsubscribe());
     window.removeEventListener('resize', this.setItemsPerView.bind(this));
   }
@@ -93,19 +87,19 @@ export class HomeComponent implements OnInit, OnDestroy {
     } else {
       this.itemsPerView = 4;
     }
-    this.slidePosition = 0; // Reset position when resizing
+    this.slidePosition = 0;
   }
 
-  // Заменяем метод loadUniqueBrands на новый loadAllBrands
   loadAllBrands(): void {
-    const brandsSub = this.carmodelService.allBrands$.subscribe((brands) => {
-      this.allBrands = brands;
-      this.displayedBrands = this.allBrands.slice(0, 16);
-    });
+    const brandsSub = this.carBrandService.availableBrands$.subscribe(
+      (brands) => {
+        this.allBrands = brands;
+        this.displayedBrands = this.allBrands.slice(0, 16);
+      }
+    );
 
     this.subscriptions.push(brandsSub);
-    // Вызываем новый метод для получения всех брендов
-    this.carmodelService.getAllBrands().subscribe();
+    this.carBrandService.getAllCarBrands();
   }
 
   loadMainCategories(): void {
@@ -117,7 +111,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         next: (categories) => {
           this.mainCategories = categories;
 
-          // For each main category, load its subcategories
           categories.forEach((category) => {
             if (category.id) {
               const subCatSub = this.categoryService
@@ -149,7 +142,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   loadProducts(): void {
-    // Create shop params for fetching products
     this.shopParams.pageNumber = 1;
     this.shopParams.pageSize = 20;
 
@@ -159,12 +151,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         next: (response) => {
           this.allProducts = response.data;
 
-          // Filter products for each tab
           this.newProducts = [...this.allProducts]
-            .sort((a, b) =>
-              // This is a placeholder sort - in a real app, you might sort by date added
-              b.id.localeCompare(a.id)
-            )
+            .sort((a, b) => b.id.localeCompare(a.id))
             .slice(0, 10);
 
           this.discountProducts = [...this.allProducts]
@@ -172,11 +160,8 @@ export class HomeComponent implements OnInit, OnDestroy {
             .sort((a, b) => b.discount - a.discount)
             .slice(0, 10);
 
-          this.popularProducts = [...this.allProducts]
-            // In a real app, you might sort by sales count or views
-            .slice(0, 10);
+          this.popularProducts = [...this.allProducts].slice(0, 10);
 
-          // Set initial displayed products
           this.changeProductTab(this.selectedProductTab);
         },
         error: (err) => console.error('Failed to load products', err),
@@ -197,7 +182,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   changeProductTab(tab: string): void {
     this.selectedProductTab = tab;
-    this.slidePosition = 0; // Reset slide position
+    this.slidePosition = 0;
 
     switch (tab) {
       case 'new':
@@ -250,5 +235,11 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getImageUrl(path: string): string {
     return this.imageService.getImageUrl(path);
+  }
+
+  getBrandLogo(brand: CarBrand): string {
+    return brand.logoPath
+      ? this.imageService.getImageUrl(brand.logoPath)
+      : '/images/no-image.jpeg';
   }
 }

@@ -1,5 +1,6 @@
 using EuroMotors.Application.Products.UpdateProduct;
 using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.CarBrands;
 using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Categories;
 using EuroMotors.Domain.Products;
@@ -16,9 +17,18 @@ public class UpdateProductCommandHandlerTests
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
 
     private readonly UpdateProductCommandHandler _handler;
+    private readonly Guid _brandId = Guid.NewGuid();
+    private readonly CarBrand _carBrand;
 
     public UpdateProductCommandHandlerTests()
     {
+        _carBrand = CarBrand.Create("Test Brand");
+
+        // Set the brand ID for testing
+        typeof(Entity)
+            .GetProperty("Id")
+            ?.SetValue(_carBrand, _brandId);
+
         _handler = new UpdateProductCommandHandler(
             _productRepository,
             _categoryRepository,
@@ -181,8 +191,15 @@ public class UpdateProductCommandHandlerTests
 
         _productRepository.GetByIdAsync(productId, CancellationToken.None).Returns(product);
         _categoryRepository.GetByIdAsync(categoryId, CancellationToken.None).Returns(Category.Create("Test Category"));
-        _carModelRepository.GetByIdAsync(carModelId, CancellationToken.None).Returns(
-            CarModel.Create("Test Brand", "Test CarModel", 2020, BodyType.Sedan, new EngineSpec(6, FuelType.Diesel)));
+
+        var carModel = CarModel.Create(
+            _carBrand,
+            "Test Model",
+            2020,
+            BodyType.Sedan,
+            new EngineSpec(6, FuelType.Diesel));
+
+        _carModelRepository.GetByIdAsync(carModelId, CancellationToken.None).Returns(carModel);
 
         // Act
         Result result = await _handler.Handle(command, CancellationToken.None);
@@ -191,4 +208,4 @@ public class UpdateProductCommandHandlerTests
         result.IsSuccess.ShouldBeTrue();
         await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);
     }
-} 
+}

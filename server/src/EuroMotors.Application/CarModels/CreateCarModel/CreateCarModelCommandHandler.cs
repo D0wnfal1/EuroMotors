@@ -1,36 +1,30 @@
 ﻿using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.CarBrands;
 using EuroMotors.Domain.CarModels;
 
 namespace EuroMotors.Application.CarModels.CreateCarModel;
 
-internal sealed class CreateCarModelCommandHandler(ICarModelRepository carModelRepository, IUnitOfWork unitOfWork) : ICommandHandler<CreateCarModelCommand, Guid>
+internal sealed class CreateCarModelCommandHandler(
+    ICarModelRepository carModelRepository,
+    ICarBrandRepository carBrandRepository,
+    IUnitOfWork unitOfWork) : ICommandHandler<CreateCarModelCommand, Guid>
 {
     public async Task<Result<Guid>> Handle(CreateCarModelCommand request, CancellationToken cancellationToken)
     {
-        var carModel = CarModel.Create(request.Brand, request.Model, request.StartYear, request.BodyType, request.EngineSpec);
+        CarBrand? carBrand = await carBrandRepository.GetByIdAsync(request.CarBrandId, cancellationToken);
 
-        if (request.Image != null && request.Image.Length > 0)
+        if (carBrand is null)
         {
-            string fileName = $"{Guid.NewGuid()}{Path.GetExtension(request.Image.FileName)}";
-
-            string projectRoot = Path.GetFullPath(Directory.GetCurrentDirectory());
-            string basePath = Path.Combine(projectRoot, "wwwroot", "images", "CarModels");
-
-            if (!Directory.Exists(basePath))
-            {
-                Directory.CreateDirectory(basePath);
-            }
-
-            string filePath = Path.Combine(basePath, fileName);
-            await using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await request.Image.CopyToAsync(stream, cancellationToken);
-            }
-
-            string imageUrl = $"/images/CarModels/{fileName}";
-            carModel.SetImagePath(imageUrl);
+            return Result.Failure<Guid>(CarModelErrors.BrandNotFound(request.CarBrandId));
         }
+
+        var carModel = CarModel.Create(
+            carBrand,
+            request.ModelName,
+            request.StartYear,
+            request.BodyType,
+            request.EngineSpec);
 
         carModelRepository.Insert(carModel);
         await unitOfWork.SaveChangesAsync(cancellationToken);

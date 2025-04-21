@@ -83,7 +83,7 @@ public class SetProductAvailabilityCommandHandlerTests
             100,
             10,
             50);
-        
+
         product.SetAvailability(true);
 
         _productRepository.GetByIdAsync(productId, CancellationToken.None).Returns(product);
@@ -96,4 +96,4 @@ public class SetProductAvailabilityCommandHandlerTests
         product.IsAvailable.ShouldBeFalse();
         await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);
     }
-} 
+}

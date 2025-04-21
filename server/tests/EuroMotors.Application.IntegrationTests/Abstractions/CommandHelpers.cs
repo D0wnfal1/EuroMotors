@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using EuroMotors.Application.CarBrands.CreateCarBrand;
 using EuroMotors.Application.CarModels.CreateCarModel;
 using EuroMotors.Application.Categories.CreateCategory;
 using EuroMotors.Application.ProductImages.UploadProductImage;
@@ -38,12 +39,26 @@ internal static class CommandHelpers
         return result.Value;
     }
 
-    public static async Task<Guid> CreateCarModelAsync(this ISender sender, string brand, string model, int startYear, BodyType bodyType, EngineSpec engineSpec, IFormFile? image = null)
+    public static async Task<Guid> CreateCarBrandAsync(this ISender sender, string brandName, IFormFile? logo = null)
     {
-        var createCarModelCommand = new CreateCarModelCommand(brand, model, startYear, bodyType, engineSpec, image);
+        var createCarBrandCommand = new CreateCarBrandCommand(brandName, logo);
+        Result<Guid> result = await sender.Send(createCarBrandCommand);
+        result.IsSuccess.ShouldBeTrue();
+        return result.Value;
+    }
+
+    public static async Task<Guid> CreateCarModelAsync(this ISender sender, Guid brandId, string modelName, int startYear, BodyType bodyType, EngineSpec engineSpec)
+    {
+        var createCarModelCommand = new CreateCarModelCommand(brandId, modelName, startYear, bodyType, engineSpec);
         Result<Guid> result = await sender.Send(createCarModelCommand);
         result.IsSuccess.ShouldBeTrue();
         return result.Value;
+    }
+
+    public static async Task<Guid> CreateCarModelWithBrandAsync(this ISender sender, string brandName, string modelName, int startYear, BodyType bodyType, EngineSpec engineSpec)
+    {
+        Guid brandId = await sender.CreateCarBrandAsync(brandName);
+        return await sender.CreateCarModelAsync(brandId, modelName, startYear, bodyType, engineSpec);
     }
 
     public static async Task<Guid> CreateProductAsync(
@@ -82,5 +97,4 @@ internal static class CommandHelpers
         result.IsSuccess.ShouldBeTrue();
         return result.Value;
     }
-
 }

@@ -54,4 +54,4 @@ public class SpecificationTests : BaseTest
         specification1.Equals(specification2).ShouldBeFalse();
         (specification1 == specification2).ShouldBeFalse();
     }
-} 
+}

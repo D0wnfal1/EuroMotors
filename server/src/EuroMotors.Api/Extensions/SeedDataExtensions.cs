@@ -3,6 +3,7 @@ using Bogus;
 using Dapper;
 using EuroMotors.Application.Abstractions.Authentication;
 using EuroMotors.Application.Abstractions.Data;
+using EuroMotors.Domain.CarBrands;
 using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Categories;
 using EuroMotors.Domain.Products;
@@ -19,42 +20,118 @@ public static class SeedDataExtensions
         IDbConnectionFactory sqlConnectionFactory = scope.ServiceProvider.GetRequiredService<IDbConnectionFactory>();
         using IDbConnection connection = sqlConnectionFactory.CreateConnection();
 
-
+        SeedCarBrands(connection);
         SeedCarModels(connection);
         SeedCategories(connection);
         SeedProducts(connection);
         SeedUsers(connection, passwordHasher);
     }
 
+    private static void SeedCarBrands(IDbConnection connection)
+    {
+        int brandsCount = connection.ExecuteScalar<int>("SELECT COUNT(*) FROM car_brands");
+        if (brandsCount > 0)
+        {
+            return;
+        }
+
+        string[] carBrands =
+        [
+            "BMW", "Mercedes-Benz", "Audi", "Toyota", "Honda",
+            "Ford", "Chevrolet", "Volkswagen", "Hyundai", "Kia",
+            "Volvo", "Tesla", "Porsche", "Nissan", "Mazda"
+        ];
+
+        var brands = carBrands.Select(name => CarBrand.Create(name)).ToList();
+
+        const string sql = @"INSERT INTO car_brands (id, name, slug, logo_path) 
+                       VALUES (@Id, @Name, @Slug, @LogoPath);";
+
+        connection.Execute(sql, brands.Select(b => new
+        {
+            b.Id,
+            b.Name,
+            Slug = b.Slug.Value,
+            b.LogoPath
+        }));
+    }
+
     private static void SeedCarModels(IDbConnection connection)
     {
-        Faker<CarModel>? faker = new Faker<CarModel>()
-            .CustomInstantiator(f =>
-                CarModel.Create(
-                    f.Vehicle.Manufacturer(),
-                    f.Vehicle.Model(),
-                    f.Date.Past(20).Year,
-                    f.PickRandom<BodyType>(),
-                    new EngineSpec(f.Random.Number(1, 5), f.PickRandom<FuelType>())
-                )
-            );
+        int modelsCount = connection.ExecuteScalar<int>("SELECT COUNT(*) FROM car_models");
+        if (modelsCount > 0)
+        {
+            return;
+        }
 
-        List<CarModel>? carModels = faker.Generate(20);
+        var brands = connection.Query<(Guid Id, string Name)>(
+            "SELECT id, name FROM car_brands").ToList();
 
-        const string sql = @"INSERT INTO car_models (id, brand, model, start_year, body_type, engine_spec_volume_liters, engine_spec_fuel_type, slug, image_path) 
-                         VALUES (@Id, @Brand, @Model, @StartYear, @BodyType, @VolumeLiters, @FuelType, @Slug, @ImagePath);";
+        if (brands.Count == 0)
+        {
+            return;
+        }
+
+        var carModels = new List<CarModel>();
+
+        var brandModels = new Dictionary<string, string[]>
+        {
+            ["BMW"] = ["1 Series", "2 Series", "3 Series", "4 Series", "5 Series", "7 Series", "X1", "X3", "X5", "M3", "M5"],
+            ["Mercedes-Benz"] = ["A-Class", "C-Class", "E-Class", "S-Class", "GLA", "GLC", "GLE", "AMG GT"],
+            ["Audi"] = ["A3", "A4", "A6", "Q3", "Q5", "Q7", "TT", "R8", "RS6"],
+            ["Toyota"] = ["Corolla", "Camry", "RAV4", "Highlander", "Prius", "Land Cruiser", "Yaris"],
+            ["Honda"] = ["Civic", "Accord", "CR-V", "Pilot", "Fit", "HR-V", "Odyssey"],
+            ["Ford"] = ["F-150", "Mustang", "Explorer", "Escape", "Focus", "Edge", "Ranger"],
+            ["Chevrolet"] = ["Silverado", "Malibu", "Equinox", "Tahoe", "Camaro", "Bolt", "Corvette"],
+            ["Volkswagen"] = ["Golf", "Passat", "Tiguan", "Atlas", "Jetta", "Arteon", "ID.4"],
+            ["Hyundai"] = ["Elantra", "Sonata", "Tucson", "Santa Fe", "Kona", "Palisade", "Ioniq"],
+            ["Kia"] = ["Forte", "Optima", "Sportage", "Sorento", "Soul", "Telluride", "Stinger"],
+            ["Volvo"] = ["S60", "S90", "XC40", "XC60", "XC90", "V60", "V90"],
+            ["Tesla"] = ["Model 3", "Model S", "Model X", "Model Y", "Cybertruck"],
+            ["Porsche"] = ["911", "Cayenne", "Macan", "Panamera", "Taycan", "718 Cayman", "718 Boxster"],
+            ["Nissan"] = ["Altima", "Maxima", "Rogue", "Pathfinder", "Sentra", "Murano", "Leaf"],
+            ["Mazda"] = ["Mazda3", "Mazda6", "CX-5", "CX-9", "MX-5 Miata", "CX-30"]
+        };
+
+        var faker = new Faker();
+
+        foreach ((Guid brandId, string brandName) in brands)
+        {
+            if (!brandModels.TryGetValue(brandName, out string[]? models))
+            {
+                continue;
+            }
+
+            foreach (string modelName in models)
+            {
+                var brand = CarBrand.Create(brandName);
+                brand.Id = brandId;
+
+                var carModel = CarModel.Create(
+                    brand,
+                    modelName,
+                    faker.Date.Past(20).Year,
+                    faker.PickRandom<BodyType>(),
+                    new EngineSpec(MathF.Round(faker.Random.Float(1, 5), 1), faker.PickRandom<FuelType>())
+                );
+
+                carModels.Add(carModel);
+            }
+        }
+
+        const string sql = @"INSERT INTO car_models (id, car_brand_id, model_name, start_year, body_type, engine_spec_volume_liters, engine_spec_fuel_type, slug) 
+                         VALUES (@Id, @CarBrandId, @ModelName, @StartYear, @BodyType, @VolumeLiters, @FuelType, @Slug);";
 
         connection.Execute(sql, carModels.Select(c => new
         {
             c.Id,
-            c.Brand,
-            c.Model,
+            c.CarBrandId,
+            c.ModelName,
             c.StartYear,
             BodyType = c.BodyType.ToString(),
             c.EngineSpec.VolumeLiters,
             FuelType = c.EngineSpec.FuelType.ToString(),
-            Slug = c.Slug.Value,
-            c.ImagePath
+            Slug = c.Slug.Value
         }));
     }
 

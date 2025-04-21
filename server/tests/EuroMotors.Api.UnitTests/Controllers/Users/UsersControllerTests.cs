@@ -32,13 +32,13 @@ public class UsersControllerTests
     {
         // Arrange
         string email = "test@example.com";
-        var identity = new ClaimsIdentity(new Claim[] 
-        { 
+        var identity = new ClaimsIdentity(new Claim[]
+        {
             new Claim(ClaimTypes.Email, email)
         }, "test");
         var principal = new ClaimsPrincipal(identity);
         _controller.ControllerContext.HttpContext.User = principal;
-        
+
         var userResponse = new UserResponse
         {
             Id = Guid.NewGuid(),
@@ -46,7 +46,7 @@ public class UsersControllerTests
             FirstName = "John",
             LastName = "Doe"
         };
-        
+
         _sender.Send(Arg.Any<GetUserByEmailQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(userResponse));
 
@@ -56,9 +56,9 @@ public class UsersControllerTests
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(userResponse);
-        
+
         await _sender.Received(1).Send(
-            Arg.Is<GetUserByEmailQuery>(query => query.Email == email), 
+            Arg.Is<GetUserByEmailQuery>(query => query.Email == email),
             Arg.Any<CancellationToken>());
     }
 
@@ -73,9 +73,9 @@ public class UsersControllerTests
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBeNull();
-        
+
         await _sender.DidNotReceive().Send(
-            Arg.Any<GetUserByEmailQuery>(), 
+            Arg.Any<GetUserByEmailQuery>(),
             Arg.Any<CancellationToken>());
     }
 
@@ -83,8 +83,8 @@ public class UsersControllerTests
     public async Task GetByEmail_ShouldReturnUnauthorized_WhenEmailNotInClaims()
     {
         // Arrange
-        var identity = new ClaimsIdentity(new Claim[] 
-        { 
+        var identity = new ClaimsIdentity(new Claim[]
+        {
             new Claim(ClaimTypes.Name, "user")
         }, "test");
         var principal = new ClaimsPrincipal(identity);
@@ -96,9 +96,9 @@ public class UsersControllerTests
         // Assert
         UnauthorizedObjectResult unauthorizedResult = result.ShouldBeOfType<UnauthorizedObjectResult>();
         unauthorizedResult.Value.ShouldBe("Email not found in token");
-        
+
         await _sender.DidNotReceive().Send(
-            Arg.Any<GetUserByEmailQuery>(), 
+            Arg.Any<GetUserByEmailQuery>(),
             Arg.Any<CancellationToken>());
     }
 
@@ -107,13 +107,13 @@ public class UsersControllerTests
     {
         // Arrange
         var request = new LoginRequest("test@example.com", "password123");
-        
+
         var authResponse = new AuthenticationResponse
         {
             AccessToken = "access-token",
             RefreshToken = "refresh-token"
         };
-        
+
         _sender.Send(Arg.Any<LoginUserCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(authResponse));
 
@@ -123,11 +123,11 @@ public class UsersControllerTests
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(authResponse);
-        
+
         await _sender.Received(1).Send(
-            Arg.Is<LoginUserCommand>(cmd => 
-                cmd.Email == request.Email && 
-                cmd.Password == request.Password), 
+            Arg.Is<LoginUserCommand>(cmd =>
+                cmd.Email == request.Email &&
+                cmd.Password == request.Password),
             Arg.Any<CancellationToken>());
     }
 
@@ -136,7 +136,7 @@ public class UsersControllerTests
     {
         // Arrange
         var request = new LoginRequest("test@example.com", "wrong-password");
-        
+
         var error = Error.Failure("User.InvalidCredentials", "Invalid email or password");
         _sender.Send(Arg.Any<LoginUserCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<AuthenticationResponse>(error));
@@ -154,7 +154,7 @@ public class UsersControllerTests
     {
         // Arrange
         var request = new RegisterRequest("new@example.com", "Jane", "Smith", "password123");
-        
+
         var userId = Guid.NewGuid();
         _sender.Send(Arg.Any<RegisterUserCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(userId));
@@ -165,13 +165,13 @@ public class UsersControllerTests
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(userId);
-        
+
         await _sender.Received(1).Send(
-            Arg.Is<RegisterUserCommand>(cmd => 
-                cmd.Email == request.Email && 
+            Arg.Is<RegisterUserCommand>(cmd =>
+                cmd.Email == request.Email &&
                 cmd.FirstName == request.FirstName &&
                 cmd.LastName == request.LastName &&
-                cmd.Password == request.Password), 
+                cmd.Password == request.Password),
             Arg.Any<CancellationToken>());
     }
 
@@ -180,7 +180,7 @@ public class UsersControllerTests
     {
         // Arrange
         var request = new RegisterRequest("existing@example.com", "Jane", "Smith", "password123");
-        
+
         var error = Error.Conflict("User.AlreadyExists", "A user with this email already exists");
         _sender.Send(Arg.Any<RegisterUserCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<Guid>(error));
@@ -205,9 +205,9 @@ public class UsersControllerTests
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
-        
+
         await _sender.Received(1).Send(
-            Arg.Any<LogoutUserCommand>(), 
+            Arg.Any<LogoutUserCommand>(),
             Arg.Any<CancellationToken>());
     }
 
@@ -232,15 +232,15 @@ public class UsersControllerTests
     {
         // Arrange
         string email = "test@example.com";
-        var identity = new ClaimsIdentity(new Claim[] 
-        { 
+        var identity = new ClaimsIdentity(new Claim[]
+        {
             new Claim(ClaimTypes.Email, email)
         }, "test");
         var principal = new ClaimsPrincipal(identity);
         _controller.ControllerContext.HttpContext.User = principal;
 
         var request = new UpdateUserInformationRequest("UpdatedFirst", "UpdatedLast", "1234567890", "New York");
-        
+
         _sender.Send(Arg.Any<UpdateUserInformationCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
@@ -249,14 +249,14 @@ public class UsersControllerTests
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
-        
+
         await _sender.Received(1).Send(
-            Arg.Is<UpdateUserInformationCommand>(cmd => 
-                cmd.Email == email && 
+            Arg.Is<UpdateUserInformationCommand>(cmd =>
+                cmd.Email == email &&
                 cmd.FirstName == request.Firstname &&
                 cmd.LastName == request.LastName &&
                 cmd.PhoneNumber == request.PhoneNumber &&
-                cmd.City == request.City), 
+                cmd.City == request.City),
             Arg.Any<CancellationToken>());
     }
 
@@ -264,13 +264,13 @@ public class UsersControllerTests
     public async Task UpdateUser_ShouldReturnUnauthorized_WhenEmailNotInClaims()
     {
         // Arrange
-        var identity = new ClaimsIdentity(new Claim[] 
-        { 
+        var identity = new ClaimsIdentity(new Claim[]
+        {
             new Claim(ClaimTypes.Name, "user")
         }, "test");
         var principal = new ClaimsPrincipal(identity);
         _controller.ControllerContext.HttpContext.User = principal;
-        
+
         var request = new UpdateUserInformationRequest("UpdatedFirst", "UpdatedLast", "1234567890", "New York");
 
         // Act
@@ -279,9 +279,9 @@ public class UsersControllerTests
         // Assert
         UnauthorizedObjectResult unauthorizedResult = result.ShouldBeOfType<UnauthorizedObjectResult>();
         unauthorizedResult.Value.ShouldBe("Email not found in token");
-        
+
         await _sender.DidNotReceive().Send(
-            Arg.Any<UpdateUserInformationCommand>(), 
+            Arg.Any<UpdateUserInformationCommand>(),
             Arg.Any<CancellationToken>());
     }
 
@@ -290,8 +290,8 @@ public class UsersControllerTests
     {
         // Arrange
         string email = "test@example.com";
-        var identity = new ClaimsIdentity(new Claim[] 
-        { 
+        var identity = new ClaimsIdentity(new Claim[]
+        {
             new Claim(ClaimTypes.Email, email)
         }, "test");
         var principal = new ClaimsPrincipal(identity);
@@ -310,4 +310,4 @@ public class UsersControllerTests
         BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();
         badRequestResult.Value.ShouldBe(error);
     }
-} 
+}

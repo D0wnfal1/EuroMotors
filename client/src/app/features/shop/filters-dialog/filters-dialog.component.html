@@ -17,14 +17,14 @@
     </div>
 
     <div class="w-1/2">
-      <h4 class="font-semibold text-xl text-primary">CarModel Brands</h4>
+      <h4 class="font-semibold text-xl text-primary">Car Models</h4>
       <div class="scrollable-list">
         <mat-selection-list [(ngModel)]="selectedCarModels" [multiple]="true">
           <mat-list-option
             *ngFor="let carModel of carModelService.carModels$ | async"
             [value]="carModel.id"
           >
-            {{ carModel.brand }} {{ carModel.model }}
+            {{ carModel.brandName || "" }} {{ carModel.modelName }}
           </mat-list-option>
         </mat-selection-list>
       </div>

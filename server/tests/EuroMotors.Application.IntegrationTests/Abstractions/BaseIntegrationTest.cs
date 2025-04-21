@@ -27,6 +27,7 @@ public abstract class BaseIntegrationTest : IClassFixture<IntegrationTestWebAppF
             DELETE FROM products;
             DELETE FROM categories;
             DELETE FROM car_models;
+            DELETE FROM car_brands;
             """);
     }
 }

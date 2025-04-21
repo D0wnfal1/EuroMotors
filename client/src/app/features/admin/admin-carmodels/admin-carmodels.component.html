@@ -26,33 +26,12 @@
       [dataSource]="carModels"
       class="mat-elevation-z8 min-w-full bg-white rounded-lg"
     >
-      <ng-container matColumnDef="image">
-        <th mat-header-cell *matHeaderCellDef class="py-2 px-4 text-left">
-          Image
-        </th>
-        <td mat-cell *matCellDef="let carModel" class="py-2 px-4">
-          <img
-            *ngIf="carModel.imagePath; else defaultImage"
-            [src]="getCarModelImage(carModel.imagePath)"
-            alt="Car Model Image"
-            class="w-16 h-16 object-cover rounded-sm"
-          />
-          <ng-template #defaultImage>
-            <img
-              [src]="getCarModelImage('')"
-              alt="Default Car Model Image"
-              class="w-16 h-16 object-cover rounded-sm"
-            />
-          </ng-template>
-        </td>
-      </ng-container>
-
       <ng-container matColumnDef="brand">
         <th mat-header-cell *matHeaderCellDef class="py-2 px-4 text-left">
           Brand
         </th>
         <td mat-cell *matCellDef="let carModel" class="py-2 px-4">
-          {{ carModel.brand }}
+          {{ getBrandName(carModel) }}
         </td>
       </ng-container>
 
@@ -61,7 +40,7 @@
           Model
         </th>
         <td mat-cell *matCellDef="let carModel" class="py-2 px-4">
-          {{ carModel.model }}
+          {{ carModel?.modelName || "—" }}
         </td>
       </ng-container>
 
@@ -70,7 +49,7 @@
           Start Year
         </th>
         <td mat-cell *matCellDef="let carModel" class="py-2 px-4">
-          {{ carModel.startYear }}
+          {{ carModel?.startYear || "—" }}
         </td>
       </ng-container>
 
@@ -79,25 +58,16 @@
           Body Type
         </th>
         <td mat-cell *matCellDef="let carModel" class="py-2 px-4">
-          {{ carModel.bodyType }}
+          {{ carModel?.bodyType || "—" }}
         </td>
       </ng-container>
 
-      <ng-container matColumnDef="volumeLiters">
+      <ng-container matColumnDef="engine">
         <th mat-header-cell *matHeaderCellDef class="py-2 px-4 text-left">
-          Volume Liters
+          Engine
         </th>
         <td mat-cell *matCellDef="let carModel" class="py-2 px-4">
-          {{ carModel.volumeLiters }}
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="fuelType">
-        <th mat-header-cell *matHeaderCellDef class="py-2 px-4 text-left">
-          Fuel Type
-        </th>
-        <td mat-cell *matCellDef="let carModel" class="py-2 px-4">
-          {{ carModel.fuelType }}
+          {{ getEngineInfo(carModel) }}
         </td>
       </ng-container>
 

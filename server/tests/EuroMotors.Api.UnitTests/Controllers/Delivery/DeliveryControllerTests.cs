@@ -1,6 +1,5 @@
 using EuroMotors.Api.Controllers.Delivery;
 using EuroMotors.Application.Delivery.GetWarehouse;
-using EuroMotors.Domain.Abstractions;
 using Microsoft.AspNetCore.Http;
 
 namespace EuroMotors.Api.UnitTests.Controllers.Delivery;
@@ -92,4 +91,4 @@ public class DeliveryControllerTests
         // Assert
         result.ShouldBeOfType<NotFoundResult>();
     }
-} 
+}

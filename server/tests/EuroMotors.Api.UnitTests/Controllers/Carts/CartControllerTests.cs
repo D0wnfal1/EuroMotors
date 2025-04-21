@@ -5,7 +5,6 @@ using EuroMotors.Application.Carts.ClearCart;
 using EuroMotors.Application.Carts.GetCartById;
 using EuroMotors.Application.Carts.RemoveItemFromCart;
 using EuroMotors.Application.Carts.UpdateItemQuantity;
-using EuroMotors.Domain.Abstractions;
 using Microsoft.AspNetCore.Http;
 
 namespace EuroMotors.Api.UnitTests.Controllers.Carts;
@@ -224,4 +223,4 @@ public class CartControllerTests
         BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();
         badRequestResult.Value.ShouldBe(error);
     }
-} 
+}

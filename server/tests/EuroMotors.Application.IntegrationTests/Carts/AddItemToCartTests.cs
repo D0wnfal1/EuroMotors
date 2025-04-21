@@ -15,6 +15,7 @@ namespace EuroMotors.Application.IntegrationTests.Carts;
 public class AddItemToCartTests : BaseIntegrationTest
 {
     private const int Quantity = 10;
+    private readonly Faker _faker = new();
 
     public AddItemToCartTests(IntegrationTestWebAppFactory factory)
         : base(factory)
@@ -25,15 +26,14 @@ public class AddItemToCartTests : BaseIntegrationTest
     public async Task Should_ReturnFailure_WhenUserDoesNotExist()
     {
         // Arrange
-        var faker = new Faker();
-        Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
+        Guid categoryId = await Sender.CreateCategoryAsync(_faker.Commerce.Categories(1)[0]);
+        Guid brandId = await Sender.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
         Guid carModelId = await Sender.CreateCarModelAsync(
-            faker.Vehicle.Manufacturer(),
-            faker.Vehicle.Model(),
-            faker.Date.Past(10).Year,
+            brandId,
+            _faker.Vehicle.Model(),
+            _faker.Random.Int(2000, 2023),
             BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel),
-            null
+            new EngineSpec(6, FuelType.Diesel)
         );
 
         var specifications = new List<Specification>
@@ -54,7 +54,7 @@ public class AddItemToCartTests : BaseIntegrationTest
         );
 
         var command = new AddItemToCartCommand(
-            faker.Random.Guid(),
+            _faker.Random.Guid(),
             productId,
             Quantity);
 
@@ -73,11 +73,10 @@ public class AddItemToCartTests : BaseIntegrationTest
 
         var nonExistingProductId = Guid.NewGuid();
 
-        var faker = new Faker();
         var command = new AddItemToCartCommand(
             userId,
             nonExistingProductId,
-            faker.Random.Int(min: 1, max: 10));
+            _faker.Random.Int(min: 1, max: 10));
 
         // Act
         Result result = await Sender.Send(command);
@@ -93,15 +92,14 @@ public class AddItemToCartTests : BaseIntegrationTest
         // Arrange
         Guid userId = await Sender.CreateUserAsync();
 
-        var faker = new Faker();
-        Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
+        Guid categoryId = await Sender.CreateCategoryAsync("Category Category");
+        Guid brandId = await Sender.CreateCarBrandAsync("Test Brand1124");
         Guid carModelId = await Sender.CreateCarModelAsync(
-            faker.Vehicle.Manufacturer(),
-            faker.Vehicle.Model(),
-            faker.Date.Past(10).Year,
+            brandId,
+            _faker.Vehicle.Model(),
+            _faker.Random.Int(2000, 2023),
             BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel),
-            null
+            new EngineSpec(6, FuelType.Diesel)
         );
 
         var specifications = new List<Specification>
@@ -138,15 +136,14 @@ public class AddItemToCartTests : BaseIntegrationTest
         // Arrange
         Guid userId = await Sender.CreateUserAsync();
 
-        var faker = new Faker();
-        Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
+        Guid categoryId = await Sender.CreateCategoryAsync("Category1");
+        Guid brandId = await Sender.CreateCarBrandAsync("Brand1");
         Guid carModelId = await Sender.CreateCarModelAsync(
-            faker.Vehicle.Manufacturer(),
-            faker.Vehicle.Model(),
-            faker.Date.Past(10).Year,
+            brandId,
+            _faker.Vehicle.Model(),
+            _faker.Random.Int(2000, 2023),
             BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel),
-            null
+            new EngineSpec(6, FuelType.Diesel)
         );
         var specifications = new List<Specification>
         {
@@ -180,19 +177,19 @@ public class AddItemToCartTests : BaseIntegrationTest
     [Fact]
     public async Task User_ShouldBeAbleTo_AddProductToCart()
     {
-        var faker = new Faker();
-        var createCategoryCommand = new CreateCategoryCommand(faker.Commerce.Categories(1)[0], null, null, null);
+        var createCategoryCommand = new CreateCategoryCommand("CategoryName1", null, null, null);
         Result<Guid> createCategoryResult = await Sender.Send(createCategoryCommand);
         createCategoryResult.IsSuccess.ShouldBeTrue();
         Guid categoryId = createCategoryResult.Value;
 
+        Guid brandId = await Sender.CreateCarBrandAsync("BrandName1");
+
         var createCarModelCommand = new CreateCarModelCommand(
-            faker.Vehicle.Manufacturer(),
-            faker.Vehicle.Model(),
-            faker.Date.Past(10).Year,
+            brandId,
+            _faker.Vehicle.Model(),
+            _faker.Random.Int(2000, 2023),
             BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel),
-            null
+            new EngineSpec(6, FuelType.Diesel)
         );
 
         Result<Guid> createCarModelResult = await Sender.Send(createCarModelCommand);
@@ -207,13 +204,13 @@ public class AddItemToCartTests : BaseIntegrationTest
 
 
         var createProductCommand = new CreateProductCommand(
-            faker.Commerce.ProductName(),
+            _faker.Commerce.ProductName(),
             specifications,
-            faker.Commerce.Ean13(),
+            _faker.Commerce.Ean13(),
             categoryId,
             carModelId,
-            faker.Random.Decimal(100, 1000),
-            faker.Random.Decimal(0, 100),
+            _faker.Random.Decimal(100, 1000),
+            _faker.Random.Decimal(0, 100),
             Quantity
         );
 
@@ -223,7 +220,7 @@ public class AddItemToCartTests : BaseIntegrationTest
         createProductResult.IsSuccess.ShouldBeTrue();
         Guid productId = createProductResult.Value;
 
-        var createUserCommand = new RegisterUserCommand(faker.Internet.Email(), faker.Name.FirstName(), faker.Name.FirstName(), faker.Internet.Password());
+        var createUserCommand = new RegisterUserCommand(_faker.Internet.Email(), _faker.Name.FirstName(), _faker.Name.FirstName(), _faker.Internet.Password());
         Result<Guid> createUserResult = await Sender.Send(createUserCommand);
         createUserResult.IsSuccess.ShouldBeTrue();
         Guid userId = createUserResult.Value;

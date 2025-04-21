@@ -19,23 +19,18 @@ namespace EuroMotors.Infrastructure.Database.Migration
                 name: "public");
 
             migrationBuilder.CreateTable(
-                name: "car_models",
+                name: "car_brands",
                 schema: "public",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    brand = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    model = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    start_year = table.Column<int>(type: "integer", nullable: false),
-                    body_type = table.Column<string>(type: "text", nullable: false),
-                    engine_spec_volume_liters = table.Column<float>(type: "real", nullable: false),
-                    engine_spec_fuel_type = table.Column<string>(type: "text", nullable: false),
+                    name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     slug = table.Column<string>(type: "text", nullable: false),
-                    image_path = table.Column<string>(type: "text", nullable: true)
+                    logo_path = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_car_models", x => x.id);
+                    table.PrimaryKey("pk_car_brands", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -121,38 +116,29 @@ namespace EuroMotors.Infrastructure.Database.Migration
                 });
 
             migrationBuilder.CreateTable(
-                name: "products",
+                name: "car_models",
                 schema: "public",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    category_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    car_model_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    vendor_code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    price = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
-                    discount = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
-                    stock = table.Column<int>(type: "integer", nullable: false),
-                    is_available = table.Column<bool>(type: "boolean", nullable: false),
+                    car_brand_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    model_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    start_year = table.Column<int>(type: "integer", nullable: false),
+                    body_type = table.Column<string>(type: "text", nullable: false),
+                    engine_spec_volume_liters = table.Column<float>(type: "real", nullable: false),
+                    engine_spec_fuel_type = table.Column<string>(type: "text", nullable: false),
                     slug = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_products", x => x.id);
+                    table.PrimaryKey("pk_car_models", x => x.id);
                     table.ForeignKey(
-                        name: "fk_products_car_models_car_model_id",
-                        column: x => x.car_model_id,
+                        name: "fk_car_models_car_brands_car_brand_id",
+                        column: x => x.car_brand_id,
                         principalSchema: "public",
-                        principalTable: "car_models",
+                        principalTable: "car_brands",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "fk_products_categories_category_id",
-                        column: x => x.category_id,
-                        principalSchema: "public",
-                        principalTable: "categories",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -233,6 +219,41 @@ namespace EuroMotors.Infrastructure.Database.Migration
                 });
 
             migrationBuilder.CreateTable(
+                name: "products",
+                schema: "public",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    category_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    car_model_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    vendor_code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    price = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    discount = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    stock = table.Column<int>(type: "integer", nullable: false),
+                    is_available = table.Column<bool>(type: "boolean", nullable: false),
+                    slug = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_products", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_products_car_models_car_model_id",
+                        column: x => x.car_model_id,
+                        principalSchema: "public",
+                        principalTable: "car_models",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_products_categories_category_id",
+                        column: x => x.category_id,
+                        principalSchema: "public",
+                        principalTable: "categories",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "product_images",
                 schema: "public",
                 columns: table => new
@@ -283,6 +304,19 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     { 1, "Admin" },
                     { 2, "Customer" }
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_car_brands_slug",
+                schema: "public",
+                table: "car_brands",
+                column: "slug",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_car_models_car_brand_id",
+                schema: "public",
+                table: "car_models",
+                column: "car_brand_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_car_models_slug",
@@ -393,6 +427,10 @@ namespace EuroMotors.Infrastructure.Database.Migration
 
             migrationBuilder.DropTable(
                 name: "categories",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "car_brands",
                 schema: "public");
         }
     }

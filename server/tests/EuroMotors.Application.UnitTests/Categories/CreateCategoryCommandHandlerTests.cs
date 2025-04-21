@@ -4,7 +4,6 @@ using EuroMotors.Domain.Categories;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
 using Shouldly;
-using System.IO;
 
 namespace EuroMotors.Application.UnitTests.Categories;
 
@@ -28,9 +27,9 @@ public class CreateCategoryCommandHandlerTests
         // Arrange
         var parentCategoryId = Guid.NewGuid();
         var grandParentCategoryId = Guid.NewGuid();
-        
+
         var parentCategory = Category.Create("Parent Category", grandParentCategoryId);
-        
+
         var command = new CreateCategoryCommand(
             "Test Category",
             parentCategoryId,
@@ -87,9 +86,9 @@ public class CreateCategoryCommandHandlerTests
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
-        _categoryRepository.Received(1).Insert(Arg.Is<Category>(c => 
-            c.Name == "Test Category" && 
+        _categoryRepository.Received(1).Insert(Arg.Is<Category>(c =>
+            c.Name == "Test Category" &&
             c.ImagePath != null));
         await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);
     }
-} 
+}

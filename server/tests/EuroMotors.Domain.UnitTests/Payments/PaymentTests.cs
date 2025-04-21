@@ -1,10 +1,7 @@
 ﻿using EuroMotors.Domain.Abstractions;
-using EuroMotors.Domain.Orders;
 using EuroMotors.Domain.Payments;
 using EuroMotors.Domain.Payments.Events;
 using EuroMotors.Domain.UnitTests.Infrastructure;
-using EuroMotors.Domain.UnitTests.Users;
-using EuroMotors.Domain.Users;
 using Shouldly;
 
 namespace EuroMotors.Domain.UnitTests.Payments;
@@ -70,7 +67,7 @@ public class PaymentTests : BaseTest
         // Assert
         result.IsSuccess.ShouldBeTrue();
         payment.AmountRefunded.ShouldBe(refundAmount);
-        
+
         PaymentPartiallyRefundedDomainEvent domainEvent = AssertDomainEventWasPublished<PaymentPartiallyRefundedDomainEvent>(payment);
         domainEvent.PaymentId.ShouldBe(payment.Id);
         domainEvent.TransactionId.ShouldBe(TransactionId);
@@ -92,7 +89,7 @@ public class PaymentTests : BaseTest
         // Assert
         result.IsSuccess.ShouldBeTrue();
         payment.AmountRefunded.ShouldBe(Amount);
-        
+
         PaymentRefundedDomainEvent domainEvent = AssertDomainEventWasPublished<PaymentRefundedDomainEvent>(payment);
         domainEvent.PaymentId.ShouldBe(payment.Id);
         domainEvent.TransactionId.ShouldBe(TransactionId);

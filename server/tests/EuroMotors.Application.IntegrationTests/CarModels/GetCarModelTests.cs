@@ -2,13 +2,14 @@
 using EuroMotors.Application.CarModels.GetCarModelById;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Domain.Abstractions;
-using EuroMotors.Domain.CarModels;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.CarModels;
 
 public class GetCarModelTests : BaseIntegrationTest
 {
+    private readonly Faker _faker = new();
+
     public GetCarModelTests(IntegrationTestWebAppFactory factory)
         : base(factory)
     {
@@ -21,25 +22,27 @@ public class GetCarModelTests : BaseIntegrationTest
         var query = new GetCarModelByIdQuery(Guid.NewGuid());
 
         // Act
-        Result result = await Sender.Send(query);
+        Result<CarModelResponse> result = await Sender.Send(query);
 
         // Assert
-        result.Error.ShouldBe(CarModelErrors.NotFound(query.CarModelId));
+        result.IsFailure.ShouldBeTrue();
+        result.Error.Code.ShouldBe("CarModel.NotFound");
     }
 
     [Fact]
     public async Task Should_ReturnCarModel_WhenCarModelExists()
     {
         // Arrange
-        var faker = new Faker();
+        Guid brandId = await Sender.CreateCarBrandAsync("Test Brand11111");
         Guid carModelId = await Sender.CreateCarModelAsync(
-            faker.Vehicle.Manufacturer(),
-            faker.Vehicle.Model(),
-            faker.Date.Past(10).Year,
-            BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel),
-            null
-        );
+            brandId,
+            _faker.Vehicle.Model(),
+            _faker.Random.Int(2000, 2023),
+            EuroMotors.Domain.CarModels.BodyType.Sedan,
+            new EuroMotors.Domain.CarModels.EngineSpec(
+                _faker.Random.Int(3, 12),
+                EuroMotors.Domain.CarModels.FuelType.Diesel)
+            );
 
         var query = new GetCarModelByIdQuery(carModelId);
 
@@ -49,5 +52,6 @@ public class GetCarModelTests : BaseIntegrationTest
         // Assert
         result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldNotBeNull();
+        result.Value.Id.ShouldBe(carModelId);
     }
 }

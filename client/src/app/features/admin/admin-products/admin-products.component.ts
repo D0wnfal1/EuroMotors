@@ -97,7 +97,7 @@ export class AdminProductsComponent implements OnInit {
 
   getCarModelName(carModelId: string): string {
     const model = this.carModels.find((cm) => cm.id === carModelId);
-    return model ? `${model.brand} ${model.model}` : '—';
+    return model ? `${model.carBrand?.name || ''} ${model.modelName}` : '—';
   }
 
   deleteProduct(productId: string): void {

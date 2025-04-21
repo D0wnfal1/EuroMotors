@@ -12,53 +12,60 @@ internal sealed class GetCarModelSelectionQueryHandler(IDbConnectionFactory dbCo
     {
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
         string sql = @"
-            SELECT DISTINCT id 
-            FROM car_models 
-            WHERE (@Brand IS NULL OR brand = @Brand)
-                AND (@Model IS NULL OR model = @Model)
-                AND (@StartYear IS NULL OR start_year = @StartYear)
-                AND (@BodyType IS NULL OR body_type = @BodyType);
+            SELECT DISTINCT cm.id 
+            FROM car_models cm
+            JOIN car_brands cb ON cm.car_brand_id = cb.id
+            WHERE (@BrandId IS NULL OR cm.car_brand_id = @BrandId)
+                AND (@ModelName IS NULL OR cm.model_name = @ModelName)
+                AND (@StartYear IS NULL OR cm.start_year = @StartYear)
+                AND (@BodyType IS NULL OR cm.body_type = @BodyType);
 
-            SELECT DISTINCT brand 
-            FROM car_models 
-            WHERE (@Brand IS NULL OR brand = @Brand);
+            SELECT DISTINCT cb.id, cb.name 
+            FROM car_brands cb
+            JOIN car_models cm ON cb.id = cm.car_brand_id
+            WHERE (@BrandId IS NULL OR cb.id = @BrandId)
+            ORDER BY cb.name;
     
-            SELECT DISTINCT model 
-            FROM car_models 
-            WHERE (@Model IS NULL OR model = @Model) 
-                AND (@Brand IS NULL OR brand = @Brand);
+            SELECT DISTINCT cm.model_name 
+            FROM car_models cm
+            WHERE (@ModelName IS NULL OR cm.model_name = @ModelName) 
+                AND (@BrandId IS NULL OR cm.car_brand_id = @BrandId)
+            ORDER BY cm.model_name;
     
-            SELECT DISTINCT start_year 
-            FROM car_models 
-            WHERE (@StartYear IS NULL OR start_year = @StartYear) 
-                AND (@Brand IS NULL OR brand = @Brand)
-                AND (@Model IS NULL OR model = @Model);
+            SELECT DISTINCT cm.start_year 
+            FROM car_models cm
+            WHERE (@StartYear IS NULL OR cm.start_year = @StartYear) 
+                AND (@BrandId IS NULL OR cm.car_brand_id = @BrandId)
+                AND (@ModelName IS NULL OR cm.model_name = @ModelName)
+            ORDER BY cm.start_year;
     
-            SELECT DISTINCT body_type 
-            FROM car_models 
-            WHERE (@BodyType IS NULL OR body_type = @BodyType)
-                AND (@Brand IS NULL OR brand = @Brand)
-                AND (@Model IS NULL OR model = @Model);
+            SELECT DISTINCT cm.body_type 
+            FROM car_models cm
+            WHERE (@BodyType IS NULL OR cm.body_type = @BodyType)
+                AND (@BrandId IS NULL OR cm.car_brand_id = @BrandId)
+                AND (@ModelName IS NULL OR cm.model_name = @ModelName)
+            ORDER BY cm.body_type;
 
             SELECT DISTINCT 
-                CONCAT(engine_spec_volume_liters, ' ', engine_spec_fuel_type) AS EngineSpec
-            FROM car_models 
-            WHERE (@Brand IS NULL OR brand = @Brand)
-                AND (@Model IS NULL OR model = @Model)
-                AND (@StartYear IS NULL OR start_year = @StartYear)
-                AND (@BodyType IS NULL OR body_type = @BodyType);
+                CONCAT(cm.engine_spec_volume_liters, ' ', cm.engine_spec_fuel_type) AS EngineSpec
+            FROM car_models cm
+            WHERE (@BrandId IS NULL OR cm.car_brand_id = @BrandId)
+                AND (@ModelName IS NULL OR cm.model_name = @ModelName)
+                AND (@StartYear IS NULL OR cm.start_year = @StartYear)
+                AND (@BodyType IS NULL OR cm.body_type = @BodyType)
+            ORDER BY EngineSpec;
             ";
 
         await using SqlMapper.GridReader multi = await connection.QueryMultipleAsync(sql, new
         {
-            request.Brand,
-            request.Model,
+            request.BrandId,
+            request.ModelName,
             request.StartYear,
             request.BodyType,
         });
 
         IEnumerable<Guid> ids = await multi.ReadAsync<Guid>();
-        IEnumerable<string> brands = await multi.ReadAsync<string>();
+        IEnumerable<BrandInfo> brands = await multi.ReadAsync<BrandInfo>();
         IEnumerable<string> models = await multi.ReadAsync<string>();
         IEnumerable<int> years = await multi.ReadAsync<int>();
         IEnumerable<string> bodyTypes = await multi.ReadAsync<string>();

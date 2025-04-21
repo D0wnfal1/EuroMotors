@@ -42,14 +42,15 @@ public class ProductControllerTests
                 Discount = 10
             }
         };
-        
-        var pagination = new Pagination<ProductResponse>{
-           PageIndex  = 1,
-           PageSize = 10,
-           Count = 1,
-           Data = products
+
+        var pagination = new Pagination<ProductResponse>
+        {
+            PageIndex = 1,
+            PageSize = 10,
+            Count = 1,
+            Data = products
         };
-        
+
         _sender.Send(Arg.Any<GetProductsQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(pagination));
 
@@ -60,11 +61,11 @@ public class ProductControllerTests
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(pagination);
-        
+
         await _sender.Received(1).Send(
-            Arg.Is<GetProductsQuery>(query => 
-                query.PageNumber == 1 && 
-                query.PageSize == 10), 
+            Arg.Is<GetProductsQuery>(query =>
+                query.PageNumber == 1 &&
+                query.PageSize == 10),
             Arg.Any<CancellationToken>());
     }
 
@@ -78,32 +79,33 @@ public class ProductControllerTests
         string searchTerm = "test";
         int pageNumber = 2;
         int pageSize = 20;
-        
+
         var products = new List<ProductResponse>();
-        var pagination = new Pagination<ProductResponse>{
-          Data  = products,
-          PageIndex  = pageNumber,
-          PageSize  = pageSize,
-          Count  = 0
+        var pagination = new Pagination<ProductResponse>
+        {
+            Data = products,
+            PageIndex = pageNumber,
+            PageSize = pageSize,
+            Count = 0
         };
-        
+
         _sender.Send(Arg.Any<GetProductsQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(pagination));
 
         // Act
         await _controller.GetProducts(
-            categoryIds, carModelIds, sortOrder, searchTerm, 
+            categoryIds, carModelIds, sortOrder, searchTerm,
             CancellationToken.None, pageNumber, pageSize);
 
         // Assert
         await _sender.Received(1).Send(
-            Arg.Is<GetProductsQuery>(query => 
-                query.CategoryIds == categoryIds && 
+            Arg.Is<GetProductsQuery>(query =>
+                query.CategoryIds == categoryIds &&
                 query.CarModelIds == carModelIds &&
                 query.SortOrder == sortOrder &&
                 query.SearchTerm == searchTerm &&
                 query.PageNumber == pageNumber &&
-                query.PageSize == pageSize), 
+                query.PageSize == pageSize),
             Arg.Any<CancellationToken>());
     }
 
@@ -119,7 +121,7 @@ public class ProductControllerTests
             Price = 100,
             Discount = 10
         };
-        
+
         _sender.Send(Arg.Any<GetProductByIdQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(product));
 
@@ -168,7 +170,7 @@ public class ProductControllerTests
                 new SpecificationRequest ( "Color", "Red" )
             }
         };
-        
+
         var productId = Guid.NewGuid();
         _sender.Send(Arg.Any<CreateProductCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(productId));
@@ -182,16 +184,16 @@ public class ProductControllerTests
         createdResult.RouteValues?["id"].ShouldBe(productId);
 
         createdResult.Value.ShouldBe(productId);
-        
+
         await _sender.Received(1).Send(
-            Arg.Is<CreateProductCommand>(cmd => 
-                cmd.Name == request.Name && 
+            Arg.Is<CreateProductCommand>(cmd =>
+                cmd.Name == request.Name &&
                 cmd.VendorCode == request.VendorCode &&
                 cmd.CategoryId == request.CategoryId &&
                 cmd.CarModelId == request.CarModelId &&
                 cmd.Price == request.Price &&
                 cmd.Discount == request.Discount &&
-                cmd.Stock == request.Stock), 
+                cmd.Stock == request.Stock),
             Arg.Any<CancellationToken>());
     }
 
@@ -242,7 +244,7 @@ public class ProductControllerTests
                 new SpecificationRequest ("Color", "Blue")
             }
         };
-        
+
         _sender.Send(Arg.Any<UpdateProductCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
@@ -254,7 +256,7 @@ public class ProductControllerTests
 
         await _sender.Received(1).Send(
             Arg.Is<UpdateProductCommand>(cmd =>
-                cmd.ProductId == id && 
+                cmd.ProductId == id &&
                 cmd.Name == request.Name &&
                 cmd.VendorCode == request.VendorCode &&
                 cmd.CategoryId == request.CategoryId &&
@@ -281,7 +283,7 @@ public class ProductControllerTests
             Stock = 40,
             Specifications = new List<SpecificationRequest>()
         };
-        
+
         var error = Error.NotFound("Product.NotFound", "Product not found");
         _sender.Send(Arg.Any<UpdateProductCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure(error));
@@ -303,7 +305,7 @@ public class ProductControllerTests
         {
             IsAvailable = true
         };
-        
+
         _sender.Send(Arg.Any<SetProductAvailabilityCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
@@ -312,11 +314,11 @@ public class ProductControllerTests
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
-        
+
         await _sender.Received(1).Send(
-            Arg.Is<SetProductAvailabilityCommand>(cmd => 
+            Arg.Is<SetProductAvailabilityCommand>(cmd =>
                 cmd.ProductId == id &&
-                cmd.IsAvailable == request.IsAvailable), 
+                cmd.IsAvailable == request.IsAvailable),
             Arg.Any<CancellationToken>());
     }
 
@@ -329,7 +331,7 @@ public class ProductControllerTests
         {
             IsAvailable = true
         };
-        
+
         var error = Error.NotFound("Product.NotFound", "Product not found");
         _sender.Send(Arg.Any<SetProductAvailabilityCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure(error));
@@ -347,7 +349,7 @@ public class ProductControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        
+
         _sender.Send(Arg.Any<DeleteProductCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
@@ -356,9 +358,9 @@ public class ProductControllerTests
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
-        
+
         await _sender.Received(1).Send(
-            Arg.Is<DeleteProductCommand>(cmd => cmd.ProductId == id), 
+            Arg.Is<DeleteProductCommand>(cmd => cmd.ProductId == id),
             Arg.Any<CancellationToken>());
     }
 
@@ -367,7 +369,7 @@ public class ProductControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        
+
         var error = Error.NotFound("Product.NotFound", "Product not found");
         _sender.Send(Arg.Any<DeleteProductCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure(error));
@@ -379,4 +381,4 @@ public class ProductControllerTests
         NotFoundObjectResult notFoundResult = result.ShouldBeOfType<NotFoundObjectResult>();
         notFoundResult.Value.ShouldBe(error);
     }
-} 
+}

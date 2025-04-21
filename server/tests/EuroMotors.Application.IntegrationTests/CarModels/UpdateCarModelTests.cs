@@ -9,6 +9,8 @@ namespace EuroMotors.Application.IntegrationTests.CarModels;
 
 public class UpdateCarModelTests : BaseIntegrationTest
 {
+    private readonly Faker _faker = new();
+
     public UpdateCarModelTests(IntegrationTestWebAppFactory factory)
         : base(factory)
     {
@@ -16,11 +18,9 @@ public class UpdateCarModelTests : BaseIntegrationTest
 
     public static readonly TheoryData<UpdateCarModelCommand> InvalidCommands =
     [
-        new(Guid.Empty, new Faker().Vehicle.Manufacturer(),
-            new Faker().Vehicle.Model(), null, null,  null, null, null),
-        new(Guid.NewGuid(), string.Empty, string.Empty, null, null, null, null, null)
+        new(Guid.Empty, string.Empty),
+        new(Guid.NewGuid(), string.Empty)
     ];
-
 
     [Theory]
     [MemberData(nameof(InvalidCommands))]
@@ -38,33 +38,68 @@ public class UpdateCarModelTests : BaseIntegrationTest
     public async Task Should_ReturnFailure_WhenCarModelDoesNotExist()
     {
         // Arrange
-        var faker = new Faker();
-        var command = new UpdateCarModelCommand(Guid.NewGuid(), faker.Vehicle.Manufacturer(),
-            faker.Vehicle.Model(), null, null, null, null, null);
+        var command = new UpdateCarModelCommand(
+            Guid.NewGuid(),
+            _faker.Vehicle.Model());
 
         // Act
         Result result = await Sender.Send(command);
 
         // Assert
-        result.Error.ShouldBe(CarModelErrors.NotFound(command.CarModelId));
+        result.IsFailure.ShouldBeTrue();
+        result.Error.Code.ShouldBe("CarModel.NotFound");
     }
 
     [Fact]
     public async Task Should_UpdateCarModel_WhenCarModelExists()
     {
         // Arrange
-        var faker = new Faker();
+        Guid brandId = await Sender.CreateCarBrandAsync("Test Brand1");
         Guid carModelId = await Sender.CreateCarModelAsync(
-            faker.Vehicle.Manufacturer(),
-            faker.Vehicle.Model(),
+            brandId,
+            _faker.Vehicle.Model(),
             2020,
             BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel),
-            null
+            new EngineSpec(2.0f, FuelType.Petrol)
         );
 
-        var command = new UpdateCarModelCommand(carModelId, faker.Vehicle.Manufacturer(),
-            faker.Vehicle.Model(), 2020, BodyType.Sedan, null, null, null);
+        var command = new UpdateCarModelCommand(
+            carModelId,
+            _faker.Vehicle.Model(),
+            2022,
+            BodyType.SUV,
+            3.0f,
+            FuelType.Diesel);
+
+        // Act
+        Result result = await Sender.Send(command);
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task Should_UpdateOnlyProvidedFields_WhenPartialUpdateProvided()
+    {
+        // Arrange
+        string originalModelName = _faker.Vehicle.Model();
+        Guid brandId = await Sender.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
+        Guid carModelId = await Sender.CreateCarModelAsync(
+            brandId,
+            originalModelName,
+            2020,
+            BodyType.Sedan,
+            new EngineSpec(2.0f, FuelType.Petrol)
+        );
+
+        // Only updating engine specs
+        var command = new UpdateCarModelCommand(
+            carModelId,
+            originalModelName,
+            null,
+            null,
+            3.5f,
+            FuelType.Diesel);
 
         // Act
         Result result = await Sender.Send(command);

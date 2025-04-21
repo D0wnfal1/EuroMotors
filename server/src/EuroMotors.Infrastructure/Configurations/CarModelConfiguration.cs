@@ -11,11 +11,15 @@ internal sealed class CarModelConfiguration : IEntityTypeConfiguration<CarModel>
     {
         builder.HasKey(cm => cm.Id);
 
-        builder.Property(cm => cm.Brand)
-            .IsRequired()
-            .HasMaxLength(100);
+        builder.Property(cm => cm.CarBrandId)
+            .IsRequired();
 
-        builder.Property(cm => cm.Model)
+        builder.HasOne(cm => cm.CarBrand)
+            .WithMany(cb => cb.Models)
+            .HasForeignKey(cm => cm.CarBrandId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(cm => cm.ModelName)
             .IsRequired()
             .HasMaxLength(100);
 
@@ -42,9 +46,6 @@ internal sealed class CarModelConfiguration : IEntityTypeConfiguration<CarModel>
 
         builder.HasIndex(c => c.Slug)
             .IsUnique();
-
-        builder.Property(cm => cm.ImagePath);
-
 
         builder.HasMany(cm => cm.Products)
             .WithOne()

@@ -4,7 +4,6 @@ import { MatListOption, MatSelectionList } from '@angular/material/list';
 import { MatButton } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
-import { ProductService } from '../../../core/services/product.service';
 import { CommonModule } from '@angular/common';
 import { CategoryService } from '../../../core/services/category.service';
 import { CarmodelService } from '../../../core/services/carmodel.service';

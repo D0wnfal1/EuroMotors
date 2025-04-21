@@ -9,6 +9,7 @@ using EuroMotors.Application.Abstractions.Delivery;
 using EuroMotors.Application.Abstractions.Payments;
 using EuroMotors.Application.Carts;
 using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.CarBrands;
 using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Categories;
 using EuroMotors.Domain.Orders;
@@ -64,6 +65,8 @@ public static class DependencyInjection
         services.AddScoped<IProductImageRepository, ProductImageRepository>();
 
         services.AddScoped<ICarModelRepository, CarModelRepository>();
+
+        services.AddScoped<ICarBrandRepository, CarBrandRepository>();
 
         services.AddScoped<ICategoryRepository, CategoryRepository>();
 

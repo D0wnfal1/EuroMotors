@@ -6,11 +6,9 @@ internal sealed class UpdateCarModelCommandValidator : AbstractValidator<UpdateC
 {
     public UpdateCarModelCommandValidator()
     {
-        RuleFor(c => c.CarModelId).NotEmpty();
+        RuleFor(c => c.Id).NotEmpty();
 
-        RuleFor(c => c.Brand).NotEmpty();
-
-        RuleFor(c => c.Model).NotEmpty();
+        RuleFor(c => c.ModelName).NotEmpty();
 
         RuleFor(c => c.StartYear)
             .GreaterThanOrEqualTo(1900)
@@ -19,13 +17,13 @@ internal sealed class UpdateCarModelCommandValidator : AbstractValidator<UpdateC
         RuleFor(c => c.BodyType)
             .IsInEnum();
 
-        RuleFor(c => c.VolumeLiters)
+        RuleFor(c => c.EngineVolumeLiters)
             .GreaterThan(0)
             .LessThanOrEqualTo(10)
-            .When(c => c.VolumeLiters.HasValue);
+            .When(c => c.EngineVolumeLiters.HasValue);
 
-        RuleFor(c => c.FuelType)
+        RuleFor(c => c.EngineFuelType)
             .IsInEnum()
-            .When(c => c.FuelType.HasValue);
+            .When(c => c.EngineFuelType.HasValue);
     }
 }

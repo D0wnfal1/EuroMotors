@@ -6,8 +6,8 @@ internal sealed class CreateCarModelCommandValidator : AbstractValidator<CreateC
 {
     public CreateCarModelCommandValidator()
     {
-        RuleFor(c => c.Brand).MaximumLength(100).NotEmpty();
-        RuleFor(c => c.Model).MaximumLength(100).NotEmpty();
+        RuleFor(c => c.CarBrandId).NotEmpty();
+        RuleFor(c => c.ModelName).MaximumLength(100).NotEmpty();
         RuleFor(c => c.StartYear)
             .GreaterThanOrEqualTo(1900)
             .LessThanOrEqualTo(DateTime.Now.Year);

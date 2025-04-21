@@ -1,5 +1,4 @@
-﻿using Bogus;
-using EuroMotors.Application.Categories.SetCategoryAvailability;
+﻿using EuroMotors.Application.Categories.SetCategoryAvailability;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Categories;

@@ -12,6 +12,8 @@ namespace EuroMotors.Application.IntegrationTests.Products;
 
 public class GetProductsTests : BaseIntegrationTest
 {
+    private readonly Faker _faker = new();
+
     public GetProductsTests(IntegrationTestWebAppFactory factory)
         : base(factory)
     {
@@ -39,16 +41,14 @@ public class GetProductsTests : BaseIntegrationTest
         // Arrange
         await CleanDatabaseAsync();
 
-        var faker = new Faker();
-
-        Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
+        Guid categoryId = await Sender.CreateCategoryAsync(_faker.Commerce.Categories(1)[0]);
+        Guid brandId = await Sender.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
         Guid carModelId = await Sender.CreateCarModelAsync(
-            faker.Vehicle.Manufacturer(),
-            faker.Vehicle.Model(),
+            brandId,
+            _faker.Vehicle.Model(),
             2020,
             BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel),
-            null
+            new EngineSpec(6, FuelType.Diesel)
         );
         var specifications = new List<Specification>
         {
@@ -57,9 +57,9 @@ public class GetProductsTests : BaseIntegrationTest
         };
         await Sender.CreateProductAsync(
             "Product1",
-            faker.Commerce.ProductName(),
+            _faker.Commerce.ProductName(),
             categoryId,
-        carModelId,
+            carModelId,
             100m,
             10m,
             5,
@@ -68,7 +68,7 @@ public class GetProductsTests : BaseIntegrationTest
 
         await Sender.CreateProductAsync(
             "Product2",
-            faker.Commerce.ProductName(),
+            _faker.Commerce.ProductName(),
             categoryId,
             carModelId,
             150m,
@@ -86,5 +86,4 @@ public class GetProductsTests : BaseIntegrationTest
         // Assert
         result.Value.Count.ShouldBe(2);
     }
-
 }

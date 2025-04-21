@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Globalization;
 using System.Text;
 using Dapper;
 using EuroMotors.Application.Abstractions.Data;
@@ -19,19 +20,40 @@ internal sealed class GetCarModelsQueryHandler(IDbConnectionFactory dbConnection
         sql.AppendLine(
           $"""
             SELECT
-                id AS {nameof(CarModelResponse.Id)},
-                brand AS {nameof(CarModelResponse.Brand)},
-                model AS {nameof(CarModelResponse.Model)},
-                start_year AS {nameof(CarModelResponse.StartYear)},
-                body_type AS {nameof(CarModelResponse.BodyType)},
-                engine_spec_volume_liters AS {nameof(CarModelResponse.VolumeLiters)},
-                engine_spec_fuel_type AS {nameof(CarModelResponse.FuelType)},
-                slug AS {nameof(CarModelResponse.Slug)},
-                image_path AS {nameof(CarModelResponse.ImagePath)}
-            FROM car_models
+                cm.id AS {nameof(CarModelResponse.Id)},
+                cm.car_brand_id AS {nameof(CarModelResponse.CarBrandId)},
+                cb.name AS {nameof(CarModelResponse.BrandName)},
+                cm.model_name AS {nameof(CarModelResponse.ModelName)},
+                cm.start_year AS {nameof(CarModelResponse.StartYear)},
+                cm.body_type AS {nameof(CarModelResponse.BodyType)},
+                cm.engine_spec_volume_liters AS {nameof(CarModelResponse.VolumeLiters)},
+                cm.engine_spec_fuel_type AS {nameof(CarModelResponse.FuelType)},
+                cm.slug AS {nameof(CarModelResponse.Slug)}
+            FROM car_models cm
+            JOIN car_brands cb ON cm.car_brand_id = cb.id
             """);
 
+        var whereClause = new List<string>();
         var parameters = new Dictionary<string, object>();
+
+        if (request.BrandId.HasValue)
+        {
+            whereClause.Add("cm.car_brand_id = @BrandId");
+            parameters.Add("BrandId", request.BrandId.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+        {
+            whereClause.Add("(cb.name ILIKE @SearchTerm OR cm.model_name ILIKE @SearchTerm)");
+            parameters.Add("SearchTerm", $"%{request.SearchTerm}%");
+        }
+
+        if (whereClause.Count > 0)
+        {
+            sql.AppendLine(string.Format(CultureInfo.InvariantCulture, "WHERE {0}", string.Join(" AND ", whereClause)));
+        }
+
+        sql.AppendLine("ORDER BY cb.name, cm.model_name");
 
         if (request.PageSize > 0)
         {
@@ -43,9 +65,14 @@ internal sealed class GetCarModelsQueryHandler(IDbConnectionFactory dbConnection
         List<CarModelResponse> carModels = (await connection.QueryAsync<CarModelResponse>(sql.ToString(), parameters)).AsList();
 
         var countSql = new StringBuilder();
-        countSql.Append("SELECT COUNT(*) FROM car_models ");
+        countSql.Append("SELECT COUNT(*) FROM car_models cm ");
 
-        int totalCount = await connection.ExecuteScalarAsync<int>(countSql.ToString());
+        if (request.BrandId.HasValue)
+        {
+            countSql.Append("WHERE cm.car_brand_id = @BrandId");
+        }
+
+        int totalCount = await connection.ExecuteScalarAsync<int>(countSql.ToString(), parameters);
 
         if (request.PageSize > 0)
         {

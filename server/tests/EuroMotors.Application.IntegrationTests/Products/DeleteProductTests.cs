@@ -10,6 +10,8 @@ namespace EuroMotors.Application.IntegrationTests.Products;
 
 public class DeleteProductTests : BaseIntegrationTest
 {
+    private readonly Faker _faker = new();
+
     public DeleteProductTests(IntegrationTestWebAppFactory factory)
         : base(factory)
     {
@@ -33,15 +35,14 @@ public class DeleteProductTests : BaseIntegrationTest
     [Fact]
     public async Task Should_ReturnSuccess_WhenProductIsDeleted()
     {
-        var faker = new Faker();
-        Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
+        Guid categoryId = await Sender.CreateCategoryAsync("Category Cateory9");
+        Guid brandId = await Sender.CreateCarBrandAsync("Brand brand9");
         Guid carModelId = await Sender.CreateCarModelAsync(
-            faker.Vehicle.Manufacturer(),
-            faker.Vehicle.Model(),
+            brandId,
+            _faker.Vehicle.Model(),
             2020,
             BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel),
-            null
+            new EngineSpec(6, FuelType.Diesel)
         );
 
         var specifications = new List<Specification>
@@ -70,5 +71,4 @@ public class DeleteProductTests : BaseIntegrationTest
         // Assert
         result.IsSuccess.ShouldBeTrue();
     }
-
 }

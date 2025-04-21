@@ -51,14 +51,12 @@ export class CustomerCarComponent implements OnInit {
 
     this.carModelService.getSelectedCarDetails(savedId).subscribe({
       next: (carModel) => {
-        const spec = `${carModel.volumeLiters}L ${carModel.fuelType}`;
-
         this.selectedCar = {
-          brand: carModel.brand,
-          model: carModel.model,
+          brand: carModel.brandName || '',
+          model: carModel.modelName,
           startYear: carModel.startYear,
           bodyType: carModel.bodyType,
-          engineSpec: spec,
+          engineSpec: carModel.volumeLiters + 'L ' + carModel.fuelType,
         };
       },
       error: (err) => {

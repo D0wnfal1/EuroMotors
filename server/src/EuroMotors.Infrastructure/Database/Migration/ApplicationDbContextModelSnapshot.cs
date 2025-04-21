@@ -18,10 +18,42 @@ namespace EuroMotors.Infrastructure.Database.Migration
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("public")
-                .HasAnnotation("ProductVersion", "9.0.3")
+                .HasAnnotation("ProductVersion", "9.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("EuroMotors.Domain.CarBrands.CarBrand", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("LogoPath")
+                        .HasColumnType("text")
+                        .HasColumnName("logo_path");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("slug");
+
+                    b.HasKey("Id")
+                        .HasName("pk_car_brands");
+
+                    b.HasIndex("Slug")
+                        .IsUnique()
+                        .HasDatabaseName("ix_car_brands_slug");
+
+                    b.ToTable("car_brands", "public");
+                });
 
             modelBuilder.Entity("EuroMotors.Domain.CarModels.CarModel", b =>
                 {
@@ -35,21 +67,15 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnType("text")
                         .HasColumnName("body_type");
 
-                    b.Property<string>("Brand")
+                    b.Property<Guid>("CarBrandId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("car_brand_id");
+
+                    b.Property<string>("ModelName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("brand");
-
-                    b.Property<string>("ImagePath")
-                        .HasColumnType("text")
-                        .HasColumnName("image_path");
-
-                    b.Property<string>("Model")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("model");
+                        .HasColumnName("model_name");
 
                     b.Property<string>("Slug")
                         .IsRequired()
@@ -62,6 +88,9 @@ namespace EuroMotors.Infrastructure.Database.Migration
 
                     b.HasKey("Id")
                         .HasName("pk_car_models");
+
+                    b.HasIndex("CarBrandId")
+                        .HasDatabaseName("ix_car_models_car_brand_id");
 
                     b.HasIndex("Slug")
                         .IsUnique()
@@ -456,6 +485,13 @@ namespace EuroMotors.Infrastructure.Database.Migration
 
             modelBuilder.Entity("EuroMotors.Domain.CarModels.CarModel", b =>
                 {
+                    b.HasOne("EuroMotors.Domain.CarBrands.CarBrand", "CarBrand")
+                        .WithMany("Models")
+                        .HasForeignKey("CarBrandId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_car_models_car_brands_car_brand_id");
+
                     b.OwnsOne("EuroMotors.Domain.CarModels.EngineSpec", "EngineSpec", b1 =>
                         {
                             b1.Property<Guid>("CarModelId")
@@ -479,6 +515,8 @@ namespace EuroMotors.Infrastructure.Database.Migration
                                 .HasForeignKey("CarModelId")
                                 .HasConstraintName("fk_car_models_car_models_id");
                         });
+
+                    b.Navigation("CarBrand");
 
                     b.Navigation("EngineSpec")
                         .IsRequired();
@@ -588,6 +626,11 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_role_user_users_users_id");
+                });
+
+            modelBuilder.Entity("EuroMotors.Domain.CarBrands.CarBrand", b =>
+                {
+                    b.Navigation("Models");
                 });
 
             modelBuilder.Entity("EuroMotors.Domain.CarModels.CarModel", b =>

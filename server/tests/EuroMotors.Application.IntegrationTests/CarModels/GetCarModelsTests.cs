@@ -11,6 +11,8 @@ namespace EuroMotors.Application.IntegrationTests.CarModels;
 
 public class GetCarModelsTests : BaseIntegrationTest
 {
+    private readonly Faker _faker = new();
+
     public GetCarModelsTests(IntegrationTestWebAppFactory factory)
         : base(factory)
     {
@@ -22,7 +24,7 @@ public class GetCarModelsTests : BaseIntegrationTest
         // Arrange
         await CleanDatabaseAsync();
 
-        var query = new GetCarModelsQuery(1, 10);
+        var query = new GetCarModelsQuery(null, null, 1, 10);
 
         // Act
         Result<Pagination<CarModelResponse>> result = await Sender.Send(query);
@@ -38,27 +40,25 @@ public class GetCarModelsTests : BaseIntegrationTest
         // Arrange
         await CleanDatabaseAsync();
 
-        var faker = new Faker();
+        Guid brandId1 = await Sender.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
         await Sender.CreateCarModelAsync(
-            faker.Vehicle.Manufacturer(),
-            faker.Vehicle.Model(),
-            faker.Date.Past(10).Year,
+            brandId1,
+            _faker.Vehicle.Model(),
+            _faker.Random.Int(2000, 2023),
             BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel),
-            null
+            new EngineSpec(_faker.Random.Int(3, 12), FuelType.Diesel)
         );
 
+        Guid brandId2 = await Sender.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
         await Sender.CreateCarModelAsync(
-            faker.Vehicle.Manufacturer(),
-            faker.Vehicle.Model(),
-            faker.Date.Past(10).Year,
+            brandId2,
+            _faker.Vehicle.Model(),
+            _faker.Random.Int(2000, 2023),
             BodyType.SUV,
-            new EngineSpec(6, FuelType.Diesel),
-            null
+            new EngineSpec(_faker.Random.Int(3, 12), FuelType.Diesel)
         );
 
-
-        var query = new GetCarModelsQuery(1, 10);
+        var query = new GetCarModelsQuery(null, null, 1, 10);
 
         // Act
         Result<Pagination<CarModelResponse>> result = await Sender.Send(query);

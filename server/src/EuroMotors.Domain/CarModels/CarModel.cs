@@ -1,19 +1,21 @@
 ﻿using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.CarBrands;
 using EuroMotors.Domain.CarModels.Events;
 using EuroMotors.Domain.Products;
 
 namespace EuroMotors.Domain.CarModels;
 
-public class CarModel : Entity
+public sealed class CarModel : Entity
 {
     private CarModel()
     {
-
     }
 
-    public string Brand { get; private set; } = null!;
+    public Guid CarBrandId { get; private set; }
 
-    public string Model { get; private set; } = null!;
+    public CarBrand? CarBrand { get; private set; }
+
+    public string ModelName { get; private set; } = null!;
 
     public int StartYear { get; private set; }
 
@@ -23,13 +25,11 @@ public class CarModel : Entity
 
     public Slug Slug { get; private set; }
 
-    public string? ImagePath { get; private set; }
-
     public List<Product> Products { get; private set; } = [];
 
     public static CarModel Create(
-        string brand,
-        string model,
+        CarBrand carBrand,
+        string modelName,
         int startYear,
         BodyType bodyType,
         EngineSpec engineSpec)
@@ -37,12 +37,13 @@ public class CarModel : Entity
         var car = new CarModel
         {
             Id = Guid.NewGuid(),
-            Brand = brand,
-            Model = model,
+            CarBrandId = carBrand.Id,
+            CarBrand = carBrand,
+            ModelName = modelName,
             StartYear = startYear,
             BodyType = bodyType,
             EngineSpec = engineSpec,
-            Slug = Slug.GenerateSlug($"{brand}-{model}")
+            Slug = Slug.GenerateSlug($"{carBrand.Name}-{modelName}")
         };
 
         car.RaiseDomainEvent(new CarModelCreatedDomainEvent(car.Id));
@@ -50,20 +51,16 @@ public class CarModel : Entity
         return car;
     }
 
-    public void Update(string brand, string model, int? startYear = null, BodyType? bodyType = null)
+    public void Update(string modelName, int? startYear = null, BodyType? bodyType = null)
     {
-        if (!string.IsNullOrWhiteSpace(brand) && Brand != brand)
+        if (!string.IsNullOrWhiteSpace(modelName) && ModelName != modelName)
         {
-            Brand = brand;
-            Slug = Slug.GenerateSlug($"{Brand}-{Model}");
-            RaiseDomainEvent(new CarModelBrandChangedDomainEvent(Id, Brand));
-        }
-
-        if (!string.IsNullOrWhiteSpace(model) && Model != model)
-        {
-            Model = model;
-            Slug = Slug.GenerateSlug($"{Brand}-{Model}");
-            RaiseDomainEvent(new CarModelModelChangedDomainEvent(Id, Model));
+            ModelName = modelName;
+            if (CarBrand is not null)
+            {
+                Slug = Slug.GenerateSlug($"{CarBrand.Name}-{ModelName}");
+            }
+            RaiseDomainEvent(new CarModelModelChangedDomainEvent(Id, ModelName));
         }
 
         if (startYear.HasValue && startYear != StartYear)
@@ -100,26 +97,11 @@ public class CarModel : Entity
             shouldUpdate = true;
         }
 
-
         if (shouldUpdate)
         {
             EngineSpec = new EngineSpec(newVolume, newFuel);
             RaiseDomainEvent(new CarModelEngineSpecUpdatedDomainEvent(Id));
         }
-    }
-
-
-    public Result SetImagePath(string path)
-    {
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            return Result.Failure(CarModelErrors.InvalidPath(path));
-        }
-        ImagePath = path;
-
-        RaiseDomainEvent(new CarModelImageUpdatedDomainEvent(Id));
-
-        return Result.Success();
     }
 }
 

@@ -17,7 +17,14 @@ public class CreateCarModelTests : BaseIntegrationTest
     public async Task Should_CreateCarModel_WhenCommandIsValid()
     {
         // Arrange
-        var command = new CreateCarModelCommand("Car Brand", "Car Model", 2020, BodyType.Sedan, new EngineSpec(6, FuelType.Diesel), null);
+        Guid brandId = await Sender.CreateCarBrandAsync("TestBrand");
+        var command = new CreateCarModelCommand(
+            brandId,
+            "X5",
+            2020,
+            BodyType.Sedan,
+            new EngineSpec(6, FuelType.Diesel)
+            );
 
         // Act
         Result<Guid> result = await Sender.Send(command);
@@ -28,10 +35,37 @@ public class CreateCarModelTests : BaseIntegrationTest
     }
 
     [Fact]
+    public async Task Should_ReturnFailure_WhenBrandDoesNotExist()
+    {
+        // Arrange
+        var command = new CreateCarModelCommand(
+            Guid.NewGuid(),
+            "X5",
+            2020,
+            BodyType.Sedan,
+            new EngineSpec(6, FuelType.Diesel)
+            );
+
+        // Act
+        Result<Guid> result = await Sender.Send(command);
+
+        // Assert
+        result.IsFailure.ShouldBeTrue();
+        result.Error.Code.ShouldBe("CarBrand.NotFound");
+    }
+
+    [Fact]
     public async Task Should_ReturnFailure_WhenCommandIsNotValid()
     {
         // Arrange
-        var command = new CreateCarModelCommand("Car Brand", "Car Model", 0, BodyType.Sedan, new EngineSpec(6, FuelType.Diesel), null);
+        Guid brandId = await Sender.CreateCarBrandAsync("TestBrand2");
+        var command = new CreateCarModelCommand(
+            brandId,
+            "X5",
+            0,
+            BodyType.Sedan,
+            new EngineSpec(6, FuelType.Diesel)
+            );
 
         // Act
         Result<Guid> result = await Sender.Send(command);

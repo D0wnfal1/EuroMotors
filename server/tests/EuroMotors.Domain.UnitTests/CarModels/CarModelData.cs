@@ -1,7 +1,11 @@
-﻿namespace EuroMotors.Domain.UnitTests.CarModels;
+﻿using EuroMotors.Domain.CarBrands;
+
+namespace EuroMotors.Domain.UnitTests.CarModels;
 
 internal static class CarModelData
 {
-    public static readonly string Brand = new("Test Brand");
-    public static readonly string Model = new("Test Model");
+    public const string BrandName = "Test Brand";
+    public const string ModelName = "Test Model";
+
+    public static CarBrand CreateTestBrand() => CarBrand.Create(BrandName);
 }

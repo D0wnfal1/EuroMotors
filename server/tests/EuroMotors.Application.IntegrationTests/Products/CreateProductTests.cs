@@ -11,6 +11,8 @@ namespace EuroMotors.Application.IntegrationTests.Products;
 
 public class CreateProductTests : BaseIntegrationTest
 {
+    private readonly Faker _faker = new();
+
     public CreateProductTests(IntegrationTestWebAppFactory factory)
         : base(factory)
     {
@@ -20,9 +22,15 @@ public class CreateProductTests : BaseIntegrationTest
     public async Task Should_ReturnFailure_WhenPriceIsInvalid()
     {
         // Arrange
-        var faker = new Faker();
-        Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
-        Guid carModelId = await Sender.CreateCarModelAsync(faker.Vehicle.Manufacturer(), faker.Vehicle.Model(), 2020, BodyType.Sedan, new EngineSpec(6, FuelType.Diesel), null);
+        Guid categoryId = await Sender.CreateCategoryAsync(_faker.Commerce.Categories(1)[0]);
+        Guid brandId = await Sender.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
+        Guid carModelId = await Sender.CreateCarModelAsync(
+            brandId,
+            _faker.Vehicle.Model(),
+            2020,
+            BodyType.Sedan,
+            new EngineSpec(6, FuelType.Diesel)
+            );
 
         var specifications = new List<Specification>
         {
@@ -31,13 +39,13 @@ public class CreateProductTests : BaseIntegrationTest
         };
 
         var command = new CreateProductCommand(
-            faker.Commerce.ProductName(),
+            _faker.Commerce.ProductName(),
             specifications,
-            faker.Commerce.Ean13(),
+            _faker.Commerce.Ean13(),
             categoryId,
             carModelId,
             -100,
-            faker.Random.Decimal(0, 100),
+            _faker.Random.Decimal(0, 100),
             10);
 
         // Act
@@ -53,9 +61,15 @@ public class CreateProductTests : BaseIntegrationTest
     public async Task Should_ReturnFailure_WhenCategoryDoesNotExist()
     {
         // Arrange
-        var faker = new Faker();
         var categoryId = Guid.NewGuid();
-        Guid carModelId = await Sender.CreateCarModelAsync(faker.Vehicle.Manufacturer(), faker.Vehicle.Model(), 2020, BodyType.Sedan, new EngineSpec(6, FuelType.Diesel), null);
+        Guid brandId = await Sender.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
+        Guid carModelId = await Sender.CreateCarModelAsync(
+            brandId,
+            _faker.Vehicle.Model(),
+            2020,
+            BodyType.Sedan,
+            new EngineSpec(6, FuelType.Diesel)
+            );
 
         var specifications = new List<Specification>
         {
@@ -64,13 +78,13 @@ public class CreateProductTests : BaseIntegrationTest
         };
 
         var command = new CreateProductCommand(
-            faker.Commerce.ProductName(),
+            _faker.Commerce.ProductName(),
             specifications,
-            faker.Commerce.Ean13(),
+            _faker.Commerce.Ean13(),
             categoryId,
             carModelId,
-            faker.Random.Decimal(100, 1000),
-            faker.Random.Decimal(0, 100),
+            _faker.Random.Decimal(100, 1000),
+            _faker.Random.Decimal(0, 100),
             10);
 
         // Act
@@ -84,8 +98,7 @@ public class CreateProductTests : BaseIntegrationTest
     public async Task Should_ReturnFailure_WhenCarModelDoesNotExist()
     {
         // Arrange
-        var faker = new Faker();
-        Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
+        Guid categoryId = await Sender.CreateCategoryAsync(_faker.Commerce.Categories(1)[0]);
         var carModelId = Guid.NewGuid();
 
         var specifications = new List<Specification>
@@ -95,20 +108,20 @@ public class CreateProductTests : BaseIntegrationTest
         };
 
         var command = new CreateProductCommand(
-            faker.Commerce.ProductName(),
+            _faker.Commerce.ProductName(),
             specifications,
-            faker.Commerce.Ean13(),
+            _faker.Commerce.Ean13(),
             categoryId,
             carModelId,
-            faker.Random.Decimal(100, 1000),
-            faker.Random.Decimal(0, 100),
+            _faker.Random.Decimal(100, 1000),
+            _faker.Random.Decimal(0, 100),
             10);
 
         // Act
         Result<Guid> result = await Sender.Send(command);
 
         // Assert
-        result.Error.ShouldBe(CarModelErrors.NotFound(carModelId));
+        result.Error.ShouldBe(CarModelErrors.ModelNotFound(carModelId));
     }
 
     [Fact]
@@ -116,15 +129,14 @@ public class CreateProductTests : BaseIntegrationTest
     {
         // Arrange
         await CleanDatabaseAsync();
-        var faker = new Faker();
-        Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
+        Guid categoryId = await Sender.CreateCategoryAsync(_faker.Commerce.Categories(1)[0]);
+        Guid brandId = await Sender.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
         Guid carModelId = await Sender.CreateCarModelAsync(
-            faker.Vehicle.Manufacturer(),
-            faker.Vehicle.Model(),
+            brandId,
+            _faker.Vehicle.Model(),
             2020,
             BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel),
-            null
+            new EngineSpec(6, FuelType.Diesel)
         );
 
         var specifications = new List<Specification>
@@ -134,13 +146,13 @@ public class CreateProductTests : BaseIntegrationTest
         };
 
         var command = new CreateProductCommand(
-            faker.Commerce.ProductName(),
+            _faker.Commerce.ProductName(),
             specifications,
-            faker.Commerce.Ean13(),
+            _faker.Commerce.Ean13(),
             categoryId,
             carModelId,
-            faker.Random.Decimal(100, 1000),
-            faker.Random.Decimal(0, 100),
+            _faker.Random.Decimal(100, 1000),
+            _faker.Random.Decimal(0, 100),
             10);
 
         // Act

@@ -3,7 +3,6 @@ using EuroMotors.Application.Payments.CreatePayment;
 using EuroMotors.Application.Payments.GetPaymentById;
 using EuroMotors.Application.Payments.GetPaymentByOrderId;
 using EuroMotors.Application.Payments.GetPaymentByStatus;
-using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Payments;
 using Microsoft.AspNetCore.Http;
 
@@ -205,4 +204,4 @@ public class PaymentControllerTests
         BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();
         badRequestResult.Value.ShouldBe(error);
     }
-} 
+}

@@ -46,7 +46,7 @@ public class UserTests : BaseTest
     {
         // Arrange
         var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
-        
+
         string newEmail = "updated@example.com";
         string newFirstName = "Jane";
         string newLastName = "Smith";
@@ -69,7 +69,7 @@ public class UserTests : BaseTest
     {
         // Arrange
         var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
-        
+
         string refreshToken = "refreshtoken123";
         DateTime expiryTime = DateTime.UtcNow.AddDays(7);
 

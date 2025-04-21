@@ -1,4 +1,5 @@
 ﻿using EuroMotors.Application.Abstractions.Pagination;
+using EuroMotors.Application.CarBrands.GetCarBrands;
 using EuroMotors.Application.CarModels.CreateCarModel;
 using EuroMotors.Application.CarModels.DeleteCarModel;
 using EuroMotors.Application.CarModels.GetAllCarModelBrands;
@@ -16,7 +17,7 @@ namespace EuroMotors.Api.Controllers.CarModels;
 
 [Route("api/carModels")]
 [ApiController]
-public class CarModelController : ControllerBase
+public sealed class CarModelController : ControllerBase
 {
     private readonly ISender _sender;
 
@@ -26,10 +27,11 @@ public class CarModelController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetCarModels(CancellationToken cancellationToken, [FromQuery] int pageNumber = 1,
+    public async Task<IActionResult> GetCarModels(CancellationToken cancellationToken, [FromQuery] Guid? brandId = null,
+        [FromQuery] string? searchTerm = null, [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10)
     {
-        var query = new GetCarModelsQuery(pageNumber, pageSize);
+        var query = new GetCarModelsQuery(brandId, searchTerm, pageNumber, pageSize);
 
         Result<Pagination<CarModelResponse>> result = await _sender.Send(query, cancellationToken);
 
@@ -50,7 +52,7 @@ public class CarModelController : ControllerBase
     [HttpGet("brands")]
     public async Task<IActionResult> GetAllBrands()
     {
-        Result<List<string>> result = await _sender.Send(new GetAllCarModelBrandsQuery());
+        Result<List<CarBrandResponse>> result = await _sender.Send(new GetAllCarModelBrandsQuery());
 
         return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
@@ -58,7 +60,7 @@ public class CarModelController : ControllerBase
     [HttpGet("selection")]
     public async Task<IActionResult> GetCarSelection([FromQuery] SelectCarModelRequest request, CancellationToken cancellationToken)
     {
-        var query = new GetCarModelSelectionQuery(request.Brand, request.Model, request.StartYear, request.BodyType);
+        var query = new GetCarModelSelectionQuery(request.BrandId, request.Model, request.StartYear, request.BodyType);
 
         Result<CarModelSelectionResponse> result = await _sender.Send(query, cancellationToken);
 
@@ -72,12 +74,11 @@ public class CarModelController : ControllerBase
         var engineSpec = new EngineSpec(request.VolumeLiters, request.FuelType);
 
         var command = new CreateCarModelCommand(
-            request.Brand,
+            request.CarBrandId,
             request.Model,
             request.StartYear,
             request.BodyType,
-            engineSpec,
-            request.ImagePath
+            engineSpec
         );
 
         Result<Guid> result = await _sender.Send(command, cancellationToken);
@@ -94,14 +95,13 @@ public class CarModelController : ControllerBase
         [FromForm] UpdateCarModelRequest request,
         CancellationToken cancellationToken)
     {
-        var command = new UpdateCarModelCommand(id,
-        request.Brand,
-        request.Model,
-        request.StartYear,
-        request.BodyType,
-        request.VolumeLiters,
-        request.FuelType,
-        request.ImagePath);
+        var command = new UpdateCarModelCommand(
+            id,
+            request.Model,
+            request.StartYear,
+            request.BodyType,
+            request.VolumeLiters,
+            request.FuelType);
 
         Result result = await _sender.Send(command, cancellationToken);
 

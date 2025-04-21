@@ -12,19 +12,7 @@ internal sealed class DeleteCarModelCommandHandler(ICarModelRepository carModelR
 
         if (carModel is null)
         {
-            return Result.Failure(CarModelErrors.NotFound(request.CarModelId));
-        }
-
-        if (!string.IsNullOrEmpty(carModel.ImagePath))
-        {
-            string projectRoot = Path.GetFullPath(Directory.GetCurrentDirectory());
-            string basePath = Path.Combine(projectRoot, "wwwroot", "images", "carModels");
-            string filePath = Path.Combine(basePath, Path.GetFileName(carModel.ImagePath));
-
-            if (File.Exists(filePath))
-            {
-                File.Delete(filePath);
-            }
+            return Result.Failure(CarModelErrors.ModelNotFound(request.CarModelId));
         }
 
         await carModelRepository.Delete(carModel.Id);

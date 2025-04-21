@@ -1,0 +1,34 @@
+/* Admin Car Brands component styles */
+.mat-mdc-table {
+  width: 100%;
+  background-color: white;
+}
+
+.mat-mdc-header-cell {
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.mat-mdc-cell,
+.mat-mdc-header-cell {
+  padding: 0.5rem 1rem;
+}
+
+.brand-logo-cell {
+  width: 80px;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.brand-card {
+  margin-bottom: 1rem;
+  transition: transform 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+}

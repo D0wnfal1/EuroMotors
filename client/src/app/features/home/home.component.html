@@ -12,8 +12,13 @@
         *ngFor="let brand of displayedBrands"
         class="border border-gray-300 rounded hover:shadow-md transition-shadow cursor-pointer"
       >
-        <div class="p-3 text-center">
-          SPARE PARTS FOR {{ brand | uppercase }}
+        <div class="p-3 text-center flex items-center">
+          <img
+            [src]="getBrandLogo(brand)"
+            [alt]="brand.name"
+            class="h-10 w-auto object-contain"
+          />
+          <span>SPARE PARTS FOR {{ brand.name | uppercase }}</span>
         </div>
       </button>
     </div>

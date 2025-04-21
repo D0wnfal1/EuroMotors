@@ -1,5 +1,6 @@
 using EuroMotors.Api.Controllers.CarModels;
 using EuroMotors.Application.Abstractions.Pagination;
+using EuroMotors.Application.CarBrands.GetCarBrands;
 using EuroMotors.Application.CarModels.CreateCarModel;
 using EuroMotors.Application.CarModels.DeleteCarModel;
 using EuroMotors.Application.CarModels.GetAllCarModelBrands;
@@ -7,7 +8,6 @@ using EuroMotors.Application.CarModels.GetCarModelById;
 using EuroMotors.Application.CarModels.GetCarModels;
 using EuroMotors.Application.CarModels.GetCarModelSelection;
 using EuroMotors.Application.CarModels.UpdateCarModel;
-using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
 using Microsoft.AspNetCore.Http;
 
@@ -40,8 +40,8 @@ public class CarModelControllerTests
             new CarModelResponse
             {
                 Id = Guid.NewGuid(),
-                Brand = "BMW",
-                Model = "X5",
+                CarBrandId = Guid.NewGuid(),
+                ModelName = "X5",
                 StartYear = 2020,
                 BodyType = "SUV"
             }
@@ -94,8 +94,7 @@ public class CarModelControllerTests
         var carModel = new CarModelResponse
         {
             Id = id,
-            Brand = "BMW",
-            Model = "X5",
+            ModelName = "X5",
             StartYear = 2020,
             BodyType = "SUV"
         };
@@ -135,7 +134,12 @@ public class CarModelControllerTests
     public async Task GetAllBrands_ShouldReturnOk_WhenBrandsFound()
     {
         // Arrange
-        var brands = new List<string> { "BMW", "Audi", "Mercedes" };
+        var brands = new List<CarBrandResponse>
+        {
+            new CarBrandResponse { Id = Guid.NewGuid(), Name = "BMW", Slug = "bmw", LogoPath = null },
+            new CarBrandResponse { Id = Guid.NewGuid(), Name = "Audi", Slug = "audi", LogoPath = null },
+            new CarBrandResponse { Id = Guid.NewGuid(), Name = "Mercedes", Slug = "mercedes", LogoPath = null }
+        };
 
         _sender.Send(Arg.Any<GetAllCarModelBrandsQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(brands));
@@ -157,7 +161,7 @@ public class CarModelControllerTests
     {
         // Arrange
         _sender.Send(Arg.Any<GetAllCarModelBrandsQuery>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Failure<List<string>>(Error.NotFound("Brands.NotFound", "Brands not found")));
+            .Returns(Result.Failure<List<CarBrandResponse>>(Error.NotFound("Brands.NotFound", "Brands not found")));
 
         // Act
         IActionResult result = await _controller.GetAllBrands();
@@ -170,9 +174,10 @@ public class CarModelControllerTests
     public async Task GetCarSelection_ShouldReturnOk_WhenSelectionFound()
     {
         // Arrange
+        var brandId = Guid.NewGuid();
         var request = new SelectCarModelRequest
         {
-            Brand = "BMW",
+            BrandId = brandId,
             Model = "X5",
             StartYear = 2020,
             BodyType = "SUV"
@@ -181,7 +186,7 @@ public class CarModelControllerTests
         var response = new CarModelSelectionResponse
         {
             Ids = new List<Guid> { Guid.NewGuid() },
-            Brands = new List<string> { "BMW" },
+            Brands = new List<BrandInfo> { new BrandInfo { Id = Guid.NewGuid(), Name = "BMW" } },
             Models = new List<string> { "X5" },
             Years = new List<int> { 2020 },
             BodyTypes = new List<string> { "SUV" },
@@ -200,8 +205,8 @@ public class CarModelControllerTests
 
         await _sender.Received(1).Send(
             Arg.Is<GetCarModelSelectionQuery>(query =>
-                query.Brand == request.Brand &&
-                query.Model == request.Model &&
+                query.BrandId == request.BrandId &&
+                query.ModelName == request.Model &&
                 query.StartYear == request.StartYear &&
                 query.BodyType == request.BodyType),
             Arg.Any<CancellationToken>());
@@ -213,7 +218,7 @@ public class CarModelControllerTests
         // Arrange
         var request = new SelectCarModelRequest
         {
-            Brand = "Unknown",
+            BrandId = Guid.NewGuid(),
             Model = "Unknown",
             StartYear = 9999,
             BodyType = "Unknown"
@@ -233,9 +238,10 @@ public class CarModelControllerTests
     public async Task CreateCarModel_ShouldReturnCreatedAtAction_WhenCreationSucceeds()
     {
         // Arrange
+        var brandId = Guid.NewGuid();
         var request = new CreateCarModelRequest
         {
-            Brand = "BMW",
+            CarBrandId = brandId,
             Model = "X5",
             StartYear = 2020,
             BodyType = BodyType.SUV,
@@ -259,8 +265,8 @@ public class CarModelControllerTests
 
         await _sender.Received(1).Send(
             Arg.Is<CreateCarModelCommand>(cmd =>
-                cmd.Brand == request.Brand &&
-                cmd.Model == request.Model &&
+                cmd.CarBrandId == request.CarBrandId &&
+                cmd.ModelName == request.Model &&
                 cmd.StartYear == request.StartYear &&
                 cmd.BodyType == request.BodyType),
             Arg.Any<CancellationToken>());
@@ -270,9 +276,10 @@ public class CarModelControllerTests
     public async Task CreateCarModel_ShouldReturnBadRequest_WhenCreationFails()
     {
         // Arrange
+        var brandId = Guid.NewGuid();
         var request = new CreateCarModelRequest
         {
-            Brand = "BMW",
+            CarBrandId = brandId,
             Model = "X5",
             StartYear = 2020,
             BodyType = BodyType.SUV,
@@ -300,7 +307,6 @@ public class CarModelControllerTests
         var id = Guid.NewGuid();
         var request = new UpdateCarModelRequest
         {
-            Brand = "BMW",
             Model = "X5 Updated",
             StartYear = 2021,
             BodyType = BodyType.SUV,
@@ -319,13 +325,12 @@ public class CarModelControllerTests
 
         await _sender.Received(1).Send(
             Arg.Is<UpdateCarModelCommand>(cmd =>
-                cmd.CarModelId == id &&
-                cmd.Brand == request.Brand &&
-                cmd.Model == request.Model &&
+                cmd.Id == id &&
+                cmd.ModelName == request.Model &&
                 cmd.StartYear == request.StartYear &&
                 cmd.BodyType == request.BodyType &&
-                Math.Abs(cmd.VolumeLiters.GetValueOrDefault() - request.VolumeLiters.GetValueOrDefault()) < 0.0001f &&
-                cmd.FuelType == request.FuelType),
+                Math.Abs(cmd.EngineVolumeLiters.GetValueOrDefault() - request.VolumeLiters.GetValueOrDefault()) < 0.0001f &&
+                cmd.EngineFuelType == request.FuelType),
             Arg.Any<CancellationToken>());
     }
 
@@ -336,12 +341,11 @@ public class CarModelControllerTests
         var id = Guid.NewGuid();
         var request = new UpdateCarModelRequest
         {
-            Brand = "BMW",
             Model = "X5 Updated",
             StartYear = 2021,
             BodyType = BodyType.SUV,
             VolumeLiters = 3.0f,
-            FuelType = FuelType.Petrol
+            FuelType = FuelType.Diesel
         };
 
         var error = Error.NotFound("CarModel.NotFound", "Car model not found");
@@ -395,4 +399,4 @@ public class CarModelControllerTests
         BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();
         badRequestResult.Value.ShouldBe(error);
     }
-} 
+}

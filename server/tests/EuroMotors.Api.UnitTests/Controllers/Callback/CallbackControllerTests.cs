@@ -66,4 +66,4 @@ public class CallbackControllerTests
         // Assert
         result.ShouldBeOfType<NotFoundResult>();
     }
-} 
+}

@@ -47,7 +47,7 @@ public class ProductImageControllerTests
         CreatedAtActionResult createdResult = result.ShouldBeOfType<CreatedAtActionResult>();
         createdResult.ActionName.ShouldBe(nameof(ProductImageController.UploadProductImage));
         createdResult.RouteValues?["id"].ShouldBe(imageId);
-        
+
         await _sender.Received(1).Send(
             Arg.Is<UploadProductImageCommand>(cmd =>
                 cmd.File == request.File &&
@@ -100,7 +100,7 @@ public class ProductImageControllerTests
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
-        
+
         await _sender.Received(1).Send(
             Arg.Is<UpdateProductImageCommand>(cmd =>
                 cmd.Id == imageId &&
@@ -139,7 +139,7 @@ public class ProductImageControllerTests
     {
         // Arrange
         var imageId = Guid.NewGuid();
-        
+
         _sender.Send(Arg.Any<DeleteProductImageCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
@@ -148,7 +148,7 @@ public class ProductImageControllerTests
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
-        
+
         await _sender.Received(1).Send(
             Arg.Is<DeleteProductImageCommand>(cmd => cmd.Id == imageId),
             Arg.Any<CancellationToken>());
@@ -159,7 +159,7 @@ public class ProductImageControllerTests
     {
         // Arrange
         var imageId = Guid.NewGuid();
-        
+
         var error = Error.NotFound("ProductImage.NotFound", "Product image not found");
         _sender.Send(Arg.Any<DeleteProductImageCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure(error));
@@ -171,4 +171,4 @@ public class ProductImageControllerTests
         BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();
         badRequestResult.Value.ShouldBe(error);
     }
-} 
+}

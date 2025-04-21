@@ -1,18 +1,28 @@
 import { Product } from './product';
 
-export type CarModel = {
+export interface CarModel {
   id: string;
-  brand: string;
-  model: string;
+  carBrandId: string;
+  brandName: string;
+  modelName: string;
   startYear: number;
   bodyType: BodyType;
   volumeLiters: number;
   fuelType: FuelType;
-  horsePower: number;
+  engineSpec: EngineSpec;
   slug: string;
-  imagePath?: string;
   products: Product[];
-};
+  carBrand?: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+}
+
+export interface EngineSpec {
+  volumeLiters: number;
+  fuelType: FuelType;
+}
 
 export enum FuelType {
   Petrol = 'Petrol',
@@ -32,12 +42,12 @@ export enum BodyType {
   Pickup = 'Pickup',
 }
 
-export type CarSelectionFilter = {
+export interface CarSelectionFilter {
   brand?: string;
   model?: string;
   startYear?: number;
   bodyType?: BodyType;
-};
+}
 
 export interface SelectedCar {
   brand: string;

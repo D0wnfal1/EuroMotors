@@ -10,6 +10,8 @@ namespace EuroMotors.Application.IntegrationTests.Products;
 
 public class GetProductTests : BaseIntegrationTest
 {
+    private readonly Faker _faker = new();
+
     public GetProductTests(IntegrationTestWebAppFactory factory)
         : base(factory)
     {
@@ -34,15 +36,14 @@ public class GetProductTests : BaseIntegrationTest
         // Arrange
         await CleanDatabaseAsync();
 
-        var faker = new Faker();
-        Guid categoryId = await Sender.CreateCategoryAsync(faker.Commerce.Categories(1)[0]);
+        Guid categoryId = await Sender.CreateCategoryAsync(_faker.Commerce.Categories(1)[0]);
+        Guid brandId = await Sender.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
         Guid carModelId = await Sender.CreateCarModelAsync(
-            faker.Vehicle.Manufacturer(),
-            faker.Vehicle.Model(),
+            brandId,
+            _faker.Vehicle.Model(),
             2020,
             BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel),
-            null
+            new EngineSpec(6, FuelType.Diesel)
         );
 
         var specifications = new List<Specification>

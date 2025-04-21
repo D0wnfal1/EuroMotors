@@ -17,8 +17,8 @@
               <mat-form-field appearance="fill" class="w-full">
                 <mat-label>Brand</mat-label>
                 <mat-select formControlName="brand">
-                  <mat-option *ngFor="let brand of brands" [value]="brand">
-                    {{ brand }}
+                  <mat-option *ngFor="let brand of carBrands" [value]="brand">
+                    {{ brand.name }}
                   </mat-option>
                 </mat-select>
                 <mat-error
@@ -187,6 +187,49 @@
           </mat-step>
         </mat-stepper>
       </form>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<div *ngIf="selectedCar" class="container mx-auto p-4 max-w-2xl">
+  <mat-card class="mb-6">
+    <mat-card-header>
+      <mat-card-title class="text-xl font-bold mb-4">
+        Selected Car
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="p-4">
+        <div class="mb-2"><strong>Brand:</strong> {{ selectedCar.brand }}</div>
+        <div class="mb-2"><strong>Model:</strong> {{ selectedCar.model }}</div>
+        <div class="mb-2">
+          <strong>Year:</strong> {{ selectedCar.startYear }}
+        </div>
+        <div class="mb-2">
+          <strong>Body Type:</strong> {{ selectedCar.bodyType }}
+        </div>
+        <div class="mb-2">
+          <strong>Engine:</strong> {{ selectedCar.engineSpec }}
+        </div>
+
+        <div class="flex justify-between mt-4">
+          <button
+            mat-button
+            (click)="clearSelection()"
+            class="bg-gray-500 text-white"
+          >
+            Change Selection
+          </button>
+          <button
+            mat-button
+            (click)="navigateToShop(carModelService.getStoredCarId()!)"
+            class="bg-blue-500 text-white"
+          >
+            Continue Shopping
+          </button>
+        </div>
+      </div>
     </mat-card-content>
   </mat-card>
 </div>

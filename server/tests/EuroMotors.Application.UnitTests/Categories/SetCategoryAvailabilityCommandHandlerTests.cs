@@ -33,7 +33,7 @@ public class SetCategoryAvailabilityCommandHandlerTests
         // Assert
         result.IsFailure.ShouldBeTrue();
         result.Error.Code.ShouldBe("Category.NotFound");
-        
+
         await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
@@ -43,7 +43,7 @@ public class SetCategoryAvailabilityCommandHandlerTests
         // Arrange
         var categoryId = Guid.NewGuid();
         var category = Category.Create("Test Category");
-            
+
         // Update the category's id via reflection for testing
         typeof(Entity)
             .GetProperty("Id")
@@ -59,13 +59,13 @@ public class SetCategoryAvailabilityCommandHandlerTests
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
-        
+
         // Verify the category availability has been updated
         typeof(Category)
             .GetProperty("IsAvailable")
             ?.GetValue(category)
             .ShouldBe(false);
-        
+
         await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);
     }
-} 
+}

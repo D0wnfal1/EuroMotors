@@ -7,9 +7,12 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { RouterLink } from '@angular/router';
 import { ShopParams } from '../../../shared/models/shopParams';
 import { CarmodelService } from '../../../core/services/carmodel.service';
+import { CarbrandService } from '../../../core/services/carbrand.service';
 import { CarModel } from '../../../shared/models/carModel';
 import { ImageService } from '../../../core/services/image.service';
 import { MatTableModule } from '@angular/material/table';
+import { forkJoin } from 'rxjs';
+import { CarBrand } from '../../../shared/models/carBrand';
 
 @Component({
   selector: 'app-admin-carmodels',
@@ -27,6 +30,7 @@ import { MatTableModule } from '@angular/material/table';
 })
 export class AdminCarmodelsComponent implements OnInit {
   private carModelService = inject(CarmodelService);
+  private carBrandService = inject(CarbrandService);
   private imageService = inject(ImageService);
   carModels: CarModel[] = [];
   totalItems = 0;
@@ -34,25 +38,28 @@ export class AdminCarmodelsComponent implements OnInit {
   pageSizeOptions = [5, 10, 15, 20];
   count = 0;
 
+  brandCache: { [brandId: string]: CarBrand } = {};
+
   displayedColumns: string[] = [
-    'image',
     'brand',
     'model',
     'startYear',
     'bodyType',
-    'volumeLiters',
-    'fuelType',
+    'engine',
     'actions',
   ];
 
   ngOnInit() {
     this.getCarModels();
+    this.loadAllBrands();
   }
 
   getCarModels() {
     this.carModelService.getCarModels(this.shopParams);
     this.carModelService.carModels$.subscribe((response) => {
       this.carModels = response;
+
+      this.loadMissingBrands();
     });
 
     this.carModelService.totalItems$.subscribe((count) => {
@@ -60,14 +67,61 @@ export class AdminCarmodelsComponent implements OnInit {
     });
   }
 
-  getCarModelName(carModelId: string): string {
-    return this.carModels.find((c) => c.id === carModelId)?.brand || '—';
+  loadAllBrands() {
+    const brandsParams = new ShopParams();
+    brandsParams.pageSize = 1000;
+    brandsParams.pageNumber = 1;
+
+    this.carBrandService.getCarBrands(brandsParams);
+    this.carBrandService.carBrands$.subscribe((brands) => {
+      brands.forEach((brand) => {
+        this.brandCache[brand.id] = brand;
+      });
+    });
   }
 
-  getCarModelImage(imagePath?: string): string {
-    return imagePath
-      ? this.imageService.getImageUrl(imagePath)
-      : '/images/no-image.jpeg';
+  loadMissingBrands() {
+    const missingBrandIds = new Set<string>();
+
+    this.carModels.forEach((model) => {
+      if (
+        model.carBrandId &&
+        (!model.carBrand || !model.carBrand.name) &&
+        !this.brandCache[model.carBrandId]
+      ) {
+        missingBrandIds.add(model.carBrandId);
+      }
+    });
+
+    if (missingBrandIds.size > 0) {
+      const requests = Array.from(missingBrandIds).map((id) =>
+        this.carBrandService.getCarBrandById(id)
+      );
+
+      if (requests.length > 0) {
+        forkJoin(requests).subscribe((brands) => {
+          brands.forEach((brand) => {
+            if (brand) {
+              this.brandCache[brand.id] = brand;
+            }
+          });
+        });
+      }
+    }
+  }
+
+  getBrandName(carModel: CarModel): string {
+    if (!carModel) return '—';
+
+    if (carModel.brandName) {
+      return carModel.brandName;
+    }
+
+    if (carModel.carBrandId && this.brandCache[carModel.carBrandId]) {
+      return this.brandCache[carModel.carBrandId].name;
+    }
+
+    return '—';
   }
 
   handlePageEvent(event: PageEvent) {
@@ -93,5 +147,11 @@ export class AdminCarmodelsComponent implements OnInit {
         );
       }
     });
+  }
+
+  getEngineInfo(carModel: CarModel): string {
+    if (!carModel.volumeLiters && !carModel.fuelType) return '—';
+
+    return `${carModel.volumeLiters}L ${carModel.fuelType}`;
   }
 }

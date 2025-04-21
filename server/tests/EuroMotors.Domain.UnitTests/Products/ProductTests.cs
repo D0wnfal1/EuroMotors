@@ -236,7 +236,7 @@ public class ProductTests : BaseTest
             Price,
             Discount,
             0);
-        
+
         // Act
         product.SetAvailability(true);
 
@@ -259,7 +259,7 @@ public class ProductTests : BaseTest
             Price,
             Discount,
             Stock);
-        
+
         // Act
         product.SetAvailability(false);
 
@@ -282,9 +282,9 @@ public class ProductTests : BaseTest
             Price,
             Discount,
             Stock);
-        
+
         int initialDomainEventsCount = product.DomainEvents.Count;
-        
+
         // Act
         product.SetAvailability(true);
 

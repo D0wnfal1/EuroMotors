@@ -45,7 +45,7 @@ public class DeleteCategoryCommandHandlerTests
         var command = new DeleteCategoryCommand(categoryId);
 
         var category = Category.Create("Test Category");
-            
+
         // Update the category's id via reflection for testing
         typeof(Entity)
             .GetProperty("Id")
@@ -59,8 +59,8 @@ public class DeleteCategoryCommandHandlerTests
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
-        
+
         await _categoryRepository.Received(1).Delete(categoryId);
         await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);
     }
-} 
+}

@@ -73,7 +73,9 @@
         <mat-label>Car Model</mat-label>
         <mat-select formControlName="carModelId">
           <mat-option *ngFor="let model of carModels" [value]="model.id">
-            {{ model.brand }} {{ model.model }}
+            {{ getCarBrandNameForModel(model) }} {{ model.modelName }} ({{
+              model.startYear
+            }})
           </mat-option>
         </mat-select>
       </mat-form-field>

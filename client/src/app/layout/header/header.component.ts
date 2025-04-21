@@ -91,13 +91,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.carModelService.getSelectedCarDetails(carId).subscribe({
         next: (carModel) => {
           this.selectedCar = {
-            brand: carModel.brand,
-            model: carModel.model,
+            brand: carModel.brandName || '',
+            model: carModel.modelName,
           };
         },
         error: (err) => {
           console.error('Failed to load selected car details', err);
-          this.clearCarSelection(); // Clear invalid selection
+          this.clearCarSelection();
         },
       });
     } else {

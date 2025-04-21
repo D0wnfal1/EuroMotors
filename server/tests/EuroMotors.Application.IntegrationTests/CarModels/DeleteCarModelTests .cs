@@ -1,9 +1,9 @@
-﻿using EuroMotors.Application.CarModels.DeleteCarModel;
+﻿using EuroMotors.Application.CarBrands.CreateCarBrand;
+using EuroMotors.Application.CarModels.DeleteCarModel;
 using EuroMotors.Application.CarModels.GetCarModelById;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
-using Microsoft.AspNetCore.Http;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.CarModels;
@@ -26,21 +26,23 @@ public class DeleteCarModelTests : BaseIntegrationTest
 
         // Assert
         result.IsFailure.ShouldBeTrue();
-        result.Error.ShouldBe(CarModelErrors.NotFound(command.CarModelId));
+        result.Error.ShouldBe(CarModelErrors.ModelNotFound(command.CarModelId));
     }
 
     [Fact]
     public async Task Should_DeleteCarModel_WhenCarModelExists()
     {
         // Arrange
-        string brand = "Test Brand";
-        string model = "Test Model";
-        int startYear = 2020; // Example start year
-        BodyType bodyType = BodyType.Sedan; // Example body type
-        var engineSpec = new EngineSpec(6, FuelType.Diesel); // Example engine spec
-        IFormFile? image = null; // Example image
+        var createBrandCommand = new CreateCarBrandCommand("TestBrand", null);
+        Result<Guid> brandResult = await Sender.Send(createBrandCommand);
+        Guid brandId = brandResult.Value;
 
-        Guid carModelId = await Sender.CreateCarModelAsync(brand, model, startYear, bodyType, engineSpec, image);
+        string model = "Test Model";
+        int startYear = 2020;
+        BodyType bodyType = BodyType.Sedan;
+        var engineSpec = new EngineSpec(6, FuelType.Diesel);
+
+        Guid carModelId = await Sender.CreateCarModelAsync(brandId, model, startYear, bodyType, engineSpec);
 
         var command = new DeleteCarModelCommand(carModelId);
 
@@ -54,6 +56,7 @@ public class DeleteCarModelTests : BaseIntegrationTest
         Result<CarModelResponse> getResult = await Sender.Send(getCarModelQuery);
 
         getResult.IsFailure.ShouldBeTrue();
-        getResult.Error.ShouldBe(CarModelErrors.NotFound(carModelId));
+        getResult.Error.ShouldBe(CarModelErrors.ModelNotFound(carModelId));
     }
+
 }

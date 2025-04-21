@@ -35,12 +35,12 @@ public class OrderItemTests : BaseTest
     {
         // Arrange
         int[] quantities = [1, 5, 10];
-        
+
         foreach (int qty in quantities)
         {
             // Act
             var orderItem = OrderItem.Create(OrderId, ProductId, qty, UnitPrice);
-            
+
             // Assert
             orderItem.Price.ShouldBe(qty * UnitPrice);
         }
@@ -51,14 +51,14 @@ public class OrderItemTests : BaseTest
     {
         // Arrange
         decimal[] unitPrices = [0.99m, 10.50m, 99.99m];
-        
+
         foreach (decimal price in unitPrices)
         {
             // Act
             var orderItem = OrderItem.Create(OrderId, ProductId, Quantity, price);
-            
+
             // Assert
             orderItem.Price.ShouldBe(Quantity * price);
         }
     }
-} 
+}

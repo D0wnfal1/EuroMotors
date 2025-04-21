@@ -4,50 +4,24 @@ using EuroMotors.Domain.CarModels;
 
 namespace EuroMotors.Application.CarModels.UpdateCarModel;
 
-internal sealed class UpdateCarModelCommandHandler(ICarModelRepository carModelRepository, IUnitOfWork unitOfWork) : ICommandHandler<UpdateCarModelCommand>
+internal sealed class UpdateCarModelCommandHandler(
+    ICarModelRepository carModelRepository,
+    IUnitOfWork unitOfWork) : ICommandHandler<UpdateCarModelCommand>
 {
     public async Task<Result> Handle(UpdateCarModelCommand request, CancellationToken cancellationToken)
     {
-        CarModel? carModel = await carModelRepository.GetByIdAsync(request.CarModelId, cancellationToken);
+        CarModel? carModel = await carModelRepository.GetByIdAsync(request.Id, cancellationToken);
 
         if (carModel is null)
         {
-            return Result.Failure(CarModelErrors.NotFound(request.CarModelId));
+            return Result.Failure(CarModelErrors.ModelNotFound(request.Id));
         }
 
-        carModel.Update(request.Brand, request.Model, request.StartYear, request.BodyType);
+        carModel.Update(request.ModelName, request.StartYear, request.BodyType);
 
-        carModel.UpdateEngineSpec(request.VolumeLiters, request.FuelType);
-
-        if (request.Image is not null && request.Image.Length > 0)
+        if (request.EngineVolumeLiters.HasValue || request.EngineFuelType.HasValue)
         {
-            string projectRoot = Path.GetFullPath(Directory.GetCurrentDirectory());
-            string basePath = Path.Combine(projectRoot, "wwwroot", "images", "carModels");
-
-            if (!Directory.Exists(basePath))
-            {
-                Directory.CreateDirectory(basePath);
-            }
-
-            if (!string.IsNullOrEmpty(carModel.ImagePath))
-            {
-                string oldImagePath = Path.Combine(projectRoot, "wwwroot", carModel.ImagePath.TrimStart('/'));
-                if (File.Exists(oldImagePath))
-                {
-                    File.Delete(oldImagePath);
-                }
-            }
-
-            string fileName = $"{Guid.NewGuid()}{Path.GetExtension(request.Image.FileName)}";
-            string newFilePath = Path.Combine(basePath, fileName);
-
-            await using (var stream = new FileStream(newFilePath, FileMode.Create))
-            {
-                await request.Image.CopyToAsync(stream, cancellationToken);
-            }
-
-            string newImageUrl = $"/images/carModels/{fileName}";
-            carModel.SetImagePath(newImageUrl);
+            carModel.UpdateEngineSpec(request.EngineVolumeLiters, request.EngineFuelType);
         }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);

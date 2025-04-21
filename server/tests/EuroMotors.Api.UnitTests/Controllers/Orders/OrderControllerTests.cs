@@ -6,7 +6,6 @@ using EuroMotors.Application.Orders.DeleteOrder;
 using EuroMotors.Application.Orders.GetOrderById;
 using EuroMotors.Application.Orders.GetOrders;
 using EuroMotors.Application.Orders.GetUserOrders;
-using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Orders;
 using Microsoft.AspNetCore.Http;
 
@@ -326,4 +325,4 @@ public class OrderControllerTests
         // Assert
         result.ShouldBeOfType<NotFoundResult>();
     }
-} 
+}

@@ -1,5 +1,6 @@
 using EuroMotors.Application.CarModels.DeleteCarModel;
 using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.CarBrands;
 using EuroMotors.Domain.CarModels;
 using NSubstitute;
 using Shouldly;
@@ -11,9 +12,18 @@ public class DeleteCarModelCommandHandlerTests
     private readonly ICarModelRepository _carModelRepository = Substitute.For<ICarModelRepository>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly DeleteCarModelCommandHandler _handler;
+    private readonly Guid _brandId = Guid.NewGuid();
+    private readonly CarBrand _carBrand;
 
     public DeleteCarModelCommandHandlerTests()
     {
+        _carBrand = CarBrand.Create("BMW");
+
+        // Set the brand ID for testing
+        typeof(Entity)
+            .GetProperty("Id")
+            ?.SetValue(_carBrand, _brandId);
+
         _handler = new DeleteCarModelCommandHandler(_carModelRepository, _unitOfWork);
     }
 
@@ -45,10 +55,10 @@ public class DeleteCarModelCommandHandlerTests
         var command = new DeleteCarModelCommand(carModelId);
 
         var carModel = CarModel.Create(
-            "BMW", 
-            "X5", 
-            2020, 
-            BodyType.SUV, 
+            _carBrand,
+            "X5",
+            2020,
+            BodyType.SUV,
             new EngineSpec(2.0f, FuelType.Diesel));
 
         // Update the carModel's id via reflection for testing
@@ -64,8 +74,8 @@ public class DeleteCarModelCommandHandlerTests
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
-        
+
         await _carModelRepository.Received(1).Delete(carModelId);
         await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);
     }
-} 
+}

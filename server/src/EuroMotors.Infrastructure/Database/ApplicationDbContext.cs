@@ -2,6 +2,7 @@
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Exceptions;
 using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.CarBrands;
 using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Categories;
 using EuroMotors.Domain.Orders;
@@ -27,6 +28,8 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
 
     public DbSet<Category> Categories { get; set; }
 
+    public DbSet<CarBrand> CarBrands { get; set; }
+
     public DbSet<CarModel> CarModels { get; set; }
 
     public DbSet<Order> Orders { get; set; }
@@ -43,6 +46,7 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
         modelBuilder.ApplyConfiguration(new ProductConfiguration());
         modelBuilder.ApplyConfiguration(new ProductImageConfiguration());
         modelBuilder.ApplyConfiguration(new CategoryConfiguration());
+        modelBuilder.ApplyConfiguration(new CarBrandConfiguration());
         modelBuilder.ApplyConfiguration(new CarModelConfiguration());
         modelBuilder.ApplyConfiguration(new OrderConfiguration());
         modelBuilder.ApplyConfiguration(new OrderItemConfiguration());

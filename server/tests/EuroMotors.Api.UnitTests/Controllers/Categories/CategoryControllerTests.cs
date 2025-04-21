@@ -8,7 +8,6 @@ using EuroMotors.Application.Categories.GetParentCategories;
 using EuroMotors.Application.Categories.GetSubcategories;
 using EuroMotors.Application.Categories.SetCategoryAvailability;
 using EuroMotors.Application.Categories.UpdateCategory;
-using EuroMotors.Domain.Abstractions;
 using Microsoft.AspNetCore.Http;
 
 namespace EuroMotors.Api.UnitTests.Controllers.Categories;
@@ -97,7 +96,7 @@ public class CategoryControllerTests
         // Arrange
         var id = Guid.NewGuid();
         var error = Error.NotFound("Category.NotFound", "Category not found");
-        
+
         _sender.Send(Arg.Any<GetCategoryByIdQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<CategoryResponse>(error));
 
@@ -117,7 +116,7 @@ public class CategoryControllerTests
         {
             new(Guid.NewGuid(), "Test Category", true, null, null,"test-category")
         };
-        
+
         var pagination = new Pagination<CategoryResponse>
         {
             PageIndex = 1,
@@ -148,7 +147,7 @@ public class CategoryControllerTests
     {
         // Arrange
         var error = Error.NotFound("Categories.NotFound", "Parent categories not found");
-        
+
         _sender.Send(Arg.Any<GetParentCategoriesQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<Pagination<CategoryResponse>>(error));
 
@@ -191,7 +190,7 @@ public class CategoryControllerTests
         // Arrange
         var parentId = Guid.NewGuid();
         var error = Error.NotFound("Categories.NotFound", "Subcategories not found");
-        
+
         _sender.Send(Arg.Any<GetSubcategoriesQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<List<CategoryResponse>>(error));
 
@@ -212,9 +211,9 @@ public class CategoryControllerTests
             null,
             new List<string> { "Subcategory1", "Subcategory2" },
             null);
-            
+
         var categoryId = Guid.NewGuid();
-        
+
         _sender.Send(Arg.Any<CreateCategoryCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(categoryId));
 
@@ -226,7 +225,7 @@ public class CategoryControllerTests
         createdResult.ActionName.ShouldBe(nameof(CategoryController.GetCategoryById));
         createdResult.RouteValues?["id"].ShouldBe(categoryId);
         createdResult.Value.ShouldBe(categoryId);
-        
+
         await _sender.Received(1).Send(
             Arg.Is<CreateCategoryCommand>(cmd =>
                 cmd.Name == request.Name &&
@@ -244,9 +243,9 @@ public class CategoryControllerTests
             null,
             new List<string> { "Subcategory1", "Subcategory2" },
             null);
-            
+
         var error = Error.Failure("Category.InvalidData", "Invalid category data");
-        
+
         _sender.Send(Arg.Any<CreateCategoryCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<Guid>(error));
 
@@ -267,7 +266,7 @@ public class CategoryControllerTests
             "Updated Category",
             null,
             null);
-            
+
         _sender.Send(Arg.Any<UpdateCategoryCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
@@ -276,7 +275,7 @@ public class CategoryControllerTests
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
-        
+
         await _sender.Received(1).Send(
             Arg.Is<UpdateCategoryCommand>(cmd =>
                 cmd.CategoryId == id &&
@@ -294,9 +293,9 @@ public class CategoryControllerTests
             "Updated Category",
             null,
             null);
-            
+
         var error = Error.NotFound("Category.NotFound", "Category not found");
-        
+
         _sender.Send(Arg.Any<UpdateCategoryCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure(error));
 
@@ -314,7 +313,7 @@ public class CategoryControllerTests
         // Arrange
         var id = Guid.NewGuid();
         var request = new SetCategoryAvailabilityRequest { IsAvailable = false };
-        
+
         _sender.Send(Arg.Any<SetCategoryAvailabilityCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
@@ -323,7 +322,7 @@ public class CategoryControllerTests
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
-        
+
         await _sender.Received(1).Send(
             Arg.Is<SetCategoryAvailabilityCommand>(cmd =>
                 cmd.CategoryId == id &&
@@ -337,9 +336,9 @@ public class CategoryControllerTests
         // Arrange
         var id = Guid.NewGuid();
         var request = new SetCategoryAvailabilityRequest { IsAvailable = false };
-        
+
         var error = Error.NotFound("Category.NotFound", "Category not found");
-        
+
         _sender.Send(Arg.Any<SetCategoryAvailabilityCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure(error));
 
@@ -356,7 +355,7 @@ public class CategoryControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        
+
         _sender.Send(Arg.Any<DeleteCategoryCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
@@ -365,7 +364,7 @@ public class CategoryControllerTests
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
-        
+
         await _sender.Received(1).Send(
             Arg.Is<DeleteCategoryCommand>(cmd => cmd.CategoryId == id),
             Arg.Any<CancellationToken>());
@@ -376,9 +375,9 @@ public class CategoryControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        
+
         var error = Error.NotFound("Category.NotFound", "Category not found");
-        
+
         _sender.Send(Arg.Any<DeleteCategoryCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure(error));
 
@@ -389,4 +388,4 @@ public class CategoryControllerTests
         NotFoundObjectResult notFoundResult = result.ShouldBeOfType<NotFoundObjectResult>();
         notFoundResult.Value.ShouldBe(error);
     }
-} 
+}

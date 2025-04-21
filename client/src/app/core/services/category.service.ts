@@ -38,14 +38,14 @@ export class CategoryService {
       .set('pageNumber', paginationParams.pageNumber);
 
     return this.http
-      .get<{ data: Category[]; totalCount: number }>(
+      .get<{ data: Category[]; count: number }>(
         `${this.baseUrl}/categories/parentCategories`,
         { params }
       )
       .pipe(
         map((res) => {
           this.categoriesSubject.next(res.data);
-          this.totalItemsSubject.next(res.totalCount);
+          this.totalItemsSubject.next(res.count);
           return res.data;
         })
       );

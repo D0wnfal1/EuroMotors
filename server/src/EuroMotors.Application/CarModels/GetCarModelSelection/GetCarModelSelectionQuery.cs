@@ -2,6 +2,6 @@
 
 namespace EuroMotors.Application.CarModels.GetCarModelSelection;
 
-public sealed record GetCarModelSelectionQuery(string? Brand, string? Model, int? StartYear, string? BodyType)
+public sealed record GetCarModelSelectionQuery(Guid? BrandId = null, string? ModelName = null, int? StartYear = null, string? BodyType = null)
     : IQuery<CarModelSelectionResponse>;
 

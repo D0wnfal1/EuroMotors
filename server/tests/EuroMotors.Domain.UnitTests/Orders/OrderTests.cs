@@ -89,7 +89,7 @@ public class OrderTests : BaseTest
         // Assert
         order.OrderItems.Count.ShouldBe(1);
         order.TotalPrice.ShouldBe(unitPrice * quantity);
-        
+
         OrderItem orderItem = order.OrderItems.First();
         orderItem.OrderId.ShouldBe(order.Id);
         orderItem.ProductId.ShouldBe(product.Id);
@@ -113,7 +113,7 @@ public class OrderTests : BaseTest
 
         Product product1 = CreateTestProduct();
         Product product2 = CreateTestProduct();
-        
+
         decimal unitPrice1 = 100.00m;
         int quantity1 = 2;
         decimal unitPrice2 = 50.00m;
@@ -140,9 +140,9 @@ public class OrderTests : BaseTest
             DeliveryMethod,
             ShippingAddress,
             PaymentMethod);
-        
+
         DateTime originalUpdatedAtUtc = order.UpdatedAtUtc;
-        
+
         // Act
         order.ChangeStatus(OrderStatus.Completed);
 
@@ -163,12 +163,12 @@ public class OrderTests : BaseTest
             DeliveryMethod,
             ShippingAddress,
             PaymentMethod);
-        
+
         DeliveryMethod newDeliveryMethod = DeliveryMethod.Pickup;
         string newAddress = "456 New St, New City, Country";
 
         DateTime originalUpdatedAtUtc = order.UpdatedAtUtc;
-        
+
         // Act
         order.SetDelivery(newDeliveryMethod, newAddress);
 
@@ -176,7 +176,7 @@ public class OrderTests : BaseTest
         order.DeliveryMethod.ShouldBe(newDeliveryMethod);
         order.ShippingAddress.ShouldBe(newAddress);
         order.UpdatedAtUtc.ShouldBeGreaterThan(originalUpdatedAtUtc);
-        
+
         OrderDeliveryMethodChangedDomainEvent domainEvent = AssertDomainEventWasPublished<OrderDeliveryMethodChangedDomainEvent>(order);
         domainEvent.Id.ShouldBe(order.Id);
         domainEvent.DeliveryMethod.ShouldBe(newDeliveryMethod);
@@ -194,10 +194,10 @@ public class OrderTests : BaseTest
             DeliveryMethod,
             ShippingAddress,
             PaymentMethod);
-        
+
         var paymentId = Guid.NewGuid();
         DateTime originalUpdatedAtUtc = order.UpdatedAtUtc;
-        
+
         // Act
         order.SetPayment(paymentId);
 
@@ -264,4 +264,4 @@ public class OrderTests : BaseTest
         // Assert
         Assert.Equal(OrderStatus.Shipped, order.Status);
     }
-} 
+}

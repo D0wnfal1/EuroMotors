@@ -21,7 +21,7 @@ internal sealed class CreateProductCommandHandler(IProductRepository productRepo
 
         if (carModel is null)
         {
-            return Result.Failure<Guid>(CarModelErrors.NotFound(request.CarModelId));
+            return Result.Failure<Guid>(CarModelErrors.ModelNotFound(request.CarModelId));
         }
 
         IEnumerable<(string SpecificationName, string SpecificationValue)> specs = request.Specifications

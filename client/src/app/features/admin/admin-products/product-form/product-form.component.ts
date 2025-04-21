@@ -26,6 +26,9 @@ import {
   MatExpansionModule,
   MatExpansionPanel,
 } from '@angular/material/expansion';
+import { CarbrandService } from '../../../../core/services/carbrand.service';
+import { CarBrand } from '../../../../shared/models/carBrand';
+
 @Component({
   selector: 'app-product-form',
   imports: [
@@ -48,6 +51,7 @@ export class ProductFormComponent implements OnInit {
   productForm!: FormGroup;
   categories: Category[] = [];
   carModels: CarModel[] = [];
+  carBrands: CarBrand[] = [];
   productImages: ProductImage[] = [];
   productId: string | null = null;
   isEditMode = false;
@@ -59,6 +63,7 @@ export class ProductFormComponent implements OnInit {
     private productService: ProductService,
     private categoryService: CategoryService,
     private carModelService: CarmodelService,
+    private carBrandService: CarbrandService,
     private imageService: ImageService,
     private route: ActivatedRoute,
     private router: Router
@@ -82,12 +87,18 @@ export class ProductFormComponent implements OnInit {
     this.categoryService.categories$.subscribe(
       (categories) => (this.categories = categories)
     );
+
     this.carModelService.carModels$.subscribe(
       (carModels) => (this.carModels = carModels)
     );
 
+    this.carBrandService.carBrands$.subscribe(
+      (carBrands) => (this.carBrands = carBrands)
+    );
+
     this.categoryService.getCategories();
     this.carModelService.getCarModels({ pageNumber: 1, pageSize: 0 });
+    this.carBrandService.getCarBrands({ pageNumber: 1, pageSize: 0 });
 
     if (this.isEditMode) {
       this.productService
@@ -174,6 +185,15 @@ export class ProductFormComponent implements OnInit {
 
   getImageUrl(imagePath: string): string {
     return this.imageService.getImageUrl(imagePath);
+  }
+
+  getBrandNameById(brandId: string): string {
+    const brand = this.carBrands.find((b) => b.id === brandId);
+    return brand ? brand.name : '';
+  }
+
+  getCarBrandNameForModel(model: CarModel): string {
+    return model.carBrand ? model.carBrand.name : '';
   }
 
   onSubmit() {

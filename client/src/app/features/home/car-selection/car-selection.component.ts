@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, inject } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
@@ -6,18 +6,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatStepperModule } from '@angular/material/stepper';
-import { CarmodelService } from '../../../core/services/carmodel.service';
+import { CarbrandService } from '../../../core/services/carbrand.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { Subscription, forkJoin } from 'rxjs';
 import { Router } from '@angular/router';
-
-interface SelectedCar {
-  brand: string;
-  model: string;
-  year: number;
-  bodyType: string;
-  engineSpec: string;
-}
+import { SelectedCar } from '../../../shared/models/carModel';
+import { CarBrand } from '../../../shared/models/carBrand';
+import { CarmodelService } from '../../../core/services/carmodel.service';
 
 interface CarSelectionResponse {
   ids: string[];
@@ -46,7 +41,8 @@ interface CarSelectionResponse {
   styleUrl: './car-selection.component.scss',
 })
 export class CarSelectionComponent implements OnInit, OnDestroy {
-  brands: string[] = [];
+  carModelService = inject(CarmodelService);
+  carBrands: CarBrand[] = [];
   models: string[] = [];
   years: number[] = [];
   bodyTypes: string[] = [];
@@ -58,12 +54,12 @@ export class CarSelectionComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   constructor(
-    private carModelService: CarmodelService,
+    private carBrandService: CarbrandService,
     private fb: FormBuilder,
     private router: Router
   ) {
     this.carSelectionForm = this.fb.group({
-      brand: ['', Validators.required],
+      brand: [null, Validators.required],
       model: ['', Validators.required],
       year: [null, Validators.required],
       bodyType: ['', Validators.required],
@@ -74,10 +70,17 @@ export class CarSelectionComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.carBrandService.getAllCarBrands();
+
+    this.subscriptions.push(
+      this.carBrandService.availableBrands$.subscribe((brands) => {
+        this.carBrands = brands;
+      })
+    );
+
     this.subscriptions.push(
       this.carModelService.getCarSelectionWithIds().subscribe((resp) => {
         this.availableCarIds = resp.ids;
-        this.brands = resp.brands;
         this.models = resp.models;
         this.years = resp.years;
         this.bodyTypes = resp.bodyTypes;
@@ -91,7 +94,6 @@ export class CarSelectionComponent implements OnInit, OnDestroy {
         this.selectedCar = null;
         this.carModelService.getCarSelectionWithIds().subscribe((resp) => {
           this.availableCarIds = resp.ids;
-          this.brands = resp.brands;
           this.models = resp.models;
           this.years = resp.years;
           this.bodyTypes = resp.bodyTypes;
@@ -101,11 +103,13 @@ export class CarSelectionComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.push(
-      this.carSelectionForm.get('brand')?.valueChanges.subscribe((brand) => {
-        if (brand) {
-          this.updateFilters();
-        }
-      }) as Subscription,
+      this.carSelectionForm
+        .get('brand')
+        ?.valueChanges.subscribe((brand: CarBrand) => {
+          if (brand) {
+            this.updateFilters();
+          }
+        }) as Subscription,
 
       this.carSelectionForm.get('model')?.valueChanges.subscribe((model) => {
         if (model) {
@@ -134,8 +138,10 @@ export class CarSelectionComponent implements OnInit, OnDestroy {
   }
 
   updateFilters(): void {
+    const selectedBrand = this.carSelectionForm.get('brand')?.value as CarBrand;
+
     const filter = {
-      brand: this.carSelectionForm.get('brand')?.value,
+      brand: selectedBrand ? selectedBrand.name : undefined,
       model: this.carSelectionForm.get('model')?.value,
       startYear: this.carSelectionForm.get('year')?.value,
       bodyType: this.carSelectionForm.get('bodyType')?.value,
@@ -144,7 +150,6 @@ export class CarSelectionComponent implements OnInit, OnDestroy {
     this.carModelService.getCarSelectionWithIds(filter).subscribe({
       next: (response: CarSelectionResponse) => {
         this.availableCarIds = response.ids;
-        this.brands = response.brands;
         this.models = response.models;
         this.years = response.years;
         this.bodyTypes = response.bodyTypes;
@@ -166,8 +171,10 @@ export class CarSelectionComponent implements OnInit, OnDestroy {
         this.navigateToShop(selectedCarId);
       } else if (this.availableCarIds.length > 1) {
         const formValues = this.carSelectionForm.value;
+        const selectedBrand = formValues.brand as CarBrand;
+
         const filter = {
-          brand: formValues.brand,
+          brand: selectedBrand ? selectedBrand.name : undefined,
           model: formValues.model,
           startYear: formValues.year,
           bodyType: formValues.bodyType,
@@ -210,22 +217,31 @@ export class CarSelectionComponent implements OnInit, OnDestroy {
   private loadFromLocalStorage(): void {
     const savedCarId = this.carModelService.getStoredCarId();
     if (savedCarId) {
-      this.carModelService.getSelectedCarDetails(savedCarId).subscribe({
-        next: (carModel) => {
+      forkJoin({
+        carModel: this.carModelService.getSelectedCarDetails(savedCarId),
+        carBrands: this.carBrandService.availableBrands$,
+      }).subscribe({
+        next: ({ carModel, carBrands }) => {
+          const engineSpecStr = `${carModel.engineSpec.volumeLiters}L ${carModel.engineSpec.fuelType}`;
+
+          const selectedBrand = carBrands.find(
+            (brand) => brand.id === carModel.carBrandId
+          );
+
           this.selectedCar = {
-            brand: carModel.brand,
-            model: carModel.model,
-            year: carModel.startYear,
+            brand: carModel.brandName || '',
+            model: carModel.modelName,
+            startYear: carModel.startYear,
             bodyType: carModel.bodyType,
-            engineSpec: carModel.horsePower + ' ' + carModel.fuelType,
+            engineSpec: engineSpecStr,
           };
 
           this.carSelectionForm.patchValue({
-            brand: carModel.brand,
-            model: carModel.model,
+            brand: selectedBrand,
+            model: carModel.modelName,
             year: carModel.startYear,
             bodyType: carModel.bodyType,
-            engineSpec: carModel.horsePower + ' ' + carModel.fuelType,
+            engineSpec: engineSpecStr,
           });
         },
         error: (err) => {

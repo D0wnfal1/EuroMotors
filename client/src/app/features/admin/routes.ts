@@ -9,6 +9,8 @@ import { AdminCategoriesComponent } from './admin-categories/admin-categories.co
 import { CategoryFormComponent } from './admin-categories/category-form/category-form.component';
 import { AdminCarmodelsComponent } from './admin-carmodels/admin-carmodels.component';
 import { CarmodelFormComponent } from './admin-carmodels/carmodel-form/carmodel-form.component';
+import { AdminCarbrandsComponent } from './admin-carbrands/admin-carbrands.component';
+import { CarbrandFormComponent } from './admin-carbrands/carbrand-form/carbrand-form.component';
 
 export const adminRourtes: Route[] = [
   {
@@ -64,6 +66,21 @@ export const adminRourtes: Route[] = [
   {
     path: 'carmodels/edit/:id',
     component: CarmodelFormComponent,
+    canActivate: [authGuard, adminGuard],
+  },
+  {
+    path: 'carbrands',
+    component: AdminCarbrandsComponent,
+    canActivate: [authGuard, adminGuard],
+  },
+  {
+    path: 'carbrands/create',
+    component: CarbrandFormComponent,
+    canActivate: [authGuard, adminGuard],
+  },
+  {
+    path: 'carbrands/edit/:id',
+    component: CarbrandFormComponent,
     canActivate: [authGuard, adminGuard],
   },
 ];
