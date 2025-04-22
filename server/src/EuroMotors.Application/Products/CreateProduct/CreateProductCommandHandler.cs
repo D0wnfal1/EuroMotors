@@ -17,11 +17,18 @@ internal sealed class CreateProductCommandHandler(IProductRepository productRepo
             return Result.Failure<Guid>(CategoryErrors.NotFound(request.CategoryId));
         }
 
-        CarModel? carModel = await carModelRepository.GetByIdAsync(request.CarModelId, cancellationToken);
-
-        if (carModel is null)
+        // Get all requested car models
+        List<CarModel> carModels = [];
+        foreach (var carModelId in request.CarModelIds)
         {
-            return Result.Failure<Guid>(CarModelErrors.ModelNotFound(request.CarModelId));
+            CarModel? carModel = await carModelRepository.GetByIdAsync(carModelId, cancellationToken);
+
+            if (carModel is null)
+            {
+                return Result.Failure<Guid>(CarModelErrors.ModelNotFound(carModelId));
+            }
+            
+            carModels.Add(carModel);
         }
 
         IEnumerable<(string SpecificationName, string SpecificationValue)> specs = request.Specifications
@@ -32,7 +39,7 @@ internal sealed class CreateProductCommandHandler(IProductRepository productRepo
             specs,
             request.VendorCode,
             request.CategoryId,
-            request.CarModelId,
+            carModels, // Pass the list of car models
             request.Price,
             request.Discount,
             request.Stock);

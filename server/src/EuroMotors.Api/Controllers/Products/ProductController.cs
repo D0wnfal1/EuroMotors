@@ -1,10 +1,13 @@
 ﻿using EuroMotors.Application.Abstractions.Pagination;
+using EuroMotors.Application.Products.AddCarModelToProduct;
 using EuroMotors.Application.Products.CreateProduct;
 using EuroMotors.Application.Products.DeleteProduct;
 using EuroMotors.Application.Products.GetProductById;
 using EuroMotors.Application.Products.GetProducts;
+using EuroMotors.Application.Products.RemoveCarModelFromProduct;
 using EuroMotors.Application.Products.SetProductAvailability;
 using EuroMotors.Application.Products.UpdateProduct;
+using EuroMotors.Application.Products.UpdateProductCarModels;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Products;
 using MediatR;
@@ -53,14 +56,14 @@ public class ProductController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = Roles.Admin)]
-    public async Task<IActionResult> CreateProduct([FromBody] ProductRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateProductCommand(
             request.Name,
             request.Specifications.Select(s => new Specification(s.SpecificationName, s.SpecificationValue)).ToList(),
             request.VendorCode,
             request.CategoryId,
-            request.CarModelId,
+            request.CarModelIds,
             request.Price,
             request.Discount,
             request.Stock
@@ -75,7 +78,7 @@ public class ProductController : ControllerBase
 
     [HttpPut("{id}")]
     [Authorize(Roles = Roles.Admin)]
-    public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] UpdateProductRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateProductCommand(
             id,
@@ -83,7 +86,6 @@ public class ProductController : ControllerBase
             request.Specifications.Select(s => new Specification(s.SpecificationName, s.SpecificationValue)).ToList(),
             request.VendorCode,
             request.CategoryId,
-            request.CarModelId,
             request.Price,
             request.Discount,
             request.Stock
@@ -94,9 +96,8 @@ public class ProductController : ControllerBase
         return result.IsSuccess ? NoContent() : BadRequest(result.Error);
     }
 
-
     [HttpPatch("{id}")]
-    public async Task<IActionResult> SetProductAvailability(Guid id, [FromBody] SetCategoryAvailabilityRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> SetProductAvailability(Guid id, [FromBody] SetProductAvailabilityRequest request, CancellationToken cancellationToken)
     {
         var command = new SetProductAvailabilityCommand(id, request.IsAvailable);
 
@@ -114,6 +115,39 @@ public class ProductController : ControllerBase
         Result result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess ? NoContent() : NotFound(result.Error);
+    }
+    
+    [HttpPost("{productId}/car-models/{carModelId}")]
+    [Authorize(Roles = Roles.Admin)]
+    public async Task<IActionResult> AddCarModelToProduct(Guid productId, Guid carModelId, CancellationToken cancellationToken)
+    {
+        var command = new AddCarModelToProductCommand(productId, carModelId);
+
+        Result result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess ? NoContent() : BadRequest(result.Error);
+    }
+    
+    [HttpDelete("{productId}/car-models/{carModelId}")]
+    [Authorize(Roles = Roles.Admin)]
+    public async Task<IActionResult> RemoveCarModelFromProduct(Guid productId, Guid carModelId, CancellationToken cancellationToken)
+    {
+        var command = new RemoveCarModelFromProductCommand(productId, carModelId);
+
+        Result result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess ? NoContent() : BadRequest(result.Error);
+    }
+    
+    [HttpPut("{productId}/car-models")]
+    [Authorize(Roles = Roles.Admin)]
+    public async Task<IActionResult> UpdateProductCarModels(Guid productId, [FromBody] List<Guid> carModelIds, CancellationToken cancellationToken)
+    {
+        var command = new UpdateProductCarModelsCommand(productId, carModelIds);
+
+        Result result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess ? NoContent() : BadRequest(result.Error);
     }
 }
 

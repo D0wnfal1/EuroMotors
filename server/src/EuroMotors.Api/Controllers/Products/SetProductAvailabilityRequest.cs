@@ -2,7 +2,7 @@
 
 namespace EuroMotors.Api.Controllers.Products;
 
-public sealed class SetCategoryAvailabilityRequest
+public sealed class SetProductAvailabilityRequest
 {
     [JsonRequired]
     public bool IsAvailable { get; set; }

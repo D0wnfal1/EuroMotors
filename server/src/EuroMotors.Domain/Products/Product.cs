@@ -1,6 +1,7 @@
 ﻿using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.ProductImages;
 using EuroMotors.Domain.Products.Events;
+using EuroMotors.Domain.CarModels;
 
 namespace EuroMotors.Domain.Products;
 
@@ -13,7 +14,8 @@ public sealed class Product : Entity
 
     public Guid CategoryId { get; private set; }
 
-    public Guid CarModelId { get; private set; }
+    private readonly List<CarModel> _carModels = [];
+    public IReadOnlyCollection<CarModel> CarModels => _carModels.AsReadOnly();
 
     public string Name { get; private set; }
 
@@ -39,7 +41,7 @@ public sealed class Product : Entity
         IEnumerable<(string Name, string Value)>? specifications,
         string vendorCode,
         Guid categoryId,
-        Guid carModelId,
+        IEnumerable<CarModel> carModels,
         decimal price,
         decimal discount,
         int stock)
@@ -50,13 +52,21 @@ public sealed class Product : Entity
             Name = name,
             VendorCode = vendorCode,
             CategoryId = categoryId,
-            CarModelId = carModelId,
             Price = price,
             Discount = discount,
             Stock = stock,
             IsAvailable = stock > 0,
             Slug = Slug.GenerateSlug(name)
         };
+
+        if (carModels is not null)
+        {
+            foreach (CarModel carModel in carModels)
+            {
+                product._carModels.Add(carModel);
+            }
+        }
+
         if (specifications is not null)
         {
             foreach ((string specName, string specValue) in specifications)
@@ -75,7 +85,7 @@ public sealed class Product : Entity
         IEnumerable<(string Name, string Value)>? specifications,
         string vendorCode,
         Guid categoryId,
-        Guid carModelId,
+        IEnumerable<CarModel> carModels,
         decimal price,
         decimal discount,
         int stock
@@ -84,12 +94,13 @@ public sealed class Product : Entity
         Name = name;
         VendorCode = vendorCode;
         CategoryId = categoryId;
-        CarModelId = carModelId;
         Price = price;
         Discount = discount;
         Stock = stock;
         IsAvailable = stock > 0;
         Slug = Slug.GenerateSlug(name);
+
+        UpdateCarModels(carModels);
 
         if (specifications is not null)
         {
@@ -97,6 +108,37 @@ public sealed class Product : Entity
         }
 
         RaiseDomainEvent(new ProductUpdatedDomainEvent(Id));
+    }
+
+    public void AddCarModel(CarModel carModel)
+    {
+        if (!_carModels.Any(cm => cm.Id == carModel.Id))
+        {
+            _carModels.Add(carModel);
+        }
+    }
+
+    public void RemoveCarModel(Guid carModelId)
+    {
+        CarModel? carModel = _carModels.FirstOrDefault(cm => cm.Id == carModelId);
+        if (carModel is not null)
+        {
+            _carModels.Remove(carModel);
+        }
+    }
+
+    public void UpdateCarModels(IEnumerable<CarModel> newCarModels)
+    {
+        var uniqueNewModels = newCarModels
+            .DistinctBy(cm => cm.Id)
+            .ToList();
+        
+        _carModels.Clear();
+        
+        foreach (CarModel model in uniqueNewModels)
+        {
+            _carModels.Add(model);
+        }
     }
 
     public void AddSpecification(string name, string value)

@@ -1,10 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import {
-  CarModel,
-  CarSelectionFilter,
-  EngineSpec,
-  FuelType,
-} from '../../shared/models/carModel';
+import { CarModel, CarSelectionFilter } from '../../shared/models/carModel';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { BehaviorSubject, Observable, map } from 'rxjs';

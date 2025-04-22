@@ -50,7 +50,7 @@ public class CreateProductCommandHandlerTests
             specifications,
             "VendorCode",
             Guid.NewGuid(),
-            Guid.NewGuid(),
+            new List<Guid> { Guid.NewGuid() },
             100,
             10,
             50);
@@ -77,14 +77,16 @@ public class CreateProductCommandHandlerTests
             specifications,
             "VendorCode",
             Guid.NewGuid(),
-            Guid.NewGuid(),
+            new List<Guid> { Guid.NewGuid() },
             100,
             10,
             50);
 
         _categoryRepository.GetByIdAsync(command.CategoryId, CancellationToken.None).Returns(Category.Create("Test Name"));
-        _carModelRepository.GetByIdAsync(command.CarModelId, CancellationToken.None).Returns((CarModel)null);
-
+        foreach (Guid carModelId in command.CarModelIds)
+        {
+            _carModelRepository.GetByIdAsync(carModelId, CancellationToken.None).Returns((CarModel)null);
+        }
         Result<Guid> result = await _handler.Handle(command, CancellationToken.None);
 
         result.IsFailure.ShouldBeTrue();
@@ -105,7 +107,7 @@ public class CreateProductCommandHandlerTests
             specifications,
             "VendorCode",
             Guid.NewGuid(),
-            Guid.NewGuid(),
+            new List<Guid> { Guid.NewGuid() },
             100,
             10,
             50);
@@ -119,8 +121,10 @@ public class CreateProductCommandHandlerTests
             BodyType.Sedan,
             new EngineSpec(6, FuelType.Diesel));
 
-        _carModelRepository.GetByIdAsync(command.CarModelId, CancellationToken.None).Returns(carModel);
-
+        foreach (Guid carModelId in command.CarModelIds)
+        {
+            _carModelRepository.GetByIdAsync(carModelId, CancellationToken.None).Returns(carModel);
+        }
         Result<Guid> result = await _handler.Handle(command, default);
 
         result.IsSuccess.ShouldBeTrue();

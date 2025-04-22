@@ -12,6 +12,11 @@ import { ProductService } from '../../../core/services/product.service';
 import { ImageService } from '../../../core/services/image.service';
 import { RelatedProductsComponent } from '../related-products/related-products.component';
 import { MatTabGroup, MatTabsModule } from '@angular/material/tabs';
+import { CarModel } from '../../../shared/models/carModel';
+import { CarmodelService } from '../../../core/services/carmodel.service';
+import { CarBrand } from '../../../shared/models/carBrand';
+import { CarbrandService } from '../../../core/services/carbrand.service';
+import { Pagination } from '../../../shared/models/pagination';
 
 @Component({
   selector: 'app-product-details',
@@ -36,10 +41,15 @@ export class ProductDetailsComponent implements OnInit {
   private activatedRoute = inject(ActivatedRoute);
   private imageService = inject(ImageService);
   private cartService = inject(CartService);
+  private carModelService = inject(CarmodelService);
+  private carBrandService = inject(CarbrandService);
+
   product?: Product;
   activeIndex: number = 0;
   quantityInCart = 0;
   quantity = 1;
+  carModels: CarModel[] = [];
+  carBrands: CarBrand[] = [];
 
   @ViewChild('tabGroup') tabGroup!: MatTabGroup;
 
@@ -65,6 +75,8 @@ export class ProductDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProduct();
+    this.loadCarModels();
+    this.loadCarBrands();
   }
 
   loadProduct() {
@@ -74,9 +86,26 @@ export class ProductDetailsComponent implements OnInit {
     this.productService.getProductById(id).subscribe({
       next: (product) => {
         this.product = product;
+        this.updateQuantityInCart();
       },
       error: (error) => console.log(error),
     });
+  }
+
+  loadCarModels() {
+    this.carModelService.carModels$.subscribe((carModels) => {
+      this.carModels = carModels;
+    });
+
+    this.carModelService.getCarModels({ pageNumber: 1, pageSize: 0 });
+  }
+
+  loadCarBrands() {
+    this.carBrandService.carBrands$.subscribe((carBrands) => {
+      this.carBrands = carBrands;
+    });
+
+    this.carBrandService.getCarBrands({ pageNumber: 1, pageSize: 0 });
   }
 
   updateCart() {
@@ -108,5 +137,30 @@ export class ProductDetailsComponent implements OnInit {
 
   getButtonText() {
     return this.quantityInCart > 0 ? 'Update cart' : 'Add to cart';
+  }
+
+  getCompatibleCarModels(): string {
+    if (
+      !this.product ||
+      !this.product.carModelIds ||
+      this.product.carModelIds.length === 0
+    ) {
+      return 'This product does not fit any specific car model';
+    }
+
+    return this.product.carModelIds
+      .map((id) => {
+        const model = this.carModels.find((cm) => cm.id === id);
+        if (!model) return '';
+
+        const brandName =
+          model.carBrand?.name ||
+          this.carBrands.find((b) => b.id === model.carBrandId)?.name ||
+          '';
+
+        return `${brandName} ${model.modelName} (${model.startYear})`;
+      })
+      .filter((name) => name !== '')
+      .join(', ');
   }
 }

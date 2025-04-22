@@ -6,6 +6,7 @@ using EuroMotors.Application.Products.GetProductById;
 using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Application.Products.SetProductAvailability;
 using EuroMotors.Application.Products.UpdateProduct;
+using EuroMotors.Domain.CarModels;
 using Microsoft.AspNetCore.Http;
 
 namespace EuroMotors.Api.UnitTests.Controllers.Products;
@@ -156,12 +157,12 @@ public class ProductControllerTests
     public async Task CreateProduct_ShouldReturnCreatedAtAction_WhenCreationSucceeds()
     {
         // Arrange
-        var request = new ProductRequest
+        var request = new CreateProductRequest()
         {
             Name = "New Product",
             VendorCode = "VC123",
             CategoryId = Guid.NewGuid(),
-            CarModelId = Guid.NewGuid(),
+            CarModelIds = new List<Guid> { Guid.NewGuid() },
             Price = 200,
             Discount = 20,
             Stock = 50,
@@ -190,7 +191,7 @@ public class ProductControllerTests
                 cmd.Name == request.Name &&
                 cmd.VendorCode == request.VendorCode &&
                 cmd.CategoryId == request.CategoryId &&
-                cmd.CarModelId == request.CarModelId &&
+                cmd.CarModelIds.SequenceEqual(request.CarModelIds) && 
                 cmd.Price == request.Price &&
                 cmd.Discount == request.Discount &&
                 cmd.Stock == request.Stock),
@@ -201,12 +202,12 @@ public class ProductControllerTests
     public async Task CreateProduct_ShouldReturnBadRequest_WhenCreationFails()
     {
         // Arrange
-        var request = new ProductRequest
+        var request = new CreateProductRequest()
         {
             Name = "New Product",
             VendorCode = "VC123",
             CategoryId = Guid.NewGuid(),
-            CarModelId = Guid.NewGuid(),
+            CarModelIds = new List<Guid> { Guid.NewGuid() },
             Price = 200,
             Discount = 20,
             Stock = 50,
@@ -230,12 +231,11 @@ public class ProductControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var request = new ProductRequest
+        var request = new UpdateProductRequest
         {
             Name = "Updated Product",
             VendorCode = "VC456",
             CategoryId = Guid.NewGuid(),
-            CarModelId = Guid.NewGuid(),
             Price = 250,
             Discount = 25,
             Stock = 40,
@@ -255,12 +255,10 @@ public class ProductControllerTests
         result.ShouldBeOfType<NoContentResult>();
 
         await _sender.Received(1).Send(
-            Arg.Is<UpdateProductCommand>(cmd =>
-                cmd.ProductId == id &&
+            Arg.Is<CreateProductCommand>(cmd =>
                 cmd.Name == request.Name &&
                 cmd.VendorCode == request.VendorCode &&
                 cmd.CategoryId == request.CategoryId &&
-                cmd.CarModelId == request.CarModelId &&
                 cmd.Price == request.Price &&
                 cmd.Discount == request.Discount &&
                 cmd.Stock == request.Stock),
@@ -272,12 +270,11 @@ public class ProductControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var request = new ProductRequest
+        var request = new UpdateProductRequest
         {
             Name = "Updated Product",
             VendorCode = "VC456",
             CategoryId = Guid.NewGuid(),
-            CarModelId = Guid.NewGuid(),
             Price = 250,
             Discount = 25,
             Stock = 40,
@@ -301,7 +298,7 @@ public class ProductControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var request = new SetCategoryAvailabilityRequest
+        var request = new SetProductAvailabilityRequest()
         {
             IsAvailable = true
         };
@@ -327,7 +324,7 @@ public class ProductControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var request = new SetCategoryAvailabilityRequest
+        var request = new SetProductAvailabilityRequest()
         {
             IsAvailable = true
         };

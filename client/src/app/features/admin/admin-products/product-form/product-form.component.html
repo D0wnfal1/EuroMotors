@@ -69,16 +69,30 @@
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field class="w-full">
-        <mat-label>Car Model</mat-label>
-        <mat-select formControlName="carModelId">
-          <mat-option *ngFor="let model of carModels" [value]="model.id">
-            {{ getCarBrandNameForModel(model) }} {{ model.modelName }} ({{
-              model.startYear
-            }})
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+      <div class="flex items-center mt-2">
+        <mat-form-field class="w-full">
+          <mat-label>Car Models</mat-label>
+          <mat-select formControlName="carModelIds" multiple>
+            <mat-option *ngFor="let model of carModels" [value]="model.id">
+              {{ getCarBrandNameForModel(model) }} {{ model.brandName }}
+              {{ model.modelName }} ({{ model.startYear }})
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button
+          mat-raised-button
+          color="accent"
+          type="button"
+          (click)="saveCarModels()"
+          [disabled]="
+            !productId || !productForm.get('carModelIds')?.value?.length
+          "
+          class="ml-4"
+        >
+          <mat-icon>save</mat-icon> Save Car Models
+        </button>
+      </div>
 
       <mat-form-field class="w-full">
         <mat-label>Price</mat-label>
@@ -145,7 +159,18 @@
       </div>
     </div>
   </div>
-  <button mat-raised-button color="primary" type="submit" class="mt-6">
-    {{ isEditMode ? "Update Product" : "Create Product" }}
+  <button
+    mat-raised-button
+    color="primary"
+    type="submit"
+    class="mt-6"
+    [disabled]="productForm.invalid || isSaving"
+  >
+    <span *ngIf="!isSaving">{{
+      isEditMode ? "Update Product" : "Create Product"
+    }}</span>
+    <span *ngIf="isSaving">
+      <i class="fas fa-spinner fa-spin mr-2"></i> Saving...
+    </span>
   </button>
 </form>

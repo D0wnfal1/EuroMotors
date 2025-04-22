@@ -30,7 +30,7 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
         }
         if (request.CarModelIds?.Any() == true)
         {
-            whereClause += " AND p.car_model_id = ANY(@CarModelIds)";
+            whereClause += " AND pcm.car_model_id = ANY(@CarModelIds)";
         }
         if (!string.IsNullOrEmpty(request.SearchTerm))
         {
@@ -38,8 +38,9 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
         }
 
         string countSql = $"""
-                           SELECT COUNT(*)
+                           SELECT COUNT(DISTINCT p.id)
                            FROM products p
+                           LEFT JOIN product_car_models pcm ON p.id = pcm.product_id
                            {whereClause}
                            """;
 
@@ -53,7 +54,9 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
         string productIdsSql = $@"
             SELECT p.id
             FROM products p
+            LEFT JOIN product_car_models pcm ON p.id = pcm.product_id
             {whereClause}
+            GROUP BY p.id
             ORDER BY p.{orderBy}
             LIMIT @Limit OFFSET @Offset
         ";
@@ -85,7 +88,6 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
             SELECT
                 p.id AS {nameof(ProductResponse.Id)},
                 p.category_id AS {nameof(ProductResponse.CategoryId)},
-                p.car_model_id AS {nameof(ProductResponse.CarModelId)},
                 p.name AS {nameof(ProductResponse.Name)},
                 p.vendor_code AS {nameof(ProductResponse.VendorCode)},
                 p.price AS {nameof(ProductResponse.Price)},
@@ -116,6 +118,7 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
                     productEntry = product;
                     productEntry.Images = new List<ProductImageResponse>();
                     productEntry.Specifications = new List<Specification>();
+                    productEntry.CarModelIds = new List<Guid>();
                     productDictionary[product.Id] = productEntry;
                 }
 
@@ -134,6 +137,28 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
             new { ProductIds = productIds.ToArray() },
             splitOn: "ProductImageId,SpecificationName"
         );
+
+        // Get car model IDs for each product
+        string carModelSql = @"
+            SELECT 
+                product_id,
+                car_model_id
+            FROM product_car_models
+            WHERE product_id = ANY(@ProductIds)
+        ";
+
+        IEnumerable<(Guid ProductId, Guid CarModelId)> carModelMappings = await connection.QueryAsync<(Guid ProductId, Guid CarModelId)>(
+            carModelSql,
+            new { ProductIds = productIds.ToArray() }
+        );
+
+        foreach ((Guid ProductId, Guid CarModelId) mapping in carModelMappings)
+        {
+            if (productDictionary.TryGetValue(mapping.ProductId, out ProductResponse? product))
+            {
+                product.CarModelIds.Add(mapping.CarModelId);
+            }
+        }
 
         var products = productDictionary.Values.ToList();
 

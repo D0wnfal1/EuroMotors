@@ -116,8 +116,8 @@ export class CarmodelFormComponent implements OnInit {
             startYear: carModel.startYear,
             bodyType: carModel.bodyType,
             engineSpec: {
-              volumeLiters: carModel.engineSpec.volumeLiters,
-              fuelType: carModel.engineSpec.fuelType,
+              volumeLiters: carModel.volumeLiters,
+              fuelType: carModel.fuelType,
             },
           });
         },

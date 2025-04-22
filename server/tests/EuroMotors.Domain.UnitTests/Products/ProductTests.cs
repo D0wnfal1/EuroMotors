@@ -1,4 +1,6 @@
 ﻿using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.CarBrands;
+using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Products;
 using EuroMotors.Domain.Products.Events;
 using EuroMotors.Domain.UnitTests.Infrastructure;
@@ -9,7 +11,7 @@ namespace EuroMotors.Domain.UnitTests.Products;
 public class ProductTests : BaseTest
 {
     private static readonly Guid CategoryId = Guid.NewGuid();
-    private static readonly Guid CarModelId = Guid.NewGuid();
+    private static readonly List<CarModel> CarModels = new List<CarModel>();
     private const string Name = "Test Product";
     private const string VendorCode = "TP123";
     private const decimal Price = 100.00m;
@@ -30,7 +32,7 @@ public class ProductTests : BaseTest
             Specifications,
             VendorCode,
             CategoryId,
-            CarModelId,
+            CarModels,
             Price,
             Discount,
             Stock);
@@ -40,7 +42,7 @@ public class ProductTests : BaseTest
         product.Name.ShouldBe(Name);
         product.VendorCode.ShouldBe(VendorCode);
         product.CategoryId.ShouldBe(CategoryId);
-        product.CarModelId.ShouldBe(CarModelId);
+        product.CarModels.ShouldBe(CarModels);
         product.Price.ShouldBe(Price);
         product.Discount.ShouldBe(Discount);
         product.Stock.ShouldBe(Stock);
@@ -58,7 +60,7 @@ public class ProductTests : BaseTest
             Specifications,
             VendorCode,
             CategoryId,
-            CarModelId,
+            new List<CarModel>(),
             Price,
             Discount,
             Stock);
@@ -77,7 +79,7 @@ public class ProductTests : BaseTest
             Specifications,
             VendorCode,
             CategoryId,
-            CarModelId,
+            new List<CarModel>(),
             Price,
             Discount,
             Stock);
@@ -85,7 +87,11 @@ public class ProductTests : BaseTest
         string newName = "Updated Product";
         string newVendorCode = "UP456";
         var newCategoryId = Guid.NewGuid();
-        var newCarModelId = Guid.NewGuid();
+        var carBrand = CarBrand.Create("Name");
+        var newCarModels = new List<CarModel>
+        {
+            CarModel.Create(carBrand, "123", 1893, BodyType.Convertible, new EngineSpec(1, FuelType.Diesel))
+        };
         decimal newPrice = 150.00m;
         decimal newDiscount = 15.00m;
         int newStock = 5;
@@ -102,7 +108,7 @@ public class ProductTests : BaseTest
             newSpecifications,
             newVendorCode,
             newCategoryId,
-            newCarModelId,
+            newCarModels,
             newPrice,
             newDiscount,
             newStock);
@@ -111,7 +117,7 @@ public class ProductTests : BaseTest
         product.Name.ShouldBe(newName);
         product.VendorCode.ShouldBe(newVendorCode);
         product.CategoryId.ShouldBe(newCategoryId);
-        product.CarModelId.ShouldBe(newCarModelId);
+        product.CarModels.ShouldNotBeEmpty();
         product.Price.ShouldBe(newPrice);
         product.Discount.ShouldBe(newDiscount);
         product.Stock.ShouldBe(newStock);
@@ -128,7 +134,7 @@ public class ProductTests : BaseTest
             Specifications,
             VendorCode,
             CategoryId,
-            CarModelId,
+            new List<CarModel>(),
             Price,
             Discount,
             Stock);
@@ -139,7 +145,7 @@ public class ProductTests : BaseTest
             Specifications,
             "UP456",
             CategoryId,
-            CarModelId,
+            new List<CarModel>(),
             Price,
             Discount,
             Stock);
@@ -158,7 +164,7 @@ public class ProductTests : BaseTest
             Specifications,
             VendorCode,
             CategoryId,
-            CarModelId,
+            new List<CarModel>(),
             Price,
             Discount,
             Stock);
@@ -184,7 +190,7 @@ public class ProductTests : BaseTest
             Specifications,
             VendorCode,
             CategoryId,
-            CarModelId,
+            new List<CarModel>(),
             Price,
             Discount,
             Stock);
@@ -206,7 +212,7 @@ public class ProductTests : BaseTest
             Specifications,
             VendorCode,
             CategoryId,
-            CarModelId,
+            new List<CarModel>(),
             Price,
             Discount,
             0);
@@ -232,7 +238,7 @@ public class ProductTests : BaseTest
             Specifications,
             VendorCode,
             CategoryId,
-            CarModelId,
+            new List<CarModel>(),
             Price,
             Discount,
             0);
@@ -255,7 +261,7 @@ public class ProductTests : BaseTest
             Specifications,
             VendorCode,
             CategoryId,
-            CarModelId,
+            new List<CarModel>(),
             Price,
             Discount,
             Stock);
@@ -278,7 +284,7 @@ public class ProductTests : BaseTest
             Specifications,
             VendorCode,
             CategoryId,
-            CarModelId,
+            new List<CarModel>(),
             Price,
             Discount,
             Stock);

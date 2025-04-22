@@ -225,6 +225,12 @@ public static class SeedDataExtensions
     }
     private static void SeedProducts(IDbConnection connection)
     {
+        int productsCount = connection.ExecuteScalar<int>("SELECT COUNT(*) FROM products");
+        if (productsCount > 0)
+        {
+            return;
+        }
+
         var categories = connection.Query<Category>("SELECT id FROM categories").ToList();
         if (categories.Count == 0)
         {
@@ -237,63 +243,87 @@ public static class SeedDataExtensions
             return;
         }
 
-        Faker<Product>? faker = new Faker<Product>()
-            .CustomInstantiator(f =>
+        var random = new Random();
+        var faker = new Faker();
+        var products = new List<Product>();
+        var productCarModels = new List<(Guid ProductId, Guid CarModelId)>();
+
+        for (int i = 0; i < 500; i++)
+        {
+            Category category = faker.PickRandom(categories);
+            
+            List<CarModel> productModels = [];
+#pragma warning disable CA5394
+            int modelCount = random.Next(1, 4); 
+#pragma warning restore CA5394
+            
+            for (int j = 0; j < modelCount; j++)
             {
-                Category? category = f.PickRandom(categories);
-                CarModel? carModel = f.PickRandom(carModels);
-
-                var product = Product.Create(
-                    f.Commerce.ProductName(),
-                    null,
-                    f.Commerce.Ean13(),
-                    category.Id,
-                    carModel.Id,
-                    f.Random.Decimal(100, 1000),
-                    f.Random.Decimal(0, 30),
-                    f.Random.Int(0, 100)
-                );
-
-                var specFaker = new Faker();
-                int specsCount = f.Random.Int(4, 10);
-
-                var uniqueSpecNames = new HashSet<string>();
-
-                for (int i = 0; i < specsCount; i++)
+                CarModel model = faker.PickRandom(carModels);
+                if (!productModels.Any(m => m.Id == model.Id))
                 {
-                    string specName;
-                    do
-                    {
-                        specName = specFaker.Commerce.ProductMaterial();
-                    }
-                    while (!uniqueSpecNames.Add(specName));
-
-                    string specValue = specFaker.Random.Word();
-                    product.AddSpecification(specName, specValue);
+                    productModels.Add(model);
                 }
+            }
 
-                return product;
-            });
+            var product = Product.Create(
+                faker.Commerce.ProductName(),
+                null,
+                faker.Commerce.Ean13(),
+                category.Id,
+                productModels,
+                faker.Random.Decimal(100, 1000),
+                faker.Random.Decimal(0, 30),
+                faker.Random.Int(0, 100)
+            );
 
-        List<Product>? products = faker.Generate(500);
+            var specFaker = new Faker();
+            int specsCount = faker.Random.Int(4, 10);
+            var uniqueSpecNames = new HashSet<string>();
+
+            for (int j = 0; j < specsCount; j++)
+            {
+                string specName;
+                do
+                {
+                    specName = specFaker.Commerce.ProductMaterial();
+                }
+                while (!uniqueSpecNames.Add(specName));
+
+                string specValue = specFaker.Random.Word();
+                product.AddSpecification(specName, specValue);
+            }
+
+            products.Add(product);
+
+            foreach (CarModel model in productModels)
+            {
+                productCarModels.Add((product.Id, model.Id));
+            }
+        }
 
         const string insertProductsSql = """
         INSERT INTO products 
-        (id, category_id, car_model_id, name, vendor_code, price, discount, stock, is_available, slug)
-        VALUES (@Id, @CategoryId, @CarModelId, @Name, @VendorCode, @Price, @Discount, @Stock, @IsAvailable, @Slug);
-    """;
+        (id, category_id, name, vendor_code, price, discount, stock, is_available, slug)
+        VALUES (@Id, @CategoryId, @Name, @VendorCode, @Price, @Discount, @Stock, @IsAvailable, @Slug);
+        """;
+
+        const string insertProductCarModelsSql = """
+        INSERT INTO product_car_models
+        (product_id, car_model_id)
+        VALUES (@ProductId, @CarModelId);
+        """;
 
         const string insertSpecificationsSql = """
         INSERT INTO product_specifications
         (product_id, specification_name, specification_value)
         VALUES (@ProductId, @SpecificationName, @SpecificationValue);
-    """;
+        """;
 
         connection.Execute(insertProductsSql, products.Select(p => new
         {
             p.Id,
             p.CategoryId,
-            p.CarModelId,
             p.Name,
             p.VendorCode,
             p.Price,
@@ -301,6 +331,11 @@ public static class SeedDataExtensions
             p.Stock,
             p.IsAvailable,
             Slug = p.Slug.Value
+        }));
+
+        connection.Execute(insertProductCarModelsSql, productCarModels.Select(pcm => new
+        {
+            pcm.ProductId, pcm.CarModelId
         }));
 
         var allSpecifications = products

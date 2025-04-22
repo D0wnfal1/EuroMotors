@@ -6,7 +6,7 @@ public sealed class ProductResponse
 {
     public Guid Id { get; set; }
     public Guid CategoryId { get; set; }
-    public Guid CarModelId { get; set; }
+    public List<Guid> CarModelIds { get; set; } = [];
     public string Name { get; set; } = null!;
     public string VendorCode { get; set; } = null!;
     public decimal Price { get; set; }

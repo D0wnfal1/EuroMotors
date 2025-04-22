@@ -28,6 +28,7 @@ import {
 } from '@angular/material/expansion';
 import { CarbrandService } from '../../../../core/services/carbrand.service';
 import { CarBrand } from '../../../../shared/models/carBrand';
+import { Observable, catchError, finalize, forkJoin, of } from 'rxjs';
 
 @Component({
   selector: 'app-product-form',
@@ -57,6 +58,7 @@ export class ProductFormComponent implements OnInit {
   isEditMode = false;
   selectedImages: (string | ArrayBuffer)[] = [];
   selectedFiles: File[] = [];
+  isSaving = false;
 
   constructor(
     private fb: FormBuilder,
@@ -78,7 +80,7 @@ export class ProductFormComponent implements OnInit {
       specifications: this.fb.array([], Validators.required),
       vendorCode: ['', Validators.required],
       categoryId: [null, Validators.required],
-      carModelId: [null, Validators.required],
+      carModelIds: [[], Validators.required],
       price: [0, [Validators.required, Validators.min(0)]],
       discount: [0, [Validators.min(0)]],
       stock: [0, [Validators.required, Validators.min(0)]],
@@ -123,7 +125,7 @@ export class ProductFormComponent implements OnInit {
             name: product.name,
             vendorCode: product.vendorCode,
             categoryId: product.categoryId,
-            carModelId: product.carModelId,
+            carModelIds: product.carModelIds,
             price: product.price,
             discount: product.discount,
             stock: product.stock,
@@ -196,60 +198,137 @@ export class ProductFormComponent implements OnInit {
     return model.carBrand ? model.carBrand.name : '';
   }
 
+  compareCarModelIds(c1: string, c2: string): boolean {
+    return c1 === c2;
+  }
+
+  saveCarModels() {
+    const carModelIds = this.productForm.get('carModelIds')?.value;
+
+    if (!this.productId || !carModelIds?.length) {
+      return;
+    }
+
+    console.log('Saving car models separately');
+    console.log('Product ID:', this.productId);
+    console.log('Car Model IDs:', carModelIds);
+
+    const savingEl = document.createElement('span');
+    savingEl.innerHTML =
+      ' <i class="fas fa-spinner fa-spin"></i> Saving models...';
+    const button = document.querySelector('button[type="button"]');
+    button?.appendChild(savingEl);
+    button?.setAttribute('disabled', 'true');
+
+    this.productService
+      .updateProductCarModels(this.productId, carModelIds)
+      .subscribe({
+        next: () => {
+          console.log('Car models saved successfully');
+          button?.removeChild(savingEl);
+          button?.removeAttribute('disabled');
+
+          alert('Car models updated successfully!');
+        },
+        error: (error) => {
+          console.error('Error saving car models:', error);
+          console.error('Request payload:', carModelIds);
+
+          button?.removeChild(savingEl);
+          button?.removeAttribute('disabled');
+
+          alert('Failed to update car models. Check console for details.');
+        },
+      });
+  }
+
   onSubmit() {
     if (this.productForm.valid) {
-      if (this.isEditMode && this.productId) {
-        this.productService
-          .updateProduct(this.productId, this.productForm.value)
-          .subscribe({
-            next: () => {
-              if (this.selectedFiles.length > 0) {
-                let uploadCount = 0;
-                for (const file of this.selectedFiles) {
-                  if (this.productId) {
-                    this.imageService
-                      .uploadProductImage(this.productId, file)
-                      .subscribe({
-                        next: () => {
-                          uploadCount++;
-                          if (uploadCount === this.selectedFiles.length) {
-                            this.router.navigate(['/admin/products']);
-                          }
-                        },
-                        error: (err) =>
-                          console.error('Error uploading image', err),
-                      });
-                  }
-                }
-              } else {
-                this.router.navigate(['/admin/products']);
-              }
-            },
-            error: (err) => console.error('Error updating product', err),
-          });
+      this.isSaving = true;
+      const formValue = this.productForm.value;
+      console.log('Form values before submit:', formValue);
+
+      const productData: Product = {
+        ...formValue,
+        id: this.productId || '',
+        slug: '',
+        isAvailable: true,
+        images: [],
+      };
+
+      let productOperation: Observable<string | void>;
+
+      if (this.isEditMode) {
+        productOperation = this.productService.updateProduct(
+          this.productId!,
+          productData
+        );
       } else {
-        this.productService.createProduct(this.productForm.value).subscribe({
-          next: (id) => {
-            if (this.selectedFiles.length > 0) {
-              let uploadCount = 0;
-              for (const file of this.selectedFiles) {
-                this.imageService.uploadProductImage(id, file).subscribe({
-                  next: () => {
-                    uploadCount++;
-                    if (uploadCount === this.selectedFiles.length) {
-                      this.router.navigate(['/admin/products']);
-                    }
-                  },
-                  error: (err) => console.error('Error uploading image', err),
-                });
-              }
-            } else {
-              this.router.navigate(['/admin/products']);
-            }
-          },
-          error: (err) => console.error('Error creating product', err),
-        });
+        productOperation = this.productService.createProduct(productData);
       }
+
+      productOperation
+        .pipe(
+          catchError((error) => {
+            console.error('Error saving product', error);
+            this.isSaving = false;
+            return of(null);
+          })
+        )
+        .subscribe((result) => {
+          if (result === null) {
+            return;
+          }
+
+          const productId = this.isEditMode
+            ? this.productId!
+            : (result as string);
+
+          if (!this.isEditMode) {
+            this.productId = productId;
+            this.isEditMode = true;
+          }
+
+          if (this.selectedFiles.length > 0) {
+            this.uploadImages(productId);
+          } else {
+            this.isSaving = false;
+            this.navigateAfterSave();
+          }
+        });
     }
+  }
+
+  private uploadImages(productId: string) {
+    const imageTasks: Observable<any>[] = [];
+
+    for (const file of this.selectedFiles) {
+      imageTasks.push(
+        this.imageService.uploadProductImage(productId, file).pipe(
+          catchError((error) => {
+            console.error('Error uploading image', error);
+            return of(null);
+          })
+        )
+      );
+    }
+
+    if (imageTasks.length > 0) {
+      forkJoin(imageTasks)
+        .pipe(
+          finalize(() => {
+            this.isSaving = false;
+            this.navigateAfterSave();
+          })
+        )
+        .subscribe();
+    } else {
+      this.isSaving = false;
+      this.navigateAfterSave();
+    }
+  }
+
+  private navigateAfterSave() {
+    this.router.navigate(['/admin/products']);
   }
 }

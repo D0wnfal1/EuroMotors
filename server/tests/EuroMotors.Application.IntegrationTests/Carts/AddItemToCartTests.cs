@@ -194,7 +194,14 @@ public class AddItemToCartTests : BaseIntegrationTest
 
         Result<Guid> createCarModelResult = await Sender.Send(createCarModelCommand);
         createCarModelResult.IsSuccess.ShouldBeTrue();
-        Guid carModelId = createCarModelResult.Value;
+        Guid carModelId = await Sender.CreateCarModelAsync(
+            brandId,
+            _faker.Vehicle.Model(),
+            _faker.Random.Int(2000, 2023),
+            BodyType.Sedan,
+            new EngineSpec(6, FuelType.Diesel)
+        );
+        var carModelIds = new List<Guid> { carModelId };
 
         var specifications = new List<Specification>
         {
@@ -208,7 +215,7 @@ public class AddItemToCartTests : BaseIntegrationTest
             specifications,
             _faker.Commerce.Ean13(),
             categoryId,
-            carModelId,
+            carModelIds,
             _faker.Random.Decimal(100, 1000),
             _faker.Random.Decimal(0, 100),
             Quantity

@@ -1,3 +1,5 @@
+using EuroMotors.Domain.CarBrands;
+using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Orders;
 using EuroMotors.Domain.Orders.Events;
 using EuroMotors.Domain.Products;
@@ -213,7 +215,7 @@ public class OrderTests : BaseTest
             null,
             "TP123",
             Guid.NewGuid(),
-            Guid.NewGuid(),
+            new List<CarModel>(),
             100.00m,
             0m,
             10);
@@ -240,8 +242,11 @@ public class OrderTests : BaseTest
         // Arrange
         var user = User.Create(UserData.Email, UserData.FirstName, UserData.LastName, UserData.Password);
         var order = Order.Create(user.Id, "BuyerName", "BuyerPhoneNumber", "BuyerEmail", DeliveryMethod.Pickup, "", PaymentMethod.Postpaid);
-
-        var product = Product.Create(ProductData.Name, null, ProductData.VendorCode, ProductData.CarModelId, ProductData.CarModelId, ProductData.Price,
+        var carBrand = CarBrand.Create("Test Brand");
+        var carModels = ProductData.CarModelIds
+            .Select(id => CarModel.Create(carBrand, "ModelName", 2023, BodyType.Sedan, new EngineSpec(1, FuelType.Diesel)))
+            .ToList();
+        var product = Product.Create(ProductData.Name, null, ProductData.VendorCode, ProductData.CategoryId, carModels, ProductData.Price,
             ProductData.Discount, ProductData.Stock);
 
         // Act

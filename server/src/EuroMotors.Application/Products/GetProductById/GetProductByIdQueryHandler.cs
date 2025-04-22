@@ -18,7 +18,6 @@ internal sealed class GetProductByIdQueryHandler(IDbConnectionFactory dbConnecti
             SELECT
                 id AS Id,
                 category_id AS CategoryId,
-                car_model_id AS CarModelId,
                 name AS Name,
                 vendor_code AS VendorCode,
                 price AS Price,
@@ -39,6 +38,21 @@ internal sealed class GetProductByIdQueryHandler(IDbConnectionFactory dbConnecti
         {
             return Result.Failure<ProductResponse>(ProductErrors.NotFound(request.ProductId));
         }
+
+        // Get car model IDs for the product
+        const string carModelsSql = """
+            SELECT
+                car_model_id AS CarModelId
+            FROM product_car_models
+            WHERE product_id = @ProductId
+        """;
+
+        IEnumerable<Guid> carModelIds = await connection.QueryAsync<Guid>(
+            carModelsSql,
+            new { request.ProductId },
+            commandType: CommandType.Text
+        );
+        product.CarModelIds = carModelIds.ToList();
 
         const string imagesSql = """
             SELECT

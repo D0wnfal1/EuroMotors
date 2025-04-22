@@ -24,6 +24,13 @@ public class ProductRepository : Repository<Product>, IProductRepository
             .SingleOrDefaultAsync(cancellationToken);
     }
 
+    public async Task<Product?> GetByIdWithCarModelsAsync(Guid id, CancellationToken ct)
+    {
+        return await _dbContext.Products
+            .Include(p => p.CarModels)           
+            .SingleOrDefaultAsync(p => p.Id == id, ct);
+    }
+
     public async Task Delete(Guid id)
     {
         Product? product = await GetByIdAsync(id);

@@ -1,5 +1,6 @@
 ﻿using EuroMotors.Application.Products.DeleteProduct;
 using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Products;
 using NSubstitute;
 using Shouldly;
@@ -49,7 +50,7 @@ public class DeleteProductCommandHandlerTests
             new[] { ("Color", "Red"), ("Engine", "V8") },
             "VendorCode",
             Guid.NewGuid(),
-            Guid.NewGuid(),
+            new List<CarModel>(),
             100,
             10,
             50);

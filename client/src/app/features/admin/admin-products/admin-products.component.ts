@@ -52,7 +52,7 @@ export class AdminProductsComponent implements OnInit {
   displayedColumns: string[] = [
     'name',
     'category',
-    'carModel',
+    'carModels',
     'specifications',
     'vendorCode',
     'price',
@@ -95,9 +95,16 @@ export class AdminProductsComponent implements OnInit {
     return category ? `${category.name}` : '—';
   }
 
-  getCarModelName(carModelId: string): string {
-    const model = this.carModels.find((cm) => cm.id === carModelId);
-    return model ? `${model.carBrand?.name || ''} ${model.modelName}` : '—';
+  getCarModelNames(carModelIds: string[]): string {
+    if (!carModelIds || carModelIds.length === 0) return '—';
+
+    return carModelIds
+      .map((id) => {
+        const model = this.carModels.find((cm) => cm.id === id);
+        return model ? `${model.brandName || ''} ${model.modelName}` : '';
+      })
+      .filter((name) => name !== '')
+      .join(', ');
   }
 
   deleteProduct(productId: string): void {

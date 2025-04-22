@@ -222,7 +222,7 @@ export class CarSelectionComponent implements OnInit, OnDestroy {
         carBrands: this.carBrandService.availableBrands$,
       }).subscribe({
         next: ({ carModel, carBrands }) => {
-          const engineSpecStr = `${carModel.engineSpec.volumeLiters}L ${carModel.engineSpec.fuelType}`;
+          const engineSpecStr = `${carModel.volumeLiters}L ${carModel.fuelType}`;
 
           const selectedBrand = carBrands.find(
             (brand) => brand.id === carModel.carBrandId

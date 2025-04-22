@@ -1,5 +1,6 @@
 ﻿using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
+using EuroMotors.Domain.Products;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -48,8 +49,21 @@ internal sealed class CarModelConfiguration : IEntityTypeConfiguration<CarModel>
             .IsUnique();
 
         builder.HasMany(cm => cm.Products)
-            .WithOne()
-            .HasForeignKey(p => p.CarModelId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .WithMany(p => p.CarModels)
+            .UsingEntity<Dictionary<string, object>>(
+                "ProductCarModel",
+                r => r.HasOne<Product>()
+                    .WithMany()
+                    .HasForeignKey("product_id")
+                    .OnDelete(DeleteBehavior.Restrict),
+                l => l.HasOne<CarModel>()
+                    .WithMany()
+                    .HasForeignKey("car_model_id")
+                    .OnDelete(DeleteBehavior.Restrict),
+                j =>
+                {
+                    j.HasKey("product_id", "car_model_id");
+                    j.ToTable("product_car_models");
+                });
     }
 }

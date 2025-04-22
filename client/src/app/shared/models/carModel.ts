@@ -9,7 +9,6 @@ export interface CarModel {
   bodyType: BodyType;
   volumeLiters: number;
   fuelType: FuelType;
-  engineSpec: EngineSpec;
   slug: string;
   products: Product[];
   carBrand?: {
@@ -17,11 +16,6 @@ export interface CarModel {
     name: string;
     slug: string;
   };
-}
-
-export interface EngineSpec {
-  volumeLiters: number;
-  fuelType: FuelType;
 }
 
 export enum FuelType {

@@ -28,7 +28,6 @@ public class UpdateProductTests : BaseIntegrationTest
             [],
             _faker.Commerce.Ean13(),
             Guid.NewGuid(),
-            Guid.NewGuid(),
             _faker.Random.Decimal(100, 1000),
             _faker.Random.Decimal(0, 100),
             _faker.Random.Int(1, 100));
@@ -71,18 +70,16 @@ public class UpdateProductTests : BaseIntegrationTest
             specifications
         );
 
-        var nonExistingCategoryId = Guid.NewGuid();
         var command = new UpdateProductCommand(
             productId,
             _faker.Commerce.ProductName(),
             specifications,
             _faker.Commerce.Ean13(),
-            nonExistingCategoryId,
-            carModelId,
+            categoryId,
             _faker.Random.Decimal(100, 1000),
             _faker.Random.Decimal(0, 100),
             _faker.Random.Int(1, 100)
-            );
+        );
 
         // Act
         Result result = await Sender.Send(command);
@@ -122,18 +119,16 @@ public class UpdateProductTests : BaseIntegrationTest
             specifications
         );
 
-        var nonExistingCarModelId = Guid.NewGuid();
         var command = new UpdateProductCommand(
             productId,
             _faker.Commerce.ProductName(),
             specifications,
             _faker.Commerce.Ean13(),
             categoryId,
-            nonExistingCarModelId,
             _faker.Random.Decimal(100, 1000),
             _faker.Random.Decimal(0, 100),
             _faker.Random.Int(1, 100)
-         );
+        );
 
         // Act
         Result result = await Sender.Send(command);
@@ -187,7 +182,6 @@ public class UpdateProductTests : BaseIntegrationTest
             updatedSpecifications,
             _faker.Commerce.Ean13(),
             categoryId,
-            carModelId,
             _faker.Random.Decimal(100, 1000),
             _faker.Random.Decimal(0, 100),
             _faker.Random.Int(1, 100)

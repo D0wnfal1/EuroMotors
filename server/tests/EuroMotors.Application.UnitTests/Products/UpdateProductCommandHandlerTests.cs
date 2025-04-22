@@ -32,7 +32,6 @@ public class UpdateProductCommandHandlerTests
         _handler = new UpdateProductCommandHandler(
             _productRepository,
             _categoryRepository,
-            _carModelRepository,
             _unitOfWork);
     }
 
@@ -51,7 +50,6 @@ public class UpdateProductCommandHandlerTests
             "UpdatedProduct",
             specifications,
             "UpdatedVendorCode",
-            Guid.NewGuid(),
             Guid.NewGuid(),
             200,
             15,
@@ -84,7 +82,6 @@ public class UpdateProductCommandHandlerTests
             specifications,
             "UpdatedVendorCode",
             Guid.NewGuid(),
-            Guid.NewGuid(),
             200,
             15,
             75);
@@ -94,7 +91,7 @@ public class UpdateProductCommandHandlerTests
             new[] { ("Color", "Red"), ("Engine", "V8") },
             "OriginalVendorCode",
             Guid.NewGuid(),
-            Guid.NewGuid(),
+            new List<CarModel>(),
             100,
             10,
             50);
@@ -107,52 +104,7 @@ public class UpdateProductCommandHandlerTests
 
         // Assert
         result.IsFailure.ShouldBeTrue();
-        result.Error.Code.ShouldBe("Product.NotFound");
-    }
-
-    [Fact]
-    public async Task Handle_ShouldReturnFailure_WhenCarModelNotFound()
-    {
-        // Arrange
-        var specifications = new List<Specification>
-        {
-            new Specification("Color", "Blue"),
-            new Specification("Engine", "V6")
-        };
-
-        var productId = Guid.NewGuid();
-        var categoryId = Guid.NewGuid();
-        var command = new UpdateProductCommand(
-            productId,
-            "UpdatedProduct",
-            specifications,
-            "UpdatedVendorCode",
-            categoryId,
-            Guid.NewGuid(),
-            200,
-            15,
-            75);
-
-        var product = Product.Create(
-            "OriginalProduct",
-            new[] { ("Color", "Red"), ("Engine", "V8") },
-            "OriginalVendorCode",
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            100,
-            10,
-            50);
-
-        _productRepository.GetByIdAsync(productId, CancellationToken.None).Returns(product);
-        _categoryRepository.GetByIdAsync(categoryId, CancellationToken.None).Returns(Category.Create("Test Category"));
-        _carModelRepository.GetByIdAsync(command.CarModelId, CancellationToken.None).Returns((CarModel)null);
-
-        // Act
-        Result result = await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.IsFailure.ShouldBeTrue();
-        result.Error.Code.ShouldBe("Product.NotFound");
+        result.Error.Code.ShouldBe("Category.NotFound");
     }
 
     [Fact]
@@ -167,14 +119,13 @@ public class UpdateProductCommandHandlerTests
 
         var productId = Guid.NewGuid();
         var categoryId = Guid.NewGuid();
-        var carModelId = Guid.NewGuid();
+        var carModelIds = new List<Guid>();
         var command = new UpdateProductCommand(
             productId,
             "UpdatedProduct",
             specifications,
             "UpdatedVendorCode",
             categoryId,
-            carModelId,
             200,
             15,
             75);
@@ -184,7 +135,7 @@ public class UpdateProductCommandHandlerTests
             new[] { ("Color", "Red"), ("Engine", "V8") },
             "OriginalVendorCode",
             Guid.NewGuid(),
-            Guid.NewGuid(),
+            new List<CarModel>(),
             100,
             10,
             50);
@@ -192,15 +143,18 @@ public class UpdateProductCommandHandlerTests
         _productRepository.GetByIdAsync(productId, CancellationToken.None).Returns(product);
         _categoryRepository.GetByIdAsync(categoryId, CancellationToken.None).Returns(Category.Create("Test Category"));
 
-        var carModel = CarModel.Create(
-            _carBrand,
-            "Test Model",
-            2020,
-            BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel));
 
-        _carModelRepository.GetByIdAsync(carModelId, CancellationToken.None).Returns(carModel);
+        foreach (Guid carModelId in carModelIds)
+        {
+            var carModel = CarModel.Create(
+                _carBrand,
+                "Test Model",
+                2020,
+                BodyType.Sedan,
+                new EngineSpec(6, FuelType.Diesel));
 
+            _carModelRepository.GetByIdAsync(carModelId, CancellationToken.None).Returns(carModel);
+        }
         // Act
         Result result = await _handler.Handle(command, CancellationToken.None);
 

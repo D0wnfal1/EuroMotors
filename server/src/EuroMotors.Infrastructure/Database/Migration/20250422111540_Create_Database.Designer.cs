@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250421093442_Create_Database")]
+    [Migration("20250422111540_Create_Database")]
     partial class Create_Database
     {
         /// <inheritdoc />
@@ -326,10 +326,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<Guid>("CarModelId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("car_model_id");
-
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uuid")
                         .HasColumnName("category_id");
@@ -369,9 +365,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
 
                     b.HasKey("Id")
                         .HasName("pk_products");
-
-                    b.HasIndex("CarModelId")
-                        .HasDatabaseName("ix_products_car_model_id");
 
                     b.HasIndex("CategoryId")
                         .HasDatabaseName("ix_products_category_id");
@@ -465,6 +458,25 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasDatabaseName("ix_users_email");
 
                     b.ToTable("users", "public");
+                });
+
+            modelBuilder.Entity("ProductCarModel", b =>
+                {
+                    b.Property<Guid>("product_id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("product_id");
+
+                    b.Property<Guid>("car_model_id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("car_model_id");
+
+                    b.HasKey("product_id", "car_model_id")
+                        .HasName("pk_product_car_models");
+
+                    b.HasIndex("car_model_id")
+                        .HasDatabaseName("ix_product_car_models_car_model_id");
+
+                    b.ToTable("product_car_models", "public");
                 });
 
             modelBuilder.Entity("RoleUser", b =>
@@ -570,13 +582,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
 
             modelBuilder.Entity("EuroMotors.Domain.Products.Product", b =>
                 {
-                    b.HasOne("EuroMotors.Domain.CarModels.CarModel", null)
-                        .WithMany("Products")
-                        .HasForeignKey("CarModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_products_car_models_car_model_id");
-
                     b.HasOne("EuroMotors.Domain.Categories.Category", null)
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
@@ -614,6 +619,23 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     b.Navigation("Specifications");
                 });
 
+            modelBuilder.Entity("ProductCarModel", b =>
+                {
+                    b.HasOne("EuroMotors.Domain.CarModels.CarModel", null)
+                        .WithMany()
+                        .HasForeignKey("car_model_id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_product_car_models_car_models_car_model_id");
+
+                    b.HasOne("EuroMotors.Domain.Products.Product", null)
+                        .WithMany()
+                        .HasForeignKey("product_id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_product_car_models_products_product_id");
+                });
+
             modelBuilder.Entity("RoleUser", b =>
                 {
                     b.HasOne("EuroMotors.Domain.Users.Role", null)
@@ -634,11 +656,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
             modelBuilder.Entity("EuroMotors.Domain.CarBrands.CarBrand", b =>
                 {
                     b.Navigation("Models");
-                });
-
-            modelBuilder.Entity("EuroMotors.Domain.CarModels.CarModel", b =>
-                {
-                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("EuroMotors.Domain.Categories.Category", b =>

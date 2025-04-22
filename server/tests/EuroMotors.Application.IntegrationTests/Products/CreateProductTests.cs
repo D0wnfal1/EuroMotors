@@ -43,7 +43,7 @@ public class CreateProductTests : BaseIntegrationTest
             specifications,
             _faker.Commerce.Ean13(),
             categoryId,
-            carModelId,
+            new List<Guid> { carModelId },
             -100,
             _faker.Random.Decimal(0, 100),
             10);
@@ -82,7 +82,7 @@ public class CreateProductTests : BaseIntegrationTest
             specifications,
             _faker.Commerce.Ean13(),
             categoryId,
-            carModelId,
+            new List<Guid> { carModelId },
             _faker.Random.Decimal(100, 1000),
             _faker.Random.Decimal(0, 100),
             10);
@@ -112,7 +112,7 @@ public class CreateProductTests : BaseIntegrationTest
             specifications,
             _faker.Commerce.Ean13(),
             categoryId,
-            carModelId,
+            new List<Guid> { carModelId },
             _faker.Random.Decimal(100, 1000),
             _faker.Random.Decimal(0, 100),
             10);
@@ -150,7 +150,7 @@ public class CreateProductTests : BaseIntegrationTest
             specifications,
             _faker.Commerce.Ean13(),
             categoryId,
-            carModelId,
+            new List<Guid> { carModelId },
             _faker.Random.Decimal(100, 1000),
             _faker.Random.Decimal(0, 100),
             10);

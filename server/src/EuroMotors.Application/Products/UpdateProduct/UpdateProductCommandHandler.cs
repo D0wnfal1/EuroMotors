@@ -6,7 +6,10 @@ using EuroMotors.Domain.Products;
 
 namespace EuroMotors.Application.Products.UpdateProduct;
 
-internal sealed class UpdateProductCommandHandler(IProductRepository productRepository, ICategoryRepository categoryRepository, ICarModelRepository carModelRepository, IUnitOfWork unitOfWork) : ICommandHandler<UpdateProductCommand>
+internal sealed class UpdateProductCommandHandler(
+    IProductRepository productRepository,
+    ICategoryRepository categoryRepository,
+    IUnitOfWork unitOfWork) : ICommandHandler<UpdateProductCommand>
 {
     public async Task<Result> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {
@@ -21,14 +24,7 @@ internal sealed class UpdateProductCommandHandler(IProductRepository productRepo
 
         if (category is null)
         {
-            return Result.Failure(ProductErrors.NotFound(request.CategoryId));
-        }
-
-        CarModel? carModel = await carModelRepository.GetByIdAsync(request.CarModelId, cancellationToken);
-
-        if (carModel is null)
-        {
-            return Result.Failure(ProductErrors.NotFound(request.CarModelId));
+            return Result.Failure(CategoryErrors.NotFound(request.CategoryId));
         }
 
         IEnumerable<(string SpecificationName, string SpecificationValue)> specs = request.Specifications
@@ -39,7 +35,7 @@ internal sealed class UpdateProductCommandHandler(IProductRepository productRepo
             specs,
             request.VendorCode,
             request.CategoryId,
-            request.CarModelId,
+            product.CarModels,
             request.Price,
             request.Discount,
             request.Stock);

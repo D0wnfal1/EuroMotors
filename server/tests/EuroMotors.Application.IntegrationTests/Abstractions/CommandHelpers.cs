@@ -77,7 +77,7 @@ internal static class CommandHelpers
             specifications,
             ean13,
             categoryId,
-            carModelId,
+            new List<Guid> { carModelId },
             price,
             discount,
             quantity
