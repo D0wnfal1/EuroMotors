@@ -33,25 +33,6 @@
       </td>
     </ng-container>
 
-    <ng-container matColumnDef="specifications">
-      <th mat-header-cell *matHeaderCellDef class="text-center">
-        Specifications
-      </th>
-      <td
-        mat-cell
-        *matCellDef="let product"
-        class="text-left whitespace-pre-wrap px-2"
-      >
-        <div *ngIf="product.specifications?.length > 0; else noSpecs">
-          <div *ngFor="let spec of product.specifications">
-            <strong>{{ spec.specificationName }}:</strong>
-            {{ spec.specificationValue }}
-          </div>
-        </div>
-        <ng-template #noSpecs>—</ng-template>
-      </td>
-    </ng-container>
-
     <ng-container matColumnDef="vendorCode">
       <th mat-header-cell *matHeaderCellDef class="text-center">VendorCode</th>
       <td mat-cell *matCellDef="let product" class="text-center">

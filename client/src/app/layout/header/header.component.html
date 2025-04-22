@@ -13,7 +13,11 @@
     </nav>
 
     <div class="flex gap-3">
-      <mat-card *ngIf="selectedCar">
+      <mat-card
+        *ngIf="selectedCar"
+        class="cursor-pointer"
+        (click)="selectedCarId && navigateToShop(selectedCarId)"
+      >
         <div class="flex items-center justify-between px-2">
           <span class="font-medium leading-tight text-sm mt-2">
             {{ selectedCar.brand }} {{ selectedCar.model }}
@@ -21,7 +25,7 @@
           <button
             mat-icon-button
             color="warn"
-            (click)="clearCarSelection()"
+            (click)="clearCarSelection(); $event.stopPropagation()"
             matTooltip="Remove car selection"
           >
             <mat-icon>close</mat-icon>

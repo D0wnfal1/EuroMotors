@@ -50,7 +50,7 @@ export class CarSelectionComponent implements OnInit, OnDestroy {
   availableCarIds: string[] = [];
 
   carSelectionForm: FormGroup;
-  selectedCar: SelectedCar | null = null;
+  hasSelectedCar: boolean = false;
   private subscriptions: Subscription[] = [];
 
   constructor(
@@ -70,6 +70,8 @@ export class CarSelectionComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    const savedCarId = this.carModelService.getStoredCarId();
+    this.hasSelectedCar = !!savedCarId;
     this.carBrandService.getAllCarBrands();
 
     this.subscriptions.push(
@@ -91,7 +93,6 @@ export class CarSelectionComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.carModelService.carSelectionChanged.subscribe(() => {
         this.carSelectionForm.reset();
-        this.selectedCar = null;
         this.carModelService.getCarSelectionWithIds().subscribe((resp) => {
           this.availableCarIds = resp.ids;
           this.models = resp.models;
@@ -210,7 +211,6 @@ export class CarSelectionComponent implements OnInit, OnDestroy {
 
   clearSelection(): void {
     this.carSelectionForm.reset();
-    this.selectedCar = null;
     this.carModelService.clearCarSelection();
   }
 
@@ -227,14 +227,6 @@ export class CarSelectionComponent implements OnInit, OnDestroy {
           const selectedBrand = carBrands.find(
             (brand) => brand.id === carModel.carBrandId
           );
-
-          this.selectedCar = {
-            brand: carModel.brandName || '',
-            model: carModel.modelName,
-            startYear: carModel.startYear,
-            bodyType: carModel.bodyType,
-            engineSpec: engineSpecStr,
-          };
 
           this.carSelectionForm.patchValue({
             brand: selectedBrand,

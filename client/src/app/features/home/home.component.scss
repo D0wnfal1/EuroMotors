@@ -1,0 +1,127 @@
+.product-slider {
+  position: relative;
+  margin: 2rem 0 4rem;
+  overflow: visible;
+  max-width: 100%;
+}
+
+.slider-container {
+  position: relative;
+  width: 100%;
+  padding: 1rem 0 0;
+  display: flex;
+  align-items: center;
+}
+
+.products-viewport {
+  position: relative;
+  overflow: hidden;
+  width: calc(100% - 100px);
+  margin: 0 50px;
+  border-radius: 0.75rem;
+  padding: 0.5rem 0;
+
+  &:hover {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+}
+
+.products-track {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  width: fit-content;
+}
+
+.product-slide {
+  width: 280px;
+  min-width: 280px;
+  max-width: 280px;
+  margin: 0 2px;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.nav-button-left {
+  left: 0;
+}
+
+.nav-button-right {
+  right: 0;
+}
+
+.slide-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 2rem;
+  width: 100%;
+  position: absolute;
+  bottom: -30px;
+  left: 0;
+}
+
+.indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #93c5fd;
+    transform: scale(1.2);
+  }
+
+  &.active {
+    background-color: #3b82f6;
+    transform: scale(1.2);
+  }
+}
+
+button[mat-icon-button] {
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+}
+
+.overflow-hidden {
+  position: relative;
+  border-radius: 0.75rem;
+  padding: 0.5rem 0;
+
+  &:hover {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+}

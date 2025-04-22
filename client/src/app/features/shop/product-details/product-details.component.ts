@@ -88,7 +88,7 @@ export class ProductDetailsComponent implements OnInit {
         this.product = product;
         this.updateQuantityInCart();
       },
-      error: (error) => console.log(error),
+      error: (error) => console.error(error),
     });
   }
 

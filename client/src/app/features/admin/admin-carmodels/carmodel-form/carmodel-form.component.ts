@@ -131,13 +131,6 @@ export class CarmodelFormComponent implements OnInit {
     }
   }
 
-  onBrandChange(event: any) {
-    const selectedBrandId = event.value;
-    if (selectedBrandId) {
-      console.log('Selected brand ID:', selectedBrandId);
-    }
-  }
-
   onImageSelected(event: any) {
     const file = event.target.files[0];
     if (file && file.type.startsWith('image/')) {

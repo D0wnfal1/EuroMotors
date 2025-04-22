@@ -2,7 +2,7 @@
   <app-car-selection></app-car-selection>
 
   <div class="mt-4">
-    <h2 class="text-2xl font-bold mb-4 text-center">Car Brands</h2>
+    <h2 class="text-2xl font-bold mb-4 text-center uppercase">Car Brands</h2>
 
     <div
       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-4"
@@ -36,9 +36,11 @@
   </div>
 
   <div class="mt-10">
-    <h2 class="text-2xl font-bold mb-8 text-center">Product Categories</h2>
+    <h2 class="text-2xl font-bold mb-8 text-center uppercase">
+      Product Categories
+    </h2>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
       <mat-card
         *ngFor="let category of mainCategories"
         class="hover:shadow-lg transition-shadow"
@@ -51,7 +53,7 @@
             class="h-48 w-full object-cover"
           />
           <div
-            class="absolute bottom-0 left-0 right-0 bg-blue-700/80 bg-opacity-60 text-white p-3"
+            class="absolute bottom-0 left-0 right-0 bg-blue-500/80 text-white p-3"
           >
             <h3 class="text-xl font-bold">{{ category.name }}</h3>
           </div>
@@ -113,10 +115,12 @@
     </div>
   </div>
 
-  <div class="mt-8">
-    <h2 class="text-2xl font-bold text-center">POPULAR PRODUCTS</h2>
+  <div class="mt-12">
+    <h2 class="text-2xl font-bold text-center uppercase mb-6">
+      Popular Products
+    </h2>
 
-    <div class="flex justify-center mt-6 mb-8 gap-4">
+    <div class="flex justify-center mt-2 mb-8 gap-4">
       <button
         mat-raised-button
         [class.bg-blue-500]="selectedProductTab === 'new'"
@@ -146,77 +150,56 @@
       </button>
     </div>
 
-    <div class="relative">
-      <button
-        mat-icon-button
-        class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-blue-500 text-white"
-        (click)="prevProduct()"
-      >
-        <mat-icon>chevron_left</mat-icon>
-      </button>
-      <button
-        mat-icon-button
-        class="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-blue-500 text-white"
-        (click)="nextProduct()"
-      >
-        <mat-icon>chevron_right</mat-icon>
-      </button>
-      <div class="overflow-hidden">
+    <div class="product-slider relative">
+      <div class="slider-container">
+        <button
+          mat-mini-fab
+          color="primary"
+          class="nav-button nav-button-left"
+          (click)="prevProduct()"
+        >
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+
         <div
-          class="flex transition-transform duration-300 ease-in-out"
-          [style.transform]="'translateX(' + slidePosition + 'px)'"
+          class="products-viewport"
+          (mouseenter)="pauseAutoplay()"
+          (mouseleave)="resumeAutoplay()"
         >
           <div
-            *ngFor="let product of displayedProducts"
-            class="min-w-[280px] max-w-[280px] mx-2 border rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+            class="products-track"
+            [style.transform]="'translateX(' + slidePosition + 'px)'"
           >
-            <div class="h-48 bg-gray-100 relative overflow-hidden">
-              <img
-                *ngIf="product.images && product.images.length > 0"
-                [src]="getImageUrl(product.images[0].path)"
-                [alt]="product.name"
-                class="w-full h-full object-contain"
-              />
-              <img
-                *ngIf="!product.images || product.images.length === 0"
-                src="/images/no-image.jpeg"
-                alt="No image available"
-                class="w-full h-full object-contain"
-              />
-
-              <div
-                *ngIf="product.discount > 0"
-                class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-sm"
-              >
-                -{{ product.discount }}%
-              </div>
-            </div>
-
-            <div class="p-4">
-              <h3 class="font-medium text-lg line-clamp-2 h-14">
-                {{ product.name }}
-              </h3>
-
-              <div class="mt-2 flex justify-between items-center">
-                <div>
-                  <p class="font-bold text-lg">
-                    {{ calculateDiscountedPrice(product) | currency : "USD" }}
-                  </p>
-                  <p
-                    *ngIf="product.discount > 0"
-                    class="text-gray-500 line-through text-sm"
-                  >
-                    {{ product.price | currency : "USD" }}
-                  </p>
-                </div>
-
-                <button mat-mini-fab color="primary" aria-label="Add to cart">
-                  <mat-icon>shopping_cart</mat-icon>
-                </button>
-              </div>
+            <div
+              *ngFor="
+                let product of displayedProducts;
+                trackBy: trackByProductId
+              "
+              class="product-slide fade-in"
+            >
+              <app-product-item [product]="product"></app-product-item>
             </div>
           </div>
         </div>
+
+        <button
+          mat-mini-fab
+          color="primary"
+          class="nav-button nav-button-right"
+          (click)="nextProduct()"
+        >
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+
+      <!-- Slide indicators -->
+      <div class="slide-indicators" *ngIf="totalSlides > 1">
+        <div
+          *ngFor="let _ of [].constructor(totalSlides); let i = index"
+          class="indicator"
+          [class.active]="i === currentSlideIndex"
+          (click)="goToSlide(i)"
+        ></div>
       </div>
     </div>
   </div>

@@ -12,6 +12,7 @@ import { RouterLink } from '@angular/router';
 import { CartService } from '../../../core/services/cart.service';
 import { ImageService } from '../../../core/services/image.service';
 import { ProductImage } from '../../../shared/models/productImage';
+import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-product-item',
@@ -25,6 +26,7 @@ import { ProductImage } from '../../../shared/models/productImage';
     MatButton,
     RouterLink,
     NgIf,
+    MatTooltip,
   ],
   templateUrl: './product-item.component.html',
   styleUrl: './product-item.component.scss',
@@ -36,5 +38,19 @@ export class ProductItemComponent {
 
   getImageUrl(image: ProductImage): string {
     return this.imageService.getImageUrl(image.path);
+  }
+
+  getSpecificationsTooltip(): string {
+    if (
+      !this.product ||
+      !this.product.specifications ||
+      this.product.specifications.length === 0
+    ) {
+      return 'No specifications available';
+    }
+
+    return this.product.specifications
+      .map((spec) => `${spec.specificationName}: ${spec.specificationValue}`)
+      .join('\n');
   }
 }

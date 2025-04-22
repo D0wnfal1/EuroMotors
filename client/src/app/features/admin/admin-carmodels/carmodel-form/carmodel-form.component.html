@@ -8,10 +8,7 @@
       <div class="flex gap-2 w-full">
         <mat-form-field appearance="fill" class="flex-grow">
           <mat-label>Car Brand</mat-label>
-          <mat-select
-            formControlName="carBrandId"
-            (selectionChange)="onBrandChange($event)"
-          >
+          <mat-select formControlName="carBrandId">
             <mat-option
               *ngFor="let brand of availableBrands"
               [value]="brand.id"

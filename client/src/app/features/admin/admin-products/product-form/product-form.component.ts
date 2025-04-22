@@ -209,10 +209,6 @@ export class ProductFormComponent implements OnInit {
       return;
     }
 
-    console.log('Saving car models separately');
-    console.log('Product ID:', this.productId);
-    console.log('Car Model IDs:', carModelIds);
-
     const savingEl = document.createElement('span');
     savingEl.innerHTML =
       ' <i class="fas fa-spinner fa-spin"></i> Saving models...';
@@ -224,11 +220,8 @@ export class ProductFormComponent implements OnInit {
       .updateProductCarModels(this.productId, carModelIds)
       .subscribe({
         next: () => {
-          console.log('Car models saved successfully');
           button?.removeChild(savingEl);
           button?.removeAttribute('disabled');
-
-          alert('Car models updated successfully!');
         },
         error: (error) => {
           console.error('Error saving car models:', error);
@@ -236,8 +229,6 @@ export class ProductFormComponent implements OnInit {
 
           button?.removeChild(savingEl);
           button?.removeAttribute('disabled');
-
-          alert('Failed to update car models. Check console for details.');
         },
       });
   }
@@ -246,7 +237,6 @@ export class ProductFormComponent implements OnInit {
     if (this.productForm.valid) {
       this.isSaving = true;
       const formValue = this.productForm.value;
-      console.log('Form values before submit:', formValue);
 
       const productData: Product = {
         ...formValue,

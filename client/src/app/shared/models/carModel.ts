@@ -20,6 +20,7 @@ export interface CarModel {
 
 export enum FuelType {
   Petrol = 'Petrol',
+  Gas = 'Gas',
   Diesel = 'Diesel',
   Electric = 'Electric',
   Hybrid = 'Hybrid',

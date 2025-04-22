@@ -6,6 +6,7 @@ import { CarmodelService } from '../../../core/services/carmodel.service';
 import { CommonModule, NgIf } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { Subscription } from 'rxjs';
+import { CompatibleProductsComponent } from './compatible-products/compatible-products.component';
 
 @Component({
   selector: 'app-customer-car',
@@ -16,6 +17,7 @@ import { Subscription } from 'rxjs';
     CommonModule,
     NgIf,
     MatButtonModule,
+    CompatibleProductsComponent,
   ],
   templateUrl: './customer-car.component.html',
   styleUrls: ['./customer-car.component.scss'],
@@ -23,6 +25,7 @@ import { Subscription } from 'rxjs';
 export class CustomerCarComponent implements OnInit {
   private carModelService = inject(CarmodelService);
   selectedCar: SelectedCar | null = null;
+  selectedCarId: string | null = null;
   private subs = new Subscription();
 
   ngOnInit(): void {
@@ -39,7 +42,7 @@ export class CustomerCarComponent implements OnInit {
 
   clearSelection(): void {
     this.selectedCar = null;
-
+    this.selectedCarId = null;
     this.carModelService.clearCarSelection();
   }
 
@@ -48,6 +51,8 @@ export class CustomerCarComponent implements OnInit {
     if (!savedId) {
       return;
     }
+
+    this.selectedCarId = savedId;
 
     this.carModelService.getSelectedCarDetails(savedId).subscribe({
       next: (carModel) => {

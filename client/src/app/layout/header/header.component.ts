@@ -57,6 +57,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   subcategories: Category[] = [];
   subcategoriesVisible = false;
   selectedCar: SelectedCar | null = null;
+  selectedCarId: string | null = null;
 
   shopParams = new ShopParams();
   pageSize = 10;
@@ -87,6 +88,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   loadSelectedCar() {
     const carId = this.carModelService.getStoredCarId();
+    this.selectedCarId = carId;
     if (carId) {
       this.carModelService.getSelectedCarDetails(carId).subscribe({
         next: (carModel) => {
@@ -134,6 +136,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   closeSubcategories() {
     this.subcategoriesVisible = false;
     this.activeCategory = null;
+  }
+
+  navigateToShop(carId: string): void {
+    this.router.navigate(['/shop'], { queryParams: { carModelId: carId } });
   }
 
   logout() {

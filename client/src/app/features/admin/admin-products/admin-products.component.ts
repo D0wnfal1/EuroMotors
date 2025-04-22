@@ -53,7 +53,6 @@ export class AdminProductsComponent implements OnInit {
     'name',
     'category',
     'carModels',
-    'specifications',
     'vendorCode',
     'price',
     'discount',

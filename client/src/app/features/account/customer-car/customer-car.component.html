@@ -30,4 +30,12 @@
       <button mat-button (click)="clearSelection()">Clear Selection</button>
     </mat-card-actions>
   </mat-card>
+
+  <div *ngIf="selectedCarId" class="mt-8 flex justify-center w-full">
+    <div class="w-full max-w-7xl">
+      <app-compatible-products
+        [carModelId]="selectedCarId"
+      ></app-compatible-products>
+    </div>
+  </div>
 </div>

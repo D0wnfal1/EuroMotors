@@ -3,6 +3,8 @@
   appearance="outlined"
   routerLink="/shop/{{ product.id }}"
   class="border border-blue-300 rounded-xl shadow-sm p-4 flex flex-col items-center gap-2 w-full sm:w-64 transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg h-full"
+  [matTooltip]="getSpecificationsTooltip()"
+  matTooltipClass="specifications-tooltip"
 >
   <mat-card-content
     class="mt-2 flex flex-col items-center min-h-[80px] justify-between"

@@ -1,15 +1,22 @@
 .product-image {
-  width: 100%;
-  height: 12rem;
+  height: 180px;
   object-fit: contain;
-  border-radius: 0.5rem;
+  transition: transform 0.3s ease;
+}
+
+::ng-deep .specifications-tooltip {
+  white-space: pre-line !important;
+  max-width: 300px !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+  padding: 12px !important;
 }
 
 .image-container {
-  width: 100%;
-  height: 12rem;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  height: 180px;
+  width: 100%;
   overflow: hidden;
 }

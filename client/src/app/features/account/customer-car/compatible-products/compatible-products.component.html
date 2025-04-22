@@ -1,0 +1,37 @@
+<section *ngIf="compatibleProducts.length > 0" class="py-4 mt-2">
+  <h3 class="text-2xl font-bold mb-4 text-center uppercase">
+    Products compatible with your vehicle
+  </h3>
+
+  <button mat-icon-button (click)="previousSlide()" class="slider-nav-button">
+    <mat-icon class="-top-1.5 -left-1">chevron_left</mat-icon>
+  </button>
+
+  <div
+    class="products-container"
+    (mouseenter)="pauseAutoplay()"
+    (mouseleave)="resumeAutoplay()"
+  >
+    <div class="products-grid">
+      <div
+        *ngFor="let product of visibleProducts; trackBy: trackByProductId"
+        class="product-item fade-in"
+      >
+        <app-product-item [product]="product"></app-product-item>
+      </div>
+    </div>
+  </div>
+
+  <button mat-icon-button (click)="nextSlide()" class="slider-nav-button">
+    <mat-icon class="-top-1.5 -right-0.5">chevron_right</mat-icon>
+  </button>
+
+  <div class="slide-indicators" *ngIf="maxSlide > 0">
+    <div
+      *ngFor="let _ of [].constructor(maxSlide + 1); let i = index"
+      class="indicator"
+      [class.active]="i === currentSlide"
+      (click)="goToSlide(i)"
+    ></div>
+  </div>
+</section>

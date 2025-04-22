@@ -202,9 +202,6 @@ export class CategoryFormComponent implements OnInit {
         },
       });
     } else {
-      console.log('subcategoryNames:', this.childCategoryNames);
-      console.log('formData entries:', [...formData.entries()]);
-
       this.categoryService.createCategory(formData).subscribe({
         next: (newCategoryId) => {
           this.snackBar.open('Category created successfully!', 'Close', {
