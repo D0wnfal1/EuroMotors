@@ -33,7 +33,6 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
             b.ToTable("product_specifications");
         });
 
-
         builder.Property(p => p.VendorCode)
             .IsRequired()
             .HasMaxLength(50);
@@ -72,11 +71,11 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
                 l => l.HasOne(typeof(CarModel))
                     .WithMany()
                     .HasForeignKey("car_model_id")
-                    .OnDelete(DeleteBehavior.Restrict),
+                    .OnDelete(DeleteBehavior.Cascade),
                 r => r.HasOne(typeof(Product))
                     .WithMany()
                     .HasForeignKey("product_id")
-                    .OnDelete(DeleteBehavior.Restrict),
+                    .OnDelete(DeleteBehavior.Cascade),
                 j =>
                 {
                     j.HasKey("product_id", "car_model_id");

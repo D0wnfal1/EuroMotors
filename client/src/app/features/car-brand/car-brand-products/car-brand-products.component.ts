@@ -5,7 +5,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { CarSelectionComponent } from '../../home/car-selection/car-selection.component';
-import { CarmodelService } from '../../../core/services/carmodel.service';
 import { ProductService } from '../../../core/services/product.service';
 import { ImageService } from '../../../core/services/image.service';
 import { ShopParams } from '../../../shared/models/shopParams';

@@ -56,7 +56,7 @@ public class RemoveItemFromCartTests : BaseIntegrationTest
         Guid userId = await Sender.CreateUserAsync();
 
         var faker = new Faker();
-        var brandId = Guid.NewGuid();
+        Guid brandId = await Sender.CreateCarBrandAsync("BrandName");
         Guid categoryId = await Sender.CreateCategoryAsync("CategoryName2");
         Guid carModelId = await Sender.CreateCarModelAsync(
             brandId,

@@ -17,9 +17,8 @@ internal sealed class CreateProductCommandHandler(IProductRepository productRepo
             return Result.Failure<Guid>(CategoryErrors.NotFound(request.CategoryId));
         }
 
-        // Get all requested car models
         List<CarModel> carModels = [];
-        foreach (var carModelId in request.CarModelIds)
+        foreach (Guid carModelId in request.CarModelIds)
         {
             CarModel? carModel = await carModelRepository.GetByIdAsync(carModelId, cancellationToken);
 
@@ -39,7 +38,7 @@ internal sealed class CreateProductCommandHandler(IProductRepository productRepo
             specs,
             request.VendorCode,
             request.CategoryId,
-            carModels, // Pass the list of car models
+            carModels,
             request.Price,
             request.Discount,
             request.Stock);

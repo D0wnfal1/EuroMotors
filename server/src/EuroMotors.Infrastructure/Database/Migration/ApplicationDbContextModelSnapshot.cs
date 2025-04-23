@@ -621,14 +621,14 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     b.HasOne("EuroMotors.Domain.CarModels.CarModel", null)
                         .WithMany()
                         .HasForeignKey("car_model_id")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_product_car_models_car_models_car_model_id");
 
                     b.HasOne("EuroMotors.Domain.Products.Product", null)
                         .WithMany()
                         .HasForeignKey("product_id")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_product_car_models_products_product_id");
                 });

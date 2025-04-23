@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250422111540_Create_Database")]
+    [Migration("20250423210302_Create_Database")]
     partial class Create_Database
     {
         /// <inheritdoc />
@@ -624,14 +624,14 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     b.HasOne("EuroMotors.Domain.CarModels.CarModel", null)
                         .WithMany()
                         .HasForeignKey("car_model_id")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_product_car_models_car_models_car_model_id");
 
                     b.HasOne("EuroMotors.Domain.Products.Product", null)
                         .WithMany()
                         .HasForeignKey("product_id")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_product_car_models_products_product_id");
                 });

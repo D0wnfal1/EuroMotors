@@ -7,6 +7,7 @@ using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Application.Products.SetProductAvailability;
 using EuroMotors.Application.Products.UpdateProduct;
 using EuroMotors.Domain.CarModels;
+using EuroMotors.Domain.Categories;
 using Microsoft.AspNetCore.Http;
 
 namespace EuroMotors.Api.UnitTests.Controllers.Products;
@@ -231,11 +232,12 @@ public class ProductControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
+        var category = Category.Create("Category98");
         var request = new UpdateProductRequest
         {
             Name = "Updated Product",
             VendorCode = "VC456",
-            CategoryId = Guid.NewGuid(),
+            CategoryId = category.Id,
             Price = 250,
             Discount = 25,
             Stock = 40,
@@ -255,7 +257,7 @@ public class ProductControllerTests
         result.ShouldBeOfType<NoContentResult>();
 
         await _sender.Received(1).Send(
-            Arg.Is<CreateProductCommand>(cmd =>
+            Arg.Is<UpdateProductCommand>(cmd =>
                 cmd.Name == request.Name &&
                 cmd.VendorCode == request.VendorCode &&
                 cmd.CategoryId == request.CategoryId &&

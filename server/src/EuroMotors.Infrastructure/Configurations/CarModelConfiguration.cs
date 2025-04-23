@@ -55,11 +55,11 @@ internal sealed class CarModelConfiguration : IEntityTypeConfiguration<CarModel>
                 r => r.HasOne<Product>()
                     .WithMany()
                     .HasForeignKey("product_id")
-                    .OnDelete(DeleteBehavior.Restrict),
+                    .OnDelete(DeleteBehavior.Cascade),
                 l => l.HasOne<CarModel>()
                     .WithMany()
                     .HasForeignKey("car_model_id")
-                    .OnDelete(DeleteBehavior.Restrict),
+                    .OnDelete(DeleteBehavior.Cascade),
                 j =>
                 {
                     j.HasKey("product_id", "car_model_id");

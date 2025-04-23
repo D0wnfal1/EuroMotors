@@ -3,6 +3,7 @@ using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Application.Products.UpdateProduct;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
+using EuroMotors.Domain.Categories;
 using EuroMotors.Domain.Products;
 using Shouldly;
 
@@ -43,8 +44,8 @@ public class UpdateProductTests : BaseIntegrationTest
     public async Task Should_ReturnFailure_WhenCategoryDoesNotExist()
     {
         // Arrange
-        Guid categoryId = await Sender.CreateCategoryAsync("Test Category1");
-        Guid brandId = await Sender.CreateCarBrandAsync("Test Brand11");
+        Guid categoryId = await Sender.CreateCategoryAsync("Test Category11111");
+        Guid brandId = await Sender.CreateCarBrandAsync("Test Brand11111");
         Guid carModelId = await Sender.CreateCarModelAsync(
             brandId,
             _faker.Vehicle.Model(),
@@ -70,12 +71,14 @@ public class UpdateProductTests : BaseIntegrationTest
             specifications
         );
 
+        var nonExistCategory = Guid.NewGuid();
+
         var command = new UpdateProductCommand(
             productId,
             _faker.Commerce.ProductName(),
             specifications,
             _faker.Commerce.Ean13(),
-            categoryId,
+            nonExistCategory,
             _faker.Random.Decimal(100, 1000),
             _faker.Random.Decimal(0, 100),
             _faker.Random.Int(1, 100)
@@ -85,56 +88,7 @@ public class UpdateProductTests : BaseIntegrationTest
         Result result = await Sender.Send(command);
 
         // Assert
-        result.IsFailure.ShouldBeTrue();
-    }
-
-    [Fact]
-    public async Task Should_ReturnFailure_WhenCarModelDoesNotExist()
-    {
-        // Arrange
-        Guid categoryId = await Sender.CreateCategoryAsync(_faker.Commerce.Categories(1)[0]);
-        Guid brandId = await Sender.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
-        Guid carModelId = await Sender.CreateCarModelAsync(
-            brandId,
-            _faker.Vehicle.Model(),
-            _faker.Random.Int(2000, 2023),
-            BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel)
-        );
-
-        var specifications = new List<Specification>
-        {
-            new Specification("Color", "Red"),
-            new Specification("Engine", "V8")
-        };
-
-        Guid productId = await Sender.CreateProductAsync(
-            _faker.Commerce.ProductName(),
-            _faker.Commerce.Ean13(),
-            categoryId,
-            carModelId,
-            _faker.Random.Decimal(100, 1000),
-            _faker.Random.Decimal(0, 100),
-            10,
-            specifications
-        );
-
-        var command = new UpdateProductCommand(
-            productId,
-            _faker.Commerce.ProductName(),
-            specifications,
-            _faker.Commerce.Ean13(),
-            categoryId,
-            _faker.Random.Decimal(100, 1000),
-            _faker.Random.Decimal(0, 100),
-            _faker.Random.Int(1, 100)
-        );
-
-        // Act
-        Result result = await Sender.Send(command);
-
-        // Assert
-        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(CategoryErrors.NotFound(nonExistCategory));
     }
 
     [Fact]

@@ -262,14 +262,14 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         principalSchema: "public",
                         principalTable: "car_models",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "fk_product_car_models_products_product_id",
                         column: x => x.product_id,
                         principalSchema: "public",
                         principalTable: "products",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

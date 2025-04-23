@@ -13,7 +13,7 @@ public sealed class Product : Entity
     }
 
     public Guid CategoryId { get; private set; }
-
+    
     private readonly List<CarModel> _carModels = [];
     public IReadOnlyCollection<CarModel> CarModels => _carModels.AsReadOnly();
 
