@@ -1,16 +1,17 @@
 <div class="p-4">
   <h1 class="text-2xl font-bold text-center mb-6">Admin Categories</h1>
-  <div class="flex justify-between">
+  <div class="flex justify-between mb-4">
     <button
-      mat-button
-      color="accent"
+      mat-raised-button
+      color="primary"
       [routerLink]="['/admin/categories/create']"
-      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm m-4"
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm"
     >
-      Create
+      <mat-icon>add</mat-icon>
+      Create New Category
     </button>
     <mat-paginator
-      class="bg-white m-2"
+      class="bg-white"
       [pageSizeOptions]="pageSizeOptions"
       [length]="totalItems"
       [pageSize]="shopParams.pageSize"
@@ -18,179 +19,141 @@
       showFirstLastButtons
     ></mat-paginator>
   </div>
-  <div class="overflow-x-auto">
-    <table
-      mat-table
-      multiTemplateDataRows
-      [dataSource]="categories"
-      class="mat-elevation-z8 w-full"
+
+  <div class="bg-white rounded-lg shadow-md">
+    <mat-tree
+      [dataSource]="dataSource"
+      [treeControl]="treeControl"
+      class="w-full"
     >
-      <ng-container matColumnDef="image">
-        <th mat-header-cell *matHeaderCellDef>Image</th>
-        <td mat-cell *matCellDef="let category">
-          <img
-            *ngIf="category.imagePath; else defaultImage"
-            [src]="getCategoryImage(category.imagePath)"
-            alt="Image"
-            class="w-16 h-16 object-cover rounded-sm"
-          />
-          <ng-template #defaultImage>
-            <img
-              [src]="getCategoryImage('')"
-              alt="Default"
-              class="w-16 h-16 object-cover rounded-sm"
-            />
-          </ng-template>
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Category Name</th>
-        <td mat-cell *matCellDef="let category">
-          <button
-            *ngIf="!category.parentCategoryId"
-            mat-icon-button
-            color="primary"
-            (click)="toggleSubcategoriesVisibility(category.id)"
-            title="Toggle Subcategories"
-          >
-            <mat-icon>
-              {{
-                visibleSubcategories[category.id]
-                  ? "expand_more"
-                  : "chevron_right"
-              }}
-            </mat-icon>
-          </button>
-          <span>{{ category.name }}</span>
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="isAvailable">
-        <th mat-header-cell *matHeaderCellDef class="text-center">Available</th>
-        <td mat-cell *matCellDef="let category" class="text-center">
-          <mat-slide-toggle
-            [checked]="category.isAvailable"
-            (change)="toggleAvailability(category)"
-            color="primary"
-            class="!ml-2 !mt-1"
-          >
-          </mat-slide-toggle>
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
-        <td mat-cell *matCellDef="let category">
-          <button
-            mat-button
-            [routerLink]="['/admin/categories/edit', category.id]"
-            class="py-2 px-4"
-          >
-            Edit
-          </button>
-          <button
-            mat-button
-            (click)="deleteCategory(category.id)"
-            class="py-2 px-4"
-          >
-            Delete
-          </button>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let category; columns: displayedColumns"></tr>
-
-      <tr
-        mat-row
-        *matRowDef="
-          let category;
-          columns: ['expandedDetail'];
-          when: isExpansionDetailRow
-        "
-        class="expanded-row"
-      ></tr>
-
-      <ng-container matColumnDef="expandedDetail">
-        <td
-          mat-cell
-          *matCellDef="let category"
-          [attr.colspan]="displayedColumns.length"
-        >
-          <div *ngIf="visibleSubcategories[category.id]">
-            <table
-              mat-table
-              [dataSource]="subcategoriesMap[category.id]"
-              class="w-full"
-            >
-              <ng-container matColumnDef="subImage">
-                <td mat-cell *matCellDef="let subcategory">
-                  <img
-                    *ngIf="subcategory.imagePath; else defaultSubImage"
-                    [src]="getCategoryImage(subcategory.imagePath)"
-                    alt="Subcategory Image"
-                    class="w-16 h-16 object-cover rounded-sm"
-                  />
-                  <ng-template #defaultSubImage>
-                    <img
-                      [src]="getCategoryImage('')"
-                      alt="Default Image"
-                      class="w-16 h-16 object-cover rounded-sm"
-                    />
-                  </ng-template>
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="subName">
-                <td mat-cell *matCellDef="let subcategory">
-                  <mat-icon inline>subdirectory_arrow_right</mat-icon>
-                  {{ subcategory.name }}
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="subIsAvailable">
-                <th mat-header-cell *matHeaderCellDef class="text-center">
-                  Available
-                </th>
-                <td mat-cell *matCellDef="let subcategory" class="text-center">
-                  <mat-slide-toggle
-                    [checked]="subcategory.isAvailable"
-                    (change)="toggleAvailability(subcategory)"
-                    color="primary"
-                    class="!ml-2 !mt-1"
-                  >
-                  </mat-slide-toggle>
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="subActions">
-                <td mat-cell *matCellDef="let subcategory">
-                  <button
-                    mat-button
-                    [routerLink]="['/admin/categories/edit', subcategory.id]"
-                    class="py-2 px-4"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    mat-button
-                    (click)="deleteCategory(subcategory.id)"
-                    class="py-2 px-4"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </ng-container>
-
-              <tr
-                mat-row
-                *matRowDef="let row; columns: subDisplayedColumns"
-              ></tr>
-            </table>
+      <mat-tree-node
+        *matTreeNodeDef="let node"
+        matTreeNodePadding
+        class="node-item"
+      >
+        <div class="flex items-center w-full py-2 hover:bg-gray-50">
+          <div class="w-10 flex justify-center">
+            <mat-icon class="text-gray-300">subdirectory_arrow_right</mat-icon>
           </div>
-        </td>
+
+          <div class="w-16 h-16 mr-4">
+            <img
+              [src]="getCategoryImage(node.imagePath)"
+              alt="Category"
+              class="w-full h-full object-cover rounded-sm"
+            />
+          </div>
+          <span class="flex-grow truncate">{{ node.name }}</span>
+          <div class="flex items-center gap-3 mr-4">
+            <mat-slide-toggle
+              [checked]="node.isAvailable"
+              (change)="toggleAvailability(node)"
+              color="primary"
+              class="ml-2"
+            ></mat-slide-toggle>
+
+            <button
+              mat-button
+              [routerLink]="['/admin/categories/edit', node.id]"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+
+            <button mat-button (click)="deleteCategory(node.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-tree-node>
+
+      <mat-tree-node
+        *matTreeNodeDef="let node; when: hasChild"
+        matTreeNodePadding
+        class="node-item"
+      >
+        <div
+          class="flex items-center w-full py-2 hover:bg-gray-50 cursor-pointer"
+          (click)="toggleNode(node)"
+        >
+          <div class="w-10 flex justify-center">
+            <button
+              mat-icon-button
+              matTreeNodeToggle
+              class="bg-gray-100 hover:bg-gray-200"
+              aria-label="Toggle node"
+            >
+              <mat-icon class="text-blue-500">
+                {{
+                  treeControl.isExpanded(node) ? "expand_more" : "chevron_right"
+                }}
+              </mat-icon>
+            </button>
+          </div>
+
+          <div class="w-16 h-16 mr-4">
+            <img
+              [src]="getCategoryImage(node.imagePath)"
+              alt="Category"
+              class="w-full h-full object-cover rounded-sm"
+            />
+          </div>
+
+          <div class="flex-grow">
+            <span class="font-medium truncate">{{ node.name }}</span>
+            <div class="text-xs text-gray-500 mt-1">Has subcategories</div>
+          </div>
+
+          <div class="flex items-center gap-3 mr-4">
+            <mat-slide-toggle
+              [checked]="node.isAvailable"
+              (change)="toggleAvailability(node)"
+              color="primary"
+              class="ml-2"
+            ></mat-slide-toggle>
+
+            <button
+              mat-button
+              [routerLink]="['/admin/categories/edit', node.id]"
+              color="primary"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+
+            <button mat-button (click)="deleteCategory(node.id)" color="warn">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-tree-node>
+
+      <mat-tree-node
+        *matTreeNodeDef="let node; when: isLoading"
+        matTreeNodePadding
+      >
+        <div class="flex items-center">
+          <mat-progress-spinner
+            diameter="20"
+            mode="indeterminate"
+            class="mr-2"
+          ></mat-progress-spinner>
+          <span class="text-gray-500">Loading...</span>
+        </div>
+      </mat-tree-node>
+
+      <ng-container *ngIf="dataSource.data.length === 0">
+        <div class="p-8 text-center text-gray-500">
+          <mat-icon class="text-4xl mb-2">category</mat-icon>
+          <p>No categories found</p>
+          <button
+            mat-raised-button
+            color="primary"
+            [routerLink]="['/admin/categories/create']"
+            class="mt-4"
+          >
+            Create your first category
+          </button>
+        </div>
       </ng-container>
-    </table>
+    </mat-tree>
   </div>
 </div>

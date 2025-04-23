@@ -52,14 +52,16 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   slidePosition: number = 0;
   itemsPerView: number = 4;
-  slideWidth: number = 284; // 280px width + 4px margin (2px on each side)
+  slideWidth: number = 284; 
   maxSlidePosition: number = 0;
   currentSlideIndex: number = 0;
   totalSlides: number = 0;
-  autoplayInterval = 5000; // 5 seconds
+  autoplayInterval = 5000; 
   autoplaySubscription?: Subscription;
 
   private subscriptions: Subscription[] = [];
+
+  hasSelectedCar: boolean = false;
 
   constructor(
     private carmodelService: CarmodelService,
@@ -72,6 +74,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.checkSelectedCar();
     this.loadAllBrands();
 
     this.loadMainCategories();
@@ -115,7 +118,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   calculateItemsPerView(): number {
-    // Определяем количество продуктов строго по ширине экрана
     if (window.innerWidth < 640) {
       return 1;
     } else if (window.innerWidth < 768) {
@@ -123,7 +125,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     } else if (window.innerWidth < 1024) {
       return 3;
     } else {
-      return 4; // Максимально 4 продукта
+      return 4; 
     }
   }
 
@@ -135,25 +137,19 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   updateMaxSlidePosition(): void {
-    // Расчёт для строго фиксированного количества продуктов на слайд
     const productsPerSlide = this.itemsPerView;
     const totalProducts = this.displayedProducts.length;
 
-    // Расчет количества полных слайдов
     const fullSlides = Math.floor(totalProducts / productsPerSlide);
 
-    // Расчет остатка для последнего слайда
     const remainingProducts = totalProducts % productsPerSlide;
 
-    // Общее количество слайдов
     this.totalSlides = remainingProducts > 0 ? fullSlides + 1 : fullSlides;
 
-    // Расчет максимальной позиции слайда
     if (fullSlides > 0) {
       this.maxSlidePosition =
         productsPerSlide * this.slideWidth * (fullSlides - 1);
 
-      // Если есть остаток, учитываем его
       if (remainingProducts > 0) {
         this.maxSlidePosition += remainingProducts * this.slideWidth;
       }
@@ -273,7 +269,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.updateMaxSlidePosition();
 
-    // Reset autoplay when tab changes
     this.startAutoplay();
   }
 
@@ -282,15 +277,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.currentSlideIndex++;
 
     if (this.currentSlideIndex >= this.totalSlides) {
-      // Возврат к началу
       this.currentSlideIndex = 0;
       this.slidePosition = 0;
     } else {
-      // Переход на следующий слайд с учетом фиксированного количества продуктов
       this.slidePosition =
         -this.currentSlideIndex * productsPerSlide * this.slideWidth;
 
-      // Коррекция для последнего слайда, если он неполный
       const totalProducts = this.displayedProducts.length;
       const productsOnLastSlide =
         totalProducts % productsPerSlide || productsPerSlide;
@@ -311,25 +303,20 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.currentSlideIndex--;
 
     if (this.currentSlideIndex < 0) {
-      // Переход к последнему слайду
       this.currentSlideIndex = this.totalSlides - 1;
 
-      // Расчет позиции для последнего слайда
       const totalProducts = this.displayedProducts.length;
       const fullSlidesCount = Math.floor(totalProducts / productsPerSlide);
       const productsOnLastSlide = totalProducts % productsPerSlide;
 
       if (productsOnLastSlide > 0) {
-        // Если последний слайд неполный
         this.slidePosition =
           -fullSlidesCount * productsPerSlide * this.slideWidth;
       } else {
-        // Если последний слайд полный
         this.slidePosition =
           -(this.totalSlides - 1) * productsPerSlide * this.slideWidth;
       }
     } else {
-      // Обычное перемещение к предыдущему слайду
       this.slidePosition =
         -this.currentSlideIndex * productsPerSlide * this.slideWidth;
     }
@@ -341,21 +328,17 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.currentSlideIndex = index;
 
       if (index === this.totalSlides - 1) {
-        // Обработка последнего слайда
         const totalProducts = this.displayedProducts.length;
         const fullSlidesCount = Math.floor(totalProducts / productsPerSlide);
         const productsOnLastSlide = totalProducts % productsPerSlide;
 
         if (productsOnLastSlide > 0) {
-          // Если последний слайд неполный
           this.slidePosition =
             -fullSlidesCount * productsPerSlide * this.slideWidth;
         } else {
-          // Если последний слайд полный
           this.slidePosition = -index * productsPerSlide * this.slideWidth;
         }
       } else {
-        // Обычный слайд
         this.slidePosition = -index * productsPerSlide * this.slideWidth;
       }
 
@@ -388,7 +371,17 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   addToCart(productId: string, event: Event): void {
-    event.stopPropagation(); // Prevent routing to product details
+    event.stopPropagation();
     this.cartService.addItemToCart(productId);
+  }
+
+  checkSelectedCar(): void {
+    const savedCarId = this.carmodelService.getStoredCarId();
+    this.hasSelectedCar = !!savedCarId;
+  }
+
+  clearCarSelection(): void {
+    this.carmodelService.clearCarSelection();
+    this.hasSelectedCar = false;
   }
 }

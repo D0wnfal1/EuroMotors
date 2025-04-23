@@ -11,6 +11,16 @@ internal sealed class GetCarModelSelectionQueryHandler(IDbConnectionFactory dbCo
     public async Task<Result<CarModelSelectionResponse>> Handle(GetCarModelSelectionQuery request, CancellationToken cancellationToken)
     {
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
+        
+        Guid? brandIdFromName = null;
+        if (!string.IsNullOrEmpty(request.Brand))
+        {
+            string brandIdSql = "SELECT id FROM car_brands WHERE name = @Brand";
+            brandIdFromName = await connection.QueryFirstOrDefaultAsync<Guid?>(brandIdSql, new { request.Brand });
+        }
+
+        Guid? effectiveBrandId = request.BrandId ?? brandIdFromName;
+        
         string sql = @"
             SELECT DISTINCT cm.id 
             FROM car_models cm
@@ -47,7 +57,7 @@ internal sealed class GetCarModelSelectionQueryHandler(IDbConnectionFactory dbCo
             ORDER BY cm.body_type;
 
             SELECT DISTINCT 
-                CONCAT(cm.engine_spec_volume_liters, ' ', cm.engine_spec_fuel_type) AS EngineSpec
+                CONCAT(cm.engine_spec_volume_liters, 'L ', cm.engine_spec_fuel_type) AS EngineSpec
             FROM car_models cm
             WHERE (@BrandId IS NULL OR cm.car_brand_id = @BrandId)
                 AND (@ModelName IS NULL OR cm.model_name = @ModelName)
@@ -58,7 +68,7 @@ internal sealed class GetCarModelSelectionQueryHandler(IDbConnectionFactory dbCo
 
         await using SqlMapper.GridReader multi = await connection.QueryMultipleAsync(sql, new
         {
-            request.BrandId,
+            BrandId = effectiveBrandId,
             request.ModelName,
             request.StartYear,
             request.BodyType,

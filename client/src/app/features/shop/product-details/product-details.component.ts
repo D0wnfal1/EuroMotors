@@ -16,7 +16,6 @@ import { CarModel } from '../../../shared/models/carModel';
 import { CarmodelService } from '../../../core/services/carmodel.service';
 import { CarBrand } from '../../../shared/models/carBrand';
 import { CarbrandService } from '../../../core/services/carbrand.service';
-import { Pagination } from '../../../shared/models/pagination';
 
 @Component({
   selector: 'app-product-details',
@@ -58,18 +57,22 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   nextImage() {
-    if (
-      this.product &&
-      this.product.images.length > 0 &&
-      this.activeIndex < this.product.images.length - 1
-    ) {
+    if (!this.product || !this.product.images.length) return;
+
+    if (this.activeIndex < this.product.images.length - 1) {
       this.activeIndex++;
+    } else {
+      this.activeIndex = 0;
     }
   }
 
   previousImage() {
+    if (!this.product || !this.product.images.length) return;
+
     if (this.activeIndex > 0) {
       this.activeIndex--;
+    } else {
+      this.activeIndex = this.product.images.length - 1;
     }
   }
 

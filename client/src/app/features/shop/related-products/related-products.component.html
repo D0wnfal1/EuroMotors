@@ -7,14 +7,20 @@
     <div class="relative flex items-center">
       <button
         mat-icon-button
-        class="absolute left-[-24px] top-1/2 -translate-y-1/2 text-blue-500 bg-white shadow-md rounded-full z-10"
+        class="absolute left-[-24px] top-1/2 -translate-y-1/2 text-blue-500 bg-white shadow-md rounded-full z-10 hover:bg-blue-100 hover:shadow-lg transition-all slider-nav-button"
         (click)="previousSlide()"
-        [disabled]="currentSlide === 0"
       >
         <mat-icon>chevron_left</mat-icon>
       </button>
 
-      <div class="w-full grid grid-cols-3 gap-4 overflow-hidden mt-4">
+      <div
+        class="w-full grid gap-4 overflow-hidden mt-4"
+        [ngClass]="{
+          'grid-cols-1': productsPerPage === 1,
+          'grid-cols-2': productsPerPage === 2,
+          'grid-cols-3': productsPerPage === 3
+        }"
+      >
         <div
           *ngFor="let product of visibleProducts"
           class="border border-blue-200 rounded-md p-4 flex flex-col items-center relative"
@@ -25,12 +31,24 @@
 
       <button
         mat-icon-button
-        class="absolute right-[-24px] top-1/2 -translate-y-1/2 text-blue-500 bg-white shadow-md rounded-full z-10"
+        class="absolute right-[-24px] top-1/2 -translate-y-1/2 text-blue-500 bg-white shadow-md rounded-full z-10 hover:bg-blue-100 hover:shadow-lg transition-all slider-nav-button"
         (click)="nextSlide()"
-        [disabled]="currentSlide >= maxSlide"
       >
         <mat-icon>chevron_right</mat-icon>
       </button>
+    </div>
+
+    <div class="flex justify-center mt-4 space-x-2" *ngIf="maxSlide > 0">
+      <button
+        *ngFor="let _ of [].constructor(maxSlide + 1); let i = index"
+        class="w-2 h-2 rounded-full transition-all duration-300"
+        [ngClass]="{
+          'bg-gray-300': currentSlide !== i,
+          'bg-blue-500': currentSlide === i
+        }"
+        (click)="goToSlide(i)"
+        aria-label="Carousel page indicator"
+      ></button>
     </div>
   </div>
 </section>

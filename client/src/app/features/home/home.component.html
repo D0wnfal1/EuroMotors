@@ -1,5 +1,5 @@
 <div class="container mx-auto px-4">
-  <app-car-selection></app-car-selection>
+  <app-car-selection *ngIf="!hasSelectedCar"></app-car-selection>
 
   <div class="mt-4">
     <h2 class="text-2xl font-bold mb-4 text-center uppercase">Car Brands</h2>
@@ -11,6 +11,7 @@
         mat-raised-button
         *ngFor="let brand of displayedBrands"
         class="border border-gray-300 rounded hover:shadow-md transition-shadow cursor-pointer"
+        [routerLink]="['/brand', brand.id]"
       >
         <div class="p-3 text-center flex items-center">
           <img
@@ -73,20 +74,6 @@
                 [routerLink]="['/shop/category', category.id]"
               >
                 {{ subcat }}
-              </a>
-            </div>
-
-            <div
-              *ngIf="category.subcategoryNames.length > 6"
-              class="mt-3 text-center"
-            >
-              <a
-                mat-button
-                color="primary"
-                class="text-sm"
-                [routerLink]="['/shop/category', category.id]"
-              >
-                View all subcategories
               </a>
             </div>
           </div>

@@ -1,0 +1,64 @@
+<div class="container mx-auto px-4">
+  <div class="mt-4" *ngIf="carBrand">
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-4">
+        <img
+          [src]="getBrandLogo()"
+          [alt]="carBrand.name"
+          class="h-16 w-auto object-contain"
+        />
+        <h1 class="text-3xl font-bold">
+          SPARE PARTS FOR {{ carBrand.name | uppercase }}
+        </h1>
+      </div>
+      <button mat-raised-button color="primary" routerLink="/">
+        Back to home
+      </button>
+    </div>
+
+    <div class="bg-gray-100 p-4 mb-8 rounded-lg">
+      <h2 class="text-xl font-bold mb-4">
+        Select Your {{ carBrand.name }} Vehicle
+      </h2>
+      <app-car-selection [preSelectedBrand]="carBrand"></app-car-selection>
+    </div>
+
+    <div class="mt-8">
+      <h2 class="text-2xl font-bold mb-4">{{ carBrand.name }} Products</h2>
+
+      <div *ngIf="loading" class="text-center py-12">
+        <span class="text-lg">Loading products...</span>
+      </div>
+
+      <ng-container *ngIf="!loading">
+        <div *ngIf="products.length > 0; else noProducts">
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+          >
+            <app-product-item
+              *ngFor="let product of products"
+              [product]="product"
+            ></app-product-item>
+          </div>
+
+          <div class="mt-6 flex justify-center">
+            <mat-paginator
+              [length]="totalItems"
+              [pageSize]="shopParams.pageSize"
+              [pageIndex]="shopParams.pageNumber - 1"
+              [pageSizeOptions]="pageSizeOptions"
+              (page)="handlePageEvent($event)"
+            ></mat-paginator>
+          </div>
+        </div>
+
+        <ng-template #noProducts>
+          <div class="text-center p-8 text-gray-500">
+            No products available for this brand. Try selecting a specific
+            vehicle to see matching parts.
+          </div>
+        </ng-template>
+      </ng-container>
+    </div>
+  </div>
+</div>

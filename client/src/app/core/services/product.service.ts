@@ -105,4 +105,33 @@ export class ProductService {
       { withCredentials: true }
     );
   }
+
+  getProductsByBrandName(
+    brandName: string,
+    sortOrder?: string,
+    searchTerm?: string,
+    pageNumber: number = 1,
+    pageSize: number = 10
+  ) {
+    let params = new HttpParams();
+
+    if (sortOrder) {
+      params = params.append('sortOrder', sortOrder);
+    }
+
+    if (searchTerm) {
+      params = params.append('searchTerm', searchTerm);
+    }
+
+    params = params.append('brandName', brandName);
+    params = params.append('pageSize', pageSize.toString());
+    params = params.append('pageNumber', pageNumber.toString());
+
+    return this.http.get<Pagination<Product>>(
+      this.baseUrl + '/products/by-brand-name',
+      {
+        params,
+      }
+    );
+  }
 }

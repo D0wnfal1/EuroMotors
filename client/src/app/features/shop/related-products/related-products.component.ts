@@ -1,4 +1,4 @@
-import { Component, Input, inject, OnInit } from '@angular/core';
+import { Component, Input, inject, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -32,7 +32,23 @@ export class RelatedProductsComponent implements OnInit {
   currentSlide = 0;
   maxSlide = 0;
 
+  @HostListener('window:resize')
+  onResize() {
+    this.setProductsPerPage();
+    this.maxSlide = Math.max(
+      0,
+      Math.ceil(this.relatedProducts.length / this.productsPerPage) - 1
+    );
+
+    if (this.currentSlide > this.maxSlide) {
+      this.currentSlide = this.maxSlide;
+    }
+
+    this.updateVisibleProducts();
+  }
+
   ngOnInit(): void {
+    this.setProductsPerPage();
     this.loadRelatedProducts();
   }
 
@@ -72,17 +88,25 @@ export class RelatedProductsComponent implements OnInit {
   }
 
   nextSlide(): void {
+    if (!this.relatedProducts.length) return;
+
     if (this.currentSlide < this.maxSlide) {
       this.currentSlide++;
-      this.updateVisibleProducts();
+    } else {
+      this.currentSlide = 0;
     }
+    this.updateVisibleProducts();
   }
 
   previousSlide(): void {
+    if (!this.relatedProducts.length) return;
+
     if (this.currentSlide > 0) {
       this.currentSlide--;
-      this.updateVisibleProducts();
+    } else {
+      this.currentSlide = this.maxSlide;
     }
+    this.updateVisibleProducts();
   }
 
   getImageUrl(imagePath?: string): string {
@@ -98,5 +122,23 @@ export class RelatedProductsComponent implements OnInit {
 
   navigateToProduct(productId: string): void {
     this.router.navigate(['/shop/product', productId]);
+  }
+
+  goToSlide(index: number): void {
+    if (index >= 0 && index <= this.maxSlide) {
+      this.currentSlide = index;
+      this.updateVisibleProducts();
+    }
+  }
+
+  setProductsPerPage(): void {
+    const width = window.innerWidth;
+    if (width < 640) {
+      this.productsPerPage = 1;
+    } else if (width < 1024) {
+      this.productsPerPage = 2;
+    } else {
+      this.productsPerPage = 3;
+    }
   }
 }

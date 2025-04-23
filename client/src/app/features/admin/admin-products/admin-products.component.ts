@@ -17,6 +17,7 @@ import { CarmodelService } from '../../../core/services/carmodel.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { MatTableModule } from '@angular/material/table';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-admin-products',
@@ -29,6 +30,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     CommonModule,
     MatTableModule,
     MatSlideToggleModule,
+    MatIcon,
   ],
   templateUrl: './admin-products.component.html',
   styleUrl: './admin-products.component.scss',

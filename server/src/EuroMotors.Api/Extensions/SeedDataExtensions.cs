@@ -39,7 +39,14 @@ public static class SeedDataExtensions
         [
             "BMW", "Mercedes-Benz", "Audi", "Toyota", "Honda",
             "Ford", "Chevrolet", "Volkswagen", "Hyundai", "Kia",
-            "Volvo", "Tesla", "Porsche", "Nissan", "Mazda"
+            "Volvo", "Tesla", "Porsche", "Nissan", "Mazda",
+            "Lexus", "Subaru", "Jeep", "Dodge", "Fiat",
+            "Alfa Romeo", "Jaguar", "Land Rover", "Bentley", "Bugatti",
+            "Ferrari", "Lamborghini", "Maserati", "Rolls-Royce", "Aston Martin", 
+            "McLaren", "Mini", "Cadillac", "Chrysler", "GMC",
+            "Acura", "Infiniti", "Genesis", "Buick", "Lincoln",
+            "RAM", "Mitsubishi", "Peugeot", "Renault", "Citroen",
+            "Skoda", "Seat", "Opel", "Vauxhall", "Dacia"
         ];
 
         var brands = carBrands.Select(name => CarBrand.Create(name)).ToList();
@@ -137,62 +144,72 @@ public static class SeedDataExtensions
 
     private static void SeedCategories(IDbConnection connection)
     {
+        int categoriesCount = connection.ExecuteScalar<int>("SELECT COUNT(*) FROM categories");
+        if (categoriesCount > 0)
+        {
+            return;
+        }
+
         var random = new Random();
         var allCategories = new List<Category>();
 
         var parentCategories = new List<(string Name, List<string> Subcategories)>
-    {
-        ("Electronics",
-        [
-            "Smartphones", "Laptops", "Tablets", "Cameras", "Drones", "Smartwatches", "Headphones", "Chargers",
-            "Power Banks", "TVs", "Monitors", "Speakers", "VR Headsets"
-        ]),
-        ("Fashion",
-        [
-            "Men's Clothing", "Women's Clothing", "Kids' Clothing", "Shoes", "Bags", "Accessories", "Hats", "Watches",
-            "Jewelry", "Sunglasses", "Belts", "Scarves", "Underwear"
-        ]),
-        ("Home & Kitchen",
-        [
-            "Furniture", "Bedding", "Cookware", "Small Appliances", "Cleaning Supplies", "Lighting", "Decor", "Tools",
-            "Storage", "Vacuum Cleaners", "Air Purifiers", "Curtains"
-        ]),
-        ("Sports & Outdoors",
-        [
-            "Fitness Equipment", "Bicycles", "Camping", "Hiking", "Running", "Swimming", "Yoga", "Fishing",
-            "Winter Sports", "Balls", "Backpacks", "Tents", "Water Bottles"
-        ]),
-        ("Toys & Games",
-        [
-            "Educational Toys", "Board Games", "Puzzles", "Building Sets", "Remote Control Toys", "Stuffed Animals",
-            "Dolls", "Outdoor Toys", "Musical Toys", "Action Figures", "LEGO", "Toy Vehicles"
-        ]),
-        ("Beauty & Health",
-        [
-            "Makeup", "Skincare", "Haircare", "Perfume", "Manicure", "Personal Hygiene", "Supplements", "Massagers",
-            "Toothbrushes", "Hair Dryers", "Razors", "Body Wash"
-        ]),
-        ("Automotive",
-        [
-            "Car Electronics", "Car Care", "Tires", "Motor Oils", "Interior Accessories", "Exterior Accessories",
-            "Tools", "Batteries", "Car Seats", "GPS Navigators", "Dash Cams", "Helmets"
-        ]),
-        ("Books",
-        [
-            "Fiction", "Non-Fiction", "Children's Books", "Comics", "Educational", "Science", "History", "Biography",
-            "Self-Help", "Mystery", "Fantasy", "Business", "Technology"
-        ]),
-        ("Groceries",
-        [
-            "Fruits", "Vegetables", "Dairy", "Meat", "Snacks", "Beverages", "Bakery", "Canned Goods", "Frozen Food",
-            "Pasta", "Sauces", "Grains", "Tea & Coffee"
-        ]),
-        ("Pets",
-        [
-            "Dog Food", "Cat Food", "Bird Supplies", "Aquarium", "Pet Toys", "Beds", "Leashes", "Bowls", "Litter",
-            "Pet Grooming", "Treats", "Cages", "Health Products"
-        ])
-    };
+        {
+            ("Engine Parts",
+            [
+                "Pistons", "Crankshafts", "Camshafts", "Engine Blocks", "Cylinder Heads", "Gaskets", "Valves",
+                "Valve Springs", "Timing Chains", "Timing Belts", "Oil Pumps", "Water Pumps", "Connecting Rods",
+                "Bearings", "Engine Mounts", "Turbochargers", "Superchargers", "Intercoolers", "Engine Sensors"
+            ]),
+            ("Transmission",
+            [
+                "Gearboxes", "Clutches", "Torque Converters", "Transmission Fluid", "Shift Kits", "Gear Sets",
+                "Transmission Mounts", "Transmission Coolers", "Transmission Filters", "Automatic Transmissions",
+                "Manual Transmissions", "Dual-Clutch Transmissions", "CVT Transmissions", "Transmission Sensors"
+            ]),
+            ("Braking System",
+            [
+                "Brake Pads", "Brake Rotors", "Brake Calipers", "Brake Shoes", "Brake Drums", "Brake Lines",
+                "Master Cylinders", "Brake Boosters", "ABS Sensors", "Brake Fluid", "Brake Hoses",
+                "Brake Pad Wear Sensors", "Parking Brake Cables", "Brake Light Switches"
+            ]),
+            ("Suspension & Steering",
+            [
+                "Shock Absorbers", "Struts", "Coil Springs", "Leaf Springs", "Control Arms", "Ball Joints", 
+                "Tie Rods", "Steering Racks", "Power Steering Pumps", "Sway Bars", "Bushings", "Strut Mounts",
+                "Wheel Bearings", "Hub Assemblies", "Steering Wheels", "Steering Columns", "Alignment Kits"
+            ]),
+            ("Electrical",
+            [
+                "Batteries", "Alternators", "Starters", "Ignition Coils", "Spark Plugs", "Spark Plug Wires",
+                "Fuses", "Relays", "ECUs", "Wiring Harnesses", "Sensors", "Switches", "Battery Cables",
+                "Headlights", "Taillights", "Turn Signals", "Bulbs", "LED Lighting", "Car Audio", "Alarms"
+            ]),
+            ("Cooling System",
+            [
+                "Radiators", "Cooling Fans", "Thermostats", "Coolant", "Expansion Tanks", "Radiator Caps",
+                "Hoses", "Water Pumps", "Heater Cores", "Fan Belts", "Fan Clutches", "Temperature Sensors",
+                "Radiator Shrouds", "Cooling System Additives"
+            ]),
+            ("Fuel System",
+            [
+                "Fuel Pumps", "Fuel Injectors", "Fuel Filters", "Fuel Tanks", "Fuel Lines", "Carburetors",
+                "Fuel Pressure Regulators", "Throttle Bodies", "Fuel Rails", "Fuel Caps", "Intake Manifolds",
+                "Air Filters", "Mass Air Flow Sensors", "Oxygen Sensors", "EGR Valves", "Fuel Gauges"
+            ]),
+            ("Exhaust System",
+            [
+                "Exhaust Manifolds", "Catalytic Converters", "Mufflers", "Exhaust Pipes", "Resonators",
+                "Exhaust Tips", "Exhaust Gaskets", "O2 Sensors", "DPF Filters", "Headers", "Heat Shields",
+                "Exhaust Hangers", "Performance Exhausts", "Silencers", "EGR Valves"
+            ]),
+            ("Body Parts & Exterior",
+            [
+                "Bumpers", "Fenders", "Hoods", "Doors", "Mirrors", "Grilles", "Spoilers", "Windshields",
+                "Windows", "Window Regulators", "Body Panels", "Trim", "Moldings", "Emblems", "Paint",
+                "Car Covers", "Wiper Blades", "Wiper Motors", "Roof Racks", "Mud Flaps"
+            ])
+        };
 
         foreach ((string name, List<string> subcategories) in parentCategories)
         {
@@ -200,7 +217,7 @@ public static class SeedDataExtensions
             allCategories.Add(parent);
 
 #pragma warning disable CA5394
-            int subCount = random.Next(10, Math.Min(subcategories.Count, 30));
+            int subCount = random.Next(Math.Min(8, subcategories.Count), Math.Min(subcategories.Count, 15));
 #pragma warning restore CA5394
             foreach (string subName in subcategories.Take(subCount))
             {
@@ -223,6 +240,7 @@ public static class SeedDataExtensions
             Slug = c.Slug.Value
         }));
     }
+
     private static void SeedProducts(IDbConnection connection)
     {
         int productsCount = connection.ExecuteScalar<int>("SELECT COUNT(*) FROM products");

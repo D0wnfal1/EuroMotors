@@ -4,6 +4,7 @@ using EuroMotors.Application.Products.CreateProduct;
 using EuroMotors.Application.Products.DeleteProduct;
 using EuroMotors.Application.Products.GetProductById;
 using EuroMotors.Application.Products.GetProducts;
+using EuroMotors.Application.Products.GetProductsByBrandName;
 using EuroMotors.Application.Products.RemoveCarModelFromProduct;
 using EuroMotors.Application.Products.SetProductAvailability;
 using EuroMotors.Application.Products.UpdateProduct;
@@ -148,6 +149,22 @@ public class ProductController : ControllerBase
         Result result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess ? NoContent() : BadRequest(result.Error);
+    }
+
+    [HttpGet("by-brand-name")]
+    public async Task<IActionResult> GetProductsByBrandName(
+        [FromQuery] string brandName,
+        [FromQuery] string? sortOrder,
+        [FromQuery] string? searchTerm,
+        CancellationToken cancellationToken,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10)
+    {
+        var query = new GetProductsByBrandNameQuery(brandName, sortOrder, searchTerm, pageNumber, pageSize);
+
+        Result<Pagination<ProductResponse>> result = await _sender.Send(query, cancellationToken);
+
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 }
 

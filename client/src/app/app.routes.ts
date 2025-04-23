@@ -5,12 +5,14 @@ import { ProductDetailsComponent } from './features/shop/product-details/product
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 import { CartComponent } from './features/cart/cart.component';
 import { CategoryItemsComponent } from './features/shop/category-items/category-items.component';
+import { CarBrandProductsComponent } from './features/car-brand/car-brand-products/car-brand-products.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'shop', component: ShopComponent },
   { path: 'shop/:id', component: ProductDetailsComponent },
   { path: 'shop/category/:id', component: CategoryItemsComponent },
+  { path: 'brand/:id', component: CarBrandProductsComponent },
   { path: 'cart', component: CartComponent },
   {
     path: 'checkout',

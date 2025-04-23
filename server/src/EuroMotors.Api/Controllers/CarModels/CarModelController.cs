@@ -60,7 +60,12 @@ public sealed class CarModelController : ControllerBase
     [HttpGet("selection")]
     public async Task<IActionResult> GetCarSelection([FromQuery] SelectCarModelRequest request, CancellationToken cancellationToken)
     {
-        var query = new GetCarModelSelectionQuery(request.BrandId, request.Model, request.StartYear, request.BodyType);
+        var query = new GetCarModelSelectionQuery(
+            request.BrandId, 
+            request.Brand, 
+            request.Model, 
+            request.StartYear, 
+            request.BodyType);
 
         Result<CarModelSelectionResponse> result = await _sender.Send(query, cancellationToken);
 

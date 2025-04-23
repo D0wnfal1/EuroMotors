@@ -13,6 +13,7 @@ import { ImageService } from '../../../core/services/image.service';
 import { MatTableModule } from '@angular/material/table';
 import { forkJoin } from 'rxjs';
 import { CarBrand } from '../../../shared/models/carBrand';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-admin-carmodels',
@@ -24,6 +25,7 @@ import { CarBrand } from '../../../shared/models/carBrand';
     CommonModule,
     FormsModule,
     MatTableModule,
+    MatIconModule,
   ],
   templateUrl: './admin-carmodels.component.html',
   styleUrl: './admin-carmodels.component.scss',
@@ -31,7 +33,6 @@ import { CarBrand } from '../../../shared/models/carBrand';
 export class AdminCarmodelsComponent implements OnInit {
   private carModelService = inject(CarmodelService);
   private carBrandService = inject(CarbrandService);
-  private imageService = inject(ImageService);
   carModels: CarModel[] = [];
   totalItems = 0;
   shopParams = new ShopParams();

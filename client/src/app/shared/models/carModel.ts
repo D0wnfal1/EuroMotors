@@ -50,4 +50,7 @@ export interface SelectedCar {
   startYear?: number;
   bodyType?: BodyType;
   engineSpec?: string;
+  volumeLiters?: number;
+  fuelType?: FuelType | string;
+  carBrandId?: string;
 }

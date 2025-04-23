@@ -11,6 +11,7 @@ import { CarBrand } from '../../../shared/models/carBrand';
 import { ImageService } from '../../../core/services/image.service';
 import { MatTableModule } from '@angular/material/table';
 import { CarmodelService } from '../../../core/services/carmodel.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-admin-carbrands',
@@ -23,6 +24,7 @@ import { CarmodelService } from '../../../core/services/carmodel.service';
     CommonModule,
     FormsModule,
     MatTableModule,
+    MatIconModule,
   ],
   templateUrl: './admin-carbrands.component.html',
   styleUrl: './admin-carbrands.component.scss',
