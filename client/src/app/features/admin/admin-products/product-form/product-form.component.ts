@@ -28,7 +28,6 @@ import {
 } from '@angular/material/expansion';
 import { CarbrandService } from '../../../../core/services/carbrand.service';
 import { CarBrand } from '../../../../shared/models/carBrand';
-import { Observable, catchError, finalize, forkJoin, of } from 'rxjs';
 
 @Component({
   selector: 'app-product-form',
@@ -235,90 +234,77 @@ export class ProductFormComponent implements OnInit {
 
   onSubmit() {
     if (this.productForm.valid) {
-      this.isSaving = true;
-      const formValue = this.productForm.value;
-
-      const productData: Product = {
-        ...formValue,
-        id: this.productId || '',
-        slug: '',
-        isAvailable: true,
-        images: [],
-      };
-
-      let productOperation: Observable<string | void>;
-
-      if (this.isEditMode) {
-        productOperation = this.productService.updateProduct(
-          this.productId!,
-          productData
-        );
+      if (this.isEditMode && this.productId) {
+        this.productService
+          .updateProduct(this.productId, this.productForm.value)
+          .subscribe({
+            next: () => {
+              if (this.selectedFiles.length > 0) {
+                let uploadCount = 0;
+                for (const file of this.selectedFiles) {
+                  if (this.productId) {
+                    this.imageService
+                      .uploadProductImage(this.productId, file)
+                      .subscribe({
+                        next: () => {
+                          uploadCount++;
+                          if (uploadCount === this.selectedFiles.length) {
+                            this.router.navigate(['/admin/products']);
+                          }
+                        },
+                        error: (err) =>
+                          console.error('Error uploading image', err),
+                      });
+                  }
+                }
+              } else {
+                this.router.navigate(['/admin/products']);
+              }
+            },
+            error: (err) => console.error('Error updating product', err),
+          });
       } else {
-        productOperation = this.productService.createProduct(productData);
-      }
-
-      productOperation
-        .pipe(
-          catchError((error) => {
-            console.error('Error saving product', error);
-            this.isSaving = false;
-            return of(null);
-          })
-        )
-        .subscribe((result) => {
-          if (result === null) {
-            return;
-          }
-
-          const productId = this.isEditMode
-            ? this.productId!
-            : (result as string);
-
-          if (!this.isEditMode) {
-            this.productId = productId;
-            this.isEditMode = true;
-          }
-
-          if (this.selectedFiles.length > 0) {
-            this.uploadImages(productId);
-          } else {
-            this.isSaving = false;
-            this.navigateAfterSave();
-          }
+        this.productService.createProduct(this.productForm.value).subscribe({
+          next: (id) => {
+            if (this.selectedFiles.length > 0) {
+              let uploadCount = 0;
+              for (const file of this.selectedFiles) {
+                this.imageService.uploadProductImage(id, file).subscribe({
+                  next: () => {
+                    uploadCount++;
+                    if (uploadCount === this.selectedFiles.length) {
+                      this.router.navigate(['/admin/products']);
+                    }
+                  },
+                  error: (err) => console.error('Error uploading image', err),
+                });
+              }
+            } else {
+              this.router.navigate(['/admin/products']);
+            }
+          },
+          error: (err) => console.error('Error creating product', err),
         });
+      }
     }
   }
 
-  private uploadImages(productId: string) {
-    const imageTasks: Observable<any>[] = [];
+  private markFormGroupTouched(formGroup: FormGroup) {
+    Object.keys(formGroup.controls).forEach((key) => {
+      const control = formGroup.get(key);
+      control?.markAsTouched();
 
-    for (const file of this.selectedFiles) {
-      imageTasks.push(
-        this.imageService.uploadProductImage(productId, file).pipe(
-          catchError((error) => {
-            console.error('Error uploading image', error);
-            return of(null);
-          })
-        )
-      );
-    }
-
-    if (imageTasks.length > 0) {
-      forkJoin(imageTasks)
-        .pipe(
-          finalize(() => {
-            this.isSaving = false;
-            this.navigateAfterSave();
-          })
-        )
-        .subscribe();
-    } else {
-      this.isSaving = false;
-      this.navigateAfterSave();
-    }
-  }
-
-  private navigateAfterSave() {
-    this.router.navigate(['/admin/products']);
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      } else if (control instanceof FormArray) {
+        for (const ctrl of control.controls) {
+          if (ctrl instanceof FormGroup) {
+            this.markFormGroupTouched(ctrl);
+          } else {
+            ctrl.markAsTouched();
+          }
+        }
+      }
+    });
   }
 }

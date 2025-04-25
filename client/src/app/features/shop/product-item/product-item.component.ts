@@ -13,6 +13,8 @@ import { CartService } from '../../../core/services/cart.service';
 import { ImageService } from '../../../core/services/image.service';
 import { ProductImage } from '../../../shared/models/productImage';
 import { MatTooltip } from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
+import { CallbackComponent } from '../../../layout/callback/callback.component';
 
 @Component({
   selector: 'app-product-item',
@@ -35,7 +37,15 @@ export class ProductItemComponent {
   @Input() product?: Product;
   cartService = inject(CartService);
   imageService = inject(ImageService);
+  private dialog = inject(MatDialog);
 
+  openCallbackDialog() {
+    this.dialog.open(CallbackComponent, {
+      width: '400px',
+      panelClass: 'callback-dialog',
+      disableClose: false,
+    });
+  }
   getImageUrl(image: ProductImage): string {
     return this.imageService.getImageUrl(image.path);
   }

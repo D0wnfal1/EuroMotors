@@ -1,14 +1,5 @@
-<div class="p-4">
-  <h1 class="text-2xl font-bold text-center mb-6">Admin CarModels</h1>
+<div class="p-4 bg-white shadow-md">
   <div class="flex justify-between">
-    <button
-      mat-button
-      color="accent"
-      [routerLink]="['/admin/carmodels/create']"
-      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm m-4"
-    >
-      Create
-    </button>
     <mat-paginator
       class="bg-white m-2"
       [pageSizeOptions]="pageSizeOptions"
@@ -18,6 +9,16 @@
       showFirstLastButtons
     >
     </mat-paginator>
+    <h2 class="text-2xl font-semibold text-gray-800 mt-2">Admin CarModels</h2>
+    <button
+      mat-raised-button
+      color="accent"
+      [routerLink]="['/admin/carmodels/create']"
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm mt-2"
+    >
+      <mat-icon>add</mat-icon>
+      Create New Car Model
+    </button>
   </div>
 
   <div class="overflow-x-auto">

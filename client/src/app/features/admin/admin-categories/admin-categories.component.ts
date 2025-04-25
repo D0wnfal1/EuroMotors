@@ -15,34 +15,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil, tap } from 'rxjs/operators';
-
 import { CategoryService } from '../../../core/services/category.service';
 import { ImageService } from '../../../core/services/image.service';
-import { Category } from '../../../shared/models/category';
+import {
+  Category,
+  CategoryNode,
+  FlatCategoryNode,
+} from '../../../shared/models/category';
 import { ShopParams } from '../../../shared/models/shopParams';
-
-interface CategoryNode {
-  id: string;
-  name: string;
-  isAvailable: boolean;
-  imagePath?: string;
-  parentCategoryId?: string;
-  level: number;
-  expandable: boolean;
-  isLoading?: boolean;
-  children?: CategoryNode[];
-}
-
-interface FlatCategoryNode {
-  id: string;
-  name: string;
-  isAvailable: boolean;
-  imagePath?: string;
-  parentCategoryId?: string;
-  level: number;
-  expandable: boolean;
-  isLoading?: boolean;
-}
 
 @Component({
   selector: 'app-admin-categories',
@@ -182,7 +162,6 @@ export class AdminCategoriesComponent implements OnInit, OnDestroy {
     }
 
     const index = this.treeControl.dataNodes.findIndex((n) => n.id === node.id);
-
     if (index >= 0) {
       this.treeControl.dataNodes[index].isLoading = true;
     }

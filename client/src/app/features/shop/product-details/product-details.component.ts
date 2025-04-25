@@ -1,4 +1,10 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  inject,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Product } from '../../../shared/models/product';
 import { CommonModule, CurrencyPipe } from '@angular/common';
@@ -16,6 +22,8 @@ import { CarModel } from '../../../shared/models/carModel';
 import { CarmodelService } from '../../../core/services/carmodel.service';
 import { CarBrand } from '../../../shared/models/carBrand';
 import { CarbrandService } from '../../../core/services/carbrand.service';
+import { CallbackComponent } from '../../../layout/callback/callback.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-product-details',
@@ -42,6 +50,7 @@ export class ProductDetailsComponent implements OnInit {
   private cartService = inject(CartService);
   private carModelService = inject(CarmodelService);
   private carBrandService = inject(CarbrandService);
+  private dialog = inject(MatDialog);
 
   product?: Product;
   activeIndex: number = 0;
@@ -50,7 +59,13 @@ export class ProductDetailsComponent implements OnInit {
   carModels: CarModel[] = [];
   carBrands: CarBrand[] = [];
 
+  // Zoom related properties
+  showZoom = false;
+  zoomStyle: any = {};
+  zoomScale = 2.5;
+
   @ViewChild('tabGroup') tabGroup!: MatTabGroup;
+  @ViewChild('productImg') productImg!: ElementRef<HTMLImageElement>;
 
   getImageUrl(imagePath: string): string {
     return this.imageService.getImageUrl(imagePath);
@@ -74,6 +89,47 @@ export class ProductDetailsComponent implements OnInit {
     } else {
       this.activeIndex = this.product.images.length - 1;
     }
+  }
+
+  onImageZoom(event: MouseEvent) {
+    if (!this.productImg || !this.product?.images.length) return;
+
+    const img = this.productImg.nativeElement;
+    const rect = img.getBoundingClientRect();
+
+    // Calculate mouse position relative to the image
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+
+    // Calculate position percentage
+    const xPercent = mouseX / rect.width;
+    const yPercent = mouseY / rect.height;
+
+    // Set zoom window size (adjust as needed)
+    const zoomWidth = 200;
+    const zoomHeight = 200;
+
+    // Position the zoom window near the cursor
+    const zoomLeft = mouseX + 40;
+    const zoomTop = mouseY - zoomHeight / 2;
+
+    // Calculate background position for the zoomed area
+    const bgPosX = xPercent * 100;
+    const bgPosY = yPercent * 100;
+
+    this.zoomStyle = {
+      width: `${zoomWidth}px`,
+      height: `${zoomHeight}px`,
+      left: `${zoomLeft}px`,
+      top: `${zoomTop}px`,
+      backgroundImage: `url('${this.getImageUrl(
+        this.product.images[this.activeIndex].path
+      )}')`,
+      backgroundPosition: `${bgPosX}% ${bgPosY}%`,
+      backgroundSize: `${this.zoomScale * 100}%`,
+      backgroundRepeat: 'no-repeat',
+      zIndex: 10,
+    };
   }
 
   ngOnInit(): void {
@@ -165,5 +221,13 @@ export class ProductDetailsComponent implements OnInit {
       })
       .filter((name) => name !== '')
       .join(', ');
+  }
+
+  openCallbackDialog() {
+    this.dialog.open(CallbackComponent, {
+      width: '400px',
+      panelClass: 'callback-dialog',
+      disableClose: false,
+    });
   }
 }

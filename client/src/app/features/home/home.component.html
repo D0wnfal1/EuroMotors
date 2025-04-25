@@ -44,7 +44,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
       <mat-card
         *ngFor="let category of mainCategories"
-        class="hover:shadow-lg transition-shadow"
+        class="hover:shadow-lg transition-shadow relative min-h-[400px]"
       >
         <div class="relative">
           <img
@@ -70,7 +70,7 @@
             <div class="grid grid-cols-2 gap-2">
               <a
                 *ngFor="let subcat of category.subcategoryNames.slice(0, 6)"
-                class="text-sm text-gray-700 hover:text-blue-600 hover:underline cursor-pointer"
+                class="text-sm text-gray-700 hover:text-blue-700 cursor-pointer"
                 [routerLink]="['/shop/category', category.id]"
               >
                 {{ subcat }}
@@ -89,7 +89,7 @@
           </div>
         </mat-card-content>
 
-        <mat-card-actions class="px-4 pb-4 flex justify-end">
+        <mat-card-actions class="absolute bottom-2 right-2">
           <button
             mat-raised-button
             color="primary"
@@ -179,7 +179,6 @@
         </button>
       </div>
 
-      <!-- Slide indicators -->
       <div class="slide-indicators" *ngIf="totalSlides > 1">
         <div
           *ngFor="let _ of [].constructor(totalSlides); let i = index"

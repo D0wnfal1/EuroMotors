@@ -1,11 +1,12 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { OrderService } from '../../core/services/order.service';
-import { Order, OrderStatus } from '../../shared/models/order';
+import { Order } from '../../shared/models/order';
 import { AccountService } from '../../core/services/account.service';
 import { RouterLink } from '@angular/router';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { StatusPipe } from '../../shared/pipes/status.pipe';
 import { MatTableModule } from '@angular/material/table';
+import { EmptyOrdersStateComponent } from '../../shared/components/empty-orders-state/empty-orders-state.component';
 
 @Component({
   selector: 'app-order',
@@ -16,6 +17,7 @@ import { MatTableModule } from '@angular/material/table';
     StatusPipe,
     CommonModule,
     MatTableModule,
+    EmptyOrdersStateComponent,
   ],
   templateUrl: './order.component.html',
   styleUrl: './order.component.scss',

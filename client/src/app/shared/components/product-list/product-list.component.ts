@@ -49,10 +49,6 @@ export class ProductListComponent {
     this.pageChanged.emit(event);
   }
 
-  onSearchChange(): void {
-    this.searchChanged.emit();
-  }
-
   onSortChange(event: MatSelectionListChange): void {
     this.sortChanged.emit(event);
   }

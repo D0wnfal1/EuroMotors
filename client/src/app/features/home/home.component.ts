@@ -52,11 +52,11 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   slidePosition: number = 0;
   itemsPerView: number = 4;
-  slideWidth: number = 284; 
+  slideWidth: number = 284;
   maxSlidePosition: number = 0;
   currentSlideIndex: number = 0;
   totalSlides: number = 0;
-  autoplayInterval = 5000; 
+  autoplayInterval = 5000;
   autoplaySubscription?: Subscription;
 
   private subscriptions: Subscription[] = [];
@@ -125,7 +125,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     } else if (window.innerWidth < 1024) {
       return 3;
     } else {
-      return 4; 
+      return 4;
     }
   }
 

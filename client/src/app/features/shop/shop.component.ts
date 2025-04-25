@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatSelectionListChange } from '@angular/material/list';
 import { PageEvent } from '@angular/material/paginator';
@@ -19,7 +19,7 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './shop.component.html',
   styleUrl: './shop.component.scss',
 })
-export class ShopComponent {
+export class ShopComponent implements OnInit {
   private productService = inject(ProductService);
   private categoryService = inject(CategoryService);
   private carModelService = inject(CarmodelService);
@@ -40,6 +40,17 @@ export class ShopComponent {
       if (carModelId) {
         this.shopParams.carModelIds = [carModelId];
       }
+
+      const searchTerm = params['search'];
+      if (searchTerm) {
+        this.shopParams.searchTerm = searchTerm;
+      }
+
+      const pageNumber = params['pageNumber'];
+      if (pageNumber) {
+        this.shopParams.pageNumber = +pageNumber;
+      }
+
       this.initialiseShop();
     });
   }

@@ -1,13 +1,11 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AccountService } from '../services/account.service';
-import { SnackbarService } from '../services/snackbar.service';
 import { catchError, of, switchMap } from 'rxjs';
 
 export const adminGuard: CanActivateFn = (route, state) => {
   const accountService = inject(AccountService);
   const router = inject(Router);
-  const snack = inject(SnackbarService);
 
   if (accountService.isAdmin()) {
     return true;
@@ -17,13 +15,13 @@ export const adminGuard: CanActivateFn = (route, state) => {
         if (accountService.isAdmin()) {
           return of(true);
         } else {
-          snack.error('Error: you do not have admin rights');
+          console.error('User is not an admin');
           router.navigateByUrl('/shop');
           return of(false);
         }
       }),
       catchError((error) => {
-        snack.error('Error: response status is 401');
+        console.error('Error refreshing token', error);
         router.navigateByUrl('/shop');
         return of(false);
       })

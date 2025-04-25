@@ -1,17 +1,27 @@
 .product-image {
+  display: block;
+  transition: transform 0.2s ease-in-out;
   object-fit: contain;
   border-radius: 0.5rem;
-  transition: transform 0.3s ease;
 }
 
 .image-container {
+  position: relative;
+  overflow: visible;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #f9fafb;
   border-radius: 0.5rem;
   border: 1px solid #e5e7eb;
+}
+
+.zoom-result {
+  border: 2px solid #f0f0f0;
+  background-color: white;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
   overflow: hidden;
+  border-radius: 8px;
 }
 
 .nav-button {
@@ -33,7 +43,8 @@
 }
 
 .specification-tabs ::ng-deep .mat-mdc-tab-header {
+  border: 1px solid #e5e7eb;
+  border-bottom: none;
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
-  overflow: hidden;
 }

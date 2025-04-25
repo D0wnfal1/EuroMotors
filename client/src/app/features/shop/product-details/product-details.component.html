@@ -1,17 +1,27 @@
-<section class="py-8" *ngIf="product">
+<section class="py-4" *ngIf="product">
   <div class="max-w-(--breakpoint-2xl) px-4 mx-auto">
     <div class="grid grid-cols-2 gap-8">
       <div>
-        <div class="relative w-full max-w-xs mx-auto mt-4">
+        <div class="relative w-full max-w-md mx-auto mt-4">
           <div
-            class="image-container flex items-center justify-center h-[300px] mb-4"
+            class="image-container flex items-center justify-center h-[400px] mb-4 relative"
+            (mousemove)="onImageZoom($event)"
+            (mouseenter)="showZoom = true"
+            (mouseleave)="showZoom = false"
           >
             <img
               *ngIf="product.images.length > 0; else noImage"
               [src]="getImageUrl(product.images[activeIndex].path)"
               alt="Product Image"
-              class="product-image max-h-full max-w-full"
+              class="product-image max-h-full max-w-full cursor-zoom-in"
+              #productImg
             />
+
+            <div
+              *ngIf="showZoom && product.images.length > 0"
+              class="zoom-result absolute rounded-lg shadow-lg pointer-events-none"
+              [ngStyle]="zoomStyle"
+            ></div>
 
             <ng-template #noImage>
               <img
@@ -121,6 +131,14 @@
                 type="number"
               />
             </mat-form-field>
+            <button
+              mat-stroked-button
+              (click)="openCallbackDialog()"
+              class="ml-4"
+            >
+              <mat-icon class="text-2xl">support_agent</mat-icon>
+              <span class="text-lg font-medium">Request a call</span>
+            </button>
             <div class="text-xl font-semibold text-blue-200">
               {{ product.price | currency }}
             </div>

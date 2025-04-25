@@ -1,7 +1,7 @@
 <div class="mx-auto mt-4">
-  <h2 class="font-semibold text-2xl mb-6 text-center">My orders</h2>
+  <h2 class="font-semibold text-2xl text-center">My orders</h2>
   <div class="flex flex-col">
-    <div class="w-full">
+    <div *ngIf="orders && orders.length > 0; else emptyOrders" class="w-full">
       <table
         mat-table
         [dataSource]="orders || []"
@@ -51,4 +51,7 @@
       </table>
     </div>
   </div>
+  <ng-template #emptyOrders>
+    <app-empty-orders-state></app-empty-orders-state>
+  </ng-template>
 </div>

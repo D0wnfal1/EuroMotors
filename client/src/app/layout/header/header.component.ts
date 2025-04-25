@@ -1,4 +1,11 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  inject,
+  EventEmitter,
+  Output,
+} from '@angular/core';
 import { MatBadge } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,6 +27,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCardModule } from '@angular/material/card';
 import { ShopParams } from '../../shared/models/shopParams';
 import { SelectedCar } from '../../shared/models/carModel';
+import { FormsModule } from '@angular/forms';
+import { ProductService } from '../../core/services/product.service';
 
 @Component({
   selector: 'app-header',
@@ -40,6 +49,7 @@ import { SelectedCar } from '../../shared/models/carModel';
     MatToolbarModule,
     MatTooltipModule,
     MatCardModule,
+    FormsModule,
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
@@ -50,6 +60,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   accountService = inject(AccountService);
   categoryService = inject(CategoryService);
   carModelService = inject(CarmodelService);
+  productService = inject(ProductService);
   private router = inject(Router);
 
   categories: Category[] = [];
@@ -140,6 +151,37 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   navigateToShop(carId: string): void {
     this.router.navigate(['/shop'], { queryParams: { carModelId: carId } });
+  }
+
+  onSearchChange(): void {
+    this.shopParams.pageNumber = 1;
+
+    // Get current query parameters if we're on the shop page
+    let queryParams: any = {};
+
+    // Only add search parameter if not empty
+    if (
+      this.shopParams.searchTerm &&
+      this.shopParams.searchTerm.trim() !== ''
+    ) {
+      queryParams.search = this.shopParams.searchTerm;
+    }
+
+    if (this.router.url.includes('/shop')) {
+      // Preserve existing carModelId if present
+      const urlTree = this.router.parseUrl(this.router.url);
+      const currentQueryParams = urlTree.queryParams;
+
+      if (currentQueryParams['carModelId']) {
+        queryParams.carModelId = currentQueryParams['carModelId'];
+      }
+
+      // Always reset to page 1 when searching
+      queryParams.pageNumber = 1;
+    }
+
+    // Navigate with the appropriate query parameters
+    this.router.navigate(['/shop'], { queryParams });
   }
 
   logout() {

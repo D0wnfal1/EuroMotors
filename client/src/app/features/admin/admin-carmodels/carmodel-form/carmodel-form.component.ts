@@ -14,7 +14,6 @@ import { MatButton } from '@angular/material/button';
 import { MatFormFieldModule, MatError } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { QuickBrandAddComponent } from '../quick-brand-add/quick-brand-add.component';
@@ -49,7 +48,6 @@ export class CarmodelFormComponent implements OnInit {
     private fb: FormBuilder,
     private carModelService: CarmodelService,
     private carBrandService: CarbrandService,
-    private snackBar: MatSnackBar,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private dialog: MatDialog
@@ -122,10 +120,7 @@ export class CarmodelFormComponent implements OnInit {
           });
         },
         error: (error) => {
-          this.snackBar.open('Failed to load car model data', 'Close', {
-            duration: 3000,
-            panelClass: ['snack-error'],
-          });
+          console.error('Error loading car model data:', error);
         },
       });
     }
@@ -168,33 +163,19 @@ export class CarmodelFormComponent implements OnInit {
     if (this.isEditMode && this.carModelId) {
       this.carModelService.updateCarModel(this.carModelId, formData).subscribe({
         next: () => {
-          this.snackBar.open('CarModel updated successfully!', 'Close', {
-            duration: 3000,
-            panelClass: ['snack-success'],
-          });
           this.router.navigate(['/admin/carmodels']);
         },
         error: () => {
-          this.snackBar.open('Failed to update car model', 'Close', {
-            duration: 3000,
-            panelClass: ['snack-error'],
-          });
+          console.error('Error updating car model');
         },
       });
     } else {
       this.carModelService.createCarModel(formData).subscribe({
-        next: (newCarModelId) => {
-          this.snackBar.open('CarModel created successfully!', 'Close', {
-            duration: 3000,
-            panelClass: ['snack-success'],
-          });
+        next: () => {
           this.router.navigate(['/admin/carmodels']);
         },
         error: () => {
-          this.snackBar.open('Failed to create car model', 'Close', {
-            duration: 3000,
-            panelClass: ['snack-error'],
-          });
+          console.error('Error creating car model');
         },
       });
     }

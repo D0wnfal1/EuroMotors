@@ -11,7 +11,6 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { CarbrandService } from '../../../../core/services/carbrand.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { CarBrand } from '../../../../shared/models/carBrand';
 
 @Component({
@@ -37,7 +36,6 @@ export class QuickBrandAddComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private carBrandService: CarbrandService,
-    private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<QuickBrandAddComponent>
   ) {
     this.quickBrandForm = this.fb.group({
@@ -58,10 +56,6 @@ export class QuickBrandAddComponent implements OnInit {
 
     this.carBrandService.createCarBrand(formData).subscribe({
       next: (newBrandId) => {
-        this.snackBar.open('Car brand created successfully!', 'Close', {
-          duration: 3000,
-        });
-
         this.carBrandService.getCarBrandById(newBrandId).subscribe({
           next: (brand) => {
             this.brandAdded.emit(brand);
@@ -74,9 +68,6 @@ export class QuickBrandAddComponent implements OnInit {
         });
       },
       error: (err) => {
-        this.snackBar.open('Failed to create brand', 'Close', {
-          duration: 3000,
-        });
         this.isSubmitting = false;
         console.error('Error creating brand', err);
       },

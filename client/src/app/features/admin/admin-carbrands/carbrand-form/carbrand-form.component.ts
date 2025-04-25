@@ -10,7 +10,6 @@ import {
 import { MatButton } from '@angular/material/button';
 import { MatFormFieldModule, MatError } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -38,7 +37,6 @@ export class CarbrandFormComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private carBrandService: CarbrandService,
-    private snackBar: MatSnackBar,
     private router: Router,
     private activatedRoute: ActivatedRoute
   ) {}
@@ -68,10 +66,7 @@ export class CarbrandFormComponent implements OnInit {
           });
         },
         error: (error) => {
-          this.snackBar.open('Failed to load car brand data', 'Close', {
-            duration: 3000,
-            panelClass: ['snack-error'],
-          });
+          console.error('Error loading car brand data:', error);
         },
       });
     }
@@ -103,33 +98,17 @@ export class CarbrandFormComponent implements OnInit {
     if (this.isEditMode && this.carBrandId) {
       this.carBrandService.updateCarBrand(this.carBrandId, formData).subscribe({
         next: () => {
-          this.snackBar.open('Car brand updated successfully!', 'Close', {
-            duration: 3000,
-            panelClass: ['snack-success'],
-          });
           this.router.navigate(['/admin/carbrands']);
         },
-        error: () => {
-          this.snackBar.open('Failed to update car brand', 'Close', {
-            duration: 3000,
-            panelClass: ['snack-error'],
-          });
-        },
+        error: () => {},
       });
     } else {
       this.carBrandService.createCarBrand(formData).subscribe({
         next: (newCarBrandId) => {
-          this.snackBar.open('Car brand created successfully!', 'Close', {
-            duration: 3000,
-            panelClass: ['snack-success'],
-          });
           this.router.navigate(['/admin/carbrands']);
         },
         error: () => {
-          this.snackBar.open('Failed to create car brand', 'Close', {
-            duration: 3000,
-            panelClass: ['snack-error'],
-          });
+          console.error('Error creating car brand');
         },
       });
     }

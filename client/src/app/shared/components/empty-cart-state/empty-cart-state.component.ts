@@ -4,10 +4,10 @@ import { MatIcon } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-empty-state',
+  selector: 'app-empty-cart-state',
   standalone: true,
   imports: [MatIcon, MatButton, RouterLink],
-  templateUrl: './empty-state.component.html',
-  styleUrl: './empty-state.component.scss',
+  templateUrl: './empty-cart-state.component.html',
+  styleUrl: './empty-cart-state.component.scss',
 })
-export class EmptyStateComponent {}
+export class EmptyCartStateComponent {}

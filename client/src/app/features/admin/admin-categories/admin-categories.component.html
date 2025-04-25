@@ -1,15 +1,5 @@
-<div class="p-4">
-  <h1 class="text-2xl font-bold text-center mb-6">Admin Categories</h1>
+<div class="p-4 bg-white shadow-md">
   <div class="flex justify-between mb-4">
-    <button
-      mat-raised-button
-      color="primary"
-      [routerLink]="['/admin/categories/create']"
-      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm"
-    >
-      <mat-icon>add</mat-icon>
-      Create New Category
-    </button>
     <mat-paginator
       class="bg-white"
       [pageSizeOptions]="pageSizeOptions"
@@ -18,6 +8,16 @@
       (page)="handlePageEvent($event)"
       showFirstLastButtons
     ></mat-paginator>
+    <h2 class="text-2xl font-semibold text-gray-800 mt-2">Admin Categories</h2>
+    <button
+      mat-raised-button
+      color="primary"
+      [routerLink]="['/admin/categories/create']"
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm mt-2"
+    >
+      <mat-icon>add</mat-icon>
+      Create New Category
+    </button>
   </div>
 
   <div class="bg-white rounded-lg shadow-md">
@@ -50,16 +50,21 @@
               (change)="toggleAvailability(node)"
               color="primary"
               class="ml-2"
+              (click)="$event.stopPropagation()"
             ></mat-slide-toggle>
 
             <button
               mat-button
               [routerLink]="['/admin/categories/edit', node.id]"
+              (click)="$event.stopPropagation()"
             >
               <mat-icon>edit</mat-icon>
             </button>
 
-            <button mat-button (click)="deleteCategory(node.id)">
+            <button
+              mat-button
+              (click)="$event.stopPropagation(); deleteCategory(node.id)"
+            >
               <mat-icon>delete</mat-icon>
             </button>
           </div>
@@ -76,18 +81,11 @@
           (click)="toggleNode(node)"
         >
           <div class="w-10 flex justify-center">
-            <button
-              mat-icon-button
-              matTreeNodeToggle
-              class="bg-gray-100 hover:bg-gray-200"
-              aria-label="Toggle node"
-            >
-              <mat-icon class="text-blue-500">
-                {{
-                  treeControl.isExpanded(node) ? "expand_more" : "chevron_right"
-                }}
-              </mat-icon>
-            </button>
+            <mat-icon class="text-blue-500">
+              {{
+                treeControl.isExpanded(node) ? "expand_more" : "chevron_right"
+              }}
+            </mat-icon>
           </div>
 
           <div class="w-16 h-16 mr-4">
@@ -100,10 +98,12 @@
 
           <div class="flex-grow">
             <span class="font-medium truncate">{{ node.name }}</span>
-            <div class="text-xs text-gray-500 mt-1">Has subcategories</div>
           </div>
 
-          <div class="flex items-center gap-3 mr-4">
+          <div
+            class="flex items-center gap-3 mr-4"
+            (click)="$event.stopPropagation()"
+          >
             <mat-slide-toggle
               [checked]="node.isAvailable"
               (change)="toggleAvailability(node)"

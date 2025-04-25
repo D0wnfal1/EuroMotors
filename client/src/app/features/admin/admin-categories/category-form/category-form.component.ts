@@ -5,7 +5,6 @@ import {
   Validators,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { CategoryService } from '../../../../core/services/category.service';
 import { Category } from '../../../../shared/models/category';
@@ -55,7 +54,6 @@ export class CategoryFormComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private categoryService: CategoryService,
-    private snackBar: MatSnackBar,
     private router: Router,
     private activatedRoute: ActivatedRoute
   ) {}
@@ -97,10 +95,7 @@ export class CategoryFormComponent implements OnInit {
           });
         },
         error: (error) => {
-          this.snackBar.open('Failed to load category data', 'Close', {
-            duration: 3000,
-            panelClass: ['snack-error'],
-          });
+          console.error('Error loading category data:', error);
         },
       });
     }
@@ -188,33 +183,19 @@ export class CategoryFormComponent implements OnInit {
     if (this.isEditMode && this.categoryId) {
       this.categoryService.updateCategory(this.categoryId, formData).subscribe({
         next: () => {
-          this.snackBar.open('Category updated successfully!', 'Close', {
-            duration: 3000,
-            panelClass: ['snack-success'],
-          });
           this.router.navigate(['/admin/categories']);
         },
         error: () => {
-          this.snackBar.open('Failed to update category', 'Close', {
-            duration: 3000,
-            panelClass: ['snack-error'],
-          });
+          console.error('Error updating category');
         },
       });
     } else {
       this.categoryService.createCategory(formData).subscribe({
-        next: (newCategoryId) => {
-          this.snackBar.open('Category created successfully!', 'Close', {
-            duration: 3000,
-            panelClass: ['snack-success'],
-          });
+        next: () => {
           this.router.navigate(['/admin/categories']);
         },
         error: () => {
-          this.snackBar.open('Failed to create category', 'Close', {
-            duration: 3000,
-            panelClass: ['snack-error'],
-          });
+          console.error('Error creating category');
         },
       });
     }

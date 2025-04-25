@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProductService } from '../../../core/services/product.service';
 import { Product } from '../../../shared/models/product';
 import { RouterLink } from '@angular/router';
@@ -8,7 +8,7 @@ import { Pagination } from '../../../shared/models/pagination';
 import { ProductImage } from '../../../shared/models/productImage';
 import { ShopParams } from '../../../shared/models/shopParams';
 import { MatSelectionListChange } from '@angular/material/list';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { ProductListComponent } from '../../../shared/components/product-list/product-list.component';
 import { PageEvent } from '@angular/material/paginator';
 import { CarModel } from '../../../shared/models/carModel';
@@ -23,9 +23,11 @@ import { MatIcon } from '@angular/material/icon';
   selector: 'app-admin-products',
   imports: [
     ReactiveFormsModule,
+    FormsModule,
     RouterLink,
     CurrencyPipe,
     MatButton,
+    MatIconButton,
     ProductListComponent,
     CommonModule,
     MatTableModule,

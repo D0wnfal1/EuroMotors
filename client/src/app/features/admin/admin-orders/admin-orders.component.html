@@ -1,129 +1,111 @@
-<div>
-  <div class="bg-white shadow-md">
-    <div
-      class="flex justify-between items-center mt-4 max-w-(--breakpoint-2xl) mx-auto px-4"
+<div class="bg-white shadow-md">
+  <div
+    class="flex justify-between items-center mt-4 max-w-(--breakpoint-2xl) mx-auto px-4"
+  >
+    <mat-paginator
+      class="bg-white mt-4"
+      [pageSizeOptions]="[5, 10, 20]"
+      [length]="totalItems"
+      [pageSize]="orderParams.pageSize"
+      (page)="onPageChange($event)"
+      showFirstLastButtons
     >
-      <mat-paginator
-        class="bg-white mt-4"
-        [pageSizeOptions]="[5, 10, 20]"
-        [length]="totalItems"
-        [pageSize]="orderParams.pageSize"
-        (page)="onPageChange($event)"
-        showFirstLastButtons
-      >
-      </mat-paginator>
-      <h2 class="text-2xl font-semibold text-gray-800">Customer orders</h2>
-      <mat-form-field appearance="outline" class="mt-2">
-        <mat-label>Filter by status</mat-label>
-        <mat-select (selectionChange)="onFilterSelect($event)">
-          <mat-option *ngFor="let status of statusOptions" [value]="status">{{
-            status
-          }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
+    </mat-paginator>
+    <h2 class="text-2xl font-semibold text-gray-800">Customer orders</h2>
+    <mat-form-field appearance="outline" class="mt-2">
+      <mat-label>Filter by status</mat-label>
+      <mat-select (selectionChange)="onFilterSelect($event)">
+        <mat-option *ngFor="let status of statusOptions" [value]="status">{{
+          status
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
 
-    <div class="p-4">
-      <div class="overflow-hidden shadow-xl bg-white rounded-lg">
-        <table mat-table [dataSource]="dataSource" class="w-full table-auto">
-          <ng-container matColumnDef="id">
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              class="px-4 py-2 text-left text-gray-600"
-            >
-              Order ID
-            </th>
-            <td
-              mat-cell
-              *matCellDef="let order"
-              class="px-4 py-2 text-gray-800"
-            >
-              {{ order.id }}
-            </td>
-          </ng-container>
+  <div class="p-4">
+    <div class="overflow-hidden shadow-xl bg-white rounded-lg">
+      <table mat-table [dataSource]="dataSource" class="w-full table-auto">
+        <ng-container matColumnDef="id">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="px-4 py-2 text-left text-gray-600"
+          >
+            Order ID
+          </th>
+          <td mat-cell *matCellDef="let order" class="px-4 py-2 text-gray-800">
+            {{ order.id }}
+          </td>
+        </ng-container>
 
-          <ng-container matColumnDef="orderDate">
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              class="px-4 py-2 text-left text-gray-600"
-            >
-              Order Date
-            </th>
-            <td
-              mat-cell
-              *matCellDef="let order"
-              class="px-4 py-2 text-gray-800"
-            >
-              {{ order.createdAtUtc | date : "d MMMM yyyy HH:mm" }}
-            </td>
-          </ng-container>
+        <ng-container matColumnDef="orderDate">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="px-4 py-2 text-left text-gray-600"
+          >
+            Order Date
+          </th>
+          <td mat-cell *matCellDef="let order" class="px-4 py-2 text-gray-800">
+            {{ order.createdAtUtc | date : "d MMMM yyyy HH:mm" }}
+          </td>
+        </ng-container>
 
-          <ng-container matColumnDef="total">
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              class="px-4 py-2 text-left text-gray-600"
-            >
-              Total
-            </th>
-            <td
-              mat-cell
-              *matCellDef="let order"
-              class="px-4 py-2 text-gray-800"
-            >
-              {{ order.totalPrice | currency }}
-            </td>
-          </ng-container>
+        <ng-container matColumnDef="total">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="px-4 py-2 text-left text-gray-600"
+          >
+            Total
+          </th>
+          <td mat-cell *matCellDef="let order" class="px-4 py-2 text-gray-800">
+            {{ order.totalPrice | currency }}
+          </td>
+        </ng-container>
 
-          <ng-container matColumnDef="status">
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              class="px-4 py-2 text-left text-gray-600"
-            >
-              Status
-            </th>
-            <td
-              mat-cell
-              *matCellDef="let order"
-              class="px-4 py-2 text-gray-800"
-            >
-              {{ order.status | status }}
-            </td>
-          </ng-container>
+        <ng-container matColumnDef="status">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="px-4 py-2 text-left text-gray-600"
+          >
+            Status
+          </th>
+          <td mat-cell *matCellDef="let order" class="px-4 py-2 text-gray-800">
+            {{ order.status | status }}
+          </td>
+        </ng-container>
 
-          <ng-container matColumnDef="action">
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              class="px-4 py-2 text-left text-gray-600"
-            >
-              Actions
-            </th>
-            <td mat-cell *matCellDef="let order" class="px-4 py-2">
-              <div class="flex gap-2">
-                <button
-                  matTooltip="View"
-                  mat-icon-button
-                  routerLink="/orders/{{ order.id }}"
-                  class="text-blue-500 hover:text-blue-700"
-                >
-                  <mat-icon color="accent">visibility</mat-icon>
-                </button>
-              </div>
-            </td>
-          </ng-container>
+        <ng-container matColumnDef="action">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="px-4 py-2 text-left text-gray-600"
+          >
+            Actions
+          </th>
+          <td mat-cell *matCellDef="let order" class="px-4 py-2">
+            <div class="flex gap-2">
+              <button
+                matTooltip="View"
+                mat-icon-button
+                routerLink="/orders/{{ order.id }}"
+                class="text-blue-500 hover:text-blue-700"
+              >
+                <mat-icon color="accent">visibility</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
 
-          <tr
-            mat-header-row
-            *matHeaderRowDef="displayedColumns"
-            class="bg-gray-200"
-          ></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-        </table>
-      </div>
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumns"
+          class="bg-gray-200"
+        ></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
     </div>
   </div>
 </div>
