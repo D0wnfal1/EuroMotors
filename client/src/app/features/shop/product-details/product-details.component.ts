@@ -59,7 +59,6 @@ export class ProductDetailsComponent implements OnInit {
   carModels: CarModel[] = [];
   carBrands: CarBrand[] = [];
 
-  // Zoom related properties
   showZoom = false;
   zoomStyle: any = {};
   zoomScale = 2.5;
@@ -97,23 +96,18 @@ export class ProductDetailsComponent implements OnInit {
     const img = this.productImg.nativeElement;
     const rect = img.getBoundingClientRect();
 
-    // Calculate mouse position relative to the image
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
 
-    // Calculate position percentage
     const xPercent = mouseX / rect.width;
     const yPercent = mouseY / rect.height;
 
-    // Set zoom window size (adjust as needed)
     const zoomWidth = 200;
     const zoomHeight = 200;
 
-    // Position the zoom window near the cursor
     const zoomLeft = mouseX + 40;
     const zoomTop = mouseY - zoomHeight / 2;
 
-    // Calculate background position for the zoomed area
     const bgPosX = xPercent * 100;
     const bgPosY = yPercent * 100;
 

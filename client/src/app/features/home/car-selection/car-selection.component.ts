@@ -2,11 +2,10 @@ import {
   Component,
   OnInit,
   OnDestroy,
-  Inject,
-  inject,
   Input,
   OnChanges,
   SimpleChanges,
+  inject,
 } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -19,18 +18,9 @@ import { CarbrandService } from '../../../core/services/carbrand.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription, forkJoin } from 'rxjs';
 import { Router } from '@angular/router';
-import { SelectedCar } from '../../../shared/models/carModel';
 import { CarBrand } from '../../../shared/models/carBrand';
 import { CarmodelService } from '../../../core/services/carmodel.service';
-
-interface CarSelectionResponse {
-  ids: string[];
-  brands: string[];
-  models: string[];
-  years: number[];
-  bodyTypes: string[];
-  engineSpecs: string[];
-}
+import { CarSelectionResponse } from '../../../shared/models/carModel';
 
 @Component({
   selector: 'app-car-selection',
@@ -62,6 +52,8 @@ export class CarSelectionComponent implements OnInit, OnDestroy, OnChanges {
 
   carSelectionForm: FormGroup;
   private subscriptions: Subscription[] = [];
+  private isInitialLoad = true;
+  private isFormSetupComplete = false;
 
   constructor(
     private carBrandService: CarbrandService,
@@ -75,8 +67,6 @@ export class CarSelectionComponent implements OnInit, OnDestroy, OnChanges {
       bodyType: ['', Validators.required],
       engineSpec: ['', Validators.required],
     });
-
-    this.loadFromLocalStorage();
   }
 
   ngOnInit(): void {
@@ -85,36 +75,78 @@ export class CarSelectionComponent implements OnInit, OnDestroy, OnChanges {
     this.subscriptions.push(
       this.carBrandService.availableBrands$.subscribe((brands) => {
         this.carBrands = brands;
-        this.preSelectBrandIfAvailable();
-      })
-    );
-
-    this.subscriptions.push(
-      this.carModelService.getCarSelectionWithIds().subscribe((resp) => {
-        this.availableCarIds = resp.ids;
-        this.years = resp.years;
-        this.bodyTypes = resp.bodyTypes;
-        this.engineSpecs = resp.engineSpecs;
+        if (!this.isInitialLoad) {
+          this.preSelectBrandIfAvailable();
+        }
       })
     );
 
     this.subscriptions.push(
       this.carModelService.carSelectionChanged.subscribe(() => {
-        this.carSelectionForm.reset();
-        this.carModelService.getCarSelectionWithIds().subscribe((resp) => {
-          this.availableCarIds = resp.ids;
-          this.years = resp.years;
-          this.bodyTypes = resp.bodyTypes;
-          this.engineSpecs = resp.engineSpecs;
-        });
+        if (!this.isInitialLoad) {
+          this.carSelectionForm.reset();
+          this.loadCarSelectionData();
+        }
       })
     );
 
+    this.loadCarSelectionData();
+    this.loadFromLocalStorage();
+
+    setTimeout(() => {
+      this.setupFormValueChanges();
+      this.isFormSetupComplete = true;
+    }, 500);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (
+      changes['preSelectedBrand'] &&
+      this.preSelectedBrand &&
+      !this.isInitialLoad
+    ) {
+      this.preSelectBrandIfAvailable();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
+  }
+
+  loadCarSelectionData(filter?: any): void {
+    this.carModelService.getCarSelectionWithIds(filter).subscribe({
+      next: (response: CarSelectionResponse) => {
+        this.availableCarIds = response.ids;
+
+        if (!this.carSelectionForm.get('brand')?.value || filter) {
+          this.models = response.models;
+        }
+
+        this.years = response.years;
+        this.bodyTypes = response.bodyTypes;
+        this.engineSpecs = response.engineSpecs;
+
+        const currentModel = this.carSelectionForm.get('model')?.value;
+        if (
+          currentModel &&
+          this.models.length > 0 &&
+          !this.models.includes(currentModel)
+        ) {
+          this.carSelectionForm.patchValue({ model: '' }, { emitEvent: false });
+        }
+      },
+      error: (err) => {
+        console.error('Error loading car selection data', err);
+      },
+    });
+  }
+
+  setupFormValueChanges(): void {
     this.subscriptions.push(
       this.carSelectionForm
         .get('brand')
         ?.valueChanges.subscribe((brand: CarBrand) => {
-          if (brand) {
+          if (brand && this.isFormSetupComplete && !this.isInitialLoad) {
             this.carSelectionForm.patchValue(
               {
                 model: '',
@@ -130,13 +162,13 @@ export class CarSelectionComponent implements OnInit, OnDestroy, OnChanges {
         }) as Subscription,
 
       this.carSelectionForm.get('model')?.valueChanges.subscribe((model) => {
-        if (model) {
+        if (model && this.isFormSetupComplete && !this.isInitialLoad) {
           this.updateFilters();
         }
       }) as Subscription,
 
       this.carSelectionForm.get('year')?.valueChanges.subscribe((year) => {
-        if (year) {
+        if (year && this.isFormSetupComplete && !this.isInitialLoad) {
           this.updateFilters();
         }
       }) as Subscription,
@@ -144,24 +176,18 @@ export class CarSelectionComponent implements OnInit, OnDestroy, OnChanges {
       this.carSelectionForm
         .get('bodyType')
         ?.valueChanges.subscribe((bodyType) => {
-          if (bodyType) {
+          if (bodyType && this.isFormSetupComplete && !this.isInitialLoad) {
             this.updateFilters();
           }
         }) as Subscription
     );
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['preSelectedBrand'] && this.preSelectedBrand) {
-      this.preSelectBrandIfAvailable();
-    }
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.forEach((sub) => sub.unsubscribe());
-  }
-
   updateFilters(): void {
+    if (this.isInitialLoad) {
+      return;
+    }
+
     const selectedBrand = this.carSelectionForm.get('brand')?.value as CarBrand;
 
     const filter = {
@@ -175,26 +201,14 @@ export class CarSelectionComponent implements OnInit, OnDestroy, OnChanges {
       this.models = [];
     }
 
-    this.carModelService.getCarSelectionWithIds(filter).subscribe({
-      next: (response: CarSelectionResponse) => {
-        this.availableCarIds = response.ids;
-        this.models = response.models;
-        this.years = response.years;
-        this.bodyTypes = response.bodyTypes;
-        this.engineSpecs = response.engineSpecs;
-
-        const currentModel = this.carSelectionForm.get('model')?.value;
-        if (currentModel && !this.models.includes(currentModel)) {
-          this.carSelectionForm.patchValue({ model: '' }, { emitEvent: false });
-        }
-      },
-      error: (err) => {
-        console.error('Error updating filters', err);
-      },
-    });
+    this.loadCarSelectionData(filter);
   }
 
   saveSelection(): void {
+    if (this.isInitialLoad) {
+      return;
+    }
+
     if (this.carSelectionForm.valid) {
       let selectedCarId: string | null = null;
 
@@ -236,6 +250,7 @@ export class CarSelectionComponent implements OnInit, OnDestroy, OnChanges {
       } else {
         console.error('No car IDs match the current selection');
       }
+    } else {
     }
   }
 
@@ -251,6 +266,8 @@ export class CarSelectionComponent implements OnInit, OnDestroy, OnChanges {
   private loadFromLocalStorage(): void {
     const savedCarId = this.carModelService.getStoredCarId();
     if (savedCarId) {
+      this.isInitialLoad = true;
+
       forkJoin({
         carModel: this.carModelService.getSelectedCarDetails(savedCarId),
         carBrands: this.carBrandService.availableBrands$,
@@ -263,28 +280,46 @@ export class CarSelectionComponent implements OnInit, OnDestroy, OnChanges {
           );
 
           if (selectedBrand) {
-            this.carSelectionForm.get('brand')?.setValue(selectedBrand);
+            this.carSelectionForm
+              .get('brand')
+              ?.setValue(selectedBrand, { emitEvent: false });
           }
 
           setTimeout(() => {
-            this.carSelectionForm.patchValue({
-              model: carModel.modelName,
-              year: carModel.startYear,
-              bodyType: carModel.bodyType,
-              engineSpec: engineSpecStr,
-            });
+            this.carSelectionForm.patchValue(
+              {
+                model: carModel.modelName,
+                year: carModel.startYear,
+                bodyType: carModel.bodyType,
+                engineSpec: engineSpecStr,
+              },
+              { emitEvent: false }
+            );
+
+            setTimeout(() => {
+              this.isInitialLoad = false;
+            }, 500);
           }, 300);
         },
         error: (err) => {
           console.error('Failed to load selected car details', err);
           this.carSelectionForm.reset();
           this.carModelService.clearCarSelection();
+          this.isInitialLoad = false;
         },
       });
+    } else {
+      setTimeout(() => {
+        this.isInitialLoad = false;
+      }, 500);
     }
   }
 
   private preSelectBrandIfAvailable(): void {
+    if (this.isInitialLoad) {
+      return;
+    }
+
     if (this.preSelectedBrand && this.carBrands.length > 0) {
       const brandToSelect = this.carBrands.find(
         (brand) =>
@@ -308,7 +343,9 @@ export class CarSelectionComponent implements OnInit, OnDestroy, OnChanges {
           { emitEvent: false }
         );
 
-        this.carSelectionForm.get('brand')?.setValue(brandToSelect);
+        this.carSelectionForm
+          .get('brand')
+          ?.setValue(brandToSelect, { emitEvent: false });
         this.updateFilters();
       }
     }

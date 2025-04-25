@@ -3,7 +3,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProductService } from '../../../core/services/product.service';
 import { Product } from '../../../shared/models/product';
 import { RouterLink } from '@angular/router';
-import { CommonModule, CurrencyPipe, NgFor } from '@angular/common';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Pagination } from '../../../shared/models/pagination';
 import { ProductImage } from '../../../shared/models/productImage';
 import { ShopParams } from '../../../shared/models/shopParams';

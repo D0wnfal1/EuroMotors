@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,11 +9,10 @@ import { CarmodelService } from '../../core/services/carmodel.service';
 import { CategoryService } from '../../core/services/category.service';
 import { ProductService } from '../../core/services/product.service';
 import { ImageService } from '../../core/services/image.service';
-import { Category } from '../../shared/models/category';
+import { HierarchicalCategory } from '../../shared/models/category';
 import { Product } from '../../shared/models/product';
 import { ShopParams } from '../../shared/models/shopParams';
 import { Subscription, interval } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { CarbrandService } from '../../core/services/carbrand.service';
 import { CarBrand } from '../../shared/models/carBrand';
 import { ProductItemComponent } from '../shop/product-item/product-item.component';
@@ -40,7 +39,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   displayedBrands: CarBrand[] = [];
   showAllBrands: boolean = false;
 
-  mainCategories: Category[] = [];
+  mainCategories: HierarchicalCategory[] = [];
+  totalCategories: number = 0;
+  categoryParams = new ShopParams();
 
   shopParams = new ShopParams();
   allProducts: Product[] = [];
@@ -69,16 +70,13 @@ export class HomeComponent implements OnInit, OnDestroy {
     private categoryService: CategoryService,
     private productService: ProductService,
     private imageService: ImageService,
-    private cartService: CartService,
-    private router: Router
+    private cartService: CartService
   ) {}
 
   ngOnInit(): void {
     this.checkSelectedCar();
     this.loadAllBrands();
-
-    this.loadMainCategories();
-
+    this.loadHierarchicalCategories();
     this.loadProducts();
 
     this.setItemsPerView();
@@ -91,6 +89,24 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
     window.removeEventListener('resize', this.setItemsPerView.bind(this));
     this.stopAutoplay();
+  }
+
+  loadHierarchicalCategories(): void {
+    this.categoryParams.pageNumber = 0;
+    this.categoryParams.pageSize = 0;
+
+    const categoriesSub = this.categoryService
+      .getHierarchicalCategories(this.categoryParams)
+      .subscribe({
+        next: (response) => {
+          this.mainCategories = response.data;
+          this.totalCategories = response.count;
+        },
+        error: (err) =>
+          console.error('Failed to load hierarchical categories', err),
+      });
+
+    this.subscriptions.push(categoriesSub);
   }
 
   startAutoplay(): void {
@@ -168,45 +184,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(brandsSub);
     this.carBrandService.getAllCarBrands();
-  }
-
-  loadMainCategories(): void {
-    this.shopParams.pageNumber = 1;
-    this.shopParams.pageSize = 10;
-    const categoriesSub = this.categoryService
-      .getParentCategories(this.shopParams)
-      .subscribe({
-        next: (categories) => {
-          this.mainCategories = categories;
-
-          categories.forEach((category) => {
-            if (category.id) {
-              const subCatSub = this.categoryService
-                .getSubcategories(category.id)
-                .subscribe({
-                  next: (subcategories) => {
-                    const index = this.mainCategories.findIndex(
-                      (c) => c.id === category.id
-                    );
-                    if (index !== -1) {
-                      this.mainCategories[index].subcategoryNames =
-                        subcategories.map((sc) => sc.name);
-                    }
-                  },
-                  error: (err) =>
-                    console.error(
-                      `Failed to load subcategories for ${category.name}`,
-                      err
-                    ),
-                });
-              this.subscriptions.push(subCatSub);
-            }
-          });
-        },
-        error: (err) => console.error('Failed to load main categories', err),
-      });
-
-    this.subscriptions.push(categoriesSub);
   }
 
   loadProducts(): void {

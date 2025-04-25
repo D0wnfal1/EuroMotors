@@ -54,3 +54,12 @@ export interface SelectedCar {
   fuelType?: FuelType | string;
   carBrandId?: string;
 }
+
+export interface CarSelectionResponse {
+  ids: string[];
+  brands: string[];
+  models: string[];
+  years: number[];
+  bodyTypes: string[];
+  engineSpecs: string[];
+}

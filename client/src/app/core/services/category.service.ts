@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Category } from '../../shared/models/category';
+import { Category, HierarchicalCategory } from '../../shared/models/category';
 import { PaginationParams } from '../../shared/models/paginationParams';
 
 @Injectable({
@@ -24,37 +24,32 @@ export class CategoryService {
       });
   }
 
-  getCategoryById(id: string): Observable<Category> {
-    return this.http.get<Category>(`${this.baseUrl}/categories/${id}`, {
-      withCredentials: true,
-    });
-  }
-
-  getParentCategories(
+  getHierarchicalCategories(
     paginationParams: PaginationParams
-  ): Observable<Category[]> {
+  ): Observable<{ data: HierarchicalCategory[]; count: number }> {
     let params = new HttpParams()
       .set('pageSize', paginationParams.pageSize)
       .set('pageNumber', paginationParams.pageNumber);
 
     return this.http
-      .get<{ data: Category[]; count: number }>(
-        `${this.baseUrl}/categories/parentCategories`,
-        { params }
-      )
+      .get<{
+        data: HierarchicalCategory[];
+        count: number;
+        pageIndex: number;
+        pageSize: number;
+      }>(`${this.baseUrl}/categories/hierarchical`, { params })
       .pipe(
-        map((res) => {
-          this.categoriesSubject.next(res.data);
-          this.totalItemsSubject.next(res.count);
-          return res.data;
-        })
+        map((response) => ({
+          data: response.data,
+          count: response.count,
+        }))
       );
   }
 
-  getSubcategories(parentCategoryId: string): Observable<Category[]> {
-    return this.http.get<Category[]>(
-      `${this.baseUrl}/categories/${parentCategoryId}/subcategories`
-    );
+  getCategoryById(id: string): Observable<Category> {
+    return this.http.get<Category>(`${this.baseUrl}/categories/${id}`, {
+      withCredentials: true,
+    });
   }
 
   createCategory(formData: FormData): Observable<string> {

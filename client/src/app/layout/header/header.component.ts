@@ -18,7 +18,7 @@ import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MatDivider } from '@angular/material/divider';
 import { NgIf } from '@angular/common';
 import { CategoryService } from '../../core/services/category.service';
-import { Category } from '../../shared/models/category';
+import { Category, HierarchicalCategory } from '../../shared/models/category';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { CommonModule } from '@angular/common';
 import { CarmodelService } from '../../core/services/carmodel.service';
@@ -64,6 +64,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private router = inject(Router);
 
   categories: Category[] = [];
+  hierarchicalCategories: HierarchicalCategory[] = [];
   activeCategory: Category | null = null;
   subcategories: Category[] = [];
   subcategoriesVisible = false;
@@ -71,20 +72,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
   selectedCarId: string | null = null;
 
   shopParams = new ShopParams();
-  pageSize = 10;
-  pageNumber = 1;
+  pageSize = 0;
+  pageNumber = 0;
 
   private subscriptions: Subscription[] = [];
 
   ngOnInit() {
     this.shopParams.pageSize = this.pageSize;
     this.shopParams.pageNumber = this.pageNumber;
-    this.categoryService
-      .getParentCategories(this.shopParams)
-      .subscribe((categories) => {
-        this.categories = categories;
-      });
-
+    this.loadCategories();
     this.loadSelectedCar();
     this.subscriptions.push(
       this.carModelService.carSelectionChanged.subscribe(() => {
@@ -95,6 +91,26 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
+  }
+
+  loadCategories() {
+    this.categoryService.getHierarchicalCategories(this.shopParams).subscribe({
+      next: (response) => {
+        this.hierarchicalCategories = response.data;
+        this.categories = this.hierarchicalCategories.map((cat) => ({
+          id: cat.id,
+          name: cat.name,
+          isAvailable: cat.isAvailable,
+          imagePath: cat.imagePath,
+          slug: cat.slug,
+          products: [],
+          subcategoryNames: cat.subCategories?.map((sub) => sub.name) || [],
+        }));
+      },
+      error: (err) => {
+        console.error('Failed to load categories', err);
+      },
+    });
   }
 
   loadSelectedCar() {
@@ -132,16 +148,28 @@ export class HeaderComponent implements OnInit, OnDestroy {
     } else {
       this.activeCategory = category;
       this.subcategoriesVisible = true;
-      this.loadSubcategories(category);
+      this.loadSubcategoriesFromHierarchy(category.id);
     }
   }
 
-  loadSubcategories(category: Category) {
-    this.categoryService
-      .getSubcategories(category.id)
-      .subscribe((subcategories) => {
-        this.subcategories = subcategories;
-      });
+  loadSubcategoriesFromHierarchy(categoryId: string) {
+    const hierarchicalCategory = this.hierarchicalCategories.find(
+      (cat) => cat.id === categoryId
+    );
+
+    if (hierarchicalCategory && hierarchicalCategory.subCategories) {
+      this.subcategories = hierarchicalCategory.subCategories.map((sub) => ({
+        id: sub.id,
+        name: sub.name,
+        isAvailable: sub.isAvailable,
+        imagePath: sub.imagePath,
+        slug: sub.slug,
+        products: [],
+        subcategoryNames: [],
+      }));
+    } else {
+      this.subcategories = [];
+    }
   }
 
   closeSubcategories() {
@@ -156,10 +184,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   onSearchChange(): void {
     this.shopParams.pageNumber = 1;
 
-    // Get current query parameters if we're on the shop page
     let queryParams: any = {};
 
-    // Only add search parameter if not empty
     if (
       this.shopParams.searchTerm &&
       this.shopParams.searchTerm.trim() !== ''
@@ -168,7 +194,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     if (this.router.url.includes('/shop')) {
-      // Preserve existing carModelId if present
       const urlTree = this.router.parseUrl(this.router.url);
       const currentQueryParams = urlTree.queryParams;
 
@@ -176,11 +201,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
         queryParams.carModelId = currentQueryParams['carModelId'];
       }
 
-      // Always reset to page 1 when searching
       queryParams.pageNumber = 1;
     }
 
-    // Navigate with the appropriate query parameters
     this.router.navigate(['/shop'], { queryParams });
   }
 

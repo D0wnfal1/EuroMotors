@@ -62,26 +62,23 @@
 
         <mat-card-content class="p-4">
           <div
-            *ngIf="
-              category.subcategoryNames && category.subcategoryNames.length > 0
-            "
+            *ngIf="category.subCategories && category.subCategories.length > 0"
             class="mt-2"
           >
             <div class="grid grid-cols-2 gap-2">
               <a
-                *ngFor="let subcat of category.subcategoryNames.slice(0, 6)"
+                *ngFor="let subcat of category.subCategories.slice(0, 6)"
                 class="text-sm text-gray-700 hover:text-blue-700 cursor-pointer"
-                [routerLink]="['/shop/category', category.id]"
+                [routerLink]="['/shop/category', subcat.id]"
               >
-                {{ subcat }}
+                {{ subcat.name }}
               </a>
             </div>
           </div>
 
           <div
             *ngIf="
-              !category.subcategoryNames ||
-              category.subcategoryNames.length === 0
+              !category.subCategories || category.subCategories.length === 0
             "
             class="py-4 text-center text-gray-500"
           >

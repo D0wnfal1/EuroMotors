@@ -3,8 +3,7 @@ using EuroMotors.Application.Categories.CreateCategory;
 using EuroMotors.Application.Categories.DeleteCategory;
 using EuroMotors.Application.Categories.GetByIdCategory;
 using EuroMotors.Application.Categories.GetCategories;
-using EuroMotors.Application.Categories.GetParentCategories;
-using EuroMotors.Application.Categories.GetSubcategories;
+using EuroMotors.Application.Categories.GetHierarchicalCategories;
 using EuroMotors.Application.Categories.SetCategoryAvailability;
 using EuroMotors.Application.Categories.UpdateCategory;
 using EuroMotors.Domain.Abstractions;
@@ -35,6 +34,17 @@ public class CategoryController : ControllerBase
         return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
 
+    [HttpGet("hierarchical")]
+    public async Task<IActionResult> GetHierarchicalCategories(CancellationToken cancellationToken, [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10)
+    {
+        var query = new GetHierarchicalCategoriesQuery(pageNumber, pageSize);
+
+        Result<Pagination<HierarchicalCategoryResponse>> result = await _sender.Send(query, cancellationToken);
+
+        return result.IsSuccess ? Ok(result.Value) : NotFound();
+    }
+
     [HttpGet("{id}")]
     [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> GetCategoryById(Guid id, CancellationToken cancellationToken)
@@ -42,27 +52,6 @@ public class CategoryController : ControllerBase
         var query = new GetCategoryByIdQuery(id);
 
         Result<CategoryResponse> result = await _sender.Send(query, cancellationToken);
-
-        return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
-    }
-
-    [HttpGet("parentCategories")]
-    public async Task<IActionResult> GetParentCategories(CancellationToken cancellationToken, [FromQuery] int pageNumber = 1,
-        [FromQuery] int pageSize = 10)
-    {
-        var query = new GetParentCategoriesQuery(pageNumber, pageSize);
-
-        Result<Pagination<CategoryResponse>> result = await _sender.Send(query, cancellationToken);
-
-        return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
-    }
-
-    [HttpGet("{parentCategoryId:guid}/subcategories")]
-    public async Task<IActionResult> GetSubcategories(Guid parentCategoryId, CancellationToken cancellationToken)
-    {
-        var query = new GetSubcategoriesQuery(parentCategoryId);
-
-        Result<List<CategoryResponse>> result = await _sender.Send(query, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
     }

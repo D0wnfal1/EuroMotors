@@ -38,7 +38,7 @@ export class CompatibleProductsComponent
   productsPerPage = 3;
   currentSlide = 0;
   maxSlide = 0;
-  autoplayInterval = 5000; // 5 seconds
+  autoplayInterval = 5000;
 
   ngOnInit(): void {
     this.adjustProductsPerPage(window.innerWidth);
@@ -58,7 +58,7 @@ export class CompatibleProductsComponent
   }
 
   startAutoplay(): void {
-    this.stopAutoplay(); // Ensure we don't have multiple subscriptions
+    this.stopAutoplay();
 
     this.autoplaySubscription = interval(this.autoplayInterval)
       .pipe(takeUntil(this.destroy$))
@@ -87,7 +87,6 @@ export class CompatibleProductsComponent
       this.currentSlide = slideIndex;
       this.updateVisibleProducts();
 
-      // Reset autoplay timer
       if (this.autoplaySubscription) {
         this.stopAutoplay();
         this.startAutoplay();
@@ -110,14 +109,12 @@ export class CompatibleProductsComponent
       this.productsPerPage = 3;
     }
 
-    // Recalculate max slide if we have products loaded
     if (this.compatibleProducts.length > 0) {
       this.maxSlide = Math.max(
         0,
         Math.ceil(this.compatibleProducts.length / this.productsPerPage) - 1
       );
 
-      // Make sure current slide is not beyond max slide
       if (this.currentSlide > this.maxSlide) {
         this.currentSlide = this.maxSlide;
       }
@@ -130,7 +127,7 @@ export class CompatibleProductsComponent
     const shopParams: ShopParams = {
       categoryIds: [],
       carModelIds: [this.carModelId],
-      pageSize: 12, // Increased to get more products
+      pageSize: 12,
       pageNumber: 1,
       sortOrder: '',
       searchTerm: '',
@@ -162,7 +159,6 @@ export class CompatibleProductsComponent
     if (this.currentSlide < this.maxSlide) {
       this.currentSlide++;
     } else {
-      // Cycle back to the first slide
       this.currentSlide = 0;
     }
     this.updateVisibleProducts();
@@ -172,13 +168,11 @@ export class CompatibleProductsComponent
     if (this.currentSlide > 0) {
       this.currentSlide--;
     } else {
-      // Cycle to the last slide
       this.currentSlide = this.maxSlide;
     }
     this.updateVisibleProducts();
   }
 
-  // Track function for ngFor performance optimization
   trackByProductId(index: number, item: Product): string {
     return item.id;
   }

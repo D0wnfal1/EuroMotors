@@ -9,8 +9,6 @@ import { ShopParams } from '../../shared/models/shopParams';
 import { ProductItemComponent } from './product-item/product-item.component';
 import { ProductService } from '../../core/services/product.service';
 import { ProductListComponent } from '../../shared/components/product-list/product-list.component';
-import { CarmodelService } from '../../core/services/carmodel.service';
-import { CategoryService } from '../../core/services/category.service';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -21,8 +19,6 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class ShopComponent implements OnInit {
   private productService = inject(ProductService);
-  private categoryService = inject(CategoryService);
-  private carModelService = inject(CarmodelService);
   private route = inject(ActivatedRoute);
   products?: Pagination<Product>;
   productImages: { [key: string]: ProductImage[] } = {};
@@ -56,8 +52,6 @@ export class ShopComponent implements OnInit {
   }
 
   initialiseShop() {
-    this.categoryService.getCategories();
-    this.carModelService.getCarModels({ pageNumber: 1, pageSize: 0 });
     this.getProducts();
   }
 
@@ -85,15 +79,6 @@ export class ShopComponent implements OnInit {
     const selectedOption = event.options[0];
     if (selectedOption) {
       this.shopParams.sortOrder = selectedOption.value;
-      this.shopParams.pageNumber = 1;
-      this.getProducts();
-    }
-  }
-
-  onFilterChange(filters: any) {
-    if (filters) {
-      this.shopParams.categoryIds = filters.selectedCategories;
-      this.shopParams.carModelIds = filters.selectedCarModels;
       this.shopParams.pageNumber = 1;
       this.getProducts();
     }

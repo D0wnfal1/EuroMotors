@@ -14,13 +14,13 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { Subject } from 'rxjs';
-import { finalize, takeUntil, tap } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { CategoryService } from '../../../core/services/category.service';
 import { ImageService } from '../../../core/services/image.service';
 import {
-  Category,
   CategoryNode,
   FlatCategoryNode,
+  HierarchicalCategory,
 } from '../../../shared/models/category';
 import { ShopParams } from '../../../shared/models/shopParams';
 
@@ -52,8 +52,6 @@ export class AdminCategoriesComponent implements OnInit, OnDestroy {
   shopParams = new ShopParams();
   pageSizeOptions = [5, 10, 15, 20];
 
-  private subcategoriesCache: { [parentId: string]: Category[] } = {};
-
   transformer = (node: CategoryNode, level: number): FlatCategoryNode => {
     return {
       id: node.id,
@@ -62,9 +60,8 @@ export class AdminCategoriesComponent implements OnInit, OnDestroy {
       imagePath: node.imagePath,
       parentCategoryId: node.parentCategoryId,
       level: level,
-      expandable:
-        level === 0 ? true : !!node.children && node.children.length > 0,
-      isLoading: node.isLoading,
+      expandable: !!node.children && node.children.length > 0,
+      isLoading: false,
     };
   };
 
@@ -82,20 +79,10 @@ export class AdminCategoriesComponent implements OnInit, OnDestroy {
 
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
-  loadedNodes = new Set<string>();
-
   loading = false;
 
   ngOnInit() {
     this.loadCategories();
-
-    this.categoryService.categories$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((categories) => {
-        if (categories && categories.length > 0) {
-          this.updateCategoriesCache(categories);
-        }
-      });
   }
 
   ngOnDestroy() {
@@ -103,140 +90,62 @@ export class AdminCategoriesComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  private updateCategoriesCache(categories: Category[]): void {
-    categories.forEach((category) => {
-      if (category.parentCategoryId) {
-        if (!this.subcategoriesCache[category.parentCategoryId]) {
-          this.subcategoriesCache[category.parentCategoryId] = [];
-        }
-        if (
-          !this.subcategoriesCache[category.parentCategoryId].find(
-            (c) => c.id === category.id
-          )
-        ) {
-          this.subcategoriesCache[category.parentCategoryId].push(category);
-        }
-      }
-    });
-  }
-
-  hasChild = (_: number, node: FlatCategoryNode) => {
-    return node.level === 0 || node.expandable;
-  };
+  hasChild = (_: number, node: FlatCategoryNode) => node.expandable;
 
   isLoading = (_: number, node: FlatCategoryNode) => node.isLoading === true;
 
   loadCategories(): void {
+    this.loading = true;
     this.categoryService
-      .getParentCategories(this.shopParams)
-      .pipe(takeUntil(this.destroy$))
+      .getHierarchicalCategories(this.shopParams)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => {
+          this.loading = false;
+        })
+      )
       .subscribe({
-        next: (categories) => {
-          const treeData: CategoryNode[] = categories.map((category) => ({
-            ...category,
-            level: 0,
-            expandable: true,
-            children: [],
-          }));
-
+        next: (response) => {
+          const treeData = this.convertToTreeNodes(response.data);
           this.dataSource.data = treeData;
+          this.totalItems = response.count;
+        },
+        error: (err) => {
+          console.error('Failed to load categories', err);
         },
       });
+  }
 
-    this.categoryService.totalItems$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((count) => {
-        this.totalItems = count;
-      });
+  private convertToTreeNodes(
+    categories: HierarchicalCategory[]
+  ): CategoryNode[] {
+    return categories.map((cat) => this.mapToTreeNode(cat, null));
+  }
+
+  private mapToTreeNode(
+    category: HierarchicalCategory,
+    parentId: string | null
+  ): CategoryNode {
+    return {
+      id: category.id,
+      name: category.name,
+      isAvailable: category.isAvailable,
+      imagePath: category.imagePath,
+      parentCategoryId: parentId as string | undefined,
+      level: 0,
+      expandable: category.subCategories && category.subCategories.length > 0,
+      children: category.subCategories?.map((subCat) =>
+        this.mapToTreeNode(subCat, category.id)
+      ),
+    };
   }
 
   toggleNode(node: FlatCategoryNode): void {
     if (this.treeControl.isExpanded(node)) {
       this.treeControl.collapse(node);
-      return;
-    }
-
-    if (this.loadedNodes.has(node.id)) {
-      this.treeControl.expand(node);
-      return;
-    }
-
-    const index = this.treeControl.dataNodes.findIndex((n) => n.id === node.id);
-    if (index >= 0) {
-      this.treeControl.dataNodes[index].isLoading = true;
-    }
-
-    if (
-      this.subcategoriesCache[node.id] &&
-      this.subcategoriesCache[node.id].length > 0
-    ) {
-      this.updateTreeWithSubcategories(node, this.subcategoriesCache[node.id]);
-
-      if (index >= 0) {
-        this.treeControl.dataNodes[index].isLoading = false;
-      }
-      return;
-    }
-
-    this.categoryService
-      .getSubcategories(node.id)
-      .pipe(
-        takeUntil(this.destroy$),
-        tap((subcategories) => {
-          this.subcategoriesCache[node.id] = subcategories;
-        }),
-        finalize(() => {
-          if (index >= 0) {
-            this.treeControl.dataNodes[index].isLoading = false;
-          }
-        })
-      )
-      .subscribe({
-        next: (subcategories) => {
-          this.updateTreeWithSubcategories(node, subcategories);
-        },
-        error: (err) => {
-          console.error('Failed to load subcategories', err);
-        },
-      });
-  }
-
-  private updateTreeWithSubcategories(
-    node: FlatCategoryNode,
-    subcategories: Category[]
-  ): void {
-    this.loadedNodes.add(node.id);
-
-    const updatedData = [...this.dataSource.data];
-    const targetNode = this.findNodeById(updatedData, node.id);
-
-    if (targetNode) {
-      targetNode.children = subcategories.map((subcategory) => ({
-        ...subcategory,
-        level: node.level + 1,
-        expandable: false,
-        children: [],
-      }));
-
-      this.dataSource.data = updatedData;
-
+    } else {
       this.treeControl.expand(node);
     }
-  }
-
-  findNodeById(nodes: CategoryNode[], id: string): CategoryNode | null {
-    for (const node of nodes) {
-      if (node.id === id) {
-        return node;
-      }
-      if (node.children && node.children.length > 0) {
-        const found = this.findNodeById(node.children, id);
-        if (found) {
-          return found;
-        }
-      }
-    }
-    return null;
   }
 
   handlePageEvent(event: PageEvent) {
@@ -262,15 +171,6 @@ export class AdminCategoriesComponent implements OnInit, OnDestroy {
             categoryId
           );
           this.dataSource.data = updatedData;
-
-          this.loadedNodes.delete(categoryId);
-          delete this.subcategoriesCache[categoryId];
-
-          Object.keys(this.subcategoriesCache).forEach((parentId) => {
-            this.subcategoriesCache[parentId] = this.subcategoriesCache[
-              parentId
-            ].filter((cat) => cat.id !== categoryId);
-          });
         },
         error: (err) => {
           console.error('Failed to delete category', err);
@@ -304,30 +204,33 @@ export class AdminCategoriesComponent implements OnInit, OnDestroy {
           );
           if (index >= 0) {
             this.treeControl.dataNodes[index].isAvailable = newAvailability;
-
-            const updatedData = [...this.dataSource.data];
-            const targetNode = this.findNodeById(updatedData, node.id);
-            if (targetNode) {
-              targetNode.isAvailable = newAvailability;
-              this.dataSource.data = updatedData;
-            }
           }
 
-          if (
-            node.parentCategoryId &&
-            this.subcategoriesCache[node.parentCategoryId]
-          ) {
-            const cached = this.subcategoriesCache[node.parentCategoryId].find(
-              (cat) => cat.id === node.id
-            );
-            if (cached) {
-              cached.isAvailable = newAvailability;
-            }
+          const updatedData = [...this.dataSource.data];
+          const targetNode = this.findNodeById(updatedData, node.id);
+          if (targetNode) {
+            targetNode.isAvailable = newAvailability;
+            this.dataSource.data = updatedData;
           }
         },
         error: (err) => {
           console.error('Failed to update category availability', err);
         },
       });
+  }
+
+  findNodeById(nodes: CategoryNode[], id: string): CategoryNode | null {
+    for (const node of nodes) {
+      if (node.id === id) {
+        return node;
+      }
+      if (node.children && node.children.length > 0) {
+        const found = this.findNodeById(node.children, id);
+        if (found) {
+          return found;
+        }
+      }
+    }
+    return null;
   }
 }

@@ -4,8 +4,6 @@ using EuroMotors.Application.Categories.CreateCategory;
 using EuroMotors.Application.Categories.DeleteCategory;
 using EuroMotors.Application.Categories.GetByIdCategory;
 using EuroMotors.Application.Categories.GetCategories;
-using EuroMotors.Application.Categories.GetParentCategories;
-using EuroMotors.Application.Categories.GetSubcategories;
 using EuroMotors.Application.Categories.SetCategoryAvailability;
 using EuroMotors.Application.Categories.UpdateCategory;
 using Microsoft.AspNetCore.Http;
@@ -102,100 +100,6 @@ public class CategoryControllerTests
 
         // Act
         IActionResult result = await _controller.GetCategoryById(id, CancellationToken.None);
-
-        // Assert
-        NotFoundObjectResult notFoundResult = result.ShouldBeOfType<NotFoundObjectResult>();
-        notFoundResult.Value.ShouldBe(error);
-    }
-
-    [Fact]
-    public async Task GetParentCategories_ShouldReturnOk_WhenCategoriesFound()
-    {
-        // Arrange
-        var categories = new List<CategoryResponse>
-        {
-            new(Guid.NewGuid(), "Test Category", true, null, null,"test-category")
-        };
-
-        var pagination = new Pagination<CategoryResponse>
-        {
-            PageIndex = 1,
-            PageSize = 10,
-            Count = 1,
-            Data = categories
-        };
-
-        _sender.Send(Arg.Any<GetParentCategoriesQuery>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success(pagination));
-
-        // Act
-        IActionResult result = await _controller.GetParentCategories(CancellationToken.None);
-
-        // Assert
-        OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
-        okResult.Value.ShouldBe(pagination);
-
-        await _sender.Received(1).Send(
-            Arg.Is<GetParentCategoriesQuery>(query =>
-                query.PageNumber == 1 &&
-                query.PageSize == 10),
-            Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task GetParentCategories_ShouldReturnNotFound_WhenCategoriesNotFound()
-    {
-        // Arrange
-        var error = Error.NotFound("Categories.NotFound", "Parent categories not found");
-
-        _sender.Send(Arg.Any<GetParentCategoriesQuery>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Failure<Pagination<CategoryResponse>>(error));
-
-        // Act
-        IActionResult result = await _controller.GetParentCategories(CancellationToken.None);
-
-        // Assert
-        NotFoundObjectResult notFoundResult = result.ShouldBeOfType<NotFoundObjectResult>();
-        notFoundResult.Value.ShouldBe(error);
-    }
-
-    [Fact]
-    public async Task GetSubcategories_ShouldReturnOk_WhenSubcategoriesFound()
-    {
-        // Arrange
-        var parentId = Guid.NewGuid();
-        var subcategories = new List<CategoryResponse>
-        {
-            new(Guid.NewGuid(), "Test Category", true, null, parentId,"test-category")
-        };
-
-        _sender.Send(Arg.Any<GetSubcategoriesQuery>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success(subcategories));
-
-        // Act
-        IActionResult result = await _controller.GetSubcategories(parentId, CancellationToken.None);
-
-        // Assert
-        OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
-        okResult.Value.ShouldBe(subcategories);
-
-        await _sender.Received(1).Send(
-            Arg.Is<GetSubcategoriesQuery>(query => query.ParentCategoryId == parentId),
-            Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task GetSubcategories_ShouldReturnNotFound_WhenSubcategoriesNotFound()
-    {
-        // Arrange
-        var parentId = Guid.NewGuid();
-        var error = Error.NotFound("Categories.NotFound", "Subcategories not found");
-
-        _sender.Send(Arg.Any<GetSubcategoriesQuery>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Failure<List<CategoryResponse>>(error));
-
-        // Act
-        IActionResult result = await _controller.GetSubcategories(parentId, CancellationToken.None);
 
         // Assert
         NotFoundObjectResult notFoundResult = result.ShouldBeOfType<NotFoundObjectResult>();
