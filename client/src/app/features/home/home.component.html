@@ -70,6 +70,11 @@
                 *ngFor="let subcat of category.subCategories.slice(0, 6)"
                 class="text-sm text-gray-700 hover:text-blue-700 cursor-pointer"
                 [routerLink]="['/shop/category', subcat.id]"
+                [queryParams]="{
+                  sortOrder: 'name_asc',
+                  pageNumber: 1,
+                  pageSize: 10
+                }"
               >
                 {{ subcat.name }}
               </a>
@@ -91,6 +96,11 @@
             mat-raised-button
             color="primary"
             [routerLink]="['/shop/category', category.id]"
+            [queryParams]="{
+              sortOrder: 'name_asc',
+              pageNumber: 1,
+              pageSize: 10
+            }"
           >
             Explore Category
           </button>
@@ -98,92 +108,5 @@
       </mat-card>
     </div>
   </div>
-
-  <div class="mt-12">
-    <h2 class="text-2xl font-bold text-center uppercase mb-6">
-      Popular Products
-    </h2>
-
-    <div class="flex justify-center mt-2 mb-8 gap-4">
-      <button
-        mat-raised-button
-        [class.bg-blue-500]="selectedProductTab === 'new'"
-        [class.text-white]="selectedProductTab === 'new'"
-        class="px-8 py-2 rounded-full"
-        (click)="changeProductTab('new')"
-      >
-        NEW
-      </button>
-      <button
-        mat-raised-button
-        [class.bg-blue-500]="selectedProductTab === 'discounts'"
-        [class.text-white]="selectedProductTab === 'discounts'"
-        class="px-8 py-2 rounded-full"
-        (click)="changeProductTab('discounts')"
-      >
-        DISCOUNT
-      </button>
-      <button
-        mat-raised-button
-        [class.bg-blue-500]="selectedProductTab === 'popular'"
-        [class.text-white]="selectedProductTab === 'popular'"
-        class="px-8 py-2 rounded-full"
-        (click)="changeProductTab('popular')"
-      >
-        POPULAR
-      </button>
-    </div>
-
-    <div class="product-slider relative">
-      <div class="slider-container">
-        <button
-          mat-mini-fab
-          color="primary"
-          class="nav-button nav-button-left"
-          (click)="prevProduct()"
-        >
-          <mat-icon>chevron_left</mat-icon>
-        </button>
-
-        <div
-          class="products-viewport"
-          (mouseenter)="pauseAutoplay()"
-          (mouseleave)="resumeAutoplay()"
-        >
-          <div
-            class="products-track"
-            [style.transform]="'translateX(' + slidePosition + 'px)'"
-          >
-            <div
-              *ngFor="
-                let product of displayedProducts;
-                trackBy: trackByProductId
-              "
-              class="product-slide fade-in"
-            >
-              <app-product-item [product]="product"></app-product-item>
-            </div>
-          </div>
-        </div>
-
-        <button
-          mat-mini-fab
-          color="primary"
-          class="nav-button nav-button-right"
-          (click)="nextProduct()"
-        >
-          <mat-icon>chevron_right</mat-icon>
-        </button>
-      </div>
-
-      <div class="slide-indicators" *ngIf="totalSlides > 1">
-        <div
-          *ngFor="let _ of [].constructor(totalSlides); let i = index"
-          class="indicator"
-          [class.active]="i === currentSlideIndex"
-          (click)="goToSlide(i)"
-        ></div>
-      </div>
-    </div>
-  </div>
+  <app-product-slider class="my-8"></app-product-slider>
 </div>

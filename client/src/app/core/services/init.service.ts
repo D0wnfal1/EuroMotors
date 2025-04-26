@@ -2,7 +2,6 @@ import { inject, Injectable } from '@angular/core';
 import { CartService } from './cart.service';
 import { forkJoin, of, switchMap } from 'rxjs';
 import { AccountService } from './account.service';
-import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +9,6 @@ import { HttpClient } from '@angular/common/http';
 export class InitService {
   private cartService = inject(CartService);
   private accountService = inject(AccountService);
-  private http = inject(HttpClient);
 
   init() {
     return this.accountService.checkAuth().pipe(

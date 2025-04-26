@@ -153,4 +153,15 @@ export class AdminProductsComponent implements OnInit {
         },
       });
   }
+
+  copyProduct(productId: string): void {
+    this.productService.copyProduct(productId).subscribe({
+      next: () => {
+        this.getProducts();
+      },
+      error: (error) => {
+        console.error(error);
+      },
+    });
+  }
 }

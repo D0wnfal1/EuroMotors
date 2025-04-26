@@ -5,10 +5,14 @@ import {
   inject,
   EventEmitter,
   Output,
+  HostListener,
 } from '@angular/core';
 import { MatBadge } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatCardModule } from '@angular/material/card';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { BusyService } from '../../core/services/busy.service';
 import { MatProgressBar } from '@angular/material/progress-bar';
@@ -24,7 +28,6 @@ import { CommonModule } from '@angular/common';
 import { CarmodelService } from '../../core/services/carmodel.service';
 import { Subscription } from 'rxjs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatCardModule } from '@angular/material/card';
 import { ShopParams } from '../../shared/models/shopParams';
 import { SelectedCar } from '../../shared/models/carModel';
 import { FormsModule } from '@angular/forms';
@@ -50,6 +53,8 @@ import { ProductService } from '../../core/services/product.service';
     MatTooltipModule,
     MatCardModule,
     FormsModule,
+    MatListModule,
+    MatSidenavModule,
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
@@ -76,6 +81,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   pageNumber = 0;
 
   private subscriptions: Subscription[] = [];
+
+  isCatalogOpen = false;
 
   ngOnInit() {
     this.shopParams.pageSize = this.pageSize;
@@ -217,5 +224,59 @@ export class HeaderComponent implements OnInit, OnDestroy {
         console.error('Logout failed', err);
       },
     });
+  }
+
+  toggleCatalog() {
+    console.log('Toggling catalog');
+    this.isCatalogOpen = !this.isCatalogOpen;
+    if (!this.isCatalogOpen) {
+      this.activeCategory = null;
+    }
+  }
+
+  setActiveCategory(category: Category) {
+    console.log('Setting active category:', category);
+    this.activeCategory = category;
+  }
+
+  getSubcategoryId(parentId: string, subcategoryName: string): string {
+    const parentCategory = this.hierarchicalCategories.find(
+      (cat) => cat.id === parentId
+    );
+    if (parentCategory && parentCategory.subCategories) {
+      const subcategory = parentCategory.subCategories.find(
+        (sub) => sub.name === subcategoryName
+      );
+      return subcategory ? subcategory.id : parentId;
+    }
+    return parentId;
+  }
+
+  exploreCategory(categoryId: string): void {
+    this.router.navigate(['/shop/category', categoryId], {
+      queryParams: {
+        sortOrder: 'name_asc',
+        pageNumber: 1,
+        pageSize: 10,
+      },
+    });
+    this.isCatalogOpen = false;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent) {
+    const catalogElement = document.querySelector('.category-menu');
+    const catalogButton = document.querySelector('.catalog-button');
+
+    if (
+      this.isCatalogOpen &&
+      catalogElement &&
+      !catalogElement.contains(event.target as Node) &&
+      catalogButton &&
+      !catalogButton.contains(event.target as Node)
+    ) {
+      this.isCatalogOpen = false;
+      this.activeCategory = null;
+    }
   }
 }

@@ -7,30 +7,9 @@
         routerLink="/"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }"
-        >Home</a
+        >EuroMotors</a
       >
-      <a routerLink="/shop" routerLinkActive="active">Shop</a>
     </nav>
-
-    <form
-      (ngSubmit)="onSearchChange()"
-      class="relative flex items-center w-full max-w-sm mx-4"
-    >
-      <input
-        type="search"
-        class="block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg"
-        placeholder="Part number or Product name"
-        name="search"
-        [(ngModel)]="shopParams.searchTerm"
-      />
-      <button
-        mat-icon-button
-        type="submit"
-        class="absolute inset-y-0 right-20 flex items-center pl-3"
-      >
-        <mat-icon>search</mat-icon>
-      </button>
-    </form>
 
     <div class="flex gap-3">
       <mat-card
@@ -80,45 +59,104 @@
   </div>
 
   <div class="max-w-(--breakpoint-2xl) mx-auto mt-2">
-    <mat-toolbar
-      color="primary"
-      class="flex overflow-x-auto rounded-t justify-between p-4"
-    >
-      @for (category of categories; track category.id) {
-      <div class="flex items-center">
-        <a
-          mat-button
-          [routerLink]="['/shop/category', category.id]"
-          [color]="activeCategory?.id === category.id ? 'accent' : 'primary'"
-          class="whitespace-nowrap font-medium"
-        >
-          {{ category.name }}
-        </a>
+    <div class="flex items-center bg-primary p-3 rounded-t">
+      <div class="flex items-center justify-between w-full">
         <button
-          mat-icon-button
-          [color]="activeCategory?.id === category.id ? 'accent' : 'primary'"
-          (click)="toggleSubcategories(category)"
+          mat-button
+          class="text-white catalog-button"
+          (click)="toggleCatalog()"
         >
-          <mat-icon>expand_more</mat-icon>
+          <mat-icon>menu</mat-icon>
+          <h3 class="text-xl">Catalog of products</h3>
         </button>
-      </div>
-      }
-    </mat-toolbar>
 
-    @if (subcategoriesVisible && subcategories.length > 0) {
+        <form
+          (ngSubmit)="onSearchChange()"
+          class="relative flex items-center w-full max-w-md mx-auto"
+        >
+          <input
+            type="search"
+            class="search-input block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white"
+            placeholder="Part number or Product name"
+            name="search"
+            [(ngModel)]="shopParams.searchTerm"
+          />
+          <button
+            mat-icon-button
+            type="submit"
+            class="absolute inset-y-0 right-20 flex items-center pl-3"
+            [routerLink]="['/shop']"
+            [queryParams]="{
+              sortOrder: 'name_asc',
+              pageNumber: 1,
+              pageSize: 10,
+              search: shopParams.searchTerm
+            }"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
+        </form>
+
+        <div class="w-[200px]"></div>
+      </div>
+    </div>
+
+    @if (isCatalogOpen) {
     <div
-      class="p-4 rounded-b grid grid-cols-4 absolute left-0 right-0 max-w-(--breakpoint-2xl) mx-auto bg-gray-400/40 backdrop-blur-sm"
+      class="catalog-container absolute left-0 right-0 bg-white z-50 max-w-(--breakpoint-2xl) mx-auto"
     >
-      @for (subcategory of subcategories; track subcategory.id) {
-      <a
-        mat-button
-        [routerLink]="['/shop/category', subcategory.id]"
-        class="text-center min-h-16 flex items-center justify-center text-primary-30"
-        (click)="closeSubcategories()"
-      >
-        {{ subcategory.name }}
-      </a>
-      }
+      <div class="min-h-[400px]">
+        <div class="flex">
+          <div class="w-1/4 border-r border-gray-200 category-list">
+            <mat-nav-list class="py-0">
+              @for (category of categories; track category.id) {
+              <mat-list-item
+                (mouseenter)="setActiveCategory(category)"
+                (click)="exploreCategory(category.id)"
+                [class.active-category]="activeCategory?.id === category.id"
+                class="hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
+              >
+                <div class="flex items-center justify-between w-full py-3 px-4">
+                  <span class="text-gray-700">{{ category.name }}</span>
+                  @if (category.subcategoryNames?.length) {
+                  <mat-icon class="text-gray-400">chevron_right</mat-icon>
+                  }
+                </div>
+              </mat-list-item>
+              <mat-divider></mat-divider>
+              }
+            </mat-nav-list>
+          </div>
+
+          @if (activeCategory && activeCategory.subcategoryNames?.length) {
+          <div class="w-3/4 bg-white">
+            <div class="border-b border-gray-200 p-4">
+              <h3 class="text-xl font-medium text-gray-800">
+                {{ activeCategory.name }}
+              </h3>
+            </div>
+            <div class="p-6">
+              <div class="grid grid-cols-3 gap-6">
+                @for (subName of activeCategory.subcategoryNames; track subName)
+                {
+                <a
+                  mat-button
+                  [routerLink]="[
+                    '/shop/category',
+                    getSubcategoryId(activeCategory.id, subName)
+                  ]"
+                  (click)="isCatalogOpen = false"
+                  class="subcategory-link text-left text-gray-600 py-2 px-4 rounded transition-colors duration-200"
+                >
+                  {{ subName }}
+                </a>
+                }
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
     </div>
     }
   </div>

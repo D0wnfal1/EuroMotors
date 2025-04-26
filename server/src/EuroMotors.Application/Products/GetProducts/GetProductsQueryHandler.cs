@@ -37,6 +37,25 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
             whereClause += " AND (LOWER(p.name) LIKE LOWER(@SearchPattern) OR LOWER(p.vendor_code) LIKE LOWER(@SearchPattern))";
         }
 
+        if (request.IsDiscounted == true)
+        {
+            whereClause += " AND p.discount > 0";
+        }
+
+        //if (request.IsNew == true)
+        //{
+        //    whereClause += " AND p.created_at >= @NewThreshold";
+        //}
+
+        //if (request.IsPopular == true)
+        //{
+        //    var 1:
+        //    whereClause += " AND p.view_count >= @PopularThreshold";
+
+        //    var 2: 
+        //     whereClause += " AND p.id IN (SELECT product_id FROM order_items GROUP BY product_id HAVING COUNT(*) >= @PopularThreshold)";
+        //}
+
         string countSql = $"""
                            SELECT COUNT(DISTINCT p.id)
                            FROM products p
@@ -138,7 +157,6 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
             splitOn: "ProductImageId,SpecificationName"
         );
 
-        // Get car model IDs for each product
         string carModelSql = @"
             SELECT 
                 product_id,

@@ -34,6 +34,8 @@ export class CategoryItemsComponent implements OnInit {
   shopParams = new ShopParams();
   pageSizeOptions = [5, 10, 15, 20];
   totalItems = 0;
+  sortOrder: string = 'name_asc';
+  searchTerm: string = '';
 
   ngOnInit() {
     this.route.params
@@ -50,10 +52,7 @@ export class CategoryItemsComponent implements OnInit {
           return this.categoryService.getCategoryById(categoryId).pipe(
             tap((category) => {
               this.category = category;
-
-              this.shopParams.categoryIds = [categoryId];
-
-              this.loadProducts();
+              this.loadProducts(categoryId);
             })
           );
         })
@@ -63,23 +62,62 @@ export class CategoryItemsComponent implements OnInit {
           console.error('Error loading category or products', err);
         },
       });
+
+    this.route.queryParams.subscribe((params) => {
+      if (params['sortOrder']) {
+        this.sortOrder = params['sortOrder'];
+      }
+      if (params['pageNumber']) {
+        this.shopParams.pageNumber = +params['pageNumber'];
+      }
+      if (params['pageSize']) {
+        this.shopParams.pageSize = +params['pageSize'];
+      }
+      if (params['searchTerm']) {
+        this.searchTerm = params['searchTerm'];
+      }
+    });
   }
 
-  loadProducts() {
-    this.productService.getProducts(this.shopParams).subscribe({
-      next: (response) => {
-        this.products = response;
-        this.totalItems = response.count;
-      },
-      error: (err) => {
-        console.error('Error loading products', err);
-      },
-    });
+  loadProducts(categoryId: string) {
+    this.productService
+      .getProductsByCategoryWithChildren(
+        categoryId,
+        this.sortOrder,
+        this.searchTerm,
+        this.shopParams.pageNumber,
+        this.shopParams.pageSize
+      )
+      .subscribe({
+        next: (response) => {
+          this.products = response;
+          this.totalItems = response.count;
+        },
+        error: (err) => {
+          console.error('Error loading products', err);
+        },
+      });
   }
 
   handlePageEvent(event: PageEvent) {
     this.shopParams.pageNumber = event.pageIndex + 1;
     this.shopParams.pageSize = event.pageSize;
-    this.loadProducts();
+    if (this.category) {
+      this.loadProducts(this.category.id);
+    }
+  }
+
+  onSortOrderChange(newSortOrder: string) {
+    this.sortOrder = newSortOrder;
+    if (this.category) {
+      this.loadProducts(this.category.id);
+    }
+  }
+
+  onSearch(searchTerm: string) {
+    this.searchTerm = searchTerm;
+    if (this.category) {
+      this.loadProducts(this.category.id);
+    }
   }
 }

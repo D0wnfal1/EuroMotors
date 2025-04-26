@@ -1,9 +1,11 @@
 ﻿using EuroMotors.Application.Abstractions.Pagination;
+using EuroMotors.Application.Products.CopyProduct;
 using EuroMotors.Application.Products.CreateProduct;
 using EuroMotors.Application.Products.DeleteProduct;
 using EuroMotors.Application.Products.GetProductById;
 using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Application.Products.GetProductsByBrandName;
+using EuroMotors.Application.Products.GetProductsByCategoryWithChildren;
 using EuroMotors.Application.Products.SetProductAvailability;
 using EuroMotors.Application.Products.UpdateProduct;
 using EuroMotors.Application.Products.UpdateProductCarModels;
@@ -32,11 +34,23 @@ public class ProductController : ControllerBase
         [FromQuery] List<Guid>? carModelIds,
         [FromQuery] string? sortOrder,
         [FromQuery] string? searchTerm,
+        [FromQuery] bool? isDiscounted,
+        [FromQuery] bool? isNew,
+        [FromQuery] bool? isPopular,
         CancellationToken cancellationToken,
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10)
     {
-        var query = new GetProductsQuery(categoryIds, carModelIds, sortOrder, searchTerm, pageNumber, pageSize);
+        var query = new GetProductsQuery(
+            categoryIds,
+            carModelIds,
+            sortOrder,
+            searchTerm,
+            isDiscounted,
+            isNew,
+            isPopular,
+            pageNumber,
+            pageSize);
 
         Result<Pagination<ProductResponse>> result = await _sender.Send(query, cancellationToken);
 
@@ -67,6 +81,19 @@ public class ProductController : ControllerBase
             request.Discount,
             request.Stock
         );
+
+        Result<Guid> result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess
+            ? CreatedAtAction(nameof(GetProductById), new { id = result.Value }, result.Value)
+            : BadRequest(result.Error);
+    }
+
+    [HttpPost("{id}/copy")]
+    [Authorize(Roles = Roles.Admin)]
+    public async Task<IActionResult> CopyProduct(Guid id, CancellationToken cancellationToken)
+    {
+        var command = new CopyProductCommand(id);
 
         Result<Guid> result = await _sender.Send(command, cancellationToken);
 
@@ -137,6 +164,22 @@ public class ProductController : ControllerBase
         [FromQuery] int pageSize = 10)
     {
         var query = new GetProductsByBrandNameQuery(brandName, sortOrder, searchTerm, pageNumber, pageSize);
+
+        Result<Pagination<ProductResponse>> result = await _sender.Send(query, cancellationToken);
+
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+    }
+
+    [HttpGet("by-category/{categoryId}")]
+    public async Task<IActionResult> GetProductsByCategoryWithChildren(
+        Guid categoryId,
+        [FromQuery] string? sortOrder,
+        [FromQuery] string? searchTerm,
+        CancellationToken cancellationToken,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10)
+    {
+        var query = new GetProductsByCategoryWithChildrenQuery(categoryId, sortOrder, searchTerm, pageNumber, pageSize);
 
         Result<Pagination<ProductResponse>> result = await _sender.Send(query, cancellationToken);
 

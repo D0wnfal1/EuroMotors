@@ -1,0 +1,59 @@
+.nav-button {
+  width: 40px !important;
+  height: 40px !important;
+
+  .mat-icon {
+    font-size: 24px !important;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: rgb(239 246 255) !important;
+
+    .mat-icon {
+      color: rgb(29 78 216) !important;
+    }
+  }
+
+  &:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite !important;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+::ng-deep {
+  .mat-mdc-raised-button {
+    height: 40px !important;
+
+    .mat-icon {
+      margin-right: 8px !important;
+    }
+
+    &.mat-accent {
+      background-color: #2563eb !important;
+      color: white !important;
+
+      &:hover {
+        background-color: #1d4ed8 !important;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+          0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+      }
+
+      &:active {
+        background-color: #1e40af !important;
+      }
+    }
+  }
+}

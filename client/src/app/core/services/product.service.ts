@@ -36,6 +36,21 @@ export class ProductService {
       params = params.append('searchTerm', shopParams.searchTerm);
     }
 
+    if (shopParams.isDiscounted !== undefined) {
+      params = params.append(
+        'isDiscounted',
+        shopParams.isDiscounted.toString()
+      );
+    }
+
+    if (shopParams.isNew !== undefined) {
+      params = params.append('isNew', shopParams.isNew.toString());
+    }
+
+    if (shopParams.isPopular !== undefined) {
+      params = params.append('isPopular', shopParams.isPopular.toString());
+    }
+
     params = params.append('pageSize', shopParams.pageSize.toString());
     params = params.append('pageNumber', shopParams.pageNumber.toString());
 
@@ -52,6 +67,16 @@ export class ProductService {
     return this.http.post<string>(`${this.baseUrl}/products`, product, {
       withCredentials: true,
     });
+  }
+
+  copyProduct(id: string): Observable<string> {
+    return this.http.post<string>(
+      `${this.baseUrl}/products/${id}/copy`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
   }
 
   updateProduct(id: string, product: Product): Observable<void> {
@@ -111,6 +136,31 @@ export class ProductService {
       {
         params,
       }
+    );
+  }
+
+  getProductsByCategoryWithChildren(
+    categoryId: string,
+    sortOrder?: string,
+    searchTerm?: string,
+    pageNumber: number = 1,
+    pageSize: number = 10
+  ): Observable<Pagination<Product>> {
+    let params = new HttpParams()
+      .set('pageNumber', pageNumber.toString())
+      .set('pageSize', pageSize.toString());
+
+    if (sortOrder) {
+      params = params.set('sortOrder', sortOrder);
+    }
+
+    if (searchTerm) {
+      params = params.set('searchTerm', searchTerm);
+    }
+
+    return this.http.get<Pagination<Product>>(
+      `${this.baseUrl}/products/by-category/${categoryId}`,
+      { params }
     );
   }
 }

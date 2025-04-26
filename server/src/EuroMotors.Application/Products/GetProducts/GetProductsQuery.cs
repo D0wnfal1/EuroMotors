@@ -9,6 +9,9 @@ public sealed record GetProductsQuery(
     List<Guid>? CarModelIds,
     string? SortOrder,
     string? SearchTerm,
+    bool? IsDiscounted = null,
+    bool? IsNew = null,
+    bool? IsPopular = null,
     int PageNumber = 1,
     int PageSize = 10
 ) : IQuery<Pagination<ProductResponse>>;
