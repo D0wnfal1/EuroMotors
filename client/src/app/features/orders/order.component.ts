@@ -29,12 +29,21 @@ export class OrderComponent implements OnInit {
 
   orders: Order[] = [];
   ngOnInit(): void {
-    this.accountService.getUserInfo().subscribe((user) => {
-      if (user) {
-        this.orderService.getUserOrders(user.id).subscribe((orders) => {
-          this.orders = orders;
-        });
-      }
+    this.accountService.checkAuth().subscribe({
+      next: (auth) => {
+        if (auth.user) {
+          this.loadOrders(auth.user.email);
+        }
+      },
+      error: (error) => {
+        console.error('Error loading user info:', error);
+      },
+    });
+  }
+
+  loadOrders(email: string) {
+    this.orderService.getUserOrders(email).subscribe((orders) => {
+      this.orders = orders;
     });
   }
 }

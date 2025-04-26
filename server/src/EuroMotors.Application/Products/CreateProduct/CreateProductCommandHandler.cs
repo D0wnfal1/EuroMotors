@@ -26,7 +26,7 @@ internal sealed class CreateProductCommandHandler(IProductRepository productRepo
             {
                 return Result.Failure<Guid>(CarModelErrors.ModelNotFound(carModelId));
             }
-            
+
             carModels.Add(carModel);
         }
 

@@ -23,7 +23,7 @@
     </div>
 
     <mat-form-field appearance="fill" class="w-full mb-3">
-      <mat-label>CITY</mat-label>
+      <mat-label>City</mat-label>
       <input
         matInput
         formControlName="city"
@@ -36,7 +36,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="w-full mb-3">
-      <mat-label>DELIVERY METHOD</mat-label>
+      <mat-label>Delivery Method</mat-label>
       <mat-select
         formControlName="deliveryMethod"
         (selectionChange)="onDeliveryMethodChange($event.value)"
@@ -56,7 +56,7 @@
       *ngIf="checkoutForm.get('deliveryMethod')?.value === deliveryMethods[1]"
     >
       <mat-form-field appearance="fill" class="w-full">
-        <mat-label>SELECT WAREHOUSE*</mat-label>
+        <mat-label>Select Warehouse*</mat-label>
         <input
           type="text"
           matInput
@@ -93,7 +93,7 @@
     </ng-container>
 
     <mat-form-field appearance="fill" class="w-full mb-3">
-      <mat-label>PHONE NUMBER</mat-label>
+      <mat-label>Phone Number</mat-label>
       <input matInput formControlName="phoneNumber" placeholder="+380" />
       <mat-error *ngIf="checkoutForm.get('phoneNumber')?.hasError('required')">
         Enter a phone number
@@ -104,7 +104,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="w-full mb-3">
-      <mat-label>E-MAIL</mat-label>
+      <mat-label>E-mail</mat-label>
       <input matInput formControlName="email" placeholder="example@mail.com" />
       <mat-error *ngIf="checkoutForm.get('email')?.hasError('required')">
         Enter email
@@ -115,7 +115,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="w-full mb-4">
-      <mat-label>PAYMENT METHOD</mat-label>
+      <mat-label>Payment Method</mat-label>
       <mat-select formControlName="paymentMethod">
         <mat-option *ngFor="let method of paymentMethods" [value]="method">
           {{ method | payment }}

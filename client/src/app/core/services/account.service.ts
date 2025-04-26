@@ -1,147 +1,175 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { User } from '../../shared/models/user';
 import {
+  BehaviorSubject,
   catchError,
+  filter,
   map,
-  Subject,
+  Observable,
+  of,
   switchMap,
   take,
   tap,
   throwError,
 } from 'rxjs';
+import {
+  LoginRequest,
+  RegisterRequest,
+  UpdateUserRequest,
+  AuthenticationResponse,
+  AuthState,
+} from '../../shared/models/account';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AccountService {
-  baseUrl = environment.apiUrl;
-  private http = inject(HttpClient);
-  currentUser = signal<User | null>(null);
-  isRefreshing = signal<boolean>(false);
-  private refreshTokenSubject = new Subject<void>();
-  isAdmin = computed(() => {
+  private readonly baseUrl = environment.apiUrl;
+  private readonly http = inject(HttpClient);
+
+  readonly currentUser = signal<User | null>(null);
+  private readonly isRefreshing = signal<boolean>(false);
+  private readonly refreshTokenSubject = new BehaviorSubject<boolean | null>(
+    null
+  );
+
+  readonly isAdmin = computed(() => {
     const roles = this.currentUser()?.roles;
     return Array.isArray(roles) ? roles.includes('Admin') : roles === 'Admin';
   });
 
-  login(values: any) {
+  readonly isAuthenticated = computed(() => {
+    return this.currentUser() !== null;
+  });
+
+  login(values: LoginRequest): Observable<User> {
     return this.http
-      .post(this.baseUrl + '/users/login', values, {
+      .post<AuthenticationResponse>(this.baseUrl + '/users/login', values, {
         withCredentials: true,
       })
       .pipe(
-        switchMap(() => {
-          return this.getUserInfo();
+        switchMap(() => this.checkAuth()),
+        map((state) => {
+          if (!state.user) {
+            throw new Error('Login failed');
+          }
+          return state.user;
         }),
-        catchError((error) => {
-          console.error('Login error:', error);
-          return throwError(() => new Error(error));
-        })
+        catchError(this.handleError)
       );
   }
 
-  refreshToken() {
+  refreshToken(): Observable<any> {
     if (this.isRefreshing()) {
       return this.refreshTokenSubject.pipe(
+        filter((result): result is boolean => result !== null),
         take(1),
-        switchMap(() => {
-          return this.http
-            .post(this.baseUrl + '/auth/refresh', {}, { withCredentials: true })
-            .pipe(
-              catchError((error) => {
-                console.error('Refresh token error:', error);
-                return throwError(() => new Error(error));
-              })
+        switchMap((success) => {
+          if (!success) {
+            return throwError(
+              () => new Error('Previous refresh attempt failed')
             );
+          }
+          return this.http.post(
+            `${this.baseUrl}/auth/refresh`,
+            {},
+            { withCredentials: true }
+          );
         })
       );
     }
 
     this.isRefreshing.set(true);
-    this.refreshTokenSubject.next();
 
     return this.http
-      .post(this.baseUrl + '/auth/refresh', {}, { withCredentials: true })
+      .post(`${this.baseUrl}/auth/refresh`, {}, { withCredentials: true })
       .pipe(
-        switchMap(() => {
+        tap(() => {
           this.isRefreshing.set(false);
-          this.refreshTokenSubject.next();
-          return this.getUserInfo();
+          this.refreshTokenSubject.next(true);
         }),
         catchError((error) => {
           this.isRefreshing.set(false);
-          this.refreshTokenSubject.next();
-          console.error('Refresh token error:', error);
-          return throwError(() => new Error(error));
-        })
-      );
-  }
-  register(values: any) {
-    return this.http.post(this.baseUrl + '/users/register', values, {
-      withCredentials: true,
-    });
-  }
-
-  getUserInfo() {
-    return this.http
-      .get<User>(this.baseUrl + '/users/email', { withCredentials: true })
-      .pipe(
-        map((user) => {
-          this.currentUser.set(user);
-          return user;
+          this.refreshTokenSubject.next(false);
+          return throwError(() => error);
         })
       );
   }
 
-  updateUserInfo(values: {
-    email: string;
-    firstName: string;
-    lastName: string;
-    phoneNumber: string;
-    city: string;
-  }) {
-    const body = {
-      email: values.email,
-      firstName: values.firstName,
-      lastName: values.lastName,
-      phoneNumber: values.phoneNumber,
-      city: values.city,
-    };
+  checkAuth(): Observable<AuthState> {
+    if (this.currentUser()) {
+      return of({
+        isAuthenticated: true,
+        user: this.currentUser(),
+      });
+    }
 
     return this.http
-      .put(this.baseUrl + '/users/update', body, { withCredentials: true })
+      .get<AuthState>(this.baseUrl + '/auth/status', { withCredentials: true })
       .pipe(
-        tap(() => {
-          this.getUserInfo().subscribe();
+        tap((state) => {
+          this.currentUser.set(state.user);
+        }),
+        catchError((error) => {
+          this.currentUser.set(null);
+          return throwError(() => error);
         })
       );
   }
 
-  logout() {
+  register(values: RegisterRequest): Observable<any> {
+    return this.http
+      .post(this.baseUrl + '/users/register', values, {
+        withCredentials: true,
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  updateUserInfo(values: UpdateUserRequest): Observable<User> {
+    return this.http
+      .put<void>(this.baseUrl + '/users/update', values, {
+        withCredentials: true,
+      })
+      .pipe(
+        switchMap(() => this.checkAuth()),
+        map((state) => {
+          if (!state.user) {
+            throw new Error('Update failed');
+          }
+          return state.user;
+        }),
+        catchError(this.handleError)
+      );
+  }
+
+  logout(): Observable<any> {
     return this.http
       .post(this.baseUrl + '/users/logout', {}, { withCredentials: true })
       .pipe(
         tap(() => {
           this.currentUser.set(null);
           this.deleteCookie('AccessToken');
+          this.deleteCookie('RefreshToken');
         }),
-        catchError((error) => {
-          console.error('Logout error:', error);
-          return throwError(() => new Error(error));
-        })
+        catchError(this.handleError)
       );
   }
 
-  private deleteCookie(name: string) {
+  private deleteCookie(name: string): void {
     document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   }
 
-  getAuthState() {
-    return this.http.get<{ isAuthenticated: boolean }>(
-      this.baseUrl + '/auth/auth-status',
-      { withCredentials: true }
-    );
+  private handleError(error: HttpErrorResponse) {
+    let errorMessage = 'An error occurred';
+
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = error.error.message;
+    } else {
+      errorMessage = error.error?.error || error.message;
+    }
+
+    return throwError(() => new Error(errorMessage));
   }
 }

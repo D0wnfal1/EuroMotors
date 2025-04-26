@@ -1,10 +1,8 @@
 using EuroMotors.Api.Controllers.Categories;
-using EuroMotors.Application.Abstractions.Pagination;
 using EuroMotors.Application.Categories.CreateCategory;
 using EuroMotors.Application.Categories.DeleteCategory;
 using EuroMotors.Application.Categories.GetByIdCategory;
 using EuroMotors.Application.Categories.GetCategories;
-using EuroMotors.Application.Categories.SetCategoryAvailability;
 using EuroMotors.Application.Categories.UpdateCategory;
 using Microsoft.AspNetCore.Http;
 
@@ -34,7 +32,7 @@ public class CategoryControllerTests
         // Arrange
         var categories = new List<CategoryResponse>
         {
-            new(Guid.NewGuid(), "Test Category", true, null, null,"test-category")
+            new(Guid.NewGuid(), "Test Category", null, null,"test-category")
         };
 
         _sender.Send(Arg.Any<GetCategoriesQuery>(), Arg.Any<CancellationToken>())
@@ -71,7 +69,7 @@ public class CategoryControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var category = new CategoryResponse(Guid.NewGuid(), "Test Category", true, null, null, "test-category");
+        var category = new CategoryResponse(Guid.NewGuid(), "Test Category", null, null, "test-category");
 
         _sender.Send(Arg.Any<GetCategoryByIdQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(category));
@@ -211,48 +209,6 @@ public class CategoryControllerTests
         badRequestResult.Value.ShouldBe(error);
     }
 
-    [Fact]
-    public async Task ArchiveCategory_ShouldReturnNoContent_WhenArchivingSucceeds()
-    {
-        // Arrange
-        var id = Guid.NewGuid();
-        var request = new SetCategoryAvailabilityRequest { IsAvailable = false };
-
-        _sender.Send(Arg.Any<SetCategoryAvailabilityCommand>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success());
-
-        // Act
-        IActionResult result = await _controller.ArchiveCategory(id, request, CancellationToken.None);
-
-        // Assert
-        result.ShouldBeOfType<NoContentResult>();
-
-        await _sender.Received(1).Send(
-            Arg.Is<SetCategoryAvailabilityCommand>(cmd =>
-                cmd.CategoryId == id &&
-                cmd.IsAvailable == request.IsAvailable),
-            Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task ArchiveCategory_ShouldReturnBadRequest_WhenArchivingFails()
-    {
-        // Arrange
-        var id = Guid.NewGuid();
-        var request = new SetCategoryAvailabilityRequest { IsAvailable = false };
-
-        var error = Error.NotFound("Category.NotFound", "Category not found");
-
-        _sender.Send(Arg.Any<SetCategoryAvailabilityCommand>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Failure(error));
-
-        // Act
-        IActionResult result = await _controller.ArchiveCategory(id, request, CancellationToken.None);
-
-        // Assert
-        BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();
-        badRequestResult.Value.ShouldBe(error);
-    }
 
     [Fact]
     public async Task DeleteCategory_ShouldReturnNoContent_WhenDeletionSucceeds()

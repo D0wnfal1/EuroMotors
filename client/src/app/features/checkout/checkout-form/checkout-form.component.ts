@@ -92,26 +92,7 @@ export class CheckoutFormComponent implements OnInit {
       paymentMethod: [PaymentMethod.Prepaid, Validators.required],
     });
 
-    this.accountService.getUserInfo().subscribe((user) => {
-      if (user) {
-        this.currentUser = user;
-        this.checkoutForm.patchValue({
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          phoneNumber: user.phoneNumber,
-          city: user.city,
-        });
-
-        if (
-          user.city &&
-          this.checkoutForm.get('deliveryMethod')?.value ===
-            this.deliveryMethods[1]
-        ) {
-          this.loadWarehouses(user.city);
-        }
-      }
-    });
+    this.loadUserInfo();
 
     this.checkoutForm
       .get('warehouseQuery')
@@ -260,6 +241,25 @@ export class CheckoutFormComponent implements OnInit {
       },
       error: (orderError) => {
         console.error('Amends upon completion of the agreement:', orderError);
+      },
+    });
+  }
+
+  private loadUserInfo() {
+    this.accountService.checkAuth().subscribe({
+      next: (auth) => {
+        if (auth.user) {
+          this.checkoutForm.patchValue({
+            firstName: auth.user.firstName,
+            lastName: auth.user.lastName,
+            email: auth.user.email,
+            phoneNumber: auth.user.phoneNumber || '',
+            city: auth.user.city || '',
+          });
+        }
+      },
+      error: (error) => {
+        console.error('Error loading user info:', error);
       },
     });
   }

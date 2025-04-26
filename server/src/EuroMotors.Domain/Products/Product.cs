@@ -1,7 +1,7 @@
 ﻿using EuroMotors.Domain.Abstractions;
+using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.ProductImages;
 using EuroMotors.Domain.Products.Events;
-using EuroMotors.Domain.CarModels;
 
 namespace EuroMotors.Domain.Products;
 
@@ -13,7 +13,7 @@ public sealed class Product : Entity
     }
 
     public Guid CategoryId { get; private set; }
-    
+
     private readonly List<CarModel> _carModels = [];
     public IReadOnlyCollection<CarModel> CarModels => _carModels.AsReadOnly();
 
@@ -132,9 +132,9 @@ public sealed class Product : Entity
         var uniqueNewModels = newCarModels
             .DistinctBy(cm => cm.Id)
             .ToList();
-        
+
         _carModels.Clear();
-        
+
         foreach (CarModel model in uniqueNewModels)
         {
             _carModels.Add(model);

@@ -1,5 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatCard } from '@angular/material/card';
 import { AccountService } from '../../../core/services/account.service';
@@ -21,17 +26,30 @@ export class RegisterComponent {
 
   registerForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
-    password: ['', Validators.required],
   });
 
   onSubmit() {
-    this.accountService.register(this.registerForm.value).subscribe({
-      next: () => {
-        this.router.navigateByUrl('/account/login');
-      },
-      error: (errors) => (this.validationErrors = errors),
-    });
+    if (this.registerForm.valid) {
+      const formValue = this.registerForm.value;
+
+      const registerData = {
+        email: formValue.email!,
+        password: formValue.password!,
+        firstName: formValue.firstName!,
+        lastName: formValue.lastName!,
+      };
+
+      this.accountService.register(registerData).subscribe({
+        next: () => {
+          this.router.navigateByUrl('/account/login');
+        },
+        error: (error) => {
+          console.error('Registration failed:', error);
+        },
+      });
+    }
   }
 }

@@ -11,7 +11,7 @@ internal sealed class GetCarModelSelectionQueryHandler(IDbConnectionFactory dbCo
     public async Task<Result<CarModelSelectionResponse>> Handle(GetCarModelSelectionQuery request, CancellationToken cancellationToken)
     {
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
-        
+
         Guid? brandIdFromName = null;
         if (!string.IsNullOrEmpty(request.Brand))
         {
@@ -20,7 +20,7 @@ internal sealed class GetCarModelSelectionQueryHandler(IDbConnectionFactory dbCo
         }
 
         Guid? effectiveBrandId = request.BrandId ?? brandIdFromName;
-        
+
         string sql = @"
             SELECT DISTINCT cm.id 
             FROM car_models cm

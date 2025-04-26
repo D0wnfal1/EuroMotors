@@ -74,27 +74,6 @@ export class ProductService {
     );
   }
 
-  addCarModelToProduct(
-    productId: string,
-    carModelId: string
-  ): Observable<void> {
-    return this.http.post<void>(
-      `${this.baseUrl}/products/${productId}/car-models/${carModelId}`,
-      {},
-      { withCredentials: true }
-    );
-  }
-
-  removeCarModelFromProduct(
-    productId: string,
-    carModelId: string
-  ): Observable<void> {
-    return this.http.delete<void>(
-      `${this.baseUrl}/products/${productId}/car-models/${carModelId}`,
-      { withCredentials: true }
-    );
-  }
-
   updateProductCarModels(
     productId: string,
     carModelIds: string[]

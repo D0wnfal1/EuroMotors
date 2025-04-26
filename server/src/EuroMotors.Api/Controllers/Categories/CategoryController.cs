@@ -4,7 +4,6 @@ using EuroMotors.Application.Categories.DeleteCategory;
 using EuroMotors.Application.Categories.GetByIdCategory;
 using EuroMotors.Application.Categories.GetCategories;
 using EuroMotors.Application.Categories.GetHierarchicalCategories;
-using EuroMotors.Application.Categories.SetCategoryAvailability;
 using EuroMotors.Application.Categories.UpdateCategory;
 using EuroMotors.Domain.Abstractions;
 using MediatR;
@@ -80,16 +79,6 @@ public class CategoryController : ControllerBase
         return result.IsSuccess ? NoContent() : BadRequest(result.Error);
     }
 
-    [HttpPatch("{id}")]
-    [Authorize(Roles = Roles.Admin)]
-    public async Task<IActionResult> ArchiveCategory(Guid id, [FromBody] SetCategoryAvailabilityRequest request, CancellationToken cancellationToken)
-    {
-        var command = new SetCategoryAvailabilityCommand(id, request.IsAvailable);
-
-        Result result = await _sender.Send(command, cancellationToken);
-
-        return result.IsSuccess ? NoContent() : BadRequest(result.Error);
-    }
 
     [HttpDelete("{id}")]
     [Authorize(Roles = Roles.Admin)]

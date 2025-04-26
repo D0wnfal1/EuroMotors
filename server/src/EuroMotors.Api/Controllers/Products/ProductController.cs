@@ -1,11 +1,9 @@
 ﻿using EuroMotors.Application.Abstractions.Pagination;
-using EuroMotors.Application.Products.AddCarModelToProduct;
 using EuroMotors.Application.Products.CreateProduct;
 using EuroMotors.Application.Products.DeleteProduct;
 using EuroMotors.Application.Products.GetProductById;
 using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Application.Products.GetProductsByBrandName;
-using EuroMotors.Application.Products.RemoveCarModelFromProduct;
 using EuroMotors.Application.Products.SetProductAvailability;
 using EuroMotors.Application.Products.UpdateProduct;
 using EuroMotors.Application.Products.UpdateProductCarModels;
@@ -117,29 +115,7 @@ public class ProductController : ControllerBase
 
         return result.IsSuccess ? NoContent() : NotFound(result.Error);
     }
-    
-    [HttpPost("{productId}/car-models/{carModelId}")]
-    [Authorize(Roles = Roles.Admin)]
-    public async Task<IActionResult> AddCarModelToProduct(Guid productId, Guid carModelId, CancellationToken cancellationToken)
-    {
-        var command = new AddCarModelToProductCommand(productId, carModelId);
 
-        Result result = await _sender.Send(command, cancellationToken);
-
-        return result.IsSuccess ? NoContent() : BadRequest(result.Error);
-    }
-    
-    [HttpDelete("{productId}/car-models/{carModelId}")]
-    [Authorize(Roles = Roles.Admin)]
-    public async Task<IActionResult> RemoveCarModelFromProduct(Guid productId, Guid carModelId, CancellationToken cancellationToken)
-    {
-        var command = new RemoveCarModelFromProductCommand(productId, carModelId);
-
-        Result result = await _sender.Send(command, cancellationToken);
-
-        return result.IsSuccess ? NoContent() : BadRequest(result.Error);
-    }
-    
     [HttpPut("{productId}/car-models")]
     [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> UpdateProductCarModels(Guid productId, [FromBody] List<Guid> carModelIds, CancellationToken cancellationToken)

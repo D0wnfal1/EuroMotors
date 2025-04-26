@@ -13,8 +13,6 @@ public class Category : Entity
 
     public string Name { get; private set; }
 
-    public bool IsAvailable { get; private set; }
-
     public string? ImagePath { get; private set; }
 
     public Guid? ParentCategoryId { get; private set; }
@@ -39,7 +37,6 @@ public class Category : Entity
             Id = Guid.NewGuid(),
             Name = name,
 
-            IsAvailable = true,
             ParentCategoryId = parentCategoryId
         };
 
@@ -75,24 +72,6 @@ public class Category : Entity
         ParentCategory = parent;
     }
 
-    public void SetAvailability(bool isAvailable)
-    {
-        if (IsAvailable == isAvailable)
-        {
-            return;
-        }
-
-        IsAvailable = isAvailable;
-
-        if (isAvailable)
-        {
-            RaiseDomainEvent(new CategoryIsAvailableDomainEvent(Id));
-        }
-        else
-        {
-            RaiseDomainEvent(new CategoryIsNotAvailableDomainEvent(Id));
-        }
-    }
 
     public void ChangeName(string name)
     {

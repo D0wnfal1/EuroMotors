@@ -110,10 +110,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnType("text")
                         .HasColumnName("image_path");
 
-                    b.Property<bool>("IsAvailable")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_available");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)

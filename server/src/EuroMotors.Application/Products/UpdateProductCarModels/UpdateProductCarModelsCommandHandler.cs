@@ -39,4 +39,4 @@ internal sealed class UpdateProductCarModelsCommandHandler(
 
         return Result.Success();
     }
-} 
+}

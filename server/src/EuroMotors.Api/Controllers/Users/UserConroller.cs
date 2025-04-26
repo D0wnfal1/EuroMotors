@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using EuroMotors.Application.Users.GetByEmail;
 using EuroMotors.Application.Users.Login;
 using EuroMotors.Application.Users.Logout;
 using EuroMotors.Application.Users.Register;
@@ -20,29 +19,6 @@ public class UsersController : ControllerBase
     public UsersController(ISender sender)
     {
         _sender = sender;
-    }
-
-    [HttpGet("email")]
-    [AllowAnonymous]
-    public async Task<IActionResult> GetByEmail(CancellationToken cancellationToken)
-    {
-        if (User?.Identity is null || !User.Identity.IsAuthenticated)
-        {
-            return Ok(null);
-        }
-
-        string? email = User.FindFirst(ClaimTypes.Email)?.Value;
-
-        if (string.IsNullOrEmpty(email))
-        {
-            return Unauthorized("Email not found in token");
-        }
-
-        var query = new GetUserByEmailQuery(email);
-
-        Result<UserResponse> result = await _sender.Send(query, cancellationToken);
-
-        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 
     [HttpPost("login")]
@@ -85,7 +61,7 @@ public class UsersController : ControllerBase
 
         if (string.IsNullOrEmpty(email))
         {
-            return Unauthorized("Email not found in token");
+            return Unauthorized(new { error = "Email not found in token" });
         }
 
         var command = new UpdateUserInformationCommand(email, request.Firstname, request.LastName, request.PhoneNumber, request.City);

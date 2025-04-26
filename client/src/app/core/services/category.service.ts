@@ -69,12 +69,4 @@ export class CategoryService {
       withCredentials: true,
     });
   }
-
-  setCategoryAvailability(id: string, isAvailable: boolean): Observable<void> {
-    return this.http.patch<void>(
-      `${this.baseUrl}/categories/${id}`,
-      { isAvailable },
-      { withCredentials: true }
-    );
-  }
 }

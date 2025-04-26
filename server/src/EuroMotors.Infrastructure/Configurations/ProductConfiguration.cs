@@ -1,6 +1,6 @@
 ﻿using EuroMotors.Domain.Abstractions;
-using EuroMotors.Domain.Products;
 using EuroMotors.Domain.CarModels;
+using EuroMotors.Domain.Products;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -63,7 +63,7 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
             .WithOne()
             .HasForeignKey("ProductId")
             .OnDelete(DeleteBehavior.Cascade);
-            
+
         builder.HasMany(p => p.CarModels)
             .WithMany(cm => cm.Products)
             .UsingEntity(

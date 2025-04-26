@@ -57,7 +57,7 @@ internal sealed class GetProductsByBrandNameQueryHandler(IDbConnectionFactory db
                           """;
 
         int totalItems = await connection.ExecuteScalarAsync<int>(
-            countSql, 
+            countSql,
             new
             {
                 CarModelIds = carModelIdsList.ToArray(),
@@ -184,4 +184,4 @@ internal sealed class GetProductsByBrandNameQueryHandler(IDbConnectionFactory db
 
         return Result.Success(paginatedResult);
     }
-} 
+}

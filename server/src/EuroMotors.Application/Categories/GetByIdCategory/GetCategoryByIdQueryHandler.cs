@@ -19,7 +19,6 @@ internal sealed class GetCategoryByIdQueryHandler(IDbConnectionFactory dbConnect
              SELECT
                  id AS {nameof(CategoryResponse.Id)},
                  name AS {nameof(CategoryResponse.Name)},
-                 is_available AS {nameof(CategoryResponse.IsAvailable)},
                  image_path AS {nameof(CategoryResponse.ImagePath)},
                  parent_category_id AS {nameof(CategoryResponse.ParentCategoryId)},
                  slug AS {nameof(CategoryResponse.Slug)}

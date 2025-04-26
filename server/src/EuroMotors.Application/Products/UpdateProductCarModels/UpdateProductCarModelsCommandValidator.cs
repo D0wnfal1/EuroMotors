@@ -20,4 +20,4 @@ internal sealed class UpdateProductCarModelsCommandValidator : AbstractValidator
             .Must(x => x != Guid.Empty)
             .WithMessage("Car model ID cannot be empty");
     }
-} 
+}

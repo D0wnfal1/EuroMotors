@@ -1,6 +1,9 @@
-﻿namespace EuroMotors.Api.Controllers.Users;
+﻿using EuroMotors.Application.Users.GetByEmail;
 
-public class AuthState
+namespace EuroMotors.Api.Controllers.Users;
+
+public sealed record AuthState
 {
-    public bool IsAuthenticated { get; set; }
+    public required bool IsAuthenticated { get; init; }
+    public UserResponse? User { get; init; }
 }

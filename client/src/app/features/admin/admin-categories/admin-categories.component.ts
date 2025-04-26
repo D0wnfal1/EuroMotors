@@ -192,33 +192,6 @@ export class AdminCategoriesComponent implements OnInit, OnDestroy {
     });
   }
 
-  toggleAvailability(node: FlatCategoryNode): void {
-    const newAvailability = !node.isAvailable;
-    this.categoryService
-      .setCategoryAvailability(node.id, newAvailability)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          const index = this.treeControl.dataNodes.findIndex(
-            (n) => n.id === node.id
-          );
-          if (index >= 0) {
-            this.treeControl.dataNodes[index].isAvailable = newAvailability;
-          }
-
-          const updatedData = [...this.dataSource.data];
-          const targetNode = this.findNodeById(updatedData, node.id);
-          if (targetNode) {
-            targetNode.isAvailable = newAvailability;
-            this.dataSource.data = updatedData;
-          }
-        },
-        error: (err) => {
-          console.error('Failed to update category availability', err);
-        },
-      });
-  }
-
   findNodeById(nodes: CategoryNode[], id: string): CategoryNode | null {
     for (const node of nodes) {
       if (node.id === id) {

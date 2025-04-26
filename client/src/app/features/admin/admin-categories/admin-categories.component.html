@@ -45,14 +45,6 @@
           </div>
           <span class="flex-grow truncate">{{ node.name }}</span>
           <div class="flex items-center gap-3 mr-4">
-            <mat-slide-toggle
-              [checked]="node.isAvailable"
-              (change)="toggleAvailability(node)"
-              color="primary"
-              class="ml-2"
-              (click)="$event.stopPropagation()"
-            ></mat-slide-toggle>
-
             <button
               mat-button
               [routerLink]="['/admin/categories/edit', node.id]"
@@ -104,13 +96,6 @@
             class="flex items-center gap-3 mr-4"
             (click)="$event.stopPropagation()"
           >
-            <mat-slide-toggle
-              [checked]="node.isAvailable"
-              (change)="toggleAvailability(node)"
-              color="primary"
-              class="ml-2"
-            ></mat-slide-toggle>
-
             <button
               mat-button
               [routerLink]="['/admin/categories/edit', node.id]"

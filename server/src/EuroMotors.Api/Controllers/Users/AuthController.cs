@@ -1,4 +1,7 @@
-﻿using EuroMotors.Application.Users.Login;
+﻿using System.Security.Claims;
+using System.Security.Principal;
+using EuroMotors.Application.Users.GetByEmail;
+using EuroMotors.Application.Users.Login;
 using EuroMotors.Application.Users.RefreshToken;
 using EuroMotors.Domain.Abstractions;
 using MediatR;
@@ -6,9 +9,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EuroMotors.Api.Controllers.Users;
+
 [Route("api/auth")]
 [ApiController]
-public class AuthController : ControllerBase
+public sealed class AuthController : ControllerBase
 {
     private readonly ISender _sender;
 
@@ -18,27 +22,67 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("refresh")]
+    [ProducesResponseType(typeof(AuthenticationResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> RefreshToken(CancellationToken cancellationToken)
     {
         string? refreshToken = Request.Cookies["RefreshToken"];
 
         if (string.IsNullOrEmpty(refreshToken))
         {
-            return NoContent();
+            return Unauthorized(new { error = "No refresh token provided" });
         }
 
         var query = new RefreshTokenCommand(refreshToken);
 
         Result<AuthenticationResponse> result = await _sender.Send(query, cancellationToken);
 
-        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        if (!result.IsSuccess)
+        {
+            Response.Cookies.Delete("RefreshToken");
+            Response.Cookies.Delete("AccessToken");
+
+            return Unauthorized(new { error = result.Error });
+        }
+
+        return Ok(result.Value);
     }
 
-    [HttpGet("auth-status")]
+    [HttpGet("status")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(object), 200)]
-    public IActionResult GetAuthState()
+    [ProducesResponseType(typeof(AuthState), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAuthState(CancellationToken cancellationToken)
     {
-        return Ok(new AuthState { IsAuthenticated = User.Identity?.IsAuthenticated ?? false });
+        IIdentity? identity = User.Identity;
+
+        if (identity?.IsAuthenticated != true)
+        {
+            return Ok(new AuthState
+            {
+                IsAuthenticated = false,
+                User = null
+            });
+        }
+
+        string? email = User.FindFirst(ClaimTypes.Email)?.Value;
+
+        if (string.IsNullOrEmpty(email))
+        {
+            return Ok(new AuthState
+            {
+                IsAuthenticated = false,
+                User = null
+            });
+        }
+
+        var query = new GetUserByEmailQuery(email);
+        Result<UserResponse> result = await _sender.Send(query, cancellationToken);
+
+        return Ok(new AuthState
+        {
+            IsAuthenticated = true,
+            User = result.IsSuccess ? result.Value : null
+        });
     }
 }
+

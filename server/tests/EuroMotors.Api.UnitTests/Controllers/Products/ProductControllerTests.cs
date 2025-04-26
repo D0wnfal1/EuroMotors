@@ -6,7 +6,6 @@ using EuroMotors.Application.Products.GetProductById;
 using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Application.Products.SetProductAvailability;
 using EuroMotors.Application.Products.UpdateProduct;
-using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Categories;
 using Microsoft.AspNetCore.Http;
 
@@ -192,7 +191,7 @@ public class ProductControllerTests
                 cmd.Name == request.Name &&
                 cmd.VendorCode == request.VendorCode &&
                 cmd.CategoryId == request.CategoryId &&
-                cmd.CarModelIds.SequenceEqual(request.CarModelIds) && 
+                cmd.CarModelIds.SequenceEqual(request.CarModelIds) &&
                 cmd.Price == request.Price &&
                 cmd.Discount == request.Discount &&
                 cmd.Stock == request.Stock),

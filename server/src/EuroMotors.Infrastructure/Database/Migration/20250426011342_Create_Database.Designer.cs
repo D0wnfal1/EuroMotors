@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250423210302_Create_Database")]
+    [Migration("20250426011342_Create_Database")]
     partial class Create_Database
     {
         /// <inheritdoc />
@@ -112,10 +112,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     b.Property<string>("ImagePath")
                         .HasColumnType("text")
                         .HasColumnName("image_path");
-
-                    b.Property<bool>("IsAvailable")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_available");
 
                     b.Property<string>("Name")
                         .IsRequired()

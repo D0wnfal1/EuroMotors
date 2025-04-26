@@ -10,4 +10,4 @@ public sealed record GetProductsByBrandNameQuery(
     string? SearchTerm,
     int PageNumber = 1,
     int PageSize = 10
-) : IQuery<Pagination<ProductResponse>>; 
+) : IQuery<Pagination<ProductResponse>>;

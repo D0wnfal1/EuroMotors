@@ -42,7 +42,7 @@ public static class SeedDataExtensions
             "Volvo", "Tesla", "Porsche", "Nissan", "Mazda",
             "Lexus", "Subaru", "Jeep", "Dodge", "Fiat",
             "Alfa Romeo", "Jaguar", "Land Rover", "Bentley", "Bugatti",
-            "Ferrari", "Lamborghini", "Maserati", "Rolls-Royce", "Aston Martin", 
+            "Ferrari", "Lamborghini", "Maserati", "Rolls-Royce", "Aston Martin",
             "McLaren", "Mini", "Cadillac", "Chrysler", "GMC",
             "Acura", "Infiniti", "Genesis", "Buick", "Lincoln",
             "RAM", "Mitsubishi", "Peugeot", "Renault", "Citroen",
@@ -175,7 +175,7 @@ public static class SeedDataExtensions
             ]),
             ("Suspension & Steering",
             [
-                "Shock Absorbers", "Struts", "Coil Springs", "Leaf Springs", "Control Arms", "Ball Joints", 
+                "Shock Absorbers", "Struts", "Coil Springs", "Leaf Springs", "Control Arms", "Ball Joints",
                 "Tie Rods", "Steering Racks", "Power Steering Pumps", "Sway Bars", "Bushings", "Strut Mounts",
                 "Wheel Bearings", "Hub Assemblies", "Steering Wheels", "Steering Columns", "Alignment Kits"
             ]),
@@ -227,14 +227,13 @@ public static class SeedDataExtensions
             }
         }
 
-        const string sql = @"INSERT INTO categories (id, name, is_available, image_path, parent_category_id, slug) 
-                         VALUES (@Id, @Name, @IsAvailable, @ImagePath, @ParentCategoryId, @Slug);";
+        const string sql = @"INSERT INTO categories (id, name, image_path, parent_category_id, slug) 
+                         VALUES (@Id, @Name, @ImagePath, @ParentCategoryId, @Slug);";
 
         connection.Execute(sql, allCategories.Select(c => new
         {
             c.Id,
             c.Name,
-            c.IsAvailable,
             c.ImagePath,
             c.ParentCategoryId,
             Slug = c.Slug.Value
@@ -269,12 +268,12 @@ public static class SeedDataExtensions
         for (int i = 0; i < 500; i++)
         {
             Category category = faker.PickRandom(categories);
-            
+
             List<CarModel> productModels = [];
 #pragma warning disable CA5394
-            int modelCount = random.Next(1, 4); 
+            int modelCount = random.Next(1, 4);
 #pragma warning restore CA5394
-            
+
             for (int j = 0; j < modelCount; j++)
             {
                 CarModel model = faker.PickRandom(carModels);
@@ -353,7 +352,8 @@ public static class SeedDataExtensions
 
         connection.Execute(insertProductCarModelsSql, productCarModels.Select(pcm => new
         {
-            pcm.ProductId, pcm.CarModelId
+            pcm.ProductId,
+            pcm.CarModelId
         }));
 
         var allSpecifications = products

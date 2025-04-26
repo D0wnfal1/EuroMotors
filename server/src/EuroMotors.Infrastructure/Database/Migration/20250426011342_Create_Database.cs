@@ -40,7 +40,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    is_available = table.Column<bool>(type: "boolean", nullable: false),
                     image_path = table.Column<string>(type: "text", nullable: true),
                     parent_category_id = table.Column<Guid>(type: "uuid", nullable: true),
                     slug = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)

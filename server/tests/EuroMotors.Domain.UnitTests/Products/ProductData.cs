@@ -1,6 +1,4 @@
-﻿using EuroMotors.Domain.CarModels;
-
-namespace EuroMotors.Domain.UnitTests.Products;
+﻿namespace EuroMotors.Domain.UnitTests.Products;
 
 internal static class ProductData
 {

@@ -28,7 +28,6 @@ internal sealed class GetHierarchicalCategoriesQueryHandler(
             SELECT
                 id      AS Id,
                 name    AS Name,
-                is_available AS IsAvailable,
                 image_path   AS ImagePath,
                 slug    AS Slug
             FROM categories
@@ -64,7 +63,6 @@ internal sealed class GetHierarchicalCategoriesQueryHandler(
             SELECT
                 id                    AS Id,
                 name                  AS Name,
-                is_available          AS IsAvailable,
                 image_path            AS ImagePath,
                 parent_category_id    AS ParentCategoryId,
                 slug                  AS Slug
@@ -80,7 +78,6 @@ internal sealed class GetHierarchicalCategoriesQueryHandler(
             {
                 Id = parent.Id,
                 Name = parent.Name,
-                IsAvailable = parent.IsAvailable,
                 ImagePath = parent.ImagePath,
                 Slug = parent.Slug,
                 SubCategories = childCategories
@@ -89,7 +86,6 @@ internal sealed class GetHierarchicalCategoriesQueryHandler(
                     {
                         Id = child.Id,
                         Name = child.Name,
-                        IsAvailable = child.IsAvailable,
                         ImagePath = child.ImagePath,
                         Slug = child.Slug
                     })
