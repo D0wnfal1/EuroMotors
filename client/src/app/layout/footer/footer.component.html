@@ -1,5 +1,131 @@
 <footer class="border-t w-full bg-white mt-auto py-4">
   <div class="max-w-(--breakpoint-2xl) mx-auto w-full px-6">
+    @if (isMobile) {
+    <div class="flex flex-col gap-6">
+      <div>
+        <h3 class="text-primary mb-2">Navigation</h3>
+        <div class="grid grid-cols-2 gap-2">
+          <a
+            routerLink="/"
+            class="text-gray-600 hover:text-primary flex items-center gap-1"
+          >
+            <mat-icon class="scale-75">home</mat-icon>
+            Home
+          </a>
+          <a
+            routerLink="/delivery-payment"
+            class="text-gray-600 hover:text-primary flex items-center gap-1"
+          >
+            <mat-icon class="scale-75">local_shipping</mat-icon>
+            Delivery
+          </a>
+          <a
+            routerLink="/warranty-returns"
+            class="text-gray-600 hover:text-primary flex items-center gap-1"
+          >
+            <mat-icon class="scale-75">security</mat-icon>
+            Warranty
+          </a>
+          <a
+            routerLink="/public-offer"
+            class="text-gray-600 hover:text-primary flex items-center gap-1"
+          >
+            <mat-icon class="scale-75">description</mat-icon>
+            Offer
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="text-primary mb-2">Account</h3>
+        <div class="grid grid-cols-2 gap-2">
+          <a
+            routerLink="/account/login"
+            class="text-gray-600 hover:text-primary flex items-center gap-1"
+          >
+            <mat-icon class="scale-75">login</mat-icon>
+            Login
+          </a>
+          <a
+            routerLink="/account/register"
+            class="text-gray-600 hover:text-primary flex items-center gap-1"
+          >
+            <mat-icon class="scale-75">person_add</mat-icon>
+            Register
+          </a>
+          <a
+            routerLink="/cart"
+            class="text-gray-600 hover:text-primary flex items-center gap-1"
+          >
+            <mat-icon class="scale-75">shopping_cart</mat-icon>
+            Cart
+          </a>
+          <a
+            routerLink="/orders"
+            class="text-gray-600 hover:text-primary flex items-center gap-1"
+          >
+            <mat-icon class="scale-75">receipt_long</mat-icon>
+            Orders
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="text-primary mb-2">Contact Us</h3>
+        <div class="flex flex-col gap-2">
+          <a
+            href="tel:+380951111111"
+            class="text-gray-600 hover:text-primary flex items-center gap-1"
+          >
+            <mat-icon class="scale-75">phone</mat-icon>
+            +380 95 11 11 111
+          </a>
+          <a
+            href="tel:+380672222222"
+            class="text-gray-600 hover:text-primary flex items-center gap-1"
+          >
+            <mat-icon class="scale-75">phone</mat-icon>
+            +380 67 22 22 222
+          </a>
+          <a
+            href="mailto:info&#64;euromotors.com"
+            class="text-gray-600 hover:text-primary flex items-center gap-1"
+          >
+            <mat-icon class="scale-75">email</mat-icon>
+            info&#64;euromotors.com
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="text-primary mb-2">About EuroMotors</h3>
+        <p class="text-gray-600 text-sm mb-2">
+          Your trusted partner in European auto parts and accessories.
+        </p>
+        <div class="flex gap-2 mb-4">
+          <a
+            href="https://facebook.com"
+            target="_blank"
+            rel="noopener"
+            class="text-gray-600 hover:text-primary"
+          >
+            <mat-icon>facebook</mat-icon>
+          </a>
+          <a
+            href="https://instagram.com"
+            target="_blank"
+            rel="noopener"
+            class="text-gray-600 hover:text-primary"
+          >
+            <mat-icon>photo_camera</mat-icon>
+          </a>
+        </div>
+        <p class="text-sm text-gray-500">
+          &copy; 2025 EuroMotors. All rights reserved.
+        </p>
+      </div>
+    </div>
+    } @if (!isMobile) {
     <div class="grid grid-cols-12 gap-4 items-start">
       <div class="col-span-3">
         <h3 class="text-primary mb-2">Navigation</h3>
@@ -126,5 +252,6 @@
         </div>
       </div>
     </div>
+    }
   </div>
 </footer>

@@ -1,40 +1,51 @@
-<div class="container mx-auto px-4">
-  <div class="mt-4" *ngIf="carBrand">
-    <div class="flex items-center justify-between mb-6">
-      <div class="flex items-center gap-4">
+<div class="container mx-auto px-2 sm:px-4">
+  <div class="mt-2 sm:mt-4" *ngIf="carBrand">
+    <div
+      class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-6 gap-3 sm:gap-4"
+    >
+      <div class="flex items-center gap-2 sm:gap-4">
         <img
           [src]="getBrandLogo()"
           [alt]="carBrand.name"
-          class="h-16 w-auto object-contain"
+          class="h-10 sm:h-16 w-auto object-contain"
         />
-        <h1 class="text-3xl font-bold">
+        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold">
           SPARE PARTS FOR {{ carBrand.name | uppercase }}
         </h1>
       </div>
-      <button mat-raised-button color="primary" routerLink="/">
+      <button
+        mat-raised-button
+        color="primary"
+        routerLink="/"
+        class="text-sm sm:text-base"
+      >
         Back to home
       </button>
     </div>
 
-    <div class="bg-gray-100 p-4 mb-8 rounded-lg">
-      <h2 class="text-xl font-bold mb-4">
+    <div class="bg-gray-100 p-3 sm:p-4 mb-4 sm:mb-8 rounded-lg">
+      <h2 class="text-lg sm:text-xl font-bold mb-2 sm:mb-4">
         Select Your {{ carBrand.name }} Vehicle
       </h2>
       <app-car-selection [preSelectedBrand]="carBrand"></app-car-selection>
     </div>
 
-    <div class="mt-8">
-      <h2 class="text-2xl font-bold mb-4">{{ carBrand.name }} Products</h2>
+    <div class="mt-4 sm:mt-8">
+      <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-4">
+        {{ carBrand.name }} Products
+      </h2>
 
-      <div *ngIf="loading" class="text-center py-12">
-        <span class="text-lg">Loading products...</span>
+      <div *ngIf="loading" class="text-center py-6 sm:py-12">
+        <span class="text-base sm:text-lg">Loading products...</span>
       </div>
 
       <ng-container *ngIf="!loading">
         <div *ngIf="products && products.data.length > 0; else noProducts">
-          <div class="flex justify-between items-center">
+          <div
+            class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0"
+          >
             <mat-paginator
-              class="bg-white"
+              class="bg-white w-full sm:w-auto text-xs sm:text-sm"
               (page)="handlePageEvent($event)"
               [length]="products.count"
               [pageSize]="shopParams.pageSize"
@@ -49,18 +60,18 @@
               <button
                 mat-stroked-button
                 [matMenuTriggerFor]="sortMenu"
-                class="mr-4"
+                class="text-xs sm:text-sm"
               >
-                <mat-icon>swap_vert</mat-icon>
+                <mat-icon class="text-sm sm:text-base">swap_vert</mat-icon>
                 Sort
               </button>
             </div>
           </div>
           <div
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-4"
           >
             <app-product-item
-              class="mt-8"
+              class="mt-4 sm:mt-8"
               *ngFor="let product of products.data"
               [product]="product"
             ></app-product-item>
@@ -68,7 +79,9 @@
         </div>
 
         <ng-template #noProducts>
-          <div class="text-center p-8 text-gray-500">
+          <div
+            class="text-center p-4 sm:p-8 text-gray-500 text-sm sm:text-base"
+          >
             No products available for this brand. Try selecting a specific
             vehicle to see matching parts.
           </div>
@@ -80,6 +93,7 @@
     <mat-selection-list
       [multiple]="false"
       (selectionChange)="onSortChange($event)"
+      class="text-sm sm:text-base"
     >
       <mat-list-option
         *ngFor="let sort of sortOptions"

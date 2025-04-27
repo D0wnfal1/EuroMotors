@@ -249,6 +249,7 @@ export class CheckoutFormComponent implements OnInit {
     this.accountService.checkAuth().subscribe({
       next: (auth) => {
         if (auth.user) {
+          this.currentUser = auth.user;
           this.checkoutForm.patchValue({
             firstName: auth.user.firstName,
             lastName: auth.user.lastName,

@@ -3,8 +3,6 @@ import {
   OnInit,
   OnDestroy,
   inject,
-  EventEmitter,
-  Output,
   HostListener,
 } from '@angular/core';
 import { MatBadge } from '@angular/material/badge';
@@ -34,6 +32,7 @@ import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../core/services/product.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CallbackComponent } from '../callback/callback.component';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-header',
@@ -87,6 +86,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isCatalogOpen = false;
   private dialog = inject(MatDialog);
 
+  private breakpointObserver = inject(BreakpointObserver);
+  isMobile = false;
+  isMenuOpen = false;
+
   ngOnInit() {
     this.shopParams.pageSize = this.pageSize;
     this.shopParams.pageNumber = this.pageNumber;
@@ -96,6 +99,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.carModelService.carSelectionChanged.subscribe(() => {
         this.loadSelectedCar();
       })
+    );
+    this.subscriptions.push(
+      this.breakpointObserver
+        .observe([Breakpoints.XSmall, Breakpoints.Small])
+        .subscribe((result) => {
+          this.isMobile = result.matches;
+          if (!this.isMobile) {
+            this.isMenuOpen = false;
+          }
+        })
     );
   }
 
@@ -287,5 +300,25 @@ export class HeaderComponent implements OnInit, OnDestroy {
       panelClass: 'callback-dialog',
       disableClose: false,
     });
+  }
+
+  toggleMobileMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  closeMobileMenu() {
+    this.isMenuOpen = false;
+  }
+
+  toggleCategory(category: Category) {
+    if (this.activeCategory?.id === category.id) {
+      this.activeCategory = null;
+    } else {
+      this.activeCategory = category;
+
+      if (!category.subcategoryNames?.length) {
+        this.exploreCategory(category.id);
+      }
+    }
   }
 }

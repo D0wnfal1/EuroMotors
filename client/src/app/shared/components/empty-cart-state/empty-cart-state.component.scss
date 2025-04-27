@@ -1,3 +1,9 @@
 .icon-display {
   transform: scale(3);
 }
+
+@media (max-width: 640px) {
+  .icon-display {
+    transform: scale(2);
+  }
+}

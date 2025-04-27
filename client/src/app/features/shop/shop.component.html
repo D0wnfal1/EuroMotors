@@ -1,8 +1,8 @@
 @if (products) {
-<div class="flex flex-col gap-3">
-  <div class="flex justify-between items-center">
+<div class="flex flex-col gap-3 mt-8">
+  <div class="flex flex-col sm:flex-row justify-between items-center gap-2">
     <mat-paginator
-      class="bg-white"
+      class="bg-white w-full sm:w-auto"
       (page)="handlePageEvent($event)"
       [length]="products.count"
       [pageSize]="shopParams.pageSize"
@@ -13,7 +13,7 @@
     >
     </mat-paginator>
 
-    <div class="flex">
+    <div class="flex mt-2 sm:mt-0">
       <button mat-stroked-button [matMenuTriggerFor]="sortMenu" class="mr-4">
         <mat-icon>swap_vert</mat-icon>
         Sort
@@ -21,7 +21,9 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-5 gap-4 mt-4">
+  <div
+    class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4"
+  >
     @for (product of products.data; track product.id) {
     <app-product-item [product]="product"></app-product-item>
     }

@@ -1,19 +1,25 @@
-<div class="container mx-auto p-4 max-w-2xl">
-  <mat-card class="mb-6">
+<div class="container mx-auto p-2 sm:p-4 max-w-2xl">
+  <mat-card class="mb-4 sm:mb-6">
     <mat-card-header>
-      <mat-card-title class="text-xl font-bold mb-4">
+      <mat-card-title class="text-lg sm:text-xl font-bold mb-2 sm:mb-4">
         Car Selection
       </mat-card-title>
     </mat-card-header>
 
     <mat-card-content>
       <form [formGroup]="carSelectionForm" (ngSubmit)="saveSelection()">
-        <mat-stepper linear #stepper class="mb-4">
+        <!-- Use responsive stepper with orientation adjustment -->
+        <mat-stepper
+          [orientation]="isSmallScreen ? 'vertical' : 'horizontal'"
+          linear
+          #stepper
+          class="mb-4"
+        >
           <mat-step
             [stepControl]="carSelectionForm.get('brand')!"
             label="Select Brand"
           >
-            <div class="p-4">
+            <div class="p-2 sm:p-4">
               <mat-form-field appearance="fill" class="w-full">
                 <mat-label>Brand</mat-label>
                 <mat-select formControlName="brand">
@@ -33,7 +39,7 @@
                   matStepperNext
                   [disabled]="!carSelectionForm.get('brand')?.valid"
                   type="button"
-                  class="bg-blue-500 text-white"
+                  class="bg-blue-500 text-white px-4 py-1 rounded"
                 >
                   Next
                 </button>
@@ -45,7 +51,7 @@
             [stepControl]="carSelectionForm.get('model')!"
             label="Select Model"
           >
-            <div class="p-4">
+            <div class="p-2 sm:p-4">
               <mat-form-field appearance="fill" class="w-full">
                 <mat-label>Model</mat-label>
                 <mat-select formControlName="model">
@@ -59,8 +65,13 @@
                   Model is required
                 </mat-error>
               </mat-form-field>
-              <div class="flex justify-between mt-4">
-                <button mat-button matStepperPrevious type="button">
+              <div class="flex flex-col sm:flex-row justify-between mt-4 gap-2">
+                <button
+                  mat-button
+                  matStepperPrevious
+                  type="button"
+                  class="w-full sm:w-auto"
+                >
                   Back
                 </button>
                 <button
@@ -68,7 +79,7 @@
                   matStepperNext
                   [disabled]="!carSelectionForm.get('model')?.valid"
                   type="button"
-                  class="bg-blue-500 text-white"
+                  class="bg-blue-500 text-white px-4 py-1 rounded w-full sm:w-auto"
                 >
                   Next
                 </button>
@@ -80,7 +91,7 @@
             [stepControl]="carSelectionForm.get('year')!"
             label="Select Year"
           >
-            <div class="p-4">
+            <div class="p-2 sm:p-4">
               <mat-form-field appearance="fill" class="w-full">
                 <mat-label>Year</mat-label>
                 <mat-select formControlName="year">
@@ -94,8 +105,13 @@
                   Year is required
                 </mat-error>
               </mat-form-field>
-              <div class="flex justify-between mt-4">
-                <button mat-button matStepperPrevious type="button">
+              <div class="flex flex-col sm:flex-row justify-between mt-4 gap-2">
+                <button
+                  mat-button
+                  matStepperPrevious
+                  type="button"
+                  class="w-full sm:w-auto"
+                >
                   Back
                 </button>
                 <button
@@ -103,7 +119,7 @@
                   matStepperNext
                   [disabled]="!carSelectionForm.get('year')?.valid"
                   type="button"
-                  class="bg-blue-500 text-white"
+                  class="bg-blue-500 text-white px-4 py-1 rounded w-full sm:w-auto"
                 >
                   Next
                 </button>
@@ -115,7 +131,7 @@
             [stepControl]="carSelectionForm.get('bodyType')!"
             label="Select Body Type"
           >
-            <div class="p-4">
+            <div class="p-2 sm:p-4">
               <mat-form-field appearance="fill" class="w-full">
                 <mat-label>Body Type</mat-label>
                 <mat-select formControlName="bodyType">
@@ -132,8 +148,13 @@
                   Body type is required
                 </mat-error>
               </mat-form-field>
-              <div class="flex justify-between mt-4">
-                <button mat-button matStepperPrevious type="button">
+              <div class="flex flex-col sm:flex-row justify-between mt-4 gap-2">
+                <button
+                  mat-button
+                  matStepperPrevious
+                  type="button"
+                  class="w-full sm:w-auto"
+                >
                   Back
                 </button>
                 <button
@@ -141,7 +162,7 @@
                   matStepperNext
                   [disabled]="!carSelectionForm.get('bodyType')?.valid"
                   type="button"
-                  class="bg-blue-500 text-white"
+                  class="bg-blue-500 text-white px-4 py-1 rounded w-full sm:w-auto"
                 >
                   Next
                 </button>
@@ -153,7 +174,7 @@
             [stepControl]="carSelectionForm.get('engineSpec')!"
             label="Engine Specifications"
           >
-            <div class="p-4">
+            <div class="p-2 sm:p-4">
               <mat-form-field appearance="fill" class="w-full">
                 <mat-label>Engine Specification</mat-label>
                 <mat-select formControlName="engineSpec">
@@ -170,15 +191,20 @@
                 </mat-error>
               </mat-form-field>
 
-              <div class="flex justify-between mt-4">
-                <button mat-button matStepperPrevious type="button">
+              <div class="flex flex-col sm:flex-row justify-between mt-4 gap-2">
+                <button
+                  mat-button
+                  matStepperPrevious
+                  type="button"
+                  class="w-full sm:w-auto"
+                >
                   Back
                 </button>
                 <button
                   mat-button
                   type="submit"
                   [disabled]="!carSelectionForm.valid"
-                  class="bg-blue-500 text-white"
+                  class="bg-blue-500 text-white px-4 py-1 rounded w-full sm:w-auto"
                 >
                   Save Selection
                 </button>

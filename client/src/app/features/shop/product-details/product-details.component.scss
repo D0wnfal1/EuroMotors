@@ -22,11 +22,33 @@
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   border-radius: 8px;
+  width: 150px;
+  height: 150px;
+
+  @media (min-width: 640px) {
+    width: 180px;
+    height: 180px;
+  }
+
+  @media (min-width: 768px) {
+    width: 200px;
+    height: 200px;
+  }
 }
 
 .nav-button {
   transition: all 0.2s ease-in-out;
   opacity: 0.8;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+
+  @media (min-width: 640px) {
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+  }
+
   &:hover {
     opacity: 1;
     transform: scale(1.1);
@@ -37,9 +59,13 @@
   background-color: #e5e7eb;
   border: 1px solid #d1d5db;
   height: 2.5rem;
-  min-width: 120px;
+  min-width: 80px;
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
+
+  @media (min-width: 640px) {
+    min-width: 120px;
+  }
 }
 
 .specification-tabs ::ng-deep .mat-mdc-tab-header {
@@ -47,4 +73,24 @@
   border-bottom: none;
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
+}
+
+/* Responsive styles */
+@media (max-width: 767px) {
+  /* Improve spacing on small screens */
+  .specification-tabs ::ng-deep .mat-mdc-tab-label-container {
+    padding: 0;
+  }
+
+  /* Ensure images fit properly on mobile */
+  .image-container {
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Adjust form field width on mobile */
+  ::ng-deep .mat-mdc-form-field {
+    width: 100%;
+  }
 }

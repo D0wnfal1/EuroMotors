@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { CarSelectionComponent } from './car-selection/car-selection.component';
 import { ProductSliderComponent } from './product-slider/product-slider.component';
 import { CarmodelService } from '../../core/services/carmodel.service';
@@ -13,11 +14,12 @@ import { ImageService } from '../../core/services/image.service';
 import { HierarchicalCategory } from '../../shared/models/category';
 import { Product } from '../../shared/models/product';
 import { ShopParams } from '../../shared/models/shopParams';
-import { Subscription, interval } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { CarbrandService } from '../../core/services/carbrand.service';
 import { CarBrand } from '../../shared/models/carBrand';
 import { CartService } from '../../core/services/cart.service';
 import { Router } from '@angular/router';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-home',
@@ -30,11 +32,12 @@ import { Router } from '@angular/router';
     MatButtonModule,
     MatCardModule,
     MatIconModule,
+    MatTooltipModule,
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   uniqueBrands: string[] = [];
   allBrands: CarBrand[] = [];
   displayedBrands: CarBrand[] = [];
@@ -45,8 +48,12 @@ export class HomeComponent implements OnInit {
   categoryParams = new ShopParams();
 
   private subscriptions: Subscription[] = [];
+  private breakpointObserver = inject(BreakpointObserver);
 
   hasSelectedCar: boolean = false;
+  isMobile: boolean = false;
+  isTablet: boolean = false;
+  displayedBrandsCount: number = 16;
 
   constructor(
     private carmodelService: CarmodelService,
@@ -55,7 +62,31 @@ export class HomeComponent implements OnInit {
     private imageService: ImageService,
     private cartService: CartService,
     private router: Router
-  ) {}
+  ) {
+    this.subscriptions.push(
+      this.breakpointObserver
+        .observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium])
+        .subscribe((result) => {
+          this.isMobile = result.breakpoints[Breakpoints.XSmall];
+          this.isTablet = result.breakpoints[Breakpoints.Small];
+
+          if (this.isMobile) {
+            this.displayedBrandsCount = 4;
+          } else if (this.isTablet) {
+            this.displayedBrandsCount = 8;
+          } else {
+            this.displayedBrandsCount = 16;
+          }
+
+          if (!this.showAllBrands) {
+            this.displayedBrands = this.allBrands.slice(
+              0,
+              this.displayedBrandsCount
+            );
+          }
+        })
+    );
+  }
 
   ngOnInit(): void {
     this.checkSelectedCar();
@@ -85,7 +116,10 @@ export class HomeComponent implements OnInit {
     const brandsSub = this.carBrandService.availableBrands$.subscribe(
       (brands) => {
         this.allBrands = brands;
-        this.displayedBrands = this.allBrands.slice(0, 16);
+        this.displayedBrands = this.allBrands.slice(
+          0,
+          this.displayedBrandsCount
+        );
       }
     );
 
@@ -98,7 +132,7 @@ export class HomeComponent implements OnInit {
       this.displayedBrands = this.allBrands;
       this.showAllBrands = true;
     } else {
-      this.displayedBrands = this.allBrands.slice(0, 16);
+      this.displayedBrands = this.allBrands.slice(0, this.displayedBrandsCount);
       this.showAllBrands = false;
     }
   }
@@ -139,5 +173,9 @@ export class HomeComponent implements OnInit {
         pageSize: 10,
       },
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 }

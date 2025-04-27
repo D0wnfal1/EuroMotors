@@ -1,20 +1,29 @@
-<div class="checkout-success container mx-auto p-6">
-  <h1 class="text-3xl font-bold mb-6 text-center text-primary">
+<div class="checkout-success container mx-auto p-3 sm:p-6">
+  <h1
+    class="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 text-center text-primary"
+  >
     Thank you for your order!
   </h1>
 
-  <div *ngIf="isLoading" class="flex justify-center my-6">
+  <div *ngIf="isLoading" class="flex justify-center my-4 sm:my-6">
     <mat-spinner color="primary" diameter="50"></mat-spinner>
   </div>
 
-  <div *ngIf="error && !isLoading" class="my-6 text-center">
-    <p class="text-red-600 text-lg">{{ error }}</p>
+  <div *ngIf="error && !isLoading" class="my-4 sm:my-6 text-center">
+    <p class="text-red-600 text-base sm:text-lg">{{ error }}</p>
   </div>
 
-  <div *ngIf="order && !isLoading" class="bg-white shadow-xl rounded-lg p-6">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Order Details</h2>
+  <div
+    *ngIf="order && !isLoading"
+    class="bg-white shadow-xl rounded-lg p-3 sm:p-6"
+  >
+    <h2
+      class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-3 sm:mb-4"
+    >
+      Order Details
+    </h2>
 
-    <div class="space-y-4">
+    <div class="space-y-2 sm:space-y-4 text-sm sm:text-base">
       <p>
         <strong class="font-semibold text-gray-700">Buyer:</strong>
         {{ order.buyerName }}
@@ -33,7 +42,7 @@
         {{ order.deliveryMethod | delivery }}
       </p>
 
-      <p *ngIf="order.shippingAddress">
+      <p *ngIf="order.deliveryMethod === deliveryMethod.Delivery">
         <strong class="font-semibold text-gray-700">Shipping Address:</strong>
         {{ order.shippingAddress }}
       </p>
@@ -53,46 +62,81 @@
       </p>
     </div>
 
-    <h3 class="text-lg font-semibold mt-4">Order Items</h3>
-    <table class="min-w-full divide-y divide-gray-200 mt-2">
-      <thead class="bg-gray-50">
-        <tr>
-          <th
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-          >
-            Product Name
-          </th>
-          <th
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-          >
-            Unit Price
-          </th>
-          <th
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-          >
-            Quantity
-          </th>
-        </tr>
-      </thead>
-      <tbody class="bg-white divide-y divide-gray-200">
-        <tr *ngFor="let item of order.orderItems">
-          <td class="px-6 py-4 whitespace-nowrap">
+    <h3 class="text-base sm:text-lg font-semibold mt-4">Order Items</h3>
+
+    <!-- Desktop Table View -->
+    <div class="hidden sm:block overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 mt-2">
+        <thead class="bg-gray-50">
+          <tr>
+            <th
+              class="px-4 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Product Name
+            </th>
+            <th
+              class="px-4 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Unit Price
+            </th>
+            <th
+              class="px-4 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Quantity
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngFor="let item of order.orderItems">
+            <td class="px-4 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">
+              {{ productNames[item.productId] }}
+            </td>
+            <td
+              class="px-4 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm"
+            >
+              {{ item.price | currency }}
+            </td>
+            <td
+              class="px-4 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm"
+            >
+              {{ item.quantity }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mobile List View -->
+    <div class="sm:hidden mt-2">
+      <div class="border rounded-lg overflow-hidden">
+        <div
+          *ngFor="let item of order.orderItems; let i = index"
+          class="border-b last:border-b-0 p-3"
+          [class.bg-gray-50]="i % 2 === 0"
+        >
+          <div class="text-xs font-medium break-words">
             {{ productNames[item.productId] }}
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap">
-            {{ item.price | currency }}
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ item.quantity }}</td>
-        </tr>
-      </tbody>
-    </table>
+          </div>
+          <div class="flex justify-between mt-2">
+            <div class="flex items-center">
+              <span class="text-xs text-gray-500 mr-1">Price:</span>
+              <span class="text-xs">{{ item.price | currency }}</span>
+            </div>
+            <div class="flex items-center">
+              <span class="text-xs text-gray-500 mr-1">Qty:</span>
+              <span class="text-xs">{{ item.quantity }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="mt-8">
+  <div class="mt-4 sm:mt-8 flex justify-center sm:justify-start">
     <button
       mat-raised-button
       routerLink="/"
-      class="px-6 py-3 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-lg transition-colors duration-300"
+      class="px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-lg transition-colors duration-300"
     >
       Go to Home
     </button>

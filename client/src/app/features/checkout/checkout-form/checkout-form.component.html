@@ -1,11 +1,11 @@
-<section class="max-w-lg mx-auto">
-  <h2 class="text-xl font-bold text-center mb-6 uppercase">
+<section class="w-full max-w-lg mx-auto px-2 sm:px-4">
+  <h2 class="text-lg sm:text-xl font-bold text-center mb-4 sm:mb-6 uppercase">
     ENTER YOUR DELIVERY DETAILS
   </h2>
 
   <form [formGroup]="checkoutForm" (ngSubmit)="submitOrder()">
-    <div class="flex">
-      <mat-form-field appearance="fill" class="w-1/2 mr-2 mb-3">
+    <div class="flex flex-col sm:flex-row gap-2 sm:gap-0">
+      <mat-form-field appearance="fill" class="w-full sm:w-1/2 sm:mr-2 mb-3">
         <mat-label>First Name</mat-label>
         <input matInput formControlName="firstName" placeholder="First Name" />
         <mat-error *ngIf="checkoutForm.get('firstName')?.hasError('required')">
@@ -13,7 +13,7 @@
         </mat-error>
       </mat-form-field>
 
-      <mat-form-field appearance="fill" class="w-1/2 ml-2 mb-3">
+      <mat-form-field appearance="fill" class="w-full sm:w-1/2 sm:ml-2 mb-3">
         <mat-label>Last Name</mat-label>
         <input matInput formControlName="lastName" placeholder="Last Name" />
         <mat-error *ngIf="checkoutForm.get('lastName')?.hasError('required')">
@@ -87,7 +87,7 @@
         </mat-error>
       </mat-form-field>
 
-      <p class="mb-6 text-sm text-gray-600">
+      <p class="mb-6 text-xs sm:text-sm text-gray-600">
         Delivery cost according to Nova Poshta tariffs
       </p>
     </ng-container>
@@ -133,7 +133,7 @@
         mat-raised-button
         type="submit"
         [disabled]="checkoutForm.invalid"
-        class="bg-blue-500 text-white px-8 py-2 rounded-full w-32 uppercase font-medium"
+        class="bg-blue-500 text-white px-6 sm:px-8 py-2 rounded-full w-28 sm:w-32 text-sm sm:text-base uppercase font-medium"
       >
         BUY
       </button>

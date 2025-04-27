@@ -32,7 +32,7 @@ export class OrderComponent implements OnInit {
     this.accountService.checkAuth().subscribe({
       next: (auth) => {
         if (auth.user) {
-          this.loadOrders(auth.user.email);
+          this.loadOrders(auth.user.id);
         }
       },
       error: (error) => {
@@ -41,8 +41,8 @@ export class OrderComponent implements OnInit {
     });
   }
 
-  loadOrders(email: string) {
-    this.orderService.getUserOrders(email).subscribe((orders) => {
+  loadOrders(id: string) {
+    this.orderService.getUserOrders(id).subscribe((orders) => {
       this.orders = orders;
     });
   }

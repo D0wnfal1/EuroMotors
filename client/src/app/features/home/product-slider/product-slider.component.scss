@@ -33,6 +33,19 @@
   }
 }
 
+/* Fix slider structure */
+.slider-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  min-height: 350px;
+}
+
+.slider-content-wrapper {
+  width: 100%;
+}
+
 ::ng-deep {
   .mat-mdc-raised-button {
     height: 40px !important;

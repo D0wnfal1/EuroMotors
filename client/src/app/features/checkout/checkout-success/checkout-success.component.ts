@@ -4,7 +4,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { CurrencyPipe, DatePipe, NgFor, NgIf } from '@angular/common';
 import { OrderService } from '../../../core/services/order.service';
-import { Order } from '../../../shared/models/order';
+import { DeliveryMethod, Order } from '../../../shared/models/order';
 import { StatusPipe } from '../../../shared/pipes/status.pipe';
 import { PaymentPipe } from '../../../shared/pipes/payment.pipe';
 import { DeliveryPipe } from '../../../shared/pipes/delivery.pipe';
@@ -39,7 +39,7 @@ export class CheckoutSuccessComponent implements OnInit {
   productService = inject(ProductService);
   route = inject(ActivatedRoute);
   productNames: { [key: string]: string } = {};
-
+  deliveryMethod = DeliveryMethod;
   ngOnInit(): void {
     const orderId = this.route.snapshot.paramMap.get('orderId');
     if (orderId) {

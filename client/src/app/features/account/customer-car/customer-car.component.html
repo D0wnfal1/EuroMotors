@@ -1,14 +1,16 @@
-<div class="container mx-auto px-4">
+<div class="container mx-auto px-2 sm:px-4">
   <app-car-selection></app-car-selection>
-  <mat-card *ngIf="selectedCar" class="p-4">
+  <mat-card *ngIf="selectedCar" class="p-3 md:p-4 mt-3 md:mt-4">
     <mat-card-header>
-      <mat-card-title class="text-lg font-semibold"
+      <mat-card-title class="text-base md:text-lg font-semibold"
         >Your Selected Car</mat-card-title
       >
     </mat-card-header>
 
-    <mat-card-content class="p-4">
-      <div class="grid grid-cols-2 gap-4">
+    <mat-card-content class="p-2 md:p-4">
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-4 text-sm md:text-base"
+      >
         <div class="font-medium">Brand:</div>
         <div>{{ selectedCar.brand }}</div>
 
@@ -26,12 +28,12 @@
       </div>
     </mat-card-content>
 
-    <mat-card-actions align="end" class="px-4 pb-4">
+    <mat-card-actions align="end" class="px-2 md:px-4 pb-2 md:pb-4">
       <button mat-button (click)="clearSelection()">Clear Selection</button>
     </mat-card-actions>
   </mat-card>
 
-  <div *ngIf="selectedCarId" class="mt-8 flex justify-center w-full">
+  <div *ngIf="selectedCarId" class="mt-4 md:mt-8 flex justify-center w-full">
     <div class="w-full max-w-7xl">
       <app-compatible-products
         [carModelId]="selectedCarId"

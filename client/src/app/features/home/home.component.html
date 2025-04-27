@@ -1,34 +1,44 @@
-<div class="container mx-auto px-4">
+<div class="container mx-auto px-4 py-4">
   <app-car-selection *ngIf="!hasSelectedCar"></app-car-selection>
 
-  <div class="mt-4">
-    <h2 class="text-2xl font-bold mb-4 text-center uppercase">Car Brands</h2>
+  <div class=>
+    <h2 class="text-xl md:text-2xl font-bold mb-4 text-center uppercase">
+      Car Brands
+    </h2>
 
     <div
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-4"
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 pt-4"
     >
       <button
         mat-raised-button
         *ngFor="let brand of displayedBrands"
-        class="border border-gray-300 rounded hover:shadow-md transition-shadow cursor-pointer"
+        class="border border-gray-300 rounded hover:shadow-md transition-shadow cursor-pointer h-full"
         [routerLink]="['/brand', brand.id]"
       >
-        <div class="p-3 text-center flex items-center">
-          <img
-            [src]="getBrandLogo(brand)"
-            [alt]="brand.name"
-            class="h-10 w-auto object-contain"
-          />
-          <span>SPARE PARTS FOR {{ brand.name | uppercase }}</span>
+        <div
+          class="p-2 md:p-3 text-center flex items-center gap-2 justify-start w-full"
+        >
+          <div
+            class="flex-shrink-0 w-8 md:w-10 flex items-center justify-center"
+          >
+            <img
+              [src]="getBrandLogo(brand)"
+              [alt]="brand.name"
+              class="h-8 md:h-10 w-auto object-contain"
+            />
+          </div>
+          <span class="text-sm md:text-base text-left flex-1">
+            Spare Parts For {{ brand.name }}
+          </span>
         </div>
       </button>
     </div>
 
-    <div class="flex justify-center mt-8">
+    <div class="flex justify-center mt-6 md:mt-8">
       <button
         mat-raised-button
         color="primary"
-        class="px-6 py-2"
+        class="px-4 md:px-6 py-1 md:py-2 text-sm md:text-base"
         (click)="viewAllBrands()"
       >
         {{ showAllBrands ? "Show less" : "All Brands" }}
@@ -36,44 +46,55 @@
     </div>
   </div>
 
-  <div class="mt-10">
-    <h2 class="text-2xl font-bold mb-8 text-center uppercase">
+  <div class="mt-4 md:mt-10">
+    <h2
+      class="text-xl md:text-2xl font-bold mb-4 md:mb-8 text-center uppercase"
+    >
       Product Categories
     </h2>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-8"
+    >
       <mat-card
         *ngFor="let category of mainCategories"
-        class="hover:shadow-lg transition-shadow relative min-h-[400px]"
+        class="hover:shadow-lg transition-shadow relative min-h-[350px] md:min-h-[400px]"
       >
         <div class="relative">
           <img
             mat-card-image
             [src]="category.imagePath || '/images/no-image.jpeg'"
             [alt]="category.name"
-            class="h-48 w-full object-cover"
+            class="h-36 md:h-48 w-full object-cover"
           />
           <div
-            class="absolute bottom-0 left-0 right-0 bg-blue-500/80 text-white p-3"
+            class="absolute bottom-0 left-0 right-0 bg-blue-500/80 text-white p-2 md:p-3"
           >
-            <h3 class="text-xl font-bold">{{ category.name }}</h3>
+            <h3 class="text-lg md:text-xl font-bold">{{ category.name }}</h3>
           </div>
         </div>
 
-        <mat-card-content class="p-4">
+        <mat-card-content class="p-3 md:p-4">
           <div
             *ngIf="category.subCategories && category.subCategories.length > 0"
             class="mt-2"
           >
-            <div class="grid grid-cols-2 gap-2">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <a
-                *ngFor="let subcat of category.subCategories.slice(0, 6)"
-                class="text-sm text-gray-700 hover:text-blue-700 cursor-pointer"
+                *ngFor="
+                  let subcat of category.subCategories.slice(
+                    0,
+                    isMobile ? 4 : 6
+                  )
+                "
+                class="text-sm text-gray-700 hover:text-blue-700 cursor-pointer truncate"
                 [routerLink]="['/shop/category', subcat.id]"
                 [queryParams]="{
                   pageNumber: 1,
                   pageSize: 10
                 }"
+                [matTooltip]="subcat.name"
+                matTooltipPosition="above"
               >
                 {{ subcat.name }}
               </a>
@@ -84,7 +105,7 @@
             *ngIf="
               !category.subCategories || category.subCategories.length === 0
             "
-            class="py-4 text-center text-gray-500"
+            class="py-3 md:py-4 text-center text-gray-500 text-sm md:text-base"
           >
             No subcategories available
           </div>
@@ -94,6 +115,7 @@
           <button
             mat-raised-button
             color="primary"
+            class="text-sm md:text-base"
             [routerLink]="['/shop/category', category.id]"
             [queryParams]="{
               pageNumber: 1,
@@ -106,5 +128,6 @@
       </mat-card>
     </div>
   </div>
-  <app-product-slider class="my-8"></app-product-slider>
+
+  <app-product-slider class="hidden sm:block my-6 md:my-8"></app-product-slider>
 </div>

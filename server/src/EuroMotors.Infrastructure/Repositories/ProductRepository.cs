@@ -12,16 +12,18 @@ public class ProductRepository : Repository<Product>, IProductRepository
 
     public async Task<Product?> GetWithLockAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _dbContext
+        Product? product = await _dbContext
             .Products
-            .FromSql(
-                $"""
-                 SELECT id, category_id, car_model_id, name, vendor_code, price, discount, stock, is_available, slug
-                 FROM products
-                 WHERE id = {id}
-                 FOR UPDATE NOWAIT
-                 """)
+            .FromSqlInterpolated($"""
+                                      SELECT * 
+                                      FROM products
+                                      WHERE id = {id}
+                                      FOR UPDATE NOWAIT
+                                  """)
+            .AsTracking()
             .SingleOrDefaultAsync(cancellationToken);
+
+        return product;
     }
 
     public async Task<Product?> GetByIdWithCarModelsAsync(Guid id, CancellationToken ct)

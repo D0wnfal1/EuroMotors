@@ -1,3 +1,32 @@
 .icon-display {
   transform: scale(3);
 }
+
+.not-found-icon {
+  transform: scale(2);
+  margin: 0 auto;
+  height: 48px;
+  width: 48px;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .not-found-icon {
+    transform: scale(2.5);
+    height: 60px;
+    width: 60px;
+    font-size: 28px;
+  }
+}
+
+@media (min-width: 768px) {
+  .not-found-icon {
+    transform: scale(3);
+    height: 72px;
+    width: 72px;
+    font-size: 32px;
+  }
+}

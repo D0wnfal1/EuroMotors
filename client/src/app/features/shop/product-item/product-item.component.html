@@ -2,12 +2,12 @@
   *ngIf="product"
   appearance="outlined"
   routerLink="/shop/{{ product.id }}"
-  class="border border-blue-300 rounded-xl shadow-sm p-4 flex flex-col items-center gap-2 w-full sm:w-64 transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg h-full"
+  class="border border-blue-300 rounded-xl shadow-sm p-3 sm:p-4 flex flex-col items-center gap-2 w-full transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg h-full"
   [matTooltip]="getSpecificationsTooltip()"
   matTooltipClass="specifications-tooltip"
 >
   <mat-card-content
-    class="mt-2 flex flex-col items-center min-h-[80px] justify-between"
+    class="mt-1 sm:mt-2 flex flex-col items-center min-h-[70px] sm:min-h-[80px] justify-between w-full"
   >
     <div
       class="text-center w-full text-xs text-gray-500 tracking-wider uppercase"
@@ -15,19 +15,19 @@
       {{ product.vendorCode }}
     </div>
     <div
-      class="text-center w-full text-base font-bold uppercase text-gray-800 line-clamp-2 leading-tight"
+      class="text-center w-full text-sm sm:text-base font-bold uppercase text-gray-800 line-clamp-2 leading-tight"
     >
       {{ product.name }}
     </div>
   </mat-card-content>
 
-  <div class="image-container">
+  <div class="image-container w-full flex justify-center">
     <img
       mat-card-image
       *ngIf="product.images && product.images.length > 0; else noImage"
       [src]="getImageUrl(product.images[0])"
       alt="Product image"
-      class="product-image"
+      class="product-image max-w-full h-auto"
     />
   </div>
   <ng-template #noImage>
@@ -35,37 +35,39 @@
       mat-card-image
       src="images/no-image.jpeg"
       alt="No product image"
-      class="product-image"
+      class="product-image max-w-full h-auto"
     />
   </ng-template>
 
   <div
-    class="flex flex-col justify-between items-center flex-grow w-full min-h-[150px]"
+    class="flex flex-col justify-between items-center flex-grow w-full min-h-[130px] sm:min-h-[150px]"
   >
     <div
       *ngIf="product.isAvailable; else isNotAvailable"
-      class="flex flex-col items-center text-center justify-center gap-2 mt-2 min-h-[100px]"
+      class="flex flex-col items-center text-center justify-center gap-1 sm:gap-2 mt-1 sm:mt-2 min-h-[80px] sm:min-h-[100px]"
     >
-      <div class="text-sm text-green-700">Is Available</div>
+      <div class="text-xs sm:text-sm text-green-700">Is Available</div>
 
       <div
         *ngIf="product.discount > 0; else noDiscount"
         class="flex flex-col items-center"
       >
-        <div class="text-sm text-gray-500 line-through">
+        <div class="text-xs sm:text-sm text-gray-500 line-through">
           {{ product.price | currency }}
         </div>
-        <div class="text-xl font-semibold text-red-600">
+        <div class="text-lg sm:text-xl font-semibold text-red-600">
           {{ product.price - product.discount | currency }}
         </div>
       </div>
 
       <ng-template #noDiscount>
         <div class="flex flex-col items-center -mt-2">
-          <div class="text-sm text-transparent line-through select-none">
+          <div
+            class="text-xs sm:text-sm text-transparent line-through select-none"
+          >
             {{ product.price | currency }}
           </div>
-          <div class="text-xl font-semibold text-black">
+          <div class="text-lg sm:text-xl font-semibold text-black">
             {{ product.price | currency }}
           </div>
         </div>
@@ -77,36 +79,38 @@
       >
         <button
           mat-stroked-button
-          class="w-full bg-lime-500 hover:bg-lime-600 text-white font-semibold rounded-lg py-2"
+          class="w-full bg-lime-500 hover:bg-lime-600 text-white font-semibold rounded-lg py-1 sm:py-2 text-xs sm:text-sm"
           (click)="cartService.addItemToCart(product.id)"
         >
-          <mat-icon>add_shopping_cart</mat-icon>
+          <mat-icon class="text-base">add_shopping_cart</mat-icon>
           Add to cart
         </button>
       </mat-card-actions>
     </div>
 
     <ng-template #isNotAvailable>
-      <div class="text-sm text-red-700 mt-2 translate-y-[-2px]">
+      <div
+        class="text-xs sm:text-sm text-red-700 mt-1 sm:mt-2 translate-y-[-2px]"
+      >
         Is Not Available
       </div>
-      <div class="text-xl font-semibold text-blue-200">
+      <div class="text-lg sm:text-xl font-semibold text-blue-200">
         {{ product.price | currency }}
       </div>
       <button
         mat-stroked-button
         (click)="openCallbackDialog(); $event.stopPropagation()"
-        class="mt-2"
+        class="mt-1 sm:mt-2 text-xs sm:text-sm"
       >
-        <mat-icon>support_agent</mat-icon>
-        <span class="text-sm">Confirm Availability</span>
+        <mat-icon class="text-base">support_agent</mat-icon>
+        <span>Confirm Availability</span>
       </button>
       <button
         mat-stroked-button
-        class="w-8/12 text-blue-200 bg-lime-500 hover:bg-lime-600 font-semibold mt-3 rounded-lg py-3 my-2"
+        class="w-8/12 text-blue-200 bg-lime-500 hover:bg-lime-600 font-semibold mt-2 sm:mt-3 rounded-lg py-2 sm:py-3 my-1 sm:my-2 text-xs sm:text-sm"
         disabled
       >
-        <mat-icon>add_shopping_cart</mat-icon>
+        <mat-icon class="text-base">add_shopping_cart</mat-icon>
         Add to cart
       </button>
     </ng-template>

@@ -1,104 +1,134 @@
-<header class="pt-4 w-full fixed top-0 z-50 bg-white">
-  <div
-    class="flex align-middle items-center justify-between max-w-(--breakpoint-2xl) mx-auto"
-  >
-    <nav class="flex gap-3 my-2 uppercase text-xl">
-      <a
-        routerLink="/"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-        >EuroMotors</a
-      >
-      <a
-        routerLink="/delivery-payment"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-        >Delivery & Payment</a
-      >
-      <a
-        routerLink="/warranty-returns"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-      >
-        Warranty & Returns
-      </a>
-      <a
-        routerLink="/public-offer"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-      >
-        Public offer
-      </a>
-    </nav>
+<header class="static lg:fixed top-0 w-full z-50 bg-white shadow-sm">
+  @if (busyService.loading) {
+  <mat-progress-bar
+    mode="indeterminate"
+    class="absolute top-0"
+  ></mat-progress-bar>
+  }
 
-    <div class="flex gap-3">
-      <mat-card
-        *ngIf="selectedCar"
-        class="cursor-pointer"
-        (click)="selectedCarId && navigateToShop(selectedCarId)"
-      >
-        <div class="flex items-center justify-between px-2">
-          <span class="font-medium leading-tight text-sm mt-2">
-            {{ selectedCar.brand }} {{ selectedCar.model }}
-            {{ selectedCar.engineSpec }}
-          </span>
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between py-3">
+      <a routerLink="/" class="text-xl font-bold">EuroMotors</a>
 
+      <nav class="hidden md:flex gap-6 uppercase text-sm lg:text-xl">
+        <a
+          routerLink="/"
+          routerLinkActive="text-primary font-medium"
+          [routerLinkActiveOptions]="{ exact: true }"
+          >Home</a
+        >
+        <a
+          routerLink="/delivery-payment"
+          routerLinkActive="text-primary font-medium"
+          >Delivery & Payment</a
+        >
+        <a
+          routerLink="/warranty-returns"
+          routerLinkActive="text-primary font-medium"
+          >Warranty & Returns</a
+        >
+        <a
+          routerLink="/public-offer"
+          routerLinkActive="text-primary font-medium"
+          >Public offer</a
+        >
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <mat-card
+          *ngIf="selectedCar && !isMobile"
+          class="cursor-pointer hidden sm:block"
+          (click)="selectedCarId && navigateToShop(selectedCarId)"
+        >
+          <div class="flex items-center justify-between px-2">
+            <span class="font-medium leading-tight text-xs">
+              {{ selectedCar.brand }} {{ selectedCar.model }}
+              {{ selectedCar.engineSpec }}
+            </span>
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="clearCarSelection(); $event.stopPropagation()"
+              matTooltip="Remove car selection"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </mat-card>
+
+        <ng-container *ngIf="accountService.isAdmin() && !isMobile">
           <button
-            mat-icon-button
-            color="warn"
-            (click)="clearCarSelection(); $event.stopPropagation()"
-            matTooltip="Remove car selection"
+            mat-stroked-button
+            routerLink="/admin"
+            class="hidden sm:block"
           >
-            <mat-icon>close</mat-icon>
+            Admin
           </button>
+        </ng-container>
+
+        <a
+          routerLink="/cart"
+          routerLinkActive="text-primary"
+          matBadge="{{ cartService.itemCount() }}"
+          matBadgeSize="large"
+          class="custom-badge mt-1 mr-1"
+        >
+          <mat-icon>shopping_cart</mat-icon>
+        </a>
+
+        <div class="hidden sm:block">
+          @if (accountService.currentUser()) {
+          <button mat-button [matMenuTriggerFor]="menu">
+            <span class="truncate max-w-xs">{{
+              accountService.currentUser()?.email
+            }}</span>
+            <mat-icon>arrow_drop_down</mat-icon>
+          </button>
+          } @else {
+          <div class="flex gap-2">
+            <button routerLink="/account/login" mat-stroked-button size="small">
+              Login
+            </button>
+            <button
+              routerLink="/account/register"
+              mat-stroked-button
+              size="small"
+            >
+              Register
+            </button>
+          </div>
+          }
         </div>
-      </mat-card>
 
-      <ng-container *ngIf="accountService.isAdmin()">
-        <button mat-stroked-button routerLink="/admin">Admin</button>
-      </ng-container>
-      <a
-        routerLink="/cart"
-        routerLinkActive="active"
-        matBadge="{{ cartService.itemCount() }}"
-        matBadgeSize="large"
-        class="custom-badge mt-2 mr-2"
-      >
-        <mat-icon>shopping_cart</mat-icon>
-      </a>
-      @if (accountService.currentUser()) {
-      <button mat-button [matMenuTriggerFor]="menu">
-        <mat-icon>arrow_drop_down</mat-icon>
-        <span>{{ accountService.currentUser()?.email }}</span>
-      </button>
-      } @else {
-      <button routerLink="/account/login" mat-stroked-button>Login</button>
-      <button routerLink="/account/register" mat-stroked-button>
-        Register
-      </button>
-      }
+        <button mat-icon-button *ngIf="isMobile" (click)="toggleMobileMenu()">
+          <mat-icon>{{ isMenuOpen ? "close" : "menu" }}</mat-icon>
+        </button>
+      </div>
     </div>
-  </div>
 
-  <div class="max-w-(--breakpoint-2xl) mx-auto mt-1">
-    <div class="flex items-center bg-primary p-3 rounded-t">
-      <div class="flex items-center justify-between w-full">
+    <div class="py-2">
+      <div
+        class="flex flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-4"
+      >
         <button
-          mat-button
-          class="text-white catalog-button"
+          mat-raised-button
+          color="primary"
+          class="flex-shrink-0 w-full md:w-auto text-left justify-start"
           (click)="toggleCatalog()"
         >
-          <mat-icon>menu</mat-icon>
-          <h3 class="text-xl">Catalog of products</h3>
+          <div class="flex items-center gap-2">
+            <mat-icon>menu</mat-icon>
+            <span class="text-base">Catalog</span>
+          </div>
         </button>
 
         <form
           (ngSubmit)="onSearchChange()"
-          class="relative flex items-center w-full max-w-xl mx-auto mr-0"
+          class="relative flex items-center w-full"
         >
           <input
             type="search"
-            class="search-input block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white"
+            class="block w-full p-2 md:p-3 text-sm text-gray-900 border border-gray-300 rounded-lg"
             placeholder="Part number or Product name"
             name="search"
             [(ngModel)]="shopParams.searchTerm"
@@ -106,7 +136,7 @@
           <button
             mat-icon-button
             type="submit"
-            class="absolute inset-y-0 right-20 flex items-center pl-3"
+            class="absolute right-0 px-2"
             [routerLink]="['/shop']"
             [queryParams]="{
               pageNumber: 1,
@@ -117,115 +147,341 @@
             <mat-icon>search</mat-icon>
           </button>
         </form>
-
-        <div class="flex justify-center gap-8">
-          <a
-            href="tel:+380951111111"
-            class="text-gray-700 font-medium text-xl mt-2"
-            >+380 95 11 11 111</a
-          >
-          <a
-            href="tel:+380672222222"
-            class="text-gray-700 text-xl font-medium mt-2"
-            >+380 67 22 22 222</a
-          >
+        <div
+          class="hidden md:flex items-center justify-end gap-4 flex-shrink-0"
+        >
+          <div class="flex flex-col">
+            <a
+              href="tel:+380951111111"
+              class="text-gray-700 font-medium text-sm"
+              >+380 95 11 11 111</a
+            >
+            <a href="tel:+380672222222" class="text-gray-700 text-sm"
+              >+380 67 22 22 222</a
+            >
+          </div>
           <button
             mat-stroked-button
             color="primary"
-            class="h-8"
             (click)="openCallbackDialog()"
           >
-            <mat-icon class="text-2xl">support_agent</mat-icon>
-            <span class="text-lg font-medium">Request a call</span>
+            <mat-icon>support_agent</mat-icon>
+            <span class="hidden lg:inline-block">Request a call</span>
           </button>
         </div>
       </div>
     </div>
+  </div>
 
-    @if (isCatalogOpen) {
-    <div
-      class="catalog-container absolute left-0 right-0 bg-white z-50 max-w-(--breakpoint-2xl) mx-auto"
-    >
-      <div class="min-h-[400px]">
-        <div class="flex">
-          <div class="w-1/4 border-r border-gray-200 category-list">
-            <mat-nav-list class="py-0">
-              @for (category of categories; track category.id) {
-              <mat-list-item
-                (mouseenter)="setActiveCategory(category)"
-                (click)="exploreCategory(category.id)"
-                [class.active-category]="activeCategory?.id === category.id"
-                class="hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
-              >
-                <div class="flex items-center justify-between w-full py-3 px-4">
-                  <span class="text-gray-700">{{ category.name }}</span>
-                  @if (category.subcategoryNames?.length) {
-                  <mat-icon class="text-gray-400">chevron_right</mat-icon>
-                  }
-                </div>
-              </mat-list-item>
-              <mat-divider></mat-divider>
-              }
-            </mat-nav-list>
-          </div>
-
-          @if (activeCategory && activeCategory.subcategoryNames?.length) {
-          <div class="w-3/4 bg-white">
-            <div class="border-b border-gray-200 p-4">
-              <h3 class="text-xl font-medium text-gray-800">
-                {{ activeCategory.name }}
-              </h3>
-            </div>
-            <div class="p-6">
-              <div class="grid grid-cols-3 gap-6">
-                @for (subName of activeCategory.subcategoryNames; track subName)
-                {
-                <a
-                  mat-button
-                  [routerLink]="[
-                    '/shop/category',
-                    getSubcategoryId(activeCategory.id, subName)
-                  ]"
-                  (click)="isCatalogOpen = false"
-                  class="subcategory-link text-left text-gray-600 py-2 px-4 rounded transition-colors duration-200"
-                >
-                  {{ subName }}
-                </a>
+  @if (isCatalogOpen) {
+  <div
+    class="absolute left-0 right-0 bg-white z-50 border-t border-gray-200 shadow-lg"
+  >
+    <div class="container mx-auto">
+      <div class="hidden md:flex min-h-80">
+        <div class="w-1/4 border-r border-gray-200">
+          <mat-nav-list class="py-0">
+            @for (category of categories; track category.id) {
+            <mat-list-item
+              (mouseenter)="setActiveCategory(category)"
+              (click)="exploreCategory(category.id)"
+              [class.bg-gray-100]="activeCategory?.id === category.id"
+              class="hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
+            >
+              <div class="flex items-center justify-between w-full py-2 px-4">
+                <span class="text-gray-700">{{ category.name }}</span>
+                @if (category.subcategoryNames?.length) {
+                <mat-icon class="text-gray-400">chevron_right</mat-icon>
                 }
               </div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            }
+          </mat-nav-list>
+        </div>
+
+        @if (activeCategory && activeCategory.subcategoryNames?.length) {
+        <div class="w-3/4 bg-white">
+          <div class="border-b border-gray-200 p-4">
+            <h3 class="text-xl font-medium text-gray-800">
+              {{ activeCategory.name }}
+            </h3>
+          </div>
+          <div class="p-6">
+            <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+              @for (subName of activeCategory.subcategoryNames; track subName) {
+              <a
+                mat-button
+                [routerLink]="[
+                  '/shop/category',
+                  getSubcategoryId(activeCategory.id, subName)
+                ]"
+                (click)="isCatalogOpen = false"
+                class="text-left text-gray-600 py-2 px-4 hover:bg-gray-50 rounded"
+              >
+                {{ subName }}
+              </a>
+              }
             </div>
           </div>
-          }
         </div>
+        }
+      </div>
+
+      <div class="md:hidden min-h-96 max-h-[70vh] overflow-y-auto">
+        <mat-nav-list class="py-0">
+          @for (category of categories; track category.id) {
+          <mat-list-item
+            (click)="toggleCategory(category)"
+            [class.bg-gray-100]="activeCategory?.id === category.id"
+            class="hover:bg-gray-50 transition-colors duration-200"
+          >
+            <div class="flex items-center justify-between w-full py-2 px-4">
+              <span class="text-gray-700">{{ category.name }}</span>
+              @if (category.subcategoryNames?.length) {
+              <mat-icon class="text-gray-400">
+                {{
+                  activeCategory?.id === category.id
+                    ? "expand_less"
+                    : "expand_more"
+                }}
+              </mat-icon>
+              } @else {
+              <mat-icon
+                class="text-gray-400"
+                *ngIf="!category.subcategoryNames?.length"
+                (click)="exploreCategory(category.id); $event.stopPropagation()"
+              >
+                chevron_right
+              </mat-icon>
+              }
+            </div>
+          </mat-list-item>
+
+          @if (activeCategory?.id === category.id &&
+          category.subcategoryNames?.length) {
+          <div class="bg-gray-50 px-4 py-2">
+            @for (subName of category.subcategoryNames; track subName) {
+            <a
+              mat-button
+              [routerLink]="[
+                '/shop/category',
+                getSubcategoryId(category.id, subName)
+              ]"
+              (click)="isCatalogOpen = false"
+              class="block w-full text-left text-gray-600 py-2 hover:text-primary"
+            >
+              {{ subName }}
+            </a>
+            }
+          </div>
+          <mat-divider></mat-divider>
+
+          <button
+            mat-button
+            (click)="isCatalogOpen = false"
+            color="primary"
+            class="block w-full text-left text-gray-600 py-2 hover:text-primary"
+            [routerLink]="['/shop/category', category.id]"
+            [queryParams]="{
+              pageNumber: 1,
+              pageSize: 10
+            }"
+          >
+            Explore Category
+          </button>
+          }
+
+          <mat-divider></mat-divider>
+          }
+        </mat-nav-list>
       </div>
     </div>
-    }
   </div>
+  } @if (isMenuOpen) {
+  <div class="fixed inset-0 top-16 bg-white z-50 overflow-y-auto md:hidden">
+    <div class="container mx-auto">
+      <nav class="flex flex-col p-4">
+        @if (selectedCar) {
+        <div class="border-b py-3">
+          <div class="flex items-center justify-between">
+            <span class="font-medium">
+              {{ selectedCar.brand }} {{ selectedCar.model }}
+              {{ selectedCar.engineSpec }}
+            </span>
+            <div class="flex gap-2">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="
+                  selectedCarId && navigateToShop(selectedCarId);
+                  closeMobileMenu()
+                "
+              >
+                <mat-icon>search</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="clearCarSelection()"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+        }
+
+        <a
+          routerLink="/"
+          routerLinkActive="text-primary font-medium"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="closeMobileMenu()"
+          class="py-3 border-b"
+          >Home</a
+        >
+        <a
+          routerLink="/delivery-payment"
+          routerLinkActive="text-primary font-medium"
+          (click)="closeMobileMenu()"
+          class="py-3 border-b"
+          >Delivery & Payment</a
+        >
+        <a
+          routerLink="/warranty-returns"
+          routerLinkActive="text-primary font-medium"
+          (click)="closeMobileMenu()"
+          class="py-3 border-b"
+          >Warranty & Returns</a
+        >
+        <a
+          routerLink="/public-offer"
+          routerLinkActive="text-primary font-medium"
+          (click)="closeMobileMenu()"
+          class="py-3 border-b"
+          >Public offer</a
+        >
+
+        @if (accountService.currentUser()) {
+        <div class="py-3 border-b">
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-gray-600">{{
+              accountService.currentUser()?.email
+            }}</span>
+            <button
+              mat-button
+              color="warn"
+              (click)="logout(); closeMobileMenu()"
+            >
+              Logout
+            </button>
+          </div>
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            <a
+              routerLink="/cart"
+              (click)="closeMobileMenu()"
+              class="bg-gray-100 p-2 rounded text-center"
+            >
+              <mat-icon>shopping_cart</mat-icon>
+              <div class="text-xs">Cart</div>
+            </a>
+            <a
+              routerLink="/orders"
+              (click)="closeMobileMenu()"
+              class="bg-gray-100 p-2 rounded text-center"
+            >
+              <mat-icon>history</mat-icon>
+              <div class="text-xs">Orders</div>
+            </a>
+            <a
+              routerLink="/account/customer-car"
+              (click)="closeMobileMenu()"
+              class="bg-gray-100 p-2 rounded text-center"
+            >
+              <mat-icon>directions_car</mat-icon>
+              <div class="text-xs">My Car</div>
+            </a>
+            @if (accountService.isAdmin()) {
+            <a
+              routerLink="/admin"
+              (click)="closeMobileMenu()"
+              class="bg-gray-100 p-2 rounded text-center"
+            >
+              <mat-icon>admin_panel_settings</mat-icon>
+              <div class="text-xs">Admin</div>
+            </a>
+            }
+          </div>
+        </div>
+        } @else {
+        <div class="flex gap-4 py-3 border-b">
+          <button
+            routerLink="/account/login"
+            (click)="closeMobileMenu()"
+            mat-raised-button
+            color="primary"
+            class="flex-1"
+          >
+            Login
+          </button>
+          <button
+            routerLink="/account/register"
+            (click)="closeMobileMenu()"
+            mat-stroked-button
+            class="flex-1"
+          >
+            Register
+          </button>
+        </div>
+        }
+
+        <div class="py-3 mt-2">
+          <h3 class="font-medium mb-3">Contact Us:</h3>
+          <div class="flex flex-col gap-2">
+            <a href="tel:+380951111111" class="flex items-center gap-2">
+              <mat-icon>phone</mat-icon> +380 95 11 11 111
+            </a>
+            <a href="tel:+380672222222" class="flex items-center gap-2">
+              <mat-icon>phone</mat-icon> +380 67 22 22 222
+            </a>
+            <button
+              mat-raised-button
+              color="primary"
+              class="mt-2"
+              (click)="openCallbackDialog(); closeMobileMenu()"
+            >
+              <mat-icon>support_agent</mat-icon>
+              <span>Request a call</span>
+            </button>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </div>
+  }
 </header>
 
-@if (busyService.loading) {
-<mat-progress-bar
-  mode="indeterminate"
-  class="fixed top-34 z-50"
-></mat-progress-bar>
-}
-
-<mat-menu #menu="matMenu" class="px-5">
-  <button mat-menu-item class="px-3" routerLink="/cart">
+<mat-menu #menu="matMenu">
+  <button mat-menu-item routerLink="/cart">
     <mat-icon>shopping_cart</mat-icon>
     My cart
   </button>
-  <button mat-menu-item class="px-3" routerLink="/orders">
+  <button mat-menu-item routerLink="/orders">
     <mat-icon>history</mat-icon>
     My orders
   </button>
-  <button mat-menu-item class="px-3" routerLink="/account/customer-car">
+  <button mat-menu-item routerLink="/account/customer-car">
     <mat-icon>directions_car</mat-icon>
     My car
   </button>
   <mat-divider></mat-divider>
-  <button mat-menu-item class="px-3" (click)="logout()">
+  <button mat-menu-item (click)="logout()">
     <mat-icon>logout</mat-icon>
     Logout
   </button>
 </mat-menu>
+
+<div
+  class="hidden lg:block"
+  [style.height]="isMobile ? '150px' : '125px'"
+></div>

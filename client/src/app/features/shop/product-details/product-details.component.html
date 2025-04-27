@@ -1,10 +1,10 @@
 <section class="py-4" *ngIf="product">
   <div class="max-w-(--breakpoint-2xl) px-4 mx-auto">
-    <div class="grid grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
       <div>
         <div class="relative w-full max-w-md mx-auto mt-4">
           <div
-            class="image-container flex items-center justify-center h-[400px] mb-4 relative"
+            class="image-container flex items-center justify-center h-[300px] sm:h-[350px] md:h-[400px] mb-4 relative"
             (mousemove)="onImageZoom($event)"
             (mouseenter)="showZoom = true"
             (mouseleave)="showZoom = false"
@@ -19,7 +19,7 @@
 
             <div
               *ngIf="showZoom && product.images.length > 0"
-              class="zoom-result absolute rounded-lg shadow-lg pointer-events-none"
+              class="zoom-result absolute rounded-lg shadow-lg pointer-events-none hidden sm:block"
               [ngStyle]="zoomStyle"
             ></div>
 
@@ -34,7 +34,7 @@
 
           <button
             mat-icon-button
-            class="absolute -left-6 top-1/2 transform -translate-y-1/2 bg-white shadow-md rounded-full hover:bg-blue-100 hover:shadow-lg transition-all nav-button"
+            class="absolute -left-2 sm:-left-6 top-1/2 transform -translate-y-1/2 bg-white shadow-md rounded-full hover:bg-blue-100 hover:shadow-lg transition-all nav-button"
             (click)="previousImage()"
           >
             <mat-icon class="text-blue-500">arrow_back</mat-icon>
@@ -42,7 +42,7 @@
 
           <button
             mat-icon-button
-            class="absolute -right-6 top-1/2 transform -translate-y-1/2 bg-white shadow-md rounded-full hover:bg-blue-100 hover:shadow-lg transition-all nav-button"
+            class="absolute -right-2 sm:-right-6 top-1/2 transform -translate-y-1/2 bg-white shadow-md rounded-full hover:bg-blue-100 hover:shadow-lg transition-all nav-button"
             (click)="nextImage()"
           >
             <mat-icon class="text-blue-500">arrow_forward</mat-icon>
@@ -62,14 +62,18 @@
           ></button>
         </div>
       </div>
-      <div>
-        <h1 class="text-3xl font-semibold text-gray-900">{{ product.name }}</h1>
-        <h2 class="text-2xl font-semibold text-gray-900">
+      <div class="mt-6 md:mt-0">
+        <h1 class="text-2xl sm:text-3xl font-semibold text-gray-900">
+          {{ product.name }}
+        </h1>
+        <h2 class="text-xl sm:text-2xl font-semibold text-gray-900">
           {{ product.vendorCode }}
         </h2>
         <div class="mt-3 p-3 bg-gray-50 rounded-md border border-gray-200">
-          <h3 class="text-md font-semibold text-gray-700">Compatible with:</h3>
-          <p class="text-sm text-gray-600 mt-1">
+          <h3 class="text-sm sm:text-md font-semibold text-gray-700">
+            Compatible with:
+          </h3>
+          <p class="text-xs sm:text-sm text-gray-600 mt-1">
             {{ getCompatibleCarModels() }}
           </p>
         </div>
@@ -85,15 +89,15 @@
           class="flex-col gap-4 mt-6"
           *ngIf="product.isAvailable; else notAvailableBtn"
         >
-          <mat-form-field appearance="outline" class="flex">
+          <mat-form-field appearance="outline" class="w-full sm:w-auto sm:flex">
             <mat-label>Quantity</mat-label>
             <input matInput min="0" [(ngModel)]="quantity" type="number" />
           </mat-form-field>
           <div *ngIf="product.discount > 0; else noDiscount">
-            <div class="text-xl text-gray-500 line-through">
+            <div class="text-lg sm:text-xl text-gray-500 line-through">
               {{ product.price * quantity | currency }}
             </div>
-            <div class="text-3xl font-extrabold text-red-600">
+            <div class="text-2xl sm:text-3xl font-extrabold text-red-600">
               {{
                 product.price * quantity - product.discount * quantity
                   | currency
@@ -102,13 +106,13 @@
           </div>
 
           <ng-template #noDiscount>
-            <div class="text-xl font-semibold text-black">
+            <div class="text-lg sm:text-xl font-semibold text-black">
               {{ product.price | currency }}
             </div>
           </ng-template>
 
           <button
-            class="mt-4"
+            class="mt-4 w-full sm:w-auto"
             [disabled]="quantity === quantityInCart"
             (click)="updateCart()"
             mat-flat-button
@@ -120,7 +124,10 @@
 
         <ng-template #notAvailableBtn>
           <div class="flex-col gap-4 mt-6">
-            <mat-form-field appearance="outline" class="flex">
+            <mat-form-field
+              appearance="outline"
+              class="w-full sm:w-auto sm:flex"
+            >
               <mat-label>Quantity</mat-label>
               <input
                 matInput
@@ -133,16 +140,22 @@
             <button
               mat-stroked-button
               (click)="openCallbackDialog()"
-              class="ml-4"
+              class="w-full sm:w-auto sm:ml-4 mt-2 sm:mt-0"
             >
-              <mat-icon class="text-2xl">support_agent</mat-icon>
-              <span class="text-lg font-medium">Request a call</span>
+              <mat-icon class="text-xl sm:text-2xl">support_agent</mat-icon>
+              <span class="text-base sm:text-lg font-medium"
+                >Request a call</span
+              >
             </button>
-            <div class="text-xl font-semibold text-blue-200">
+            <div class="text-lg sm:text-xl font-semibold text-blue-200 mt-3">
               {{ product.price | currency }}
             </div>
 
-            <button class="mt-4 bg-blue-300" disabled="" mat-flat-button>
+            <button
+              class="mt-4 bg-blue-300 w-full sm:w-auto"
+              disabled=""
+              mat-flat-button
+            >
               <mat-icon>shopping_cart</mat-icon>
               {{ getButtonText() }}
             </button>
@@ -151,7 +164,7 @@
       </div>
     </div>
 
-    <div class="max-w-7xl mx-auto my-8">
+    <div class="max-w-7xl mx-auto my-6 sm:my-8">
       <mat-tab-group
         #tabGroup
         mat-stretch-tabs="true"
@@ -161,7 +174,7 @@
         <mat-tab>
           <ng-template mat-tab-label>
             <div
-              class="px-4 py-2 font-medium text-sm"
+              class="px-2 sm:px-4 py-2 font-medium text-xs sm:text-sm"
               [ngClass]="{
                 'text-blue-700': tabGroup.selectedIndex === 0,
                 'text-gray-700': tabGroup.selectedIndex !== 0
@@ -170,9 +183,11 @@
               SPECIFICATIONS
             </div>
           </ng-template>
-          <div class="p-4 border border-gray-300 border-t-0 rounded-b-lg">
+          <div
+            class="p-3 sm:p-4 border border-gray-300 border-t-0 rounded-b-lg"
+          >
             <p
-              class="text-sm text-gray-700"
+              class="text-xs sm:text-sm text-gray-700"
               *ngFor="let spec of product.specifications"
             >
               {{ spec.specificationName }}: {{ spec.specificationValue }}
@@ -183,7 +198,7 @@
         <mat-tab>
           <ng-template mat-tab-label>
             <div
-              class="px-4 py-2 font-medium text-sm"
+              class="px-2 sm:px-4 py-2 font-medium text-xs sm:text-sm"
               [ngClass]="{
                 'text-blue-700': tabGroup.selectedIndex === 1,
                 'text-gray-700': tabGroup.selectedIndex !== 1
@@ -193,7 +208,7 @@
             </div>
           </ng-template>
           <div
-            class="p-4 border border-gray-300 border-t-0 rounded-b-lg space-y-2 text-gray-700 text-sm"
+            class="p-3 sm:p-4 border border-gray-300 border-t-0 rounded-b-lg space-y-2 text-gray-700 text-xs sm:text-sm"
           >
             <p>
               Prepayment via LiqPay with a 1.5% fee (Mastercard, Visa, Apple
@@ -210,7 +225,7 @@
         <mat-tab>
           <ng-template mat-tab-label>
             <div
-              class="px-4 py-2 font-medium text-sm"
+              class="px-2 sm:px-4 py-2 font-medium text-xs sm:text-sm"
               [ngClass]="{
                 'text-blue-700': tabGroup.selectedIndex === 2,
                 'text-gray-700': tabGroup.selectedIndex !== 2
@@ -220,7 +235,7 @@
             </div>
           </ng-template>
           <div
-            class="p-4 border border-gray-300 border-t-0 rounded-b-lg space-y-2 text-gray-700 text-sm"
+            class="p-3 sm:p-4 border border-gray-300 border-t-0 rounded-b-lg space-y-2 text-gray-700 text-xs sm:text-sm"
           >
             <p>
               Delivery by Nova Poshta in Ukraine: to the branch or by courier to
@@ -236,7 +251,7 @@
         <mat-tab>
           <ng-template mat-tab-label>
             <div
-              class="px-4 py-2 font-medium text-sm"
+              class="px-2 sm:px-4 py-2 font-medium text-xs sm:text-sm"
               [ngClass]="{
                 'text-blue-700': tabGroup.selectedIndex === 3,
                 'text-gray-700': tabGroup.selectedIndex !== 3
@@ -246,7 +261,7 @@
             </div>
           </ng-template>
           <div
-            class="p-4 border border-gray-300 border-t-0 rounded-b-lg space-y-2 text-gray-700 text-sm"
+            class="p-3 sm:p-4 border border-gray-300 border-t-0 rounded-b-lg space-y-2 text-gray-700 text-xs sm:text-sm"
           >
             <p>
               The warranty period against factory defects is 14 days from the

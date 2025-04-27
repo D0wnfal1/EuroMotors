@@ -6,6 +6,7 @@ import {
   OnChanges,
   SimpleChanges,
   inject,
+  HostListener,
 } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -21,6 +22,7 @@ import { Router } from '@angular/router';
 import { CarBrand } from '../../../shared/models/carBrand';
 import { CarmodelService } from '../../../core/services/carmodel.service';
 import { CarSelectionResponse } from '../../../shared/models/carModel';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-car-selection',
@@ -49,6 +51,7 @@ export class CarSelectionComponent implements OnInit, OnDestroy, OnChanges {
   bodyTypes: string[] = [];
   engineSpecs: string[] = [];
   availableCarIds: string[] = [];
+  isSmallScreen = false;
 
   carSelectionForm: FormGroup;
   private subscriptions: Subscription[] = [];
@@ -58,7 +61,8 @@ export class CarSelectionComponent implements OnInit, OnDestroy, OnChanges {
   constructor(
     private carBrandService: CarbrandService,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private breakpointObserver: BreakpointObserver
   ) {
     this.carSelectionForm = this.fb.group({
       brand: [null, Validators.required],
@@ -70,6 +74,7 @@ export class CarSelectionComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit(): void {
+    this.observeScreenSize();
     this.carBrandService.getAllCarBrands();
 
     this.subscriptions.push(
@@ -97,6 +102,16 @@ export class CarSelectionComponent implements OnInit, OnDestroy, OnChanges {
       this.setupFormValueChanges();
       this.isFormSetupComplete = true;
     }, 500);
+  }
+
+  observeScreenSize(): void {
+    this.subscriptions.push(
+      this.breakpointObserver
+        .observe([Breakpoints.XSmall, Breakpoints.Small])
+        .subscribe((result) => {
+          this.isSmallScreen = result.matches;
+        })
+    );
   }
 
   ngOnChanges(changes: SimpleChanges): void {
