@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgFor } from '@angular/common';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -16,6 +16,12 @@ import { ProductItemComponent } from '../../shop/product-item/product-item.compo
 import { CartService } from '../../../core/services/cart.service';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { Pagination } from '../../../shared/models/pagination';
+import {
+  MatListOption,
+  MatSelectionList,
+  MatSelectionListChange,
+} from '@angular/material/list';
+import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 
 @Component({
   selector: 'app-car-brand-products',
@@ -29,6 +35,11 @@ import { Pagination } from '../../../shared/models/pagination';
     MatIconModule,
     ProductItemComponent,
     MatPaginatorModule,
+    NgFor,
+    MatMenuTrigger,
+    MatMenu,
+    MatSelectionList,
+    MatListOption,
   ],
   templateUrl: './car-brand-products.component.html',
   styleUrls: ['./car-brand-products.component.scss'],
@@ -36,12 +47,16 @@ import { Pagination } from '../../../shared/models/pagination';
 export class CarBrandProductsComponent implements OnInit, OnDestroy {
   brandId: string = '';
   carBrand?: CarBrand;
-  products: Product[] = [];
+  products?: Pagination<Product>;
   totalItems: number = 0;
   loading: boolean = true;
   shopParams = new ShopParams();
   pageSizeOptions = [5, 10, 15, 20];
-
+  sortOptions = [
+    { name: 'Alphabetical', value: '' },
+    { name: 'Price: Low-High', value: 'ASC' },
+    { name: 'Price: High-Low', value: 'DESC' },
+  ];
   private subscriptions: Subscription[] = [];
 
   constructor(
@@ -102,7 +117,7 @@ export class CarBrandProductsComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (response: Pagination<Product>) => {
-          this.products = response.data;
+          this.products = response;
           this.totalItems = response.count;
           this.loading = false;
         },
@@ -119,6 +134,15 @@ export class CarBrandProductsComponent implements OnInit, OnDestroy {
     this.shopParams.pageNumber = event.pageIndex + 1;
     this.shopParams.pageSize = event.pageSize;
     this.loadProductsForBrand();
+  }
+
+  onSortChange(event: MatSelectionListChange) {
+    const selectedOption = event.options[0];
+    if (selectedOption) {
+      this.shopParams.sortOrder = selectedOption.value;
+      this.shopParams.pageNumber = 1;
+      this.loadProductsForBrand();
+    }
   }
 
   getBrandLogo(): string {

@@ -63,11 +63,10 @@
         </div>
       </div>
       <div>
-        <h1 class="text-3xl font-semibold text-gray-900">
+        <h1 class="text-3xl font-semibold text-gray-900">{{ product.name }}</h1>
+        <h2 class="text-2xl font-semibold text-gray-900">
           {{ product.vendorCode }}
-        </h1>
-        <h2 class="text-2xl font-semibold text-gray-900">{{ product.name }}</h2>
-
+        </h2>
         <div class="mt-3 p-3 bg-gray-50 rounded-md border border-gray-200">
           <h3 class="text-md font-semibold text-gray-700">Compatible with:</h3>
           <p class="text-sm text-gray-600 mt-1">
@@ -168,7 +167,7 @@
                 'text-gray-700': tabGroup.selectedIndex !== 0
               }"
             >
-              SPECIFICATION
+              SPECIFICATIONS
             </div>
           </ng-template>
           <div class="p-4 border border-gray-300 border-t-0 rounded-b-lg">
@@ -180,6 +179,7 @@
             </p>
           </div>
         </mat-tab>
+
         <mat-tab>
           <ng-template mat-tab-label>
             <div
@@ -192,15 +192,21 @@
               PAYMENT
             </div>
           </ng-template>
-          <div class="p-4 border border-gray-300 border-t-0 rounded-b-lg">
-            <p class="text-sm text-gray-700">
-              Lorem ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled it to make a type specimen book.
+          <div
+            class="p-4 border border-gray-300 border-t-0 rounded-b-lg space-y-2 text-gray-700 text-sm"
+          >
+            <p>
+              Prepayment via LiqPay with a 1.5% fee (Mastercard, Visa, Apple
+              Pay, Google Pay). Funds arrive the next business day, all payments
+              are protected by 3D Secure.
+            </p>
+            <p>
+              Payment upon receipt (cash on delivery) via Nova Poshta —
+              commission 2% + 20 ₴.
             </p>
           </div>
         </mat-tab>
+
         <mat-tab>
           <ng-template mat-tab-label>
             <div
@@ -213,14 +219,20 @@
               DELIVERY
             </div>
           </ng-template>
-          <div class="p-4 border border-gray-300 border-t-0 rounded-b-lg">
-            <p class="text-sm text-gray-700">
-              Lorem ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s.
+          <div
+            class="p-4 border border-gray-300 border-t-0 rounded-b-lg space-y-2 text-gray-700 text-sm"
+          >
+            <p>
+              Delivery by Nova Poshta in Ukraine: to the branch or by courier to
+              your home.
+            </p>
+            <p>
+              Rates: up to 2 kg — from 60 ₴; up to 10 kg — from 90 ₴; up to 30
+              kg — from 140 ₴; courier +35 ₴. Storage — 7 days free.
             </p>
           </div>
         </mat-tab>
+
         <mat-tab>
           <ng-template mat-tab-label>
             <div
@@ -230,15 +242,23 @@
                 'text-gray-700': tabGroup.selectedIndex !== 3
               }"
             >
-              WARRANTY
+              GUARANTEE
             </div>
           </ng-template>
-          <div class="p-4 border border-gray-300 border-t-0 rounded-b-lg">
-            <p class="text-sm text-gray-700">
-              Lorem ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type.
+          <div
+            class="p-4 border border-gray-300 border-t-0 rounded-b-lg space-y-2 text-gray-700 text-sm"
+          >
+            <p>
+              The warranty period against factory defects is 14 days from the
+              date of receipt.
+            </p>
+            <p>
+              Return/exchange of proper quality - within 14 days (excluding the
+              day of purchase).
+            </p>
+            <p>
+              In case of defect - replacement or refund within 7 days after
+              confirmation.
             </p>
           </div>
         </mat-tab>

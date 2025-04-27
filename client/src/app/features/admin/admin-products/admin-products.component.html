@@ -31,117 +31,140 @@
     </button>
   </div>
 
-  <app-product-list
-    [products]="products"
-    [shopParams]="shopParams"
-    [pageSizeOptions]="pageSizeOptions"
-    [sortOptions]="sortOptions"
-    (pageChanged)="handlePageEvent($event)"
-    (sortChanged)="onSortChange($event)"
-  >
-    <table
-      mat-table
-      [dataSource]="products?.data || []"
-      class="mat-elevation-z8 w-full mt-4"
+  <div class="flex justify-between items-center">
+    <mat-paginator
+      class="bg-white"
+      (page)="handlePageEvent($event)"
+      [length]="products?.count"
+      [pageSize]="shopParams.pageSize"
+      [showFirstLastButtons]="true"
+      [pageSizeOptions]="pageSizeOptions"
+      [pageIndex]="shopParams.pageNumber - 1"
+      aria-label="Select page"
     >
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef class="text-center">Name</th>
-        <td mat-cell *matCellDef="let product" class="text-center">
-          {{ product.name }}
-        </td>
-      </ng-container>
+    </mat-paginator>
 
-      <ng-container matColumnDef="category">
-        <th mat-header-cell *matHeaderCellDef class="text-center">Category</th>
-        <td mat-cell *matCellDef="let product" class="text-center">
-          {{ getCategoryName(product.categoryId) }}
-        </td>
-      </ng-container>
+    <div class="flex">
+      <button mat-stroked-button [matMenuTriggerFor]="sortMenu" class="mr-4">
+        <mat-icon>swap_vert</mat-icon>
+        Sort
+      </button>
+    </div>
+  </div>
 
-      <ng-container matColumnDef="carModels">
-        <th mat-header-cell *matHeaderCellDef class="text-center">
-          Car Models
-        </th>
-        <td mat-cell *matCellDef="let product" class="text-center">
-          {{ getCarModelNames(product.carModelIds) }}
-        </td>
-      </ng-container>
+  <table
+    mat-table
+    [dataSource]="products?.data || []"
+    class="mat-elevation-z8 w-full mt-4"
+  >
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef class="text-center">Name</th>
+      <td mat-cell *matCellDef="let product" class="text-center">
+        {{ product.name }}
+      </td>
+    </ng-container>
 
-      <ng-container matColumnDef="vendorCode">
-        <th mat-header-cell *matHeaderCellDef class="text-center">
-          VendorCode
-        </th>
-        <td mat-cell *matCellDef="let product" class="text-center">
-          {{ product.vendorCode }}
-        </td>
-      </ng-container>
+    <ng-container matColumnDef="category">
+      <th mat-header-cell *matHeaderCellDef class="text-center">Category</th>
+      <td mat-cell *matCellDef="let product" class="text-center">
+        {{ getCategoryName(product.categoryId) }}
+      </td>
+    </ng-container>
 
-      <ng-container matColumnDef="price">
-        <th mat-header-cell *matHeaderCellDef class="text-center">Price</th>
-        <td mat-cell *matCellDef="let product" class="text-center">
-          {{ product.price | currency }}
-        </td>
-      </ng-container>
+    <ng-container matColumnDef="carModels">
+      <th mat-header-cell *matHeaderCellDef class="text-center">Car Models</th>
+      <td mat-cell *matCellDef="let product" class="text-center">
+        {{ getCarModelNames(product.carModelIds) }}
+      </td>
+    </ng-container>
 
-      <ng-container matColumnDef="discount">
-        <th mat-header-cell *matHeaderCellDef class="text-center">Discount</th>
-        <td mat-cell *matCellDef="let product" class="text-center">
-          {{ product.discount }}%
-        </td>
-      </ng-container>
+    <ng-container matColumnDef="vendorCode">
+      <th mat-header-cell *matHeaderCellDef class="text-center">VendorCode</th>
+      <td mat-cell *matCellDef="let product" class="text-center">
+        {{ product.vendorCode }}
+      </td>
+    </ng-container>
 
-      <ng-container matColumnDef="stock">
-        <th mat-header-cell *matHeaderCellDef class="text-center">Stock</th>
-        <td mat-cell *matCellDef="let product" class="text-center">
-          {{ product.stock }}
-        </td>
-      </ng-container>
+    <ng-container matColumnDef="price">
+      <th mat-header-cell *matHeaderCellDef class="text-center">Price</th>
+      <td mat-cell *matCellDef="let product" class="text-center">
+        {{ product.price | currency }}
+      </td>
+    </ng-container>
 
-      <ng-container matColumnDef="isAvailable">
-        <th mat-header-cell *matHeaderCellDef class="text-center">Available</th>
-        <td mat-cell *matCellDef="let product" class="text-center">
-          <mat-slide-toggle
-            [checked]="product.isAvailable"
-            (change)="toggleAvailability(product)"
-            color="primary"
-            class="!ml-2 !mt-1"
-          >
-          </mat-slide-toggle>
-        </td>
-      </ng-container>
+    <ng-container matColumnDef="discount">
+      <th mat-header-cell *matHeaderCellDef class="text-center">Discount</th>
+      <td mat-cell *matCellDef="let product" class="text-center">
+        {{ product.discount }}%
+      </td>
+    </ng-container>
 
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="text-center">Actions</th>
-        <td mat-cell *matCellDef="let product" class="text-center">
-          <button
-            mat-button
-            color="primary"
-            [routerLink]="['/admin/products/edit', product.id]"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm"
-          >
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button
-            mat-button
-            color="accent"
-            (click)="copyProduct(product.id)"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm ml-2"
-          >
-            <mat-icon>content_copy</mat-icon>
-          </button>
-          <button
-            mat-button
-            color="warn"
-            (click)="deleteProduct(product.id)"
-            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-sm ml-2"
-          >
-            <mat-icon>delete</mat-icon>
-          </button>
-        </td>
-      </ng-container>
+    <ng-container matColumnDef="stock">
+      <th mat-header-cell *matHeaderCellDef class="text-center">Stock</th>
+      <td mat-cell *matCellDef="let product" class="text-center">
+        {{ product.stock }}
+      </td>
+    </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
-  </app-product-list>
+    <ng-container matColumnDef="isAvailable">
+      <th mat-header-cell *matHeaderCellDef class="text-center">Available</th>
+      <td mat-cell *matCellDef="let product" class="text-center">
+        <mat-slide-toggle
+          [checked]="product.isAvailable"
+          (change)="toggleAvailability(product)"
+          color="primary"
+          class="!ml-2 !mt-1"
+        >
+        </mat-slide-toggle>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef class="text-center">Actions</th>
+      <td mat-cell *matCellDef="let product" class="text-center">
+        <button
+          mat-button
+          color="primary"
+          [routerLink]="['/admin/products/edit', product.id]"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button
+          mat-button
+          color="accent"
+          (click)="copyProduct(product.id)"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm ml-2"
+        >
+          <mat-icon>content_copy</mat-icon>
+        </button>
+        <button
+          mat-button
+          color="warn"
+          (click)="deleteProduct(product.id)"
+          class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-sm ml-2"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  <mat-menu #sortMenu="matMenu">
+    <mat-selection-list
+      [multiple]="false"
+      (selectionChange)="onSortChange($event)"
+    >
+      <mat-list-option
+        *ngFor="let sort of sortOptions"
+        [value]="sort.value"
+        [selected]="shopParams.sortOrder === sort.value"
+      >
+        {{ sort.name }}
+      </mat-list-option>
+    </mat-selection-list>
+  </mat-menu>
 </div>

@@ -123,6 +123,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpPatch("{id}")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> SetProductAvailability(Guid id, [FromBody] SetProductAvailabilityRequest request, CancellationToken cancellationToken)
     {
         var command = new SetProductAvailabilityCommand(id, request.IsAvailable);

@@ -55,7 +55,7 @@ export class ProductSliderComponent implements OnInit, OnDestroy {
     const params = new ShopParams();
     params.pageSize = 25;
     params.pageNumber = 1;
-
+    params.sortOrder = '';
     params.isPopular = false;
     params.isNew = false;
     params.isDiscounted = false;
@@ -69,7 +69,7 @@ export class ProductSliderComponent implements OnInit, OnDestroy {
         break;
       case 'discount':
         params.isDiscounted = true;
-        params.sortOrder = 'discount_desc';
+        params.sortOrder = '';
         break;
     }
 

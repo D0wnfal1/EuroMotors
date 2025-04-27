@@ -70,18 +70,8 @@ internal sealed class GetProductsByCategoryWithChildrenQueryHandler(IDbConnectio
             });
         }
 
-#pragma warning disable CA1311
-#pragma warning disable CA1304
-        string orderBy = request.SortOrder?.ToLower() switch
-#pragma warning restore CA1304
-#pragma warning restore CA1311
-        {
-            "price_asc" => "price ASC",
-            "price_desc" => "price DESC",
-            "name_asc" => "name ASC",
-            "name_desc" => "name DESC",
-            _ => "name ASC"
-        };
+        string sortPriceDirection = string.Equals(request.SortOrder, "DESC", StringComparison.OrdinalIgnoreCase) ? "DESC" : "ASC";
+        string orderBy = string.IsNullOrEmpty(request.SortOrder) ? "name ASC" : $"price {sortPriceDirection}";
 
         string productIdsSql = $"""
             SELECT p.id

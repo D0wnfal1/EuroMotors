@@ -32,6 +32,10 @@ public sealed class Product : Entity
 
     public bool IsAvailable { get; private set; }
 
+    public int? SoldCount { get; private set; }
+
+    public DateTime CreatedAtUtc { get; private set; }
+
     public Slug Slug { get; private set; }
 
     public List<ProductImage> Images { get; private set; } = [];
@@ -56,6 +60,9 @@ public sealed class Product : Entity
             Discount = discount,
             Stock = stock,
             IsAvailable = stock > 0,
+            SoldCount = 0,
+            CreatedAtUtc = DateTime.UtcNow,
+
             Slug = Slug.GenerateSlug(name)
         };
 
@@ -110,23 +117,6 @@ public sealed class Product : Entity
         RaiseDomainEvent(new ProductUpdatedDomainEvent(Id));
     }
 
-    public void AddCarModel(CarModel carModel)
-    {
-        if (!_carModels.Any(cm => cm.Id == carModel.Id))
-        {
-            _carModels.Add(carModel);
-        }
-    }
-
-    public void RemoveCarModel(Guid carModelId)
-    {
-        CarModel? carModel = _carModels.FirstOrDefault(cm => cm.Id == carModelId);
-        if (carModel is not null)
-        {
-            _carModels.Remove(carModel);
-        }
-    }
-
     public void UpdateCarModels(IEnumerable<CarModel> newCarModels)
     {
         var uniqueNewModels = newCarModels
@@ -157,15 +147,6 @@ public sealed class Product : Entity
         }
     }
 
-    public Result UpdateStock(int stock)
-    {
-        Stock = stock;
-
-        IsAvailable = stock > 0;
-
-        return Result.Success();
-    }
-
     public Result SubtractProductQuantity(int quantity)
     {
         if (Stock < quantity)
@@ -174,6 +155,7 @@ public sealed class Product : Entity
         }
 
         Stock -= quantity;
+        SoldCount += quantity;
 
         IsAvailable = Stock > 0;
 
@@ -185,6 +167,7 @@ public sealed class Product : Entity
     public Result AddProductQuantity(int quantity)
     {
         Stock += quantity;
+        SoldCount -= quantity;
 
         IsAvailable = Stock > 0;
 

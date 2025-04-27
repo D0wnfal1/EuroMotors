@@ -25,7 +25,7 @@ public class GetProductsTests : BaseIntegrationTest
         // Arrange
         await CleanDatabaseAsync();
 
-        var query = new GetProductsQuery(null, null, null, null, 1, 10);
+        var query = new GetProductsQuery(null, null, null, null, false, false, false, 1, 10);
 
 
         // Act
@@ -78,7 +78,7 @@ public class GetProductsTests : BaseIntegrationTest
         );
 
 
-        var query = new GetProductsQuery(null, null, null, null, 1, 10);
+        var query = new GetProductsQuery(null, null, null, null, false, false, false, 1, 10);
 
         // Act
         Result<Pagination<ProductResponse>> result = await Sender.Send(query);

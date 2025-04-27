@@ -47,9 +47,7 @@ export class CategoryService {
   }
 
   getCategoryById(id: string): Observable<Category> {
-    return this.http.get<Category>(`${this.baseUrl}/categories/${id}`, {
-      withCredentials: true,
-    });
+    return this.http.get<Category>(`${this.baseUrl}/categories/${id}`);
   }
 
   createCategory(formData: FormData): Observable<string> {

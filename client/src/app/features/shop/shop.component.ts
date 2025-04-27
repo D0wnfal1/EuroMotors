@@ -1,19 +1,38 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { MatSelectionListChange } from '@angular/material/list';
-import { PageEvent } from '@angular/material/paginator';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  MatSelectionListChange,
+  MatSelectionList,
+  MatListOption,
+} from '@angular/material/list';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Pagination } from '../../shared/models/pagination';
 import { Product } from '../../shared/models/product';
 import { ProductImage } from '../../shared/models/productImage';
 import { ShopParams } from '../../shared/models/shopParams';
 import { ProductItemComponent } from './product-item/product-item.component';
 import { ProductService } from '../../core/services/product.service';
-import { ProductListComponent } from '../../shared/components/product-list/product-list.component';
 import { ActivatedRoute } from '@angular/router';
+import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
+import { MatIcon } from '@angular/material/icon';
+import { NgFor, NgIf } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-shop',
-  imports: [FormsModule, ProductItemComponent, ProductListComponent],
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    ProductItemComponent,
+    MatPaginator,
+    MatMenu,
+    MatIcon,
+    MatSelectionList,
+    MatListOption,
+    NgFor,
+    MatMenuTrigger,
+    MatButtonModule,
+  ],
   templateUrl: './shop.component.html',
   styleUrl: './shop.component.scss',
 })

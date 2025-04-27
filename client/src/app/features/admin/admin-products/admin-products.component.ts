@@ -7,10 +7,17 @@ import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Pagination } from '../../../shared/models/pagination';
 import { ProductImage } from '../../../shared/models/productImage';
 import { ShopParams } from '../../../shared/models/shopParams';
-import { MatSelectionListChange } from '@angular/material/list';
-import { MatButton, MatIconButton } from '@angular/material/button';
-import { ProductListComponent } from '../../../shared/components/product-list/product-list.component';
-import { PageEvent } from '@angular/material/paginator';
+import {
+  MatSelectionListChange,
+  MatSelectionList,
+  MatListOption,
+} from '@angular/material/list';
+import {
+  MatButton,
+  MatButtonModule,
+  MatIconButton,
+} from '@angular/material/button';
+import { PageEvent, MatPaginator } from '@angular/material/paginator';
 import { CarModel } from '../../../shared/models/carModel';
 import { Category } from '../../../shared/models/category';
 import { CarmodelService } from '../../../core/services/carmodel.service';
@@ -18,6 +25,8 @@ import { CategoryService } from '../../../core/services/category.service';
 import { MatTableModule } from '@angular/material/table';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIcon } from '@angular/material/icon';
+import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
+import { NgFor, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-admin-products',
@@ -26,13 +35,18 @@ import { MatIcon } from '@angular/material/icon';
     FormsModule,
     RouterLink,
     CurrencyPipe,
-    MatButton,
+    MatButtonModule,
     MatIconButton,
-    ProductListComponent,
     CommonModule,
     MatTableModule,
     MatSlideToggleModule,
     MatIcon,
+    MatPaginator,
+    MatMenu,
+    MatSelectionList,
+    MatListOption,
+    NgFor,
+    MatMenuTrigger,
   ],
   templateUrl: './admin-products.component.html',
   styleUrl: './admin-products.component.scss',

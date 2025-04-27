@@ -51,6 +51,10 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(p => p.IsAvailable)
             .IsRequired();
 
+        builder.Property(p => p.SoldCount)
+            .HasColumnName("sold_count")  
+            .HasDefaultValue(0);
+
         builder.Property(c => c.Slug)
             .HasConversion(
                 slug => slug.Value,

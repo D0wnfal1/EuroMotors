@@ -135,7 +135,6 @@ export class HomeComponent implements OnInit {
   exploreCategory(categoryId: string): void {
     this.router.navigate(['/shop/category', categoryId], {
       queryParams: {
-        sortOrder: 'name_asc',
         pageNumber: 1,
         pageSize: 10,
       },

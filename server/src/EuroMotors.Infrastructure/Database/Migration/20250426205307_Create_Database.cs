@@ -153,6 +153,8 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     discount = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     stock = table.Column<int>(type: "integer", nullable: false),
                     is_available = table.Column<bool>(type: "boolean", nullable: false),
+                    sold_count = table.Column<int>(type: "integer", nullable: true, defaultValue: 0),
+                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     slug = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>

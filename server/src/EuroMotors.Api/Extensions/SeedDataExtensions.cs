@@ -321,8 +321,8 @@ public static class SeedDataExtensions
 
         const string insertProductsSql = """
         INSERT INTO products 
-        (id, category_id, name, vendor_code, price, discount, stock, is_available, slug)
-        VALUES (@Id, @CategoryId, @Name, @VendorCode, @Price, @Discount, @Stock, @IsAvailable, @Slug);
+        (id, category_id, name, vendor_code, price, discount, stock, is_available, slug, created_at_utc)
+        VALUES (@Id, @CategoryId, @Name, @VendorCode, @Price, @Discount, @Stock, @IsAvailable, @Slug, @CreatedAtUtc);
         """;
 
         const string insertProductCarModelsSql = """
@@ -347,8 +347,10 @@ public static class SeedDataExtensions
             p.Discount,
             p.Stock,
             p.IsAvailable,
-            Slug = p.Slug.Value
+            Slug = p.Slug.Value,
+            p.CreatedAtUtc
         }));
+
 
         connection.Execute(insertProductCarModelsSql, productCarModels.Select(pcm => new
         {

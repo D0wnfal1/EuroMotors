@@ -71,7 +71,6 @@
                 class="text-sm text-gray-700 hover:text-blue-700 cursor-pointer"
                 [routerLink]="['/shop/category', subcat.id]"
                 [queryParams]="{
-                  sortOrder: 'name_asc',
                   pageNumber: 1,
                   pageSize: 10
                 }"
@@ -97,7 +96,6 @@
             color="primary"
             [routerLink]="['/shop/category', category.id]"
             [queryParams]="{
-              sortOrder: 'name_asc',
               pageNumber: 1,
               pageSize: 10
             }"

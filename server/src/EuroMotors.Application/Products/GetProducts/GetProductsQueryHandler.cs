@@ -42,19 +42,15 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
             whereClause += " AND p.discount > 0";
         }
 
-        //if (request.IsNew == true)
-        //{
-        //    whereClause += " AND p.created_at >= @NewThreshold";
-        //}
+        if (request.IsNew == true)
+        {
+            whereClause += " AND p.created_at_utc >= @new_threshold";
+        }
 
-        //if (request.IsPopular == true)
-        //{
-        //    var 1:
-        //    whereClause += " AND p.view_count >= @PopularThreshold";
-
-        //    var 2: 
-        //     whereClause += " AND p.id IN (SELECT product_id FROM order_items GROUP BY product_id HAVING COUNT(*) >= @PopularThreshold)";
-        //}
+        if (request.IsPopular == true)
+        {
+            whereClause += " AND p.sold_count >= @popular_threshold";
+        }
 
         string countSql = $"""
                            SELECT COUNT(DISTINCT p.id)
@@ -67,7 +63,9 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
         {
             request.CategoryIds,
             request.CarModelIds,
-            SearchPattern = $"%{request.SearchTerm}%"
+            SearchPattern = $"%{request.SearchTerm}%",
+            new_threshold = DateTime.UtcNow.AddDays(-30),
+            popular_threshold = 100
         });
 
         string productIdsSql = $@"
@@ -87,6 +85,8 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
                 request.CategoryIds,
                 request.CarModelIds,
                 SearchPattern = $"%{request.SearchTerm}%",
+                new_threshold = DateTime.UtcNow.AddDays(-30),
+                popular_threshold = 100,
                 Limit = limit,
                 Offset = offset
             }

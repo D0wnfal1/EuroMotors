@@ -57,7 +57,7 @@ public class ProductControllerTests
 
         // Act
         IActionResult result = await _controller.GetProducts(
-            null, null, null, null, CancellationToken.None);
+            null, null, null, null, false, false, false, CancellationToken.None);
 
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
@@ -95,7 +95,7 @@ public class ProductControllerTests
 
         // Act
         await _controller.GetProducts(
-            categoryIds, carModelIds, sortOrder, searchTerm,
+            categoryIds, carModelIds, sortOrder, searchTerm, false, false, false,
             CancellationToken.None, pageNumber, pageSize);
 
         // Assert

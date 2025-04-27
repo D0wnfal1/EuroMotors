@@ -32,6 +32,8 @@ import { ShopParams } from '../../shared/models/shopParams';
 import { SelectedCar } from '../../shared/models/carModel';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../core/services/product.service';
+import { MatDialog } from '@angular/material/dialog';
+import { CallbackComponent } from '../callback/callback.component';
 
 @Component({
   selector: 'app-header',
@@ -83,6 +85,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   isCatalogOpen = false;
+  private dialog = inject(MatDialog);
 
   ngOnInit() {
     this.shopParams.pageSize = this.pageSize;
@@ -129,6 +132,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
           this.selectedCar = {
             brand: carModel.brandName || '',
             model: carModel.modelName,
+            engineSpec: `${carModel.volumeLiters}L ${carModel.fuelType}`,
           };
         },
         error: (err) => {
@@ -227,7 +231,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   toggleCatalog() {
-    console.log('Toggling catalog');
     this.isCatalogOpen = !this.isCatalogOpen;
     if (!this.isCatalogOpen) {
       this.activeCategory = null;
@@ -235,7 +238,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   setActiveCategory(category: Category) {
-    console.log('Setting active category:', category);
     this.activeCategory = category;
   }
 
@@ -255,7 +257,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   exploreCategory(categoryId: string): void {
     this.router.navigate(['/shop/category', categoryId], {
       queryParams: {
-        sortOrder: 'name_asc',
         pageNumber: 1,
         pageSize: 10,
       },
@@ -278,5 +279,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.isCatalogOpen = false;
       this.activeCategory = null;
     }
+  }
+
+  openCallbackDialog() {
+    this.dialog.open(CallbackComponent, {
+      width: '400px',
+      panelClass: 'callback-dialog',
+      disableClose: false,
+    });
   }
 }
