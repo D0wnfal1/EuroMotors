@@ -9,7 +9,7 @@ import { ImageService } from '../../../core/services/image.service';
 import { interval, Subscription } from 'rxjs';
 import { ProductItemComponent } from '../../shop/product-item/product-item.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-product-slider',
@@ -29,16 +29,11 @@ export class ProductSliderComponent implements OnInit, OnDestroy {
   productGroups: Product[][] = [];
   currentSlide = 0;
   private autoSlideSubscription?: Subscription;
-  private productsPerGroup = 4;
-  private readonly autoSlideInterval = 10000;
   private breakpointSubscription?: Subscription;
+  private readonly autoSlideInterval = 10000;
 
   activeFilter: 'popular' | 'new' | 'discount' = 'discount';
   loading = false;
-  isXSmall = false;
-  isSmall = false;
-  isMedium = false;
-  isLarge = false;
 
   constructor(
     private productService: ProductService,
@@ -47,50 +42,53 @@ export class ProductSliderComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.setupResponsiveBreakpoints();
+    this.setupResponsiveLayout();
     this.loadProducts();
     this.startAutoSlide();
-  }
-
-  setupResponsiveBreakpoints(): void {
-    this.breakpointSubscription = this.breakpointObserver
-      .observe([
-        Breakpoints.XSmall,
-        Breakpoints.Small,
-        Breakpoints.Medium,
-        Breakpoints.Large,
-        Breakpoints.XLarge,
-      ])
-      .subscribe((result) => {
-        this.isXSmall = result.breakpoints[Breakpoints.XSmall];
-        this.isSmall = result.breakpoints[Breakpoints.Small];
-        this.isMedium = result.breakpoints[Breakpoints.Medium];
-        this.isLarge = result.breakpoints[Breakpoints.Large];
-
-        if (this.isXSmall) {
-          this.productsPerGroup = 1;
-        } else if (this.isSmall) {
-          this.productsPerGroup = 2;
-        } else if (this.isMedium) {
-          this.productsPerGroup = 3;
-        } else if (this.isLarge) {
-          this.productsPerGroup = 5;
-        } else {
-          this.productsPerGroup = 5;
-        }
-
-        if (this.products.length > 0) {
-          this.groupProducts();
-          setTimeout(() => {
-            this.currentSlide = 0;
-          }, 0);
-        }
-      });
   }
 
   ngOnDestroy(): void {
     this.autoSlideSubscription?.unsubscribe();
     this.breakpointSubscription?.unsubscribe();
+  }
+
+  setupResponsiveLayout(): void {
+    this.breakpointSubscription = this.breakpointObserver
+      .observe([
+        '(max-width: 479px)',
+        '(min-width: 480px) and (max-width: 639px)',
+        '(min-width: 640px) and (max-width: 767px)',
+        '(min-width: 768px) and (max-width: 1023px)',
+        '(min-width: 1024px)',
+      ])
+      .subscribe((result) => {
+        let productsPerGroup = 5; // Default for large screens
+
+        if (result.breakpoints['(max-width: 479px)']) {
+          productsPerGroup = 1;
+        } else if (
+          result.breakpoints['(min-width: 480px) and (max-width: 639px)']
+        ) {
+          productsPerGroup = 2;
+        } else if (
+          result.breakpoints['(min-width: 640px) and (max-width: 767px)']
+        ) {
+          productsPerGroup = 3;
+        } else if (
+          result.breakpoints['(min-width: 768px) and (max-width: 1023px)']
+        ) {
+          productsPerGroup = 4;
+        }
+
+        // If products are already loaded, regroup them
+        if (this.products.length > 0) {
+          this.groupProducts(productsPerGroup);
+          // Reset to first slide when layout changes
+          setTimeout(() => {
+            this.currentSlide = 0;
+          }, 0);
+        }
+      });
   }
 
   loadProducts(): void {
@@ -121,7 +119,9 @@ export class ProductSliderComponent implements OnInit, OnDestroy {
     this.productService.getProducts(params).subscribe({
       next: (response) => {
         this.products = response.data;
-        this.groupProducts();
+        // Determine current screen size and group products accordingly
+        const currentBreakpoint = this.determineCurrentBreakpoint();
+        this.groupProducts(currentBreakpoint);
         this.currentSlide = 0;
         this.loading = false;
       },
@@ -132,17 +132,27 @@ export class ProductSliderComponent implements OnInit, OnDestroy {
     });
   }
 
-  private groupProducts(): void {
+  // Helper method to determine current breakpoint based on window width
+  private determineCurrentBreakpoint(): number {
+    const width = window.innerWidth;
+    if (width < 480) return 1;
+    if (width < 640) return 2;
+    if (width < 768) return 3;
+    if (width < 1024) return 4;
+    return 5;
+  }
+
+  private groupProducts(productsPerGroup: number): void {
     this.productGroups = [];
 
-    for (let i = 0; i < this.products.length; i += this.productsPerGroup) {
-      const group = this.products.slice(i, i + this.productsPerGroup);
+    for (let i = 0; i < this.products.length; i += productsPerGroup) {
+      const group = this.products.slice(i, i + productsPerGroup);
 
       if (group.length > 0) {
         this.productGroups.push(group);
       }
 
-      if (i + this.productsPerGroup >= this.products.length) {
+      if (i + productsPerGroup >= this.products.length) {
         break;
       }
     }

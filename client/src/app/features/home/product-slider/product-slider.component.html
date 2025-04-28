@@ -1,19 +1,23 @@
 <div
-  class="relative w-full overflow-hidden bg-white rounded-xl shadow-sm p-4 sm:p-6 mt-6 sm:mt-10"
+  class="relative w-full overflow-hidden bg-white rounded-xl shadow-sm p-3 md:p-4 lg:p-6 mt-4 md:mt-6 lg:mt-10"
 >
-  <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-8 text-center uppercase">
+  <h2
+    class="text-lg md:text-xl lg:text-2xl font-bold mb-3 md:mb-4 lg:mb-8 text-center uppercase"
+  >
     Popular Products
   </h2>
-  <div class="flex gap-1 sm:gap-2 justify-center mb-4 sm:mb-6 flex-wrap">
+  <div
+    class="flex gap-1 md:gap-2 justify-center mb-3 md:mb-4 lg:mb-6 flex-wrap"
+  >
     <button
       mat-raised-button
       color="primary"
       [class.mat-accent]="activeFilter === 'discount'"
       (click)="setFilter('discount')"
       [disabled]="loading"
-      class="text-xs sm:text-sm"
+      class="text-xs md:text-sm"
     >
-      <mat-icon class="text-sm sm:text-base">local_offer</mat-icon>
+      <mat-icon class="text-xs md:text-sm lg:text-base">local_offer</mat-icon>
       Discounts
     </button>
     <button
@@ -22,9 +26,9 @@
       [class.mat-accent]="activeFilter === 'new'"
       (click)="setFilter('new')"
       [disabled]="loading"
-      class="text-xs sm:text-sm"
+      class="text-xs md:text-sm"
     >
-      <mat-icon class="text-sm sm:text-base">new_releases</mat-icon>
+      <mat-icon class="text-xs md:text-sm lg:text-base">new_releases</mat-icon>
       New
     </button>
     <button
@@ -33,9 +37,9 @@
       [class.mat-accent]="activeFilter === 'popular'"
       (click)="setFilter('popular')"
       [disabled]="loading"
-      class="text-xs sm:text-sm"
+      class="text-xs md:text-sm"
     >
-      <mat-icon class="text-sm sm:text-base">trending_up</mat-icon>
+      <mat-icon class="text-xs md:text-sm lg:text-base">trending_up</mat-icon>
       Popular
     </button>
   </div>
@@ -43,7 +47,7 @@
   <div class="slider-wrapper">
     <button
       mat-icon-button
-      class="flex-shrink-0 mx-1 sm:mx-2 bg-white shadow-md rounded-full hover:bg-blue-100 hover:shadow-lg transition-all nav-button z-10"
+      class="flex-shrink-0 mx-1 md:mx-2 bg-white shadow-md rounded-full hover:bg-blue-100 hover:shadow-lg transition-all nav-button z-10"
       (click)="previousSlide()"
       [disabled]="loading"
     >
@@ -51,13 +55,14 @@
     </button>
 
     <div
-      class="slider-content-wrapper overflow-hidden min-h-[350px] sm:min-h-[400px]"
+      class="slider-content-wrapper overflow-hidden min-h-[280px] xs:min-h-[320px] md:min-h-[350px] lg:min-h-[400px]"
     >
       <div
         *ngIf="loading"
         class="absolute inset-0 bg-white bg-opacity-80 z-10 flex items-center justify-center"
       >
-        <mat-icon class="animate-spin text-3xl sm:text-4xl text-primary"
+        <mat-icon
+          class="animate-spin text-2xl md:text-3xl lg:text-4xl text-primary"
           >refresh</mat-icon
         >
       </div>
@@ -71,9 +76,12 @@
           class="min-w-full w-full flex-shrink-0"
         >
           <div
-            class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 gap-2 sm:gap-4"
+            class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-3 lg:gap-4"
           >
-            <div *ngFor="let product of group" class="h-full">
+            <div
+              *ngFor="let product of group; trackBy: trackByProductId"
+              class="h-full"
+            >
               <app-product-item
                 [product]="product"
                 class="h-full block"
@@ -86,7 +94,7 @@
 
     <button
       mat-icon-button
-      class="flex-shrink-0 mx-1 sm:mx-2 bg-white shadow-md rounded-full hover:bg-blue-100 hover:shadow-lg transition-all nav-button z-10"
+      class="flex-shrink-0 mx-1 md:mx-2 bg-white shadow-md rounded-full hover:bg-blue-100 hover:shadow-lg transition-all nav-button z-10"
       (click)="nextSlide()"
       [disabled]="loading"
     >
@@ -94,10 +102,10 @@
     </button>
   </div>
 
-  <div class="flex justify-center mt-2 sm:mt-4 space-x-1 sm:space-x-2">
+  <div class="flex justify-center mt-2 md:mt-3 lg:mt-4 space-x-1 md:space-x-2">
     <button
       *ngFor="let group of productGroups; let i = index"
-      class="w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300"
+      class="w-2 h-2 md:w-2.5 md:h-2.5 lg:w-3 lg:h-3 rounded-full transition-all duration-300"
       [ngClass]="{
         'bg-gray-400': currentSlide !== i,
         'bg-blue-600': currentSlide === i

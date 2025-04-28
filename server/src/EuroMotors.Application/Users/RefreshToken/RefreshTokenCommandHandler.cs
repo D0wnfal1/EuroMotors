@@ -12,6 +12,7 @@ namespace EuroMotors.Application.Users.RefreshToken;
 internal sealed class RefreshTokenCommandHandler(
     IUserRepository userRepository,
     ITokenProvider tokenProvider,
+    ITokenEncryptionService tokenEncryptionService,
     IUnitOfWork unitOfWork,
     IHttpContextAccessor httpContextAccessor,
     IConfiguration configuration
@@ -19,7 +20,8 @@ internal sealed class RefreshTokenCommandHandler(
 {
     public async Task<Result<AuthenticationResponse>> Handle(RefreshTokenCommand command, CancellationToken cancellationToken)
     {
-        User? user = await userRepository.GetByRefreshTokenAsync(command.RefreshToken, cancellationToken);
+        string encryptedRefreshToken = tokenEncryptionService.EncryptToken(command.RefreshToken);
+        User? user = await userRepository.GetByRefreshTokenAsync(encryptedRefreshToken, cancellationToken);
 
         if (user is null)
         {
@@ -34,7 +36,8 @@ internal sealed class RefreshTokenCommandHandler(
         string newAccessToken = tokenProvider.Create(user);
         (string newRefreshToken, DateTime newRefreshTokenExpiry) = tokenProvider.CreateRefreshToken();
 
-        user.SetRefreshToken(newRefreshToken, newRefreshTokenExpiry);
+        string encryptedNewRefreshToken = tokenEncryptionService.EncryptToken(newRefreshToken);
+        user.SetRefreshToken(encryptedNewRefreshToken, newRefreshTokenExpiry);
         userRepository.Update(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

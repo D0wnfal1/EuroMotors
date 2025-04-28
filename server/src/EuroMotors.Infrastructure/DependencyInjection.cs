@@ -210,6 +210,7 @@ public static class DependencyInjection
         services.AddScoped<IUserContext, UserContext>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<ITokenProvider, TokenProvider>();
+        services.AddScoped<ITokenEncryptionService, TokenEncryptionService>();
 
         return services;
     }

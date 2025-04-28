@@ -1,9 +1,18 @@
 .nav-button {
-  width: 40px !important;
-  height: 40px !important;
+  width: 36px !important;
+  height: 36px !important;
+
+  @media (min-width: 768px) {
+    width: 40px !important;
+    height: 40px !important;
+  }
 
   .mat-icon {
-    font-size: 24px !important;
+    font-size: 20px !important;
+
+    @media (min-width: 768px) {
+      font-size: 24px !important;
+    }
   }
 
   &:hover:not(:disabled) {
@@ -39,7 +48,19 @@
   align-items: center;
   position: relative;
   width: 100%;
-  min-height: 350px;
+  min-height: 280px;
+
+  @media (min-width: 480px) {
+    min-height: 320px;
+  }
+
+  @media (min-width: 768px) {
+    min-height: 350px;
+  }
+
+  @media (min-width: 1024px) {
+    min-height: 400px;
+  }
 }
 
 .slider-content-wrapper {
@@ -48,10 +69,26 @@
 
 ::ng-deep {
   .mat-mdc-raised-button {
-    height: 40px !important;
+    height: 32px !important;
+
+    @media (min-width: 768px) {
+      height: 36px !important;
+    }
+
+    @media (min-width: 1024px) {
+      height: 40px !important;
+    }
 
     .mat-icon {
-      margin-right: 8px !important;
+      margin-right: 4px !important;
+
+      @media (min-width: 768px) {
+        margin-right: 6px !important;
+      }
+
+      @media (min-width: 1024px) {
+        margin-right: 8px !important;
+      }
     }
 
     &.mat-accent {

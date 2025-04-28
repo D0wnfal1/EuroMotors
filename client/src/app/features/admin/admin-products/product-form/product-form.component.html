@@ -1,10 +1,10 @@
 <form
   [formGroup]="productForm"
   (ngSubmit)="onSubmit()"
-  class="space-y-6 p-6 bg-white shadow-lg rounded-lg"
+  class="space-y-4 sm:space-y-6 p-3 sm:p-6 bg-white shadow-lg rounded-lg"
 >
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-    <div class="col-span-3">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6">
+    <div class="col-span-1 md:col-span-3">
       <mat-form-field class="w-full">
         <mat-label>Name</mat-label>
         <input matInput formControlName="name" type="text" required />
@@ -16,18 +16,21 @@
             <mat-panel-title>Specifications</mat-panel-title>
           </mat-expansion-panel-header>
 
-          <div formArrayName="specifications" class="space-y-4 p-4">
+          <div
+            formArrayName="specifications"
+            class="space-y-3 sm:space-y-4 p-2 sm:p-4"
+          >
             <div
               *ngFor="let spec of specifications.controls; let i = index"
               [formGroupName]="i"
-              class="flex flex-row w-full items-center space-x-4"
+              class="flex flex-col sm:flex-row w-full items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4"
             >
-              <mat-form-field class="flex-1">
+              <mat-form-field class="flex-1 w-full">
                 <mat-label>Specification Name</mat-label>
                 <input matInput formControlName="specificationName" required />
               </mat-form-field>
 
-              <mat-form-field class="flex-1">
+              <mat-form-field class="flex-1 w-full">
                 <mat-label>Specification Value</mat-label>
                 <input matInput formControlName="specificationValue" required />
               </mat-form-field>
@@ -37,6 +40,7 @@
                 type="button"
                 (click)="removeSpecification(i)"
                 [disabled]="specifications.length <= 1"
+                class="flex-shrink-0 mt-1 sm:mt-0"
               >
                 <mat-icon>remove_circle</mat-icon>
               </button>
@@ -55,7 +59,7 @@
         </mat-expansion-panel>
       </mat-accordion>
 
-      <mat-form-field class="w-full pt-6">
+      <mat-form-field class="w-full pt-4 sm:pt-6">
         <mat-label>Vendor Code</mat-label>
         <input matInput formControlName="vendorCode" type="text" required />
       </mat-form-field>
@@ -69,7 +73,7 @@
         </mat-select>
       </mat-form-field>
 
-      <div class="flex items-center mt-2">
+      <div class="flex flex-col sm:flex-row sm:items-center mt-2 gap-2">
         <mat-form-field class="w-full">
           <mat-label>Car Models</mat-label>
           <mat-select formControlName="carModelIds" multiple>
@@ -88,7 +92,7 @@
           [disabled]="
             !productId || !productForm.get('carModelIds')?.value?.length
           "
-          class="ml-4 mb-4"
+          class="sm:ml-4 sm:mb-4 w-full sm:w-auto"
         >
           <mat-icon>save</mat-icon> Save Car Models
         </button>
@@ -111,19 +115,21 @@
     </div>
 
     <div
-      class="col-span-1 space-y-4 bg-gray-100 border border-gray-300 rounded px-4 py-2"
+      class="col-span-1 space-y-3 sm:space-y-4 bg-gray-100 border border-gray-300 rounded px-3 sm:px-4 py-2"
     >
-      <mat-label class="text-lg font-semibold">Product Image(s)</mat-label>
+      <mat-label class="text-base sm:text-lg font-semibold"
+        >Product Image(s)</mat-label
+      >
 
-      <div *ngIf="productImages.length > 0" class="space-y-4">
+      <div *ngIf="productImages.length > 0" class="space-y-3 sm:space-y-4">
         <div
           *ngFor="let image of productImages"
-          class="flex items-center space-x-4"
+          class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4"
         >
           <img
             [src]="getImageUrl(image.path)"
             alt="Product Image"
-            class="w-48 h-48 object-cover rounded-lg shadow-lg transition-transform transform hover:scale-105"
+            class="w-full sm:w-48 h-48 object-cover rounded-lg shadow-lg transition-transform transform hover:scale-105"
           />
           <button
             mat-raised-button
@@ -138,23 +144,23 @@
 
       <div
         *ngIf="selectedImages.length > 0"
-        class="flex flex-wrap gap-4 justify-center"
+        class="flex flex-wrap gap-3 sm:gap-4 justify-center"
       >
         <img
           *ngFor="let img of selectedImages"
           [src]="img"
           alt="Selected Image"
-          class="w-32 h-32 object-cover rounded-lg shadow-xl border-2 border-gray-300"
+          class="w-24 sm:w-32 h-24 sm:h-32 object-cover rounded-lg shadow-xl border-2 border-gray-300"
         />
       </div>
 
-      <div class="flex items-center justify-between mt-4">
+      <div class="flex items-center justify-between mt-3 sm:mt-4">
         <input
           type="file"
           (change)="onFileSelected($event)"
           accept="image/*"
           multiple
-          class="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 hover:file:bg-blue-100"
+          class="block w-full text-xs sm:text-sm text-gray-900 file:mr-2 sm:file:mr-4 file:py-1 sm:file:py-2 file:px-2 sm:file:px-4 file:rounded file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 hover:file:bg-blue-100"
         />
       </div>
     </div>
@@ -163,7 +169,7 @@
     mat-raised-button
     color="primary"
     type="submit"
-    class="mt-6"
+    class="mt-4 sm:mt-6 w-full sm:w-auto"
     [disabled]="productForm.invalid || isSaving"
   >
     <span *ngIf="!isSaving">{{

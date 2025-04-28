@@ -1,9 +1,9 @@
 <div class="bg-white shadow-md">
   <div
-    class="flex justify-between items-center mt-4 max-w-(--breakpoint-2xl) mx-auto px-4"
+    class="flex flex-col md:flex-row md:justify-between items-center gap-3 max-w-(--breakpoint-2xl) mx-auto px-3 sm:px-4 pt-3 sm:pt-4"
   >
     <mat-paginator
-      class="bg-white mt-4"
+      class="bg-white w-full md:w-auto"
       [pageSizeOptions]="[5, 10, 20]"
       [length]="totalItems"
       [pageSize]="orderParams.pageSize"
@@ -11,8 +11,10 @@
       showFirstLastButtons
     >
     </mat-paginator>
-    <h2 class="text-2xl font-semibold text-gray-800">Customer orders</h2>
-    <mat-form-field appearance="outline" class="mt-2">
+    <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 text-center">
+      Customer orders
+    </h2>
+    <mat-form-field appearance="outline" class="w-full md:w-auto">
       <mat-label>Filter by status</mat-label>
       <mat-select (selectionChange)="onFilterSelect($event)">
         <mat-option *ngFor="let status of statusOptions" [value]="status">{{
@@ -22,18 +24,22 @@
     </mat-form-field>
   </div>
 
-  <div class="p-4">
-    <div class="overflow-hidden shadow-xl bg-white rounded-lg">
+  <div class="p-3 sm:p-4">
+    <div class="overflow-x-auto shadow-xl bg-white rounded-lg responsive-table">
       <table mat-table [dataSource]="dataSource" class="w-full table-auto">
         <ng-container matColumnDef="id">
           <th
             mat-header-cell
             *matHeaderCellDef
-            class="px-4 py-2 text-left text-gray-600"
+            class="px-2 sm:px-4 py-2 text-left text-gray-600 text-xs sm:text-sm hidden sm:table-cell"
           >
             Order ID
           </th>
-          <td mat-cell *matCellDef="let order" class="px-4 py-2 text-gray-800">
+          <td
+            mat-cell
+            *matCellDef="let order"
+            class="px-2 sm:px-4 py-2 text-gray-800 text-xs sm:text-sm hidden sm:table-cell"
+          >
             {{ order.id }}
           </td>
         </ng-container>
@@ -42,11 +48,15 @@
           <th
             mat-header-cell
             *matHeaderCellDef
-            class="px-4 py-2 text-left text-gray-600"
+            class="px-2 sm:px-4 py-2 text-left text-gray-600 text-xs sm:text-sm"
           >
             Order Date
           </th>
-          <td mat-cell *matCellDef="let order" class="px-4 py-2 text-gray-800">
+          <td
+            mat-cell
+            *matCellDef="let order"
+            class="px-2 sm:px-4 py-2 text-gray-800 text-xs sm:text-sm"
+          >
             {{ order.createdAtUtc | date : "d MMMM yyyy HH:mm" }}
           </td>
         </ng-container>
@@ -55,11 +65,15 @@
           <th
             mat-header-cell
             *matHeaderCellDef
-            class="px-4 py-2 text-left text-gray-600"
+            class="px-2 sm:px-4 py-2 text-left text-gray-600 text-xs sm:text-sm"
           >
             Total
           </th>
-          <td mat-cell *matCellDef="let order" class="px-4 py-2 text-gray-800">
+          <td
+            mat-cell
+            *matCellDef="let order"
+            class="px-2 sm:px-4 py-2 text-gray-800 text-xs sm:text-sm"
+          >
             {{ order.totalPrice | currency }}
           </td>
         </ng-container>
@@ -68,11 +82,15 @@
           <th
             mat-header-cell
             *matHeaderCellDef
-            class="px-4 py-2 text-left text-gray-600"
+            class="px-2 sm:px-4 py-2 text-left text-gray-600 text-xs sm:text-sm hidden md:table-cell"
           >
             Status
           </th>
-          <td mat-cell *matCellDef="let order" class="px-4 py-2 text-gray-800">
+          <td
+            mat-cell
+            *matCellDef="let order"
+            class="px-2 sm:px-4 py-2 text-gray-800 text-xs sm:text-sm hidden md:table-cell"
+          >
             {{ order.status | status }}
           </td>
         </ng-container>
@@ -81,19 +99,21 @@
           <th
             mat-header-cell
             *matHeaderCellDef
-            class="px-4 py-2 text-left text-gray-600"
+            class="px-2 sm:px-4 py-2 text-left text-gray-600 text-xs sm:text-sm"
           >
             Actions
           </th>
-          <td mat-cell *matCellDef="let order" class="px-4 py-2">
-            <div class="flex gap-2">
+          <td mat-cell *matCellDef="let order" class="px-2 sm:px-4 py-2">
+            <div class="flex gap-1 sm:gap-2">
               <button
                 matTooltip="View"
                 mat-icon-button
                 routerLink="/orders/{{ order.id }}"
                 class="text-blue-500 hover:text-blue-700"
               >
-                <mat-icon color="accent">visibility</mat-icon>
+                <mat-icon class="text-base sm:text-lg" color="accent"
+                  >visibility</mat-icon
+                >
               </button>
             </div>
           </td>

@@ -50,3 +50,40 @@ button.match-input-height {
   --mat-snack-bar-button-color: #fff;
   --mdc-snackbar-supporting-text-color: #fff;
 }
+
+.responsive-table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  .mat-mdc-table {
+    width: 100%;
+    min-width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .mat-mdc-cell,
+  .mat-mdc-header-cell {
+    padding: 0.5rem !important;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 767px) {
+    .mat-mdc-table {
+      table-layout: fixed;
+    }
+
+    .mat-mdc-cell .mat-mdc-button {
+      padding: 0 8px !important;
+      min-width: auto !important;
+      line-height: 30px !important;
+    }
+
+    .mat-mdc-cell,
+    .mat-mdc-header-cell {
+      padding: 0.25rem 0.5rem !important;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}

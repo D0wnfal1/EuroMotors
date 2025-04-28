@@ -102,7 +102,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     );
     this.subscriptions.push(
       this.breakpointObserver
-        .observe([Breakpoints.XSmall, Breakpoints.Small])
+        .observe([Breakpoints.XSmall])
         .subscribe((result) => {
           this.isMobile = result.matches;
           if (!this.isMobile) {

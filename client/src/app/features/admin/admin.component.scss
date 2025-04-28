@@ -1,0 +1,27 @@
+/* Responsive styles for admin panel */
+:host {
+  display: block;
+
+  ::ng-deep {
+    mat-card {
+      transition: all 0.2s ease;
+
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+    }
+
+    .mat-icon {
+      margin-bottom: 10px;
+    }
+  }
+}
+
+/* Custom breakpoint for extra small screens */
+@media screen and (min-width: 480px) and (max-width: 639px) {
+  :host ::ng-deep .xs\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

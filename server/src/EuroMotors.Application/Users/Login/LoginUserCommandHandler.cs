@@ -12,6 +12,7 @@ internal sealed class LoginUserCommandHandler(
     IUserRepository userRepository,
     IPasswordHasher passwordHasher,
     ITokenProvider tokenProvider,
+    ITokenEncryptionService tokenEncryptionService,
     IHttpContextAccessor httpContextAccessor,
     IUnitOfWork unitOfWork,
     IConfiguration configuration) : ICommandHandler<LoginUserCommand, AuthenticationResponse>
@@ -35,7 +36,8 @@ internal sealed class LoginUserCommandHandler(
         string accessToken = tokenProvider.Create(user);
         (string refreshToken, DateTime refreshTokenExpiry) = tokenProvider.CreateRefreshToken();
 
-        user.SetRefreshToken(refreshToken, refreshTokenExpiry);
+        string encryptedRefreshToken = tokenEncryptionService.EncryptToken(refreshToken);
+        user.SetRefreshToken(encryptedRefreshToken, refreshTokenExpiry);
         userRepository.Update(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

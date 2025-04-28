@@ -1,11 +1,11 @@
-<div class="p-6 max-w-xl mx-auto">
-  <h1 class="text-2xl font-bold text-center mb-6">
+<div class="p-3 sm:p-6 max-w-xl mx-auto">
+  <h1 class="text-xl sm:text-2xl font-bold text-center mb-4 sm:mb-6">
     {{ isEditMode ? "Edit" : "Create" }} Car Model
   </h1>
 
   <form [formGroup]="carModelForm" (ngSubmit)="onSubmit()">
-    <div class="mb-4">
-      <div class="flex gap-2 w-full">
+    <div class="mb-3 sm:mb-4">
+      <div class="flex flex-col sm:flex-row gap-2 w-full">
         <mat-form-field appearance="fill" class="flex-grow">
           <mat-label>Car Brand</mat-label>
           <mat-select formControlName="carBrandId">
@@ -26,7 +26,7 @@
           type="button"
           mat-raised-button
           color="accent"
-          class="h-14 whitespace-nowrap"
+          class="h-auto sm:h-14 mb-2 sm:mb-0 py-2 sm:py-0 whitespace-nowrap"
           (click)="openQuickAddBrandDialog()"
         >
           Add Brand
@@ -34,7 +34,7 @@
       </div>
     </div>
 
-    <mat-form-field appearance="fill" class="w-full mb-4">
+    <mat-form-field appearance="fill" class="w-full mb-3 sm:mb-4">
       <mat-label>Model Name</mat-label>
       <input
         matInput
@@ -46,7 +46,7 @@
       </mat-error>
     </mat-form-field>
 
-    <mat-form-field appearance="fill" class="w-full mb-4">
+    <mat-form-field appearance="fill" class="w-full mb-3 sm:mb-4">
       <mat-label>Start Year</mat-label>
       <input
         matInput
@@ -56,7 +56,7 @@
       />
     </mat-form-field>
 
-    <div class="mb-4">
+    <div class="mb-3 sm:mb-4">
       <mat-form-field appearance="fill" class="w-full">
         <mat-label>Body Type</mat-label>
         <mat-select formControlName="bodyType">
@@ -70,10 +70,15 @@
       </mat-form-field>
     </div>
 
-    <fieldset formGroupName="engineSpec" class="border p-4 rounded mb-4">
-      <legend class="text-lg font-semibold mb-2">Engine Specifications</legend>
+    <fieldset
+      formGroupName="engineSpec"
+      class="border p-3 sm:p-4 rounded mb-3 sm:mb-4"
+    >
+      <legend class="text-base sm:text-lg font-semibold mb-2">
+        Engine Specifications
+      </legend>
 
-      <mat-form-field appearance="fill" class="w-full mb-4">
+      <mat-form-field appearance="fill" class="w-full mb-3 sm:mb-4">
         <mat-label>Volume (L)</mat-label>
         <input
           matInput
@@ -84,7 +89,7 @@
         />
       </mat-form-field>
 
-      <div class="mb-4">
+      <div class="mb-3 sm:mb-4">
         <mat-form-field appearance="fill" class="w-full">
           <mat-label>Fuel Type</mat-label>
           <mat-select formControlName="fuelType">
@@ -103,29 +108,38 @@
       </div>
     </fieldset>
 
-    <div class="mb-4">
-      <div class="w-full bg-gray-100 border border-gray-300 rounded px-4 py-2">
-        <label for="image" class="block text-sm font-medium text-gray-700 mb-1"
+    <div class="mb-3 sm:mb-4">
+      <div
+        class="w-full bg-gray-100 border border-gray-300 rounded px-3 sm:px-4 py-2"
+      >
+        <label
+          for="image"
+          class="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
           >Car Model Image (optional)</label
         >
         <input
           type="file"
           id="image"
           (change)="onImageSelected($event)"
-          class="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 hover:file:bg-blue-100"
+          class="block w-full text-xs sm:text-sm text-gray-900 file:mr-2 sm:file:mr-4 file:py-1 sm:file:py-2 file:px-2 sm:file:px-4 file:rounded file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 hover:file:bg-blue-100"
         />
       </div>
-      <mat-error *ngIf="imageInvalid && selectedImage">
+      <mat-error
+        *ngIf="imageInvalid && selectedImage"
+        class="text-xs sm:text-sm mt-1"
+      >
         Please select a valid image.
       </mat-error>
     </div>
 
-    <div class="flex justify-between mt-6">
+    <div
+      class="flex flex-col sm:flex-row sm:justify-between mt-4 sm:mt-6 gap-3 sm:gap-0"
+    >
       <button
         mat-button
         type="button"
         [routerLink]="['/admin/carmodels']"
-        class="bg-gray-500 text-white"
+        class="bg-gray-500 text-white w-full sm:w-auto order-2 sm:order-1"
       >
         Cancel
       </button>
@@ -134,6 +148,7 @@
         type="submit"
         color="primary"
         [disabled]="carModelForm.invalid"
+        class="w-full sm:w-auto order-1 sm:order-2"
       >
         {{ isEditMode ? "Update" : "Create" }} Car Model
       </button>

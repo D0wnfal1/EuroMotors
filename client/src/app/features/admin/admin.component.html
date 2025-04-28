@@ -1,47 +1,51 @@
-<div class="text-center">
-  <h1 class="text-3xl font-bold mb-8">Admin Panel</h1>
-  <div class="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+<div class="text-center px-4 py-6 sm:py-8">
+  <h1 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-8">Admin Panel</h1>
+  <div
+    class="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 max-w-4xl mx-auto"
+  >
     <a routerLink="/admin/orders">
       <mat-card
-        class="flex flex-col items-center justify-center p-6 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition"
+        class="flex flex-col items-center justify-center p-4 sm:p-6 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition h-full"
       >
-        <mat-icon>history</mat-icon>
-        <span class="text-lg font-medium">Orders</span>
+        <mat-icon class="text-2xl sm:text-3xl mb-2">history</mat-icon>
+        <span class="text-base sm:text-lg font-medium">Orders</span>
       </mat-card>
     </a>
     <a routerLink="/admin/products">
       <mat-card
-        class="flex flex-col items-center justify-center p-6 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition"
+        class="flex flex-col items-center justify-center p-4 sm:p-6 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition h-full"
       >
-        <mat-icon>inventory_2</mat-icon>
-        <span class="text-lg font-medium">Products</span>
+        <mat-icon class="text-2xl sm:text-3xl mb-2">inventory_2</mat-icon>
+        <span class="text-base sm:text-lg font-medium">Products</span>
       </mat-card>
     </a>
 
     <a routerLink="/admin/categories">
       <mat-card
-        class="flex flex-col items-center justify-center p-6 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition"
+        class="flex flex-col items-center justify-center p-4 sm:p-6 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition h-full"
       >
-        <mat-icon>folder</mat-icon>
-        <span class="text-lg font-medium">Categories</span>
+        <mat-icon class="text-2xl sm:text-3xl mb-2">folder</mat-icon>
+        <span class="text-base sm:text-lg font-medium">Categories</span>
       </mat-card>
     </a>
 
     <a routerLink="/admin/carbrands">
       <mat-card
-        class="flex flex-col items-center justify-center p-6 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition"
+        class="flex flex-col items-center justify-center p-4 sm:p-6 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition h-full"
       >
-        <mat-icon>branding_watermark</mat-icon>
-        <span class="text-lg font-medium">Car Brands</span>
+        <mat-icon class="text-2xl sm:text-3xl mb-2"
+          >branding_watermark</mat-icon
+        >
+        <span class="text-base sm:text-lg font-medium">Car Brands</span>
       </mat-card>
     </a>
 
     <a routerLink="/admin/carmodels">
       <mat-card
-        class="flex flex-col items-center justify-center p-6 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition"
+        class="flex flex-col items-center justify-center p-4 sm:p-6 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition h-full"
       >
-        <mat-icon>directions_car</mat-icon>
-        <span class="text-lg font-medium">Car Models</span>
+        <mat-icon class="text-2xl sm:text-3xl mb-2">directions_car</mat-icon>
+        <span class="text-base sm:text-lg font-medium">Car Models</span>
       </mat-card>
     </a>
   </div>
