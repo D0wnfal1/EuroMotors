@@ -1,4 +1,4 @@
-name: .NET Build and Test
+name: .NET Build, Test and SonarQube
 
 on:
   push:
@@ -21,11 +21,23 @@ jobs:
         with:
           dotnet-version: "9.0"
 
+      - name: Install SonarScanner for .NET
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: Add .NET tools to PATH
+        run: echo "${HOME}/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: SonarQube Begin Analysis
+        run: dotnet sonarscanner begin /k:"euromotors-api" /d:sonar.host.url="${{ vars.SONAR_HOST_URL }}" /d:sonar.login="${{ secrets.SONARQUBE_TOKEN }}"
+
       - name: Restore dependencies
-        run: dotnet restore  ./server/EuroMotors.sln
+        run: dotnet restore ./server/EuroMotors.sln
 
       - name: Build the project
         run: dotnet build ./server/EuroMotors.sln --configuration Release --no-restore
 
       - name: Run tests
         run: dotnet test ./server/EuroMotors.sln --configuration Release --no-restore --verbosity normal
+
+      - name: SonarQube End Analysis
+        run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONARQUBE_TOKEN }}"
