@@ -28,7 +28,7 @@ jobs:
         run: echo "${HOME}/.dotnet/tools" >> $GITHUB_PATH
 
       - name: SonarQube Begin Analysis
-        run: dotnet sonarscanner begin /k:"euromotors-api" /d:sonar.host.url="${{ vars.SONAR_HOST_URL }}" /d:sonar.login="${{ secrets.SONARQUBE_TOKEN }}"
+        run: dotnet sonarscanner begin /k:"euromotors-api" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" /d:sonar.login="${{ secrets.SONARQUBE_TOKEN }}"
 
       - name: Restore dependencies
         run: dotnet restore ./server/EuroMotors.sln
