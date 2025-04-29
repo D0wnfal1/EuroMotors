@@ -1,7 +1,6 @@
-﻿using EuroMotors.Application.CarBrands.UpdateCarBrand;
-using FluentValidation;
+﻿using FluentValidation;
 
-namespace EuroMotors.Application.CarModels.CreateCarModel;
+namespace EuroMotors.Application.CarBrands.UpdateCarBrand;
 
 internal sealed class UpdateCarBrandCommandValidator : AbstractValidator<UpdateCarBrandCommand>
 {

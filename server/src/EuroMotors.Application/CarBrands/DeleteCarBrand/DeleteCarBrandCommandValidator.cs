@@ -1,7 +1,6 @@
-﻿using EuroMotors.Application.CarBrands.DeleteCarBrand;
-using FluentValidation;
+﻿using FluentValidation;
 
-namespace EuroMotors.Application.CarModels.CreateCarModel;
+namespace EuroMotors.Application.CarBrands.DeleteCarBrand;
 
 internal sealed class DeleteCarBrandCommandValidator : AbstractValidator<DeleteCarBrandCommand>
 {

@@ -37,6 +37,7 @@
           color="warn"
           (click)="removeItemFromCart()"
           class="text-xs md:text-sm"
+          aria-label="Remove item"
         >
           <mat-icon class="text-sm md:text-base">delete</mat-icon>
           Delete
@@ -46,13 +47,23 @@
     <div class="flex flex-col items-center mt-2 md:mt-0">
       <p class="text-sm md:text-xl text-gray-500">Quantity:</p>
       <div class="flex items-center gap-2 w-32 md:w-64 justify-center">
-        <button mat-icon-button (click)="decrementQuantity()">
+        <button
+          mat-icon-button
+          (click)="decrementQuantity()"
+          class="decrement"
+          aria-label="Decrease quantity"
+        >
           <mat-icon class="text-red-600 text-sm md:text-base">remove</mat-icon>
         </button>
         <div class="font-semibold text-base md:text-xl">
           {{ item?.quantity }}
         </div>
-        <button mat-icon-button (click)="incrementQuantity()">
+        <button
+          mat-icon-button
+          (click)="incrementQuantity()"
+          class="increment"
+          aria-label="Increase quantity"
+        >
           <mat-icon class="text-green-600 text-sm md:text-base">add</mat-icon>
         </button>
       </div>
