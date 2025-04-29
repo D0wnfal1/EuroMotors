@@ -1,5 +1,3 @@
-// НЕ импортируем cypress-xpath здесь, он импортирован в e2e.ts
-// При необходимости объявляем типы без импорта
 declare global {
   namespace Cypress {
     interface Chainable {
