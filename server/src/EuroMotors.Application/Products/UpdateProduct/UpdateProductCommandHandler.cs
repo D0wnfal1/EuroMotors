@@ -28,7 +28,6 @@ internal sealed class UpdateProductCommandHandler(
             return Result.Failure(CategoryErrors.NotFound(request.CategoryId));
         }
         
-        // Сохраняем старый идентификатор категории для возможной инвалидации кеша
         Guid oldCategoryId = product.CategoryId;
 
         IEnumerable<(string SpecificationName, string SpecificationValue)> specs = request.Specifications
@@ -46,7 +45,6 @@ internal sealed class UpdateProductCommandHandler(
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
         
-        // Инвалидируем кеш после обновления
         await InvalidateCacheAsync(product, oldCategoryId, cancellationToken);
 
         return Result.Success();
@@ -54,13 +52,10 @@ internal sealed class UpdateProductCommandHandler(
     
     private async Task InvalidateCacheAsync(Product product, Guid oldCategoryId, CancellationToken cancellationToken)
     {
-        // Инвалидируем кеш конкретного продукта
         await cacheService.RemoveAsync(CacheKeys.Products.GetById(product.Id), cancellationToken);
         
-        // Инвалидируем списки продуктов
         await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetAllPrefix(), cancellationToken);
         
-        // Если категория изменилась, инвалидируем кеш для старой и новой категорий
         if (oldCategoryId != product.CategoryId)
         {
             await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetByCategory(oldCategoryId), cancellationToken);

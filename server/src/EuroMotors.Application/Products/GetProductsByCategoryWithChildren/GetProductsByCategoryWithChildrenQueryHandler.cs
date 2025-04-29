@@ -22,11 +22,9 @@ internal sealed class GetProductsByCategoryWithChildrenQueryHandler(
         GetProductsByCategoryWithChildrenQuery request,
         CancellationToken cancellationToken)
     {
-        // Создаем ключ кеша на основе параметров запроса
         string cacheKey = CreateCacheKey(request);
         
-        // Проверяем кеш
-        var cachedResult = await cacheService.GetAsync<Pagination<ProductResponse>>(cacheKey, cancellationToken);
+        Pagination<ProductResponse>? cachedResult = await cacheService.GetAsync<Pagination<ProductResponse>>(cacheKey, cancellationToken);
         if (cachedResult != null)
         {
             return Result.Success(cachedResult);
@@ -84,7 +82,6 @@ internal sealed class GetProductsByCategoryWithChildrenQueryHandler(
                 Data = new List<ProductResponse>()
             };
             
-            // Кешируем пустой результат
             await cacheService.SetAsync(cacheKey, emptyResult, CacheExpiration, cancellationToken);
             
             return Result.Success(emptyResult);
@@ -121,7 +118,6 @@ internal sealed class GetProductsByCategoryWithChildrenQueryHandler(
                 Data = new List<ProductResponse>()
             };
             
-            // Кешируем пустой результат
             await cacheService.SetAsync(cacheKey, emptyResult, CacheExpiration, cancellationToken);
             
             return Result.Success(emptyResult);
@@ -221,7 +217,6 @@ internal sealed class GetProductsByCategoryWithChildrenQueryHandler(
             Data = productDictionary.Values.ToList()
         };
         
-        // Кешируем результат
         await cacheService.SetAsync(cacheKey, result, CacheExpiration, cancellationToken);
 
         return Result.Success(result);
@@ -231,7 +226,6 @@ internal sealed class GetProductsByCategoryWithChildrenQueryHandler(
     {
         string baseKey = CacheKeys.Products.GetByCategory(request.CategoryId);
         
-        // Добавляем параметры запроса к ключу
         string searchTerm = !string.IsNullOrEmpty(request.SearchTerm) ? request.SearchTerm : "none";
         string sortOrder = !string.IsNullOrEmpty(request.SortOrder) ? request.SortOrder : "default";
         string pagination = $"{request.PageNumber}_{request.PageSize}";

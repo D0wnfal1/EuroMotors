@@ -4,6 +4,7 @@ import {
   HostListener,
   OnInit,
   OnDestroy,
+  Renderer2,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
@@ -31,11 +32,24 @@ import { ImageOptimizationModule } from './shared/modules/image-optimization.mod
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnDestroy {
+export class AppComponent implements OnInit, OnDestroy {
   title = 'EuroMotors';
   private readonly dialog = inject(MatDialog);
   notification = inject(NotificationService);
   router = inject(Router);
+  private renderer = inject(Renderer2);
+
+  ngOnInit() {
+    // Add CSS to document to improve touch scrolling on mobile devices
+    const style = document.createElement('style');
+    style.innerHTML = `
+      * {
+        touch-action: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
 
   @HostListener('window:beforeunload', ['$event'])
   unloadHandler(event: Event) {

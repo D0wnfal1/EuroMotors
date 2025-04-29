@@ -58,7 +58,6 @@ internal sealed class CreateProductCommandHandler(
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
         
-        // Инвалидируем кеш продуктов после создания нового продукта
         await InvalidateCacheAsync(result.Value, cancellationToken);
 
         return result.Value.Id;
@@ -66,13 +65,9 @@ internal sealed class CreateProductCommandHandler(
     
     private async Task InvalidateCacheAsync(Product product, CancellationToken cancellationToken)
     {
-        // Инвалидируем общий список продуктов
         await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetAllPrefix(), cancellationToken);
         
-        // Инвалидируем кеш категорий, связанных с продуктом
         await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetByCategory(product.CategoryId), cancellationToken);
         
-        // При создании продукта не нужно инвалидировать его детальный кеш,
-        // так как его еще не существует
     }
 }

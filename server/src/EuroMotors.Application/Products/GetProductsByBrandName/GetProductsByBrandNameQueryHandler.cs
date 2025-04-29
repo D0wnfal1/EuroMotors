@@ -20,11 +20,9 @@ internal sealed class GetProductsByBrandNameQueryHandler(
     
     public async Task<Result<Pagination<ProductResponse>>> Handle(GetProductsByBrandNameQuery request, CancellationToken cancellationToken)
     {
-        // Создаем ключ кеша на основе параметров запроса
         string cacheKey = CreateCacheKey(request);
         
-        // Проверяем кеш
-        var cachedResult = await cacheService.GetAsync<Pagination<ProductResponse>>(cacheKey, cancellationToken);
+        Pagination<ProductResponse>? cachedResult = await cacheService.GetAsync<Pagination<ProductResponse>>(cacheKey, cancellationToken);
         if (cachedResult != null)
         {
             return Result.Success(cachedResult);
@@ -111,7 +109,6 @@ internal sealed class GetProductsByBrandNameQueryHandler(
                 Data = new List<ProductResponse>()
             };
             
-            // Кешируем пустой результат
             await cacheService.SetAsync(cacheKey, emptyResult, CacheExpiration, cancellationToken);
             
             return Result.Success(emptyResult);
@@ -202,7 +199,6 @@ internal sealed class GetProductsByBrandNameQueryHandler(
             Data = products
         };
         
-        // Кешируем результат
         await cacheService.SetAsync(cacheKey, paginatedResult, CacheExpiration, cancellationToken);
 
         return Result.Success(paginatedResult);
@@ -212,7 +208,6 @@ internal sealed class GetProductsByBrandNameQueryHandler(
     {
         string baseKey = CacheKeys.Products.GetByBrandName(request.BrandName);
         
-        // Добавляем параметры запроса к ключу
         string searchTerm = !string.IsNullOrEmpty(request.SearchTerm) ? request.SearchTerm : "none";
         string sortOrder = !string.IsNullOrEmpty(request.SortOrder) ? request.SortOrder : "default";
         string pagination = $"{request.PageNumber}_{request.PageSize}";

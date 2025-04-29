@@ -47,7 +47,6 @@ internal sealed class GetCarBrandByIdQueryHandler(
             return Result.Failure<CarBrandResponse>(CarModelErrors.BrandNotFound(request.CarBrandId));
         }
         
-        // Кешируем результат
         await cacheService.SetAsync(cacheKey, carBrand, CacheExpiration, cancellationToken);
 
         return Result.Success(carBrand);

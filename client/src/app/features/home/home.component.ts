@@ -40,7 +40,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   showAllBrands: boolean = false;
 
   mainCategories: HierarchicalCategory[] = [];
+  displayedCategories: HierarchicalCategory[] = [];
+  showAllCategories: boolean = false;
   totalCategories: number = 0;
+  displayedCategoriesCount: number = 10;
 
   popularProducts: Product[] = [];
   newProducts: Product[] = [];
@@ -73,16 +76,26 @@ export class HomeComponent implements OnInit, OnDestroy {
 
           if (this.isMobile) {
             this.displayedBrandsCount = 4;
+            this.displayedCategoriesCount = 5;
           } else if (this.isTablet) {
             this.displayedBrandsCount = 8;
+            this.displayedCategoriesCount = 6;
           } else {
             this.displayedBrandsCount = 16;
+            this.displayedCategoriesCount = 10;
           }
 
           if (!this.showAllBrands) {
             this.displayedBrands = this.allBrands.slice(
               0,
               this.displayedBrandsCount
+            );
+          }
+
+          if (!this.showAllCategories) {
+            this.displayedCategories = this.mainCategories.slice(
+              0,
+              this.displayedCategoriesCount
             );
           }
         })
@@ -103,6 +116,10 @@ export class HomeComponent implements OnInit, OnDestroy {
       next: (categories) => {
         this.mainCategories = categories;
         this.totalCategories = categories.length;
+        this.displayedCategories = this.mainCategories.slice(
+          0,
+          this.displayedCategoriesCount
+        );
       },
       error: (err) =>
         console.error('Failed to load hierarchical categories', err),
@@ -186,6 +203,22 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.displayedBrands = this.allBrands;
     } else {
       this.displayedBrands = this.allBrands.slice(0, this.displayedBrandsCount);
+    }
+  }
+
+  viewAllCategories(): void {
+    this.toggleShowAllCategories();
+  }
+
+  toggleShowAllCategories(): void {
+    this.showAllCategories = !this.showAllCategories;
+    if (this.showAllCategories) {
+      this.displayedCategories = this.mainCategories;
+    } else {
+      this.displayedCategories = this.mainCategories.slice(
+        0,
+        this.displayedCategoriesCount
+      );
     }
   }
 

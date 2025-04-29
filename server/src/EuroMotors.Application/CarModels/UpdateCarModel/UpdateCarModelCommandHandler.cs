@@ -19,7 +19,7 @@ internal sealed class UpdateCarModelCommandHandler(
             return Result.Failure(CarModelErrors.ModelNotFound(request.Id));
         }
         
-        var brandId = carModel.CarBrandId;
+        Guid brandId = carModel.CarBrandId;
 
         carModel.Update(request.ModelName, request.StartYear, request.BodyType);
 
@@ -30,7 +30,6 @@ internal sealed class UpdateCarModelCommandHandler(
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
         
-        // Инвалидируем кеш после обновления модели
         await InvalidateCacheAsync(request.Id, brandId, cancellationToken);
 
         return Result.Success();
@@ -38,19 +37,14 @@ internal sealed class UpdateCarModelCommandHandler(
     
     private async Task InvalidateCacheAsync(Guid modelId, Guid brandId, CancellationToken cancellationToken)
     {
-        // Инвалидируем кеш конкретной модели
         await cacheService.RemoveAsync(CacheKeys.CarModels.GetById(modelId), cancellationToken);
         
-        // Инвалидируем список моделей
         await cacheService.RemoveByPrefixAsync(CacheKeys.CarModels.GetAllPrefix(), cancellationToken);
         
-        // Инвалидируем список моделей для конкретного бренда
         await cacheService.RemoveByPrefixAsync(CacheKeys.CarModels.GetByBrandId(brandId), cancellationToken);
         
-        // Инвалидируем выборку моделей
         await cacheService.RemoveAsync(CacheKeys.CarModels.GetSelection(), cancellationToken);
         
-        // Инвалидируем связанные с моделями продукты
         await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetAllPrefix(), cancellationToken);
     }
 }

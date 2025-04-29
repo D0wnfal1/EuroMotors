@@ -45,7 +45,7 @@
             class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0"
           >
             <mat-paginator
-              class="bg-white w-full sm:w-auto text-xs sm:text-sm"
+              class="bg-white w-full sm:w-auto text-xs sm:text-sm rounded-lg"
               (page)="handlePageEvent($event)"
               [length]="products.count"
               [pageSize]="shopParams.pageSize"
@@ -53,6 +53,7 @@
               [pageSizeOptions]="pageSizeOptions"
               [pageIndex]="shopParams.pageNumber - 1"
               aria-label="Select page"
+              style="touch-action: auto"
             >
             </mat-paginator>
 

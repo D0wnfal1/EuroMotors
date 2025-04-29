@@ -61,7 +61,6 @@ internal sealed class CreateCategoryCommandHandler(
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
         
-        // Инвалидируем кеш категорий после создания
         await InvalidateCacheAsync(cancellationToken);
 
         return category.Id;
@@ -69,13 +68,10 @@ internal sealed class CreateCategoryCommandHandler(
     
     private async Task InvalidateCacheAsync(CancellationToken cancellationToken)
     {
-        // Инвалидируем список категорий
         await cacheService.RemoveAsync(CacheKeys.Categories.GetList(), cancellationToken);
         
-        // Инвалидируем иерархический список категорий
         await cacheService.RemoveAsync(CacheKeys.Categories.GetHierarchical(), cancellationToken);
         
-        // Инвалидируем связанные с категориями продукты
         await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetAllPrefix(), cancellationToken);
     }
 }

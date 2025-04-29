@@ -17,11 +17,9 @@ internal sealed class GetCategoryByIdQueryHandler(
     
     public async Task<Result<CategoryResponse>> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
     {
-        // Получаем ключ кеша
         string cacheKey = CacheKeys.Categories.GetById(request.CategoryId);
         
-        // Проверяем кеш
-        var cachedCategory = await cacheService.GetAsync<CategoryResponse>(cacheKey, cancellationToken);
+        CategoryResponse? cachedCategory = await cacheService.GetAsync<CategoryResponse>(cacheKey, cancellationToken);
         if (cachedCategory != null)
         {
             return Result.Success(cachedCategory);
@@ -48,7 +46,6 @@ internal sealed class GetCategoryByIdQueryHandler(
             return Result.Failure<CategoryResponse>(CategoryErrors.NotFound(request.CategoryId));
         }
         
-        // Кешируем результат
         await cacheService.SetAsync(cacheKey, category, CacheExpiration, cancellationToken);
 
         return Result.Success(category);

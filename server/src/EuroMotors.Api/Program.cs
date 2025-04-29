@@ -8,6 +8,8 @@ using Serilog;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.UseUrls("http://0.0.0.0:8080", "https://0.0.0.0:8081");
+
 builder.Host.UseSerilog((context, loggerConfig) => loggerConfig.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddSwaggerGenWithAuth();
@@ -53,9 +55,12 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.MapControllers();
+
+app.UseSpaFallback();
 
 await app.RunAsync();
 

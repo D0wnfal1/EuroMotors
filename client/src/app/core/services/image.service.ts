@@ -13,7 +13,7 @@ export class ImageService {
   private http = inject(HttpClient);
 
   private readonly DEFAULT_IMAGE = '/images/no-image.jpeg';
-  private readonly DEFAULT_BRAND_LOGO = '/images/no-brand-logo.png';
+  private readonly DEFAULT_BRAND_LOGO = '/images/no-image.jpeg';
   private readonly IMAGE_SIZES = {
     thumbnail: { width: 100, height: 100, quality: 70 },
     small: { width: 300, height: 300, quality: 80 },

@@ -17,11 +17,9 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
     
     public async Task<Result<Pagination<ProductResponse>>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
     {
-        // Создаем ключ кеша на основе параметров запроса
         string cacheKey = CreateCacheKey(request);
         
-        // Проверяем кеш
-        var cachedResult = await cacheService.GetAsync<Pagination<ProductResponse>>(cacheKey, cancellationToken);
+        Pagination<ProductResponse>? cachedResult = await cacheService.GetAsync<Pagination<ProductResponse>>(cacheKey, cancellationToken);
         if (cachedResult != null)
         {
             return Result.Success(cachedResult);
@@ -206,7 +204,6 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
             Data = products
         };
 
-        // Кешируем результат
         await cacheService.SetAsync(cacheKey, paginatedResult, CacheExpiration, cancellationToken);
 
         return Result.Success(paginatedResult);
@@ -216,7 +213,6 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
     {
         string baseKey = CacheKeys.Products.GetList();
         
-        // Добавляем параметры запроса к ключу
         string categoryIds = request.CategoryIds?.Any() == true ? string.Join(",", request.CategoryIds) : "none";
         string carModelIds = request.CarModelIds?.Any() == true ? string.Join(",", request.CarModelIds) : "none";
         string searchTerm = !string.IsNullOrEmpty(request.SearchTerm) ? request.SearchTerm : "none";

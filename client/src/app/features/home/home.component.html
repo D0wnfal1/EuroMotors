@@ -55,10 +55,12 @@
 
     <div
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-8"
+      style="touch-action: auto; -webkit-overflow-scrolling: touch;"
     >
       <mat-card
-        *ngFor="let category of mainCategories"
+        *ngFor="let category of displayedCategories"
         class="hover:shadow-lg transition-shadow relative min-h-[350px] md:min-h-[400px]"
+        style="touch-action: auto;"
       >
         <div class="relative">
           <img
@@ -78,8 +80,9 @@
           <div
             *ngIf="category.subCategories && category.subCategories.length > 0"
             class="mt-2"
+            style="touch-action: auto; -webkit-overflow-scrolling: touch;"
           >
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" style="touch-action: auto; -webkit-overflow-scrolling: touch;">
               <a
                 *ngFor="
                   let subcat of category.subCategories.slice(
@@ -95,6 +98,7 @@
                 }"
                 [matTooltip]="subcat.name"
                 matTooltipPosition="above"
+                style="touch-action: auto;"
               >
                 {{ subcat.name }}
               </a>
@@ -126,6 +130,17 @@
           </button>
         </mat-card-actions>
       </mat-card>
+    </div>
+
+    <div *ngIf="mainCategories.length > 10" class="flex justify-center mt-6 md:mt-8">
+      <button
+        mat-raised-button
+        color="primary"
+        class="px-4 md:px-6 py-1 md:py-2 text-sm md:text-base"
+        (click)="viewAllCategories()"
+      >
+        {{ showAllCategories ? "Show less" : "All Categories" }}
+      </button>
     </div>
   </div>
 

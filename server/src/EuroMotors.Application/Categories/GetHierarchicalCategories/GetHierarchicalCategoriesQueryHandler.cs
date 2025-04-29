@@ -20,11 +20,9 @@ internal sealed class GetHierarchicalCategoriesQueryHandler(
         GetHierarchicalCategoriesQuery request,
         CancellationToken cancellationToken)
     {
-        // Создаем ключ кеша с учетом параметров пагинации
         string cacheKey = $"{CacheKeys.Categories.GetHierarchical()}:{request.PageNumber}:{request.PageSize}";
         
-        // Проверяем кеш
-        var cachedResult = await cacheService.GetAsync<Pagination<HierarchicalCategoryResponse>>(cacheKey, cancellationToken);
+        Pagination<HierarchicalCategoryResponse>? cachedResult = await cacheService.GetAsync<Pagination<HierarchicalCategoryResponse>>(cacheKey, cancellationToken);
         if (cachedResult != null)
         {
             return Result.Success(cachedResult);
@@ -71,7 +69,6 @@ internal sealed class GetHierarchicalCategoriesQueryHandler(
                 Data = new List<HierarchicalCategoryResponse>()
             };
             
-            // Кешируем пустой результат
             await cacheService.SetAsync(cacheKey, emptyResult, CacheExpiration, cancellationToken);
             
             return Result.Success(emptyResult);
@@ -120,7 +117,6 @@ internal sealed class GetHierarchicalCategoriesQueryHandler(
             Data = resultData
         };
         
-        // Кешируем результат
         await cacheService.SetAsync(cacheKey, pagination, CacheExpiration, cancellationToken);
 
         return Result.Success(pagination);

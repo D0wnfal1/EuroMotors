@@ -17,11 +17,9 @@ internal sealed class GetProductByIdQueryHandler(
     
     public async Task<Result<ProductResponse>> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
     {
-        // Получаем ключ кеша
         string cacheKey = CacheKeys.Products.GetById(request.ProductId);
         
-        // Проверяем кеш
-        var cachedProduct = await cacheService.GetAsync<ProductResponse>(cacheKey, cancellationToken);
+        ProductResponse? cachedProduct = await cacheService.GetAsync<ProductResponse>(cacheKey, cancellationToken);
         if (cachedProduct != null)
         {
             return Result.Success(cachedProduct);
@@ -54,7 +52,6 @@ internal sealed class GetProductByIdQueryHandler(
             return Result.Failure<ProductResponse>(ProductErrors.NotFound(request.ProductId));
         }
 
-        // Get car model IDs for the product
         const string carModelsSql = """
             SELECT
                 car_model_id AS CarModelId
@@ -98,7 +95,6 @@ internal sealed class GetProductByIdQueryHandler(
         );
         product.Specifications = specifications.ToList();
         
-        // Кешируем результат
         await cacheService.SetAsync(cacheKey, product, CacheExpiration, cancellationToken);
 
         return Result.Success(product);

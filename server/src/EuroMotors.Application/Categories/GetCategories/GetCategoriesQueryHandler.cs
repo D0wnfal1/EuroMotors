@@ -20,11 +20,9 @@ internal sealed class GetCategoriesQueryHandler(
         GetCategoriesQuery request,
         CancellationToken cancellationToken)
     {
-        // Получаем ключ кеша
         string cacheKey = CacheKeys.Categories.GetList();
         
-        // Проверяем кеш
-        var cachedCategories = await cacheService.GetAsync<List<CategoryResponse>>(cacheKey, cancellationToken);
+        List<CategoryResponse>? cachedCategories = await cacheService.GetAsync<List<CategoryResponse>>(cacheKey, cancellationToken);
         if (cachedCategories != null)
         {
             return Result.Success(cachedCategories);
@@ -48,7 +46,6 @@ internal sealed class GetCategoriesQueryHandler(
 
         List<CategoryResponse> categories = (await connection.QueryAsync<CategoryResponse>(sql.ToString(), parameters)).AsList();
         
-        // Кешируем результат
         await cacheService.SetAsync(cacheKey, categories, CacheExpiration, cancellationToken);
 
         return Result.Success(categories);

@@ -34,7 +34,6 @@ internal sealed class CopyProductCommandHandler(
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
         
-        // Инвалидируем кеш после копирования продукта
         await InvalidateCacheAsync(copiedProduct, cancellationToken);
 
         return copiedProduct.Id;
@@ -42,17 +41,12 @@ internal sealed class CopyProductCommandHandler(
     
     private async Task InvalidateCacheAsync(Product product, CancellationToken cancellationToken)
     {
-        // Инвалидируем общий список продуктов
         await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetAllPrefix(), cancellationToken);
         
-        // Инвалидируем кеш категорий, связанных с продуктом
         await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetByCategory(product.CategoryId), cancellationToken);
         
-        // Инвалидируем кеш продуктов по брендам
         foreach (CarModel carModel in product.CarModels)
         {
-            // Получаем имена брендов из моделей и инвалидируем кеш для каждого бренда
-            // Здесь мы должны инвалидировать все ключи, содержащие префикс бренда
             await cacheService.RemoveByPrefixAsync($"{CacheKeys.Products.GetAllPrefix()}:brand:", cancellationToken);
         }
     }

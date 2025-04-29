@@ -5,7 +5,7 @@
     </div>
     <div class="flex justify-between items-center">
       <mat-paginator
-        class="bg-white"
+        class="bg-white w-full sm:w-auto text-xs sm:text-sm rounded-lg"
         (page)="handlePageEvent($event)"
         [length]="products?.count"
         [pageSize]="shopParams.pageSize"
@@ -13,6 +13,7 @@
         [pageSizeOptions]="pageSizeOptions"
         [pageIndex]="shopParams.pageNumber - 1"
         aria-label="Select page"
+        style="touch-action: auto"
       >
       </mat-paginator>
 

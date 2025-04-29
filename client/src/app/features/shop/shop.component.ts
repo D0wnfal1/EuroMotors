@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, HostListener } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   MatSelectionListChange,
@@ -15,7 +15,7 @@ import { ProductService } from '../../core/services/product.service';
 import { ActivatedRoute } from '@angular/router';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { MatIcon } from '@angular/material/icon';
-import { NgFor, NgIf } from '@angular/common';
+import { NgFor } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
