@@ -16,16 +16,16 @@ export class CarmodelService {
   private totalItemsSubject = new BehaviorSubject<number>(0);
   totalItems$ = this.totalItemsSubject.asObservable();
 
-  private carIdsSubject = new BehaviorSubject<string[]>([]);
-  private brandsSubject = new BehaviorSubject<string[]>([]);
-  private modelsSubject = new BehaviorSubject<string[]>([]);
-  private yearsSubject = new BehaviorSubject<number[]>([]);
-  private bodyTypesSubject = new BehaviorSubject<string[]>([]);
-  private engineSpecsSubject = new BehaviorSubject<string[]>([]);
+  private readonly carIdsSubject = new BehaviorSubject<string[]>([]);
+  private readonly brandsSubject = new BehaviorSubject<string[]>([]);
+  private readonly modelsSubject = new BehaviorSubject<string[]>([]);
+  private readonly yearsSubject = new BehaviorSubject<number[]>([]);
+  private readonly bodyTypesSubject = new BehaviorSubject<string[]>([]);
+  private readonly engineSpecsSubject = new BehaviorSubject<string[]>([]);
 
-  private allBrandsSubject = new BehaviorSubject<string[]>([]);
+  private readonly allBrandsSubject = new BehaviorSubject<string[]>([]);
 
-  public carSelectionChanged = new BehaviorSubject<boolean>(false);
+  public readonly carSelectionChanged = new BehaviorSubject<boolean>(false);
 
   public carIds$ = this.carIdsSubject.asObservable();
   public brands$ = this.brandsSubject.asObservable();
@@ -133,7 +133,7 @@ export class CarmodelService {
 
   getStoredCarId(): string | null {
     const storedCarId = localStorage.getItem('selectedCarId');
-    return storedCarId ? storedCarId : null;
+    return storedCarId ?? null;
   }
 
   getSelectedCarDetails(carId: string): Observable<CarModel> {

@@ -52,7 +52,7 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
             .IsRequired();
 
         builder.Property(p => p.SoldCount)
-            .HasColumnName("sold_count")  
+            .HasColumnName("sold_count")
             .HasDefaultValue(0);
 
         builder.Property(c => c.Slug)

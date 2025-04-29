@@ -9,4 +9,4 @@ public sealed record GetProductsByCategoryWithChildrenQuery(
     string? SortOrder,
     string? SearchTerm,
     int PageNumber,
-    int PageSize) : IQuery<Pagination<ProductResponse>>; 
+    int PageSize) : IQuery<Pagination<ProductResponse>>;

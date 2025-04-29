@@ -46,7 +46,7 @@ export class AdminCategoriesComponent implements OnInit, OnDestroy {
   private readonly categoryService = inject(CategoryService);
   private readonly imageService = inject(ImageService);
 
-  private destroy$ = new Subject<void>();
+  private readonly destroy$ = new Subject<void>();
 
   totalItems = 0;
   shopParams = new ShopParams();
@@ -106,9 +106,9 @@ export class AdminCategoriesComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (response) => {
-          const treeData = this.convertToTreeNodes(response.data);
+          const treeData = this.convertToTreeNodes(response);
           this.dataSource.data = treeData;
-          this.totalItems = response.count;
+          this.totalItems = response.length;
         },
         error: (err) => {
           console.error('Failed to load categories', err);

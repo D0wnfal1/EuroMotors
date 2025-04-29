@@ -18,11 +18,10 @@ import { CartService } from '../../core/services/cart.service';
 import { AccountService } from '../../core/services/account.service';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MatDivider } from '@angular/material/divider';
-import { NgIf } from '@angular/common';
+import { NgIf, CommonModule } from '@angular/common';
 import { CategoryService } from '../../core/services/category.service';
 import { Category, HierarchicalCategory } from '../../shared/models/category';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { CommonModule } from '@angular/common';
 import { CarmodelService } from '../../core/services/carmodel.service';
 import { Subscription } from 'rxjs';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -33,6 +32,7 @@ import { ProductService } from '../../core/services/product.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CallbackComponent } from '../callback/callback.component';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { LayoutService } from '../../core/services/layout.service';
 
 @Component({
   selector: 'app-header',
@@ -67,6 +67,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   categoryService = inject(CategoryService);
   carModelService = inject(CarmodelService);
   productService = inject(ProductService);
+  layoutService = inject(LayoutService);
   private router = inject(Router);
 
   categories: Category[] = [];
@@ -81,12 +82,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
   pageSize = 0;
   pageNumber = 0;
 
-  private subscriptions: Subscription[] = [];
+  private readonly subscriptions: Subscription[] = [];
 
   isCatalogOpen = false;
-  private dialog = inject(MatDialog);
+  private readonly dialog = inject(MatDialog);
 
-  private breakpointObserver = inject(BreakpointObserver);
+  private readonly breakpointObserver = inject(BreakpointObserver);
   isMobile = false;
   isMenuOpen = false;
 
@@ -117,10 +118,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   loadCategories() {
-    this.categoryService.getHierarchicalCategories(this.shopParams).subscribe({
-      next: (response) => {
-        this.hierarchicalCategories = response.data;
-        this.categories = this.hierarchicalCategories.map((cat) => ({
+    const categoriesSub = this.layoutService.getHeaderCategories().subscribe({
+      next: (categories) => {
+        this.hierarchicalCategories = categories;
+        this.categories = categories.map((cat) => ({
           id: cat.id,
           name: cat.name,
           isAvailable: cat.isAvailable,
@@ -134,6 +135,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         console.error('Failed to load categories', err);
       },
     });
+    this.subscriptions.push(categoriesSub);
   }
 
   loadSelectedCar() {

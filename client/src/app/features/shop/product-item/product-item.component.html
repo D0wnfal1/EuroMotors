@@ -25,9 +25,11 @@
     <img
       mat-card-image
       *ngIf="product.images && product.images.length > 0; else noImage"
-      [src]="getImageUrl(product.images[0])"
-      alt="Product image"
-      class="product-image max-w-full h-auto"
+      [src]="lowQualityImageUrl || 'images/placeholder.jpeg'"
+      [alt]="product.name"
+      class="product-image max-w-full h-auto transition-opacity duration-300"
+      [class.opacity-50]="!isImageLoaded"
+      [class.opacity-100]="isImageLoaded"
     />
   </div>
   <ng-template #noImage>

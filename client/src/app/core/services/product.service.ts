@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, shareReplay } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Product } from '../../shared/models/product';
 import { Pagination } from '../../shared/models/pagination';
@@ -12,8 +12,16 @@ import { ShopParams } from '../../shared/models/shopParams';
 export class ProductService {
   baseUrl = environment.apiUrl;
   private http = inject(HttpClient);
+  private productCache = new Map<string, Observable<Pagination<Product>>>();
+  private productDetailCache = new Map<string, Observable<Product>>();
 
-  getProducts(shopParams: ShopParams) {
+  getProducts(shopParams: ShopParams): Observable<Pagination<Product>> {
+    const cacheKey = this.getCacheKey(shopParams);
+
+    if (this.productCache.has(cacheKey)) {
+      return this.productCache.get(cacheKey)!;
+    }
+
     let params = new HttpParams();
 
     if (shopParams.categoryIds?.length) {
@@ -54,13 +62,47 @@ export class ProductService {
     params = params.append('pageSize', shopParams.pageSize.toString());
     params = params.append('pageNumber', shopParams.pageNumber.toString());
 
-    return this.http.get<Pagination<Product>>(this.baseUrl + '/products', {
-      params,
-    });
+    const products$ = this.http
+      .get<Pagination<Product>>(this.baseUrl + '/products', {
+        params,
+      })
+      .pipe(shareReplay(1));
+
+    this.productCache.set(cacheKey, products$);
+
+    return products$;
   }
 
   getProductById(id: string): Observable<Product> {
-    return this.http.get<Product>(`${this.baseUrl}/products/${id}`);
+    if (this.productDetailCache.has(id)) {
+      return this.productDetailCache.get(id)!;
+    }
+
+    const product$ = this.http
+      .get<Product>(`${this.baseUrl}/products/${id}`)
+      .pipe(shareReplay(1));
+
+    this.productDetailCache.set(id, product$);
+
+    return product$;
+  }
+
+  private getCacheKey(params: ShopParams): string {
+    const categoryKey = params.categoryIds?.join(',') || 'none';
+    const modelKey = params.carModelIds?.join(',') || 'none';
+    const sortKey = params.sortOrder || 'default';
+    const searchKey = params.searchTerm || 'none';
+    const discountKey = params.isDiscounted?.toString() || 'all';
+    const newKey = params.isNew?.toString() || 'all';
+    const popularKey = params.isPopular?.toString() || 'all';
+    const paginationKey = `${params.pageNumber}_${params.pageSize}`;
+
+    return `${categoryKey}_${modelKey}_${sortKey}_${searchKey}_${discountKey}_${newKey}_${popularKey}_${paginationKey}`;
+  }
+
+  clearCache() {
+    this.productCache.clear();
+    this.productDetailCache.clear();
   }
 
   createProduct(product: Product): Observable<string> {

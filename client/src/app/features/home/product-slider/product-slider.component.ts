@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -36,9 +36,9 @@ export class ProductSliderComponent implements OnInit, OnDestroy {
   loading = false;
 
   constructor(
-    private productService: ProductService,
-    private imageService: ImageService,
-    private breakpointObserver: BreakpointObserver
+    private readonly productService: ProductService,
+    private readonly imageService: ImageService,
+    private readonly breakpointObserver: BreakpointObserver
   ) {}
 
   ngOnInit(): void {
@@ -62,7 +62,7 @@ export class ProductSliderComponent implements OnInit, OnDestroy {
         '(min-width: 1024px)',
       ])
       .subscribe((result) => {
-        let productsPerGroup = 5; // Default for large screens
+        let productsPerGroup = 5;
 
         if (result.breakpoints['(max-width: 479px)']) {
           productsPerGroup = 1;
@@ -80,10 +80,8 @@ export class ProductSliderComponent implements OnInit, OnDestroy {
           productsPerGroup = 4;
         }
 
-        // If products are already loaded, regroup them
         if (this.products.length > 0) {
           this.groupProducts(productsPerGroup);
-          // Reset to first slide when layout changes
           setTimeout(() => {
             this.currentSlide = 0;
           }, 0);
@@ -119,7 +117,6 @@ export class ProductSliderComponent implements OnInit, OnDestroy {
     this.productService.getProducts(params).subscribe({
       next: (response) => {
         this.products = response.data;
-        // Determine current screen size and group products accordingly
         const currentBreakpoint = this.determineCurrentBreakpoint();
         this.groupProducts(currentBreakpoint);
         this.currentSlide = 0;
@@ -132,7 +129,6 @@ export class ProductSliderComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Helper method to determine current breakpoint based on window width
   private determineCurrentBreakpoint(): number {
     const width = window.innerWidth;
     if (width < 480) return 1;

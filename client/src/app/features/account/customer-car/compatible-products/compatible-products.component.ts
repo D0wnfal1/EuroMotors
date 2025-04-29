@@ -29,8 +29,8 @@ export class CompatibleProductsComponent
 {
   @Input() carModelId?: string;
 
-  private productService = inject(ProductService);
-  private destroy$ = new Subject<void>();
+  private readonly productService = inject(ProductService);
+  private readonly destroy$ = new Subject<void>();
   private autoplaySubscription?: Subscription;
 
   compatibleProducts: Product[] = [];

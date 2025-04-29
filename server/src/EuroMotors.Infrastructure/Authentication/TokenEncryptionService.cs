@@ -12,10 +12,10 @@ internal sealed class TokenEncryptionService : ITokenEncryptionService
 
     public TokenEncryptionService(IConfiguration configuration)
     {
-        string encryptionKey = configuration["Jwt:EncryptionKey"] ?? 
+        string encryptionKey = configuration["Jwt:EncryptionKey"] ??
             throw new InvalidOperationException("Encryption key is not configured");
-        
-        string encryptionIV = configuration["Jwt:EncryptionIV"] ?? 
+
+        string encryptionIV = configuration["Jwt:EncryptionIV"] ??
             throw new InvalidOperationException("Encryption IV is not configured");
 
         _key = SHA256.HashData(Encoding.UTF8.GetBytes(encryptionKey));
@@ -59,7 +59,7 @@ internal sealed class TokenEncryptionService : ITokenEncryptionService
         using MemoryStream msDecrypt = new(Convert.FromBase64String(encryptedToken));
         using CryptoStream csDecrypt = new(msDecrypt, decryptor, CryptoStreamMode.Read);
         using StreamReader srDecrypt = new(csDecrypt);
-        
+
         return srDecrypt.ReadToEnd();
     }
 }

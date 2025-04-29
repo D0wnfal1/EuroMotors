@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,18 +7,15 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { CarSelectionComponent } from './car-selection/car-selection.component';
 import { ProductSliderComponent } from './product-slider/product-slider.component';
 import { CarmodelService } from '../../core/services/carmodel.service';
-import { CategoryService } from '../../core/services/category.service';
-import { ProductService } from '../../core/services/product.service';
 import { ImageService } from '../../core/services/image.service';
 import { HierarchicalCategory } from '../../shared/models/category';
 import { Product } from '../../shared/models/product';
-import { ShopParams } from '../../shared/models/shopParams';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable, shareReplay } from 'rxjs';
 import { CarbrandService } from '../../core/services/carbrand.service';
 import { CarBrand } from '../../shared/models/carBrand';
-import { CartService } from '../../core/services/cart.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { HomePageService } from '../../core/services/home-page.service';
 
 @Component({
   selector: 'app-home',
@@ -45,23 +41,28 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   mainCategories: HierarchicalCategory[] = [];
   totalCategories: number = 0;
-  categoryParams = new ShopParams();
 
-  private subscriptions: Subscription[] = [];
-  private breakpointObserver = inject(BreakpointObserver);
+  popularProducts: Product[] = [];
+  newProducts: Product[] = [];
+  discountedProducts: Product[] = [];
+
+  private readonly subscriptions: Subscription[] = [];
+  private readonly breakpointObserver = inject(BreakpointObserver);
+  private readonly homePageService = inject(HomePageService);
+
+  private cachedBrands$: Observable<CarBrand[]> | null = null;
 
   hasSelectedCar: boolean = false;
+  selectedCarId: string | null = null;
   isMobile: boolean = false;
   isTablet: boolean = false;
   displayedBrandsCount: number = 16;
 
   constructor(
-    private carmodelService: CarmodelService,
-    private carBrandService: CarbrandService,
-    private categoryService: CategoryService,
-    private imageService: ImageService,
-    private cartService: CartService,
-    private router: Router
+    private readonly carmodelService: CarmodelService,
+    private readonly carBrandService: CarbrandService,
+    private readonly imageService: ImageService,
+    private readonly router: Router
   ) {
     this.subscriptions.push(
       this.breakpointObserver
@@ -92,53 +93,81 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.checkSelectedCar();
     this.loadAllBrands();
     this.loadHierarchicalCategories();
+    this.loadPopularProducts();
+    this.loadNewProducts();
+    this.loadDiscountedProducts();
   }
 
   loadHierarchicalCategories(): void {
-    this.categoryParams.pageNumber = 0;
-    this.categoryParams.pageSize = 0;
-
-    const categoriesSub = this.categoryService
-      .getHierarchicalCategories(this.categoryParams)
-      .subscribe({
-        next: (response) => {
-          this.mainCategories = response.data;
-          this.totalCategories = response.count;
-        },
-        error: (err) =>
-          console.error('Failed to load hierarchical categories', err),
-      });
+    const categoriesSub = this.homePageService.getMainCategories().subscribe({
+      next: (categories) => {
+        this.mainCategories = categories;
+        this.totalCategories = categories.length;
+      },
+      error: (err) =>
+        console.error('Failed to load hierarchical categories', err),
+    });
 
     this.subscriptions.push(categoriesSub);
   }
 
   loadAllBrands(): void {
-    const brandsSub = this.carBrandService.availableBrands$.subscribe(
-      (brands) => {
-        this.allBrands = brands;
-        this.displayedBrands = this.allBrands.slice(
-          0,
-          this.displayedBrandsCount
-        );
-      }
-    );
+    if (!this.cachedBrands$) {
+      this.cachedBrands$ = this.carBrandService.availableBrands$.pipe(
+        shareReplay({
+          bufferSize: 1,
+          refCount: false,
+          windowTime: 10 * 60 * 1000,
+        })
+      );
+    }
+
+    const brandsSub = this.cachedBrands$.subscribe((brands) => {
+      this.allBrands = brands;
+      this.displayedBrands = this.allBrands.slice(0, this.displayedBrandsCount);
+    });
 
     this.subscriptions.push(brandsSub);
-    this.carBrandService.getAllCarBrands();
-  }
 
-  viewAllBrands(): void {
-    if (!this.showAllBrands) {
-      this.displayedBrands = this.allBrands;
-      this.showAllBrands = true;
-    } else {
-      this.displayedBrands = this.allBrands.slice(0, this.displayedBrandsCount);
-      this.showAllBrands = false;
+    if (this.allBrands.length === 0) {
+      this.carBrandService.getAllCarBrands();
     }
   }
 
-  getImageUrl(path: string): string {
-    return this.imageService.getImageUrl(path);
+  loadPopularProducts(): void {
+    const productsSub = this.homePageService.getPopularProducts(10).subscribe({
+      next: (products) => {
+        this.popularProducts = products;
+      },
+      error: (err) => console.error('Failed to load popular products', err),
+    });
+
+    this.subscriptions.push(productsSub);
+  }
+
+  loadNewProducts(): void {
+    const productsSub = this.homePageService.getNewProducts(10).subscribe({
+      next: (products) => {
+        this.newProducts = products;
+      },
+      error: (err) => console.error('Failed to load new products', err),
+    });
+
+    this.subscriptions.push(productsSub);
+  }
+
+  loadDiscountedProducts(): void {
+    const productsSub = this.homePageService
+      .getDiscountedProducts(10)
+      .subscribe({
+        next: (products) => {
+          this.discountedProducts = products;
+        },
+        error: (err) =>
+          console.error('Failed to load discounted products', err),
+      });
+
+    this.subscriptions.push(productsSub);
   }
 
   getBrandLogo(brand: CarBrand): string {
@@ -147,13 +176,17 @@ export class HomeComponent implements OnInit, OnDestroy {
       : '/images/no-image.jpeg';
   }
 
-  trackByProductId(index: number, item: Product): string {
-    return item.id;
+  viewAllBrands(): void {
+    this.toggleShowAllBrands();
   }
 
-  addToCart(productId: string, event: Event): void {
-    event.stopPropagation();
-    this.cartService.addItemToCart(productId);
+  toggleShowAllBrands(): void {
+    this.showAllBrands = !this.showAllBrands;
+    if (this.showAllBrands) {
+      this.displayedBrands = this.allBrands;
+    } else {
+      this.displayedBrands = this.allBrands.slice(0, this.displayedBrandsCount);
+    }
   }
 
   checkSelectedCar(): void {
@@ -175,7 +208,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
+  clearCaches() {
+    this.cachedBrands$ = null;
+  }
+
   ngOnDestroy(): void {
+    this.clearCaches();
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 }

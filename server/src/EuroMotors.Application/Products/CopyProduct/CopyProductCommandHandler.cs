@@ -33,4 +33,4 @@ internal sealed class CopyProductCommandHandler(
 
         return copiedProduct.Id;
     }
-} 
+}

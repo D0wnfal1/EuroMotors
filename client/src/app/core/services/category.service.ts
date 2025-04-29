@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable, map } from 'rxjs';
+import { BehaviorSubject, Observable, map, shareReplay } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Category, HierarchicalCategory } from '../../shared/models/category';
 import { PaginationParams } from '../../shared/models/paginationParams';
@@ -16,38 +16,54 @@ export class CategoryService {
   private totalItemsSubject = new BehaviorSubject<number>(0);
   totalItems$ = this.totalItemsSubject.asObservable();
 
+  private cachedHierarchicalCategories: {
+    [key: string]: Observable<HierarchicalCategory[]>;
+  } = {};
+  private cachedCategories: Observable<Category[]> | null = null;
+
   getCategories(): void {
-    this.http
+    this.cachedCategories ??= this.http
       .get<Category[]>(`${this.baseUrl}/categories`)
-      .subscribe((categories) => {
-        this.categoriesSubject.next(categories);
-      });
+      .pipe(shareReplay(1));
+
+    this.cachedCategories.subscribe((categories) => {
+      this.categoriesSubject.next(categories);
+    });
   }
 
   getHierarchicalCategories(
-    paginationParams: PaginationParams
-  ): Observable<{ data: HierarchicalCategory[]; count: number }> {
-    let params = new HttpParams()
-      .set('pageSize', paginationParams.pageSize)
-      .set('pageNumber', paginationParams.pageNumber);
+    params: PaginationParams
+  ): Observable<HierarchicalCategory[]> {
+    const cacheKey = `${params.pageNumber}_${params.pageSize}`;
 
-    return this.http
-      .get<{
-        data: HierarchicalCategory[];
-        count: number;
-        pageIndex: number;
-        pageSize: number;
-      }>(`${this.baseUrl}/categories/hierarchical`, { params })
-      .pipe(
-        map((response) => ({
-          data: response.data,
-          count: response.count,
-        }))
+    if (!this.cachedHierarchicalCategories[cacheKey]) {
+      let httpParams = new HttpParams();
+      httpParams = httpParams.append(
+        'pageNumber',
+        params.pageNumber.toString()
       );
+      httpParams = httpParams.append('pageSize', params.pageSize.toString());
+
+      this.cachedHierarchicalCategories[cacheKey] = this.http
+        .get<any>(`${this.baseUrl}/categories/hierarchical`, {
+          params: httpParams,
+        })
+        .pipe(
+          map((response) => {
+            this.totalItemsSubject.next(response.count);
+            return response.data;
+          }),
+          shareReplay(1)
+        );
+    }
+
+    return this.cachedHierarchicalCategories[cacheKey];
   }
 
   getCategoryById(id: string): Observable<Category> {
-    return this.http.get<Category>(`${this.baseUrl}/categories/${id}`);
+    return this.http
+      .get<Category>(`${this.baseUrl}/categories/${id}`)
+      .pipe(shareReplay(1));
   }
 
   createCategory(formData: FormData): Observable<string> {

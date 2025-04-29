@@ -64,7 +64,7 @@ export class ProductFormComponent implements OnInit {
     private productService: ProductService,
     private categoryService: CategoryService,
     private carModelService: CarmodelService,
-    private carBrandService: CarbrandService,
+    private readonly carBrandService: CarbrandService,
     private imageService: ImageService,
     private route: ActivatedRoute,
     private router: Router
@@ -266,6 +266,19 @@ export class ProductFormComponent implements OnInit {
       } else {
         this.productService.createProduct(this.productForm.value).subscribe({
           next: (id) => {
+            const carModelIds = this.productForm.get('carModelIds')?.value;
+            if (carModelIds?.length > 0) {
+              this.productService
+                .updateProductCarModels(id, carModelIds)
+                .subscribe({
+                  error: (err) =>
+                    console.error(
+                      'Error saving car models for new product',
+                      err
+                    ),
+                });
+            }
+
             if (this.selectedFiles.length > 0) {
               let uploadCount = 0;
               for (const file of this.selectedFiles) {

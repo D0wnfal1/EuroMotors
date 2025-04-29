@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { BehaviorSubject, Observable, map } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { CarBrand } from '../../shared/models/carBrand';
 import { PaginationParams } from '../../shared/models/paginationParams';
 
@@ -10,13 +10,13 @@ import { PaginationParams } from '../../shared/models/paginationParams';
 })
 export class CarbrandService {
   baseUrl = environment.apiUrl;
-  private http = inject(HttpClient);
-  private carBrandsSubject = new BehaviorSubject<CarBrand[]>([]);
+  private readonly http = inject(HttpClient);
+  private readonly carBrandsSubject = new BehaviorSubject<CarBrand[]>([]);
   carBrands$ = this.carBrandsSubject.asObservable();
-  private totalItemsSubject = new BehaviorSubject<number>(0);
+  private readonly totalItemsSubject = new BehaviorSubject<number>(0);
   totalItems$ = this.totalItemsSubject.asObservable();
 
-  private availableBrandsSubject = new BehaviorSubject<CarBrand[]>([]);
+  private readonly availableBrandsSubject = new BehaviorSubject<CarBrand[]>([]);
   availableBrands$ = this.availableBrandsSubject.asObservable();
 
   getCarBrands(paginationParams: PaginationParams) {
