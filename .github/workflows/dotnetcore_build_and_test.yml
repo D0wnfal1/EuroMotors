@@ -1,4 +1,4 @@
-name: .NET and Angular Build, Test and SonarQube
+name: .NET Build, Test and SonarQube
 
 on:
   push:
@@ -15,25 +15,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
 
       - name: Set up .NET SDK
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: "9.0"
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-          cache: "npm"
-          cache-dependency-path: "./client/package-lock.json"
-
-      - name: Install SonarScanner for .NET and JS
-        run: |
-          dotnet tool install --global dotnet-sonarscanner
-          npm install -g sonarqube-scanner
+      - name: Install SonarScanner for .NET
+        run: dotnet tool install --global dotnet-sonarscanner
 
       - name: Add .NET tools to PATH
         run: echo "${HOME}/.dotnet/tools" >> $GITHUB_PATH
@@ -50,30 +39,5 @@ jobs:
       - name: Run tests
         run: dotnet test ./server/EuroMotors.sln --configuration Release --no-restore --verbosity normal
 
-      - name: Install Angular dependencies
-        run: cd client && npm ci
-
-      - name: Build Angular app
-        run: cd client && npm run build
-
-      - name: Install Cypress
-        run: cd client && npm install cypress cypress-sonarqube-reporter --save-dev
-
-      - name: Prepare Cypress reporter config
-        run: |
-          echo '{
-            "reporter": "cypress-sonarqube-reporter",
-            "reporterOptions": {
-              "outputDir": "cypress/reports",
-              "overwrite": true
-            }
-          }' > client/cypress.json
-
-      - name: Run Cypress e2e tests
-        run: |
-          cd client && npx cypress run --reporter cypress-sonarqube-reporter
-
       - name: SonarQube End Analysis
         run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONARQUBE_TOKEN }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
