@@ -1,3 +1,4 @@
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.Products.UpdateProduct;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarBrands;
@@ -29,9 +30,12 @@ public class UpdateProductCommandHandlerTests
             .GetProperty("Id")
             ?.SetValue(_carBrand, _brandId);
 
+        ICacheService? cacheService = Substitute.For<ICacheService>();
+
         _handler = new UpdateProductCommandHandler(
             _productRepository,
             _categoryRepository,
+            cacheService,
             _unitOfWork);
     }
 

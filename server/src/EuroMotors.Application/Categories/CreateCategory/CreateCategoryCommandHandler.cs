@@ -1,11 +1,15 @@
-﻿using EuroMotors.Application.Abstractions.Messaging;
+﻿using EuroMotors.Application.Abstractions.Caching;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 
 using EuroMotors.Domain.Categories;
 
 namespace EuroMotors.Application.Categories.CreateCategory;
 
-internal sealed class CreateCategoryCommandHandler(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork)
+internal sealed class CreateCategoryCommandHandler(
+    ICategoryRepository categoryRepository, 
+    ICacheService cacheService,
+    IUnitOfWork unitOfWork)
     : ICommandHandler<CreateCategoryCommand, Guid>
 {
     public async Task<Result<Guid>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
@@ -56,7 +60,22 @@ internal sealed class CreateCategoryCommandHandler(ICategoryRepository categoryR
         categoryRepository.Insert(category);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        // Инвалидируем кеш категорий после создания
+        await InvalidateCacheAsync(cancellationToken);
 
         return category.Id;
+    }
+    
+    private async Task InvalidateCacheAsync(CancellationToken cancellationToken)
+    {
+        // Инвалидируем список категорий
+        await cacheService.RemoveAsync(CacheKeys.Categories.GetList(), cancellationToken);
+        
+        // Инвалидируем иерархический список категорий
+        await cacheService.RemoveAsync(CacheKeys.Categories.GetHierarchical(), cancellationToken);
+        
+        // Инвалидируем связанные с категориями продукты
+        await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetAllPrefix(), cancellationToken);
     }
 }

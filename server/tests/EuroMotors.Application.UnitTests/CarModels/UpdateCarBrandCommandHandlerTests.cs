@@ -1,3 +1,4 @@
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.CarBrands.UpdateCarBrand;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarBrands;
@@ -15,8 +16,10 @@ public class UpdateCarBrandCommandHandlerTests
 
     public UpdateCarBrandCommandHandlerTests()
     {
+        ICacheService? cacheService = Substitute.For<ICacheService>();
         _handler = new UpdateCarBrandCommandHandler(
             _carBrandRepository,
+            cacheService,
             _unitOfWork);
     }
 

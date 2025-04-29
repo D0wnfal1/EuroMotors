@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using Dapper;
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
@@ -7,11 +8,25 @@ using EuroMotors.Domain.Products;
 
 namespace EuroMotors.Application.Products.GetProductById;
 
-internal sealed class GetProductByIdQueryHandler(IDbConnectionFactory dbConnectionFactory)
+internal sealed class GetProductByIdQueryHandler(
+    IDbConnectionFactory dbConnectionFactory, 
+    ICacheService cacheService)
     : IQueryHandler<GetProductByIdQuery, ProductResponse>
 {
+    private static readonly TimeSpan CacheExpiration = TimeSpan.FromMinutes(10);
+    
     public async Task<Result<ProductResponse>> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
     {
+        // Получаем ключ кеша
+        string cacheKey = CacheKeys.Products.GetById(request.ProductId);
+        
+        // Проверяем кеш
+        var cachedProduct = await cacheService.GetAsync<ProductResponse>(cacheKey, cancellationToken);
+        if (cachedProduct != null)
+        {
+            return Result.Success(cachedProduct);
+        }
+        
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
         const string productSql = """
@@ -82,6 +97,9 @@ internal sealed class GetProductByIdQueryHandler(IDbConnectionFactory dbConnecti
             new { request.ProductId }
         );
         product.Specifications = specifications.ToList();
+        
+        // Кешируем результат
+        await cacheService.SetAsync(cacheKey, product, CacheExpiration, cancellationToken);
 
         return Result.Success(product);
     }

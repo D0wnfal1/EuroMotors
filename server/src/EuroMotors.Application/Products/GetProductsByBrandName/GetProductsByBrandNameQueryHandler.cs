@@ -1,5 +1,6 @@
 using System.Data;
 using Dapper;
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Abstractions.Pagination;
@@ -10,11 +11,25 @@ using EuroMotors.Domain.Products;
 
 namespace EuroMotors.Application.Products.GetProductsByBrandName;
 
-internal sealed class GetProductsByBrandNameQueryHandler(IDbConnectionFactory dbConnectionFactory)
+internal sealed class GetProductsByBrandNameQueryHandler(
+    IDbConnectionFactory dbConnectionFactory,
+    ICacheService cacheService)
     : IQueryHandler<GetProductsByBrandNameQuery, Pagination<ProductResponse>>
 {
+    private static readonly TimeSpan CacheExpiration = TimeSpan.FromMinutes(10);
+    
     public async Task<Result<Pagination<ProductResponse>>> Handle(GetProductsByBrandNameQuery request, CancellationToken cancellationToken)
     {
+        // Создаем ключ кеша на основе параметров запроса
+        string cacheKey = CreateCacheKey(request);
+        
+        // Проверяем кеш
+        var cachedResult = await cacheService.GetAsync<Pagination<ProductResponse>>(cacheKey, cancellationToken);
+        if (cachedResult != null)
+        {
+            return Result.Success(cachedResult);
+        }
+        
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
         string carModelSqlForBrand = @"
@@ -88,13 +103,18 @@ internal sealed class GetProductsByBrandNameQueryHandler(IDbConnectionFactory db
 
         if (!productIds.Any())
         {
-            return Result.Success(new Pagination<ProductResponse>
+            var emptyResult = new Pagination<ProductResponse>
             {
                 PageIndex = request.PageNumber,
                 PageSize = request.PageSize,
                 Count = totalItems,
                 Data = new List<ProductResponse>()
-            });
+            };
+            
+            // Кешируем пустой результат
+            await cacheService.SetAsync(cacheKey, emptyResult, CacheExpiration, cancellationToken);
+            
+            return Result.Success(emptyResult);
         }
 
         string sql = $@"
@@ -181,7 +201,22 @@ internal sealed class GetProductsByBrandNameQueryHandler(IDbConnectionFactory db
             Count = totalItems,
             Data = products
         };
+        
+        // Кешируем результат
+        await cacheService.SetAsync(cacheKey, paginatedResult, CacheExpiration, cancellationToken);
 
         return Result.Success(paginatedResult);
+    }
+    
+    private static string CreateCacheKey(GetProductsByBrandNameQuery request)
+    {
+        string baseKey = CacheKeys.Products.GetByBrandName(request.BrandName);
+        
+        // Добавляем параметры запроса к ключу
+        string searchTerm = !string.IsNullOrEmpty(request.SearchTerm) ? request.SearchTerm : "none";
+        string sortOrder = !string.IsNullOrEmpty(request.SortOrder) ? request.SortOrder : "default";
+        string pagination = $"{request.PageNumber}_{request.PageSize}";
+        
+        return $"{baseKey}:{searchTerm}:{sortOrder}:{pagination}";
     }
 }

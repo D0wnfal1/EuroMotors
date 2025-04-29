@@ -1,3 +1,4 @@
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.CarBrands.DeleteCarBrand;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarBrands;
@@ -14,7 +15,8 @@ public class DeleteCarBrandCommandHandlerTests
 
     public DeleteCarBrandCommandHandlerTests()
     {
-        _handler = new DeleteCarBrandCommandHandler(_carBrandRepository, _unitOfWork);
+        ICacheService? cacheService = Substitute.For<ICacheService>();
+        _handler = new DeleteCarBrandCommandHandler(_carBrandRepository, cacheService, _unitOfWork);
     }
 
     [Fact]

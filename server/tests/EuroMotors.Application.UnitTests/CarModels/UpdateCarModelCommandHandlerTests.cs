@@ -1,3 +1,4 @@
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.CarModels.UpdateCarModel;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarBrands;
@@ -24,7 +25,9 @@ public class UpdateCarModelCommandHandlerTests
             .GetProperty("Id")
             ?.SetValue(_carBrand, _brandId);
 
-        _handler = new UpdateCarModelCommandHandler(_carModelRepository, _unitOfWork);
+        ICacheService? cacheService = Substitute.For<ICacheService>();
+
+        _handler = new UpdateCarModelCommandHandler(_carModelRepository, cacheService, _unitOfWork);
     }
 
     [Fact]

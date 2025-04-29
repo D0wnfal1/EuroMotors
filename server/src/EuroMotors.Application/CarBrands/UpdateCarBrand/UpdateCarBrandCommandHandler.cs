@@ -1,3 +1,4 @@
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarBrands;
@@ -7,6 +8,7 @@ namespace EuroMotors.Application.CarBrands.UpdateCarBrand;
 
 internal sealed class UpdateCarBrandCommandHandler(
     ICarBrandRepository carBrandRepository,
+    ICacheService cacheService,
     IUnitOfWork unitOfWork) : ICommandHandler<UpdateCarBrandCommand>
 {
     public async Task<Result> Handle(UpdateCarBrandCommand request, CancellationToken cancellationToken)
@@ -48,7 +50,22 @@ internal sealed class UpdateCarBrandCommandHandler(
         }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        await InvalidateCacheAsync(request.CarBrandId, cancellationToken);
 
         return Result.Success();
+    }
+    
+    private async Task InvalidateCacheAsync(Guid brandId, CancellationToken cancellationToken)
+    {
+        await cacheService.RemoveAsync(CacheKeys.CarBrands.GetById(brandId), cancellationToken);
+        
+        await cacheService.RemoveByPrefixAsync(CacheKeys.CarBrands.GetAllPrefix(), cancellationToken);
+        
+        await cacheService.RemoveAsync(CacheKeys.CarBrands.GetAllForModels(), cancellationToken);
+        
+        await cacheService.RemoveByPrefixAsync(CacheKeys.CarModels.GetByBrandId(brandId), cancellationToken);
+        
+        await cacheService.RemoveAsync(CacheKeys.CarModels.GetSelection(), cancellationToken);
     }
 }

@@ -1,5 +1,6 @@
 using System.Data;
 using Dapper;
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Abstractions.Pagination;
@@ -10,13 +11,27 @@ using EuroMotors.Domain.Products;
 
 namespace EuroMotors.Application.Products.GetProductsByCategoryWithChildren;
 
-internal sealed class GetProductsByCategoryWithChildrenQueryHandler(IDbConnectionFactory dbConnectionFactory)
+internal sealed class GetProductsByCategoryWithChildrenQueryHandler(
+    IDbConnectionFactory dbConnectionFactory,
+    ICacheService cacheService)
     : IQueryHandler<GetProductsByCategoryWithChildrenQuery, Pagination<ProductResponse>>
 {
+    private static readonly TimeSpan CacheExpiration = TimeSpan.FromMinutes(10);
+    
     public async Task<Result<Pagination<ProductResponse>>> Handle(
         GetProductsByCategoryWithChildrenQuery request,
         CancellationToken cancellationToken)
     {
+        // Создаем ключ кеша на основе параметров запроса
+        string cacheKey = CreateCacheKey(request);
+        
+        // Проверяем кеш
+        var cachedResult = await cacheService.GetAsync<Pagination<ProductResponse>>(cacheKey, cancellationToken);
+        if (cachedResult != null)
+        {
+            return Result.Success(cachedResult);
+        }
+        
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
         const string getCategoriesQuery = """
@@ -61,13 +76,18 @@ internal sealed class GetProductsByCategoryWithChildrenQueryHandler(IDbConnectio
 
         if (totalItems == 0)
         {
-            return Result.Success(new Pagination<ProductResponse>
+            var emptyResult = new Pagination<ProductResponse>
             {
                 PageIndex = request.PageNumber,
                 PageSize = request.PageSize,
                 Count = 0,
                 Data = new List<ProductResponse>()
-            });
+            };
+            
+            // Кешируем пустой результат
+            await cacheService.SetAsync(cacheKey, emptyResult, CacheExpiration, cancellationToken);
+            
+            return Result.Success(emptyResult);
         }
 
         string sortPriceDirection = string.Equals(request.SortOrder, "DESC", StringComparison.OrdinalIgnoreCase) ? "DESC" : "ASC";
@@ -93,13 +113,18 @@ internal sealed class GetProductsByCategoryWithChildrenQueryHandler(IDbConnectio
 
         if (!productIds.Any())
         {
-            return Result.Success(new Pagination<ProductResponse>
+            var emptyResult = new Pagination<ProductResponse>
             {
                 PageIndex = request.PageNumber,
                 PageSize = request.PageSize,
                 Count = totalItems,
                 Data = new List<ProductResponse>()
-            });
+            };
+            
+            // Кешируем пустой результат
+            await cacheService.SetAsync(cacheKey, emptyResult, CacheExpiration, cancellationToken);
+            
+            return Result.Success(emptyResult);
         }
 
         const string productsSql = """
@@ -188,12 +213,29 @@ internal sealed class GetProductsByCategoryWithChildrenQueryHandler(IDbConnectio
             }
         }
 
-        return Result.Success(new Pagination<ProductResponse>
+        var result = new Pagination<ProductResponse>
         {
             PageIndex = request.PageNumber,
             PageSize = request.PageSize,
             Count = totalItems,
             Data = productDictionary.Values.ToList()
-        });
+        };
+        
+        // Кешируем результат
+        await cacheService.SetAsync(cacheKey, result, CacheExpiration, cancellationToken);
+
+        return Result.Success(result);
+    }
+    
+    private static string CreateCacheKey(GetProductsByCategoryWithChildrenQuery request)
+    {
+        string baseKey = CacheKeys.Products.GetByCategory(request.CategoryId);
+        
+        // Добавляем параметры запроса к ключу
+        string searchTerm = !string.IsNullOrEmpty(request.SearchTerm) ? request.SearchTerm : "none";
+        string sortOrder = !string.IsNullOrEmpty(request.SortOrder) ? request.SortOrder : "default";
+        string pagination = $"{request.PageNumber}_{request.PageSize}";
+        
+        return $"{baseKey}:{searchTerm}:{sortOrder}:{pagination}";
     }
 }

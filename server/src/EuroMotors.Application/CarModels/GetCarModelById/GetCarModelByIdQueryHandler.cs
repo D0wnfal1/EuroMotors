@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using Dapper;
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
@@ -7,10 +8,22 @@ using EuroMotors.Domain.CarModels;
 
 namespace EuroMotors.Application.CarModels.GetCarModelById;
 
-internal sealed class GetCarModelByIdQueryHandler(IDbConnectionFactory dbConnectionFactory) : IQueryHandler<GetCarModelByIdQuery, CarModelResponse>
+internal sealed class GetCarModelByIdQueryHandler(
+    IDbConnectionFactory dbConnectionFactory,
+    ICacheService cacheService) : IQueryHandler<GetCarModelByIdQuery, CarModelResponse>
 {
+    private static readonly TimeSpan CacheExpiration = TimeSpan.FromMinutes(30);
+    
     public async Task<Result<CarModelResponse>> Handle(GetCarModelByIdQuery request, CancellationToken cancellationToken)
     {
+        string cacheKey = CacheKeys.CarModels.GetById(request.CarModelId);
+        
+        CarModelResponse? cachedCarModel = await cacheService.GetAsync<CarModelResponse>(cacheKey, cancellationToken);
+        if (cachedCarModel != null)
+        {
+            return Result.Success(cachedCarModel);
+        }
+        
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
         const string sql =
@@ -32,6 +45,13 @@ internal sealed class GetCarModelByIdQueryHandler(IDbConnectionFactory dbConnect
 
         CarModelResponse? carModel = await connection.QuerySingleOrDefaultAsync<CarModelResponse>(sql, new { request.CarModelId });
 
-        return carModel ?? Result.Failure<CarModelResponse>(CarModelErrors.ModelNotFound(request.CarModelId));
+        if (carModel == null)
+        {
+            return Result.Failure<CarModelResponse>(CarModelErrors.ModelNotFound(request.CarModelId));
+        }
+        
+        await cacheService.SetAsync(cacheKey, carModel, CacheExpiration, cancellationToken);
+
+        return Result.Success(carModel);
     }
 }

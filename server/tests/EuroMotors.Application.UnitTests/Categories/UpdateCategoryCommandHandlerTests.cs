@@ -1,3 +1,4 @@
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.Categories.UpdateCategory;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Categories;
@@ -14,7 +15,8 @@ public class UpdateCategoryCommandHandlerTests
 
     public UpdateCategoryCommandHandlerTests()
     {
-        _handler = new UpdateCategoryCommandHandler(_categoryRepository, _unitOfWork);
+        ICacheService? cacheService = Substitute.For<ICacheService>();
+        _handler = new UpdateCategoryCommandHandler(_categoryRepository, cacheService, _unitOfWork);
     }
 
     [Fact]

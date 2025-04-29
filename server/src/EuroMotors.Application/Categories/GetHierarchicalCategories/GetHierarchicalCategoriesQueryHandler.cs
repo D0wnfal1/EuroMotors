@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Text;
 using Dapper;
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Abstractions.Pagination;
@@ -9,13 +10,26 @@ using EuroMotors.Domain.Abstractions;
 namespace EuroMotors.Application.Categories.GetHierarchicalCategories;
 
 internal sealed class GetHierarchicalCategoriesQueryHandler(
-    IDbConnectionFactory dbConnectionFactory)
+    IDbConnectionFactory dbConnectionFactory,
+    ICacheService cacheService)
     : IQueryHandler<GetHierarchicalCategoriesQuery, Pagination<HierarchicalCategoryResponse>>
 {
+    private static readonly TimeSpan CacheExpiration = TimeSpan.FromMinutes(15);
+    
     public async Task<Result<Pagination<HierarchicalCategoryResponse>>> Handle(
         GetHierarchicalCategoriesQuery request,
         CancellationToken cancellationToken)
     {
+        // Создаем ключ кеша с учетом параметров пагинации
+        string cacheKey = $"{CacheKeys.Categories.GetHierarchical()}:{request.PageNumber}:{request.PageSize}";
+        
+        // Проверяем кеш
+        var cachedResult = await cacheService.GetAsync<Pagination<HierarchicalCategoryResponse>>(cacheKey, cancellationToken);
+        if (cachedResult != null)
+        {
+            return Result.Success(cachedResult);
+        }
+        
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
         const string countSql = @"
@@ -49,13 +63,18 @@ internal sealed class GetHierarchicalCategoriesQueryHandler(
 
         if (!parentCategories.Any())
         {
-            return Result.Success(new Pagination<HierarchicalCategoryResponse>
+            var emptyResult = new Pagination<HierarchicalCategoryResponse>
             {
                 PageIndex = request.PageNumber,
                 PageSize = request.PageSize,
                 Count = totalCount,
                 Data = new List<HierarchicalCategoryResponse>()
-            });
+            };
+            
+            // Кешируем пустой результат
+            await cacheService.SetAsync(cacheKey, emptyResult, CacheExpiration, cancellationToken);
+            
+            return Result.Success(emptyResult);
         }
 
         Guid[] parentIds = parentCategories.Select(p => p.Id).ToArray();
@@ -100,6 +119,9 @@ internal sealed class GetHierarchicalCategoriesQueryHandler(
             Count = totalCount,
             Data = resultData
         };
+        
+        // Кешируем результат
+        await cacheService.SetAsync(cacheKey, pagination, CacheExpiration, cancellationToken);
 
         return Result.Success(pagination);
     }

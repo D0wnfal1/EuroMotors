@@ -1,10 +1,14 @@
-﻿using EuroMotors.Application.Abstractions.Messaging;
+﻿using EuroMotors.Application.Abstractions.Caching;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Categories;
 
 namespace EuroMotors.Application.Categories.DeleteCategory;
 
-internal sealed class DeleteCategoryCommandHandler(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork) : ICommandHandler<DeleteCategoryCommand>
+internal sealed class DeleteCategoryCommandHandler(
+    ICategoryRepository categoryRepository, 
+    ICacheService cacheService,
+    IUnitOfWork unitOfWork) : ICommandHandler<DeleteCategoryCommand>
 {
     public async Task<Result> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
     {
@@ -30,7 +34,22 @@ internal sealed class DeleteCategoryCommandHandler(ICategoryRepository categoryR
         await categoryRepository.Delete(category.Id);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        await InvalidateCacheAsync(category.Id, cancellationToken);
 
         return Result.Success();
+    }
+    
+    private async Task InvalidateCacheAsync(Guid categoryId, CancellationToken cancellationToken)
+    {
+        await cacheService.RemoveAsync(CacheKeys.Categories.GetById(categoryId), cancellationToken);
+        
+        await cacheService.RemoveAsync(CacheKeys.Categories.GetList(), cancellationToken);
+
+        await cacheService.RemoveByPrefixAsync($"{CacheKeys.Categories.GetHierarchical()}", cancellationToken);
+        
+        await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetByCategory(categoryId), cancellationToken);
+        
+        await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetAllPrefix(), cancellationToken);
     }
 }

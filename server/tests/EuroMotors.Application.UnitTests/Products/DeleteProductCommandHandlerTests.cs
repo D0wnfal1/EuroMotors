@@ -1,4 +1,5 @@
-﻿using EuroMotors.Application.Products.DeleteProduct;
+﻿using EuroMotors.Application.Abstractions.Caching;
+using EuroMotors.Application.Products.DeleteProduct;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Products;
@@ -16,8 +17,10 @@ public class DeleteProductCommandHandlerTests
 
     public DeleteProductCommandHandlerTests()
     {
+        ICacheService? cacheService = Substitute.For<ICacheService>();
         _handler = new DeleteProductCommandHandler(
             _productRepository,
+            cacheService,
             _unitOfWork);
     }
 

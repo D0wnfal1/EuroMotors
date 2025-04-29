@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Text;
 using Dapper;
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Categories.GetByIdCategory;
@@ -8,13 +9,27 @@ using EuroMotors.Domain.Abstractions;
 
 namespace EuroMotors.Application.Categories.GetCategories;
 
-internal sealed class GetCategoriesQueryHandler(IDbConnectionFactory dbConnectionFactory)
+internal sealed class GetCategoriesQueryHandler(
+    IDbConnectionFactory dbConnectionFactory,
+    ICacheService cacheService)
     : IQueryHandler<GetCategoriesQuery, List<CategoryResponse>>
 {
+    private static readonly TimeSpan CacheExpiration = TimeSpan.FromMinutes(15);
+    
     public async Task<Result<List<CategoryResponse>>> Handle(
         GetCategoriesQuery request,
         CancellationToken cancellationToken)
     {
+        // Получаем ключ кеша
+        string cacheKey = CacheKeys.Categories.GetList();
+        
+        // Проверяем кеш
+        var cachedCategories = await cacheService.GetAsync<List<CategoryResponse>>(cacheKey, cancellationToken);
+        if (cachedCategories != null)
+        {
+            return Result.Success(cachedCategories);
+        }
+        
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
         var sql = new StringBuilder();
@@ -32,6 +47,9 @@ internal sealed class GetCategoriesQueryHandler(IDbConnectionFactory dbConnectio
         var parameters = new Dictionary<string, object>();
 
         List<CategoryResponse> categories = (await connection.QueryAsync<CategoryResponse>(sql.ToString(), parameters)).AsList();
+        
+        // Кешируем результат
+        await cacheService.SetAsync(cacheKey, categories, CacheExpiration, cancellationToken);
 
         return Result.Success(categories);
     }

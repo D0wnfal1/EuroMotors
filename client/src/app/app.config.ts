@@ -12,18 +12,13 @@ import {
   provideHttpClient,
   withInterceptors,
   withFetch,
-  HTTP_INTERCEPTORS,
 } from '@angular/common/http';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { InitService } from './core/services/init.service';
 import { lastValueFrom } from 'rxjs';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
-import {
-  provideHttpCache,
-  httpCacheInterceptor,
-} from './core/cache/http-cache.provider';
-import { CacheInterceptor } from './core/interceptors/cache.interceptor';
+import { provideHttpCache } from './core/cache/http-cache.provider';
 import { provideServiceWorker } from '@angular/service-worker';
 
 function initializeApp() {
@@ -44,18 +39,8 @@ export const appConfig: ApplicationConfig = {
     provideHttpCache(),
     provideHttpClient(
       withFetch(),
-      withInterceptors([
-        errorInterceptor,
-        loadingInterceptor,
-        authInterceptor,
-        httpCacheInterceptor,
-      ])
+      withInterceptors([errorInterceptor, loadingInterceptor, authInterceptor])
     ),
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: CacheInterceptor,
-      multi: true,
-    },
     provideAppInitializer(initializeApp),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),

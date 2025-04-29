@@ -25,13 +25,20 @@ export class CacheInterceptor implements HttpInterceptor {
     '/users/logout',
     '/orders',
     '/cart',
+    '/auth/refresh',
+    '/auth/status',
+    '/users/update',
   ];
 
   intercept(
     request: HttpRequest<unknown>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
-    if (request.method !== 'GET' || this.isExcludedUrl(request.url)) {
+    if (
+      request.method !== 'GET' ||
+      this.isExcludedUrl(request.url) ||
+      request.withCredentials
+    ) {
       return next.handle(request);
     }
 

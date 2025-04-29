@@ -1,6 +1,7 @@
 using System.Data;
 using System.Text;
 using Dapper;
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Abstractions.Pagination;
@@ -8,11 +9,23 @@ using EuroMotors.Domain.Abstractions;
 
 namespace EuroMotors.Application.CarBrands.GetCarBrands;
 
-internal sealed class GetCarBrandsQueryHandler(IDbConnectionFactory dbConnectionFactory)
+internal sealed class GetCarBrandsQueryHandler(
+    IDbConnectionFactory dbConnectionFactory,
+    ICacheService cacheService)
     : IQueryHandler<GetCarBrandsQuery, Pagination<CarBrandResponse>>
 {
+    private static readonly TimeSpan CacheExpiration = TimeSpan.FromMinutes(30);
+    
     public async Task<Result<Pagination<CarBrandResponse>>> Handle(GetCarBrandsQuery request, CancellationToken cancellationToken)
     {
+        string cacheKey = CreateCacheKey(request);
+        
+        Pagination<CarBrandResponse>? cachedResult = await cacheService.GetAsync<Pagination<CarBrandResponse>>(cacheKey, cancellationToken);
+        if (cachedResult != null)
+        {
+            return Result.Success(cachedResult);
+        }
+        
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
         var sql = new StringBuilder();
@@ -41,28 +54,36 @@ internal sealed class GetCarBrandsQueryHandler(IDbConnectionFactory dbConnection
         string countSql = "SELECT COUNT(*) FROM car_brands";
 
         int totalCount = await connection.ExecuteScalarAsync<int>(countSql);
+        
+        Pagination<CarBrandResponse> result;
 
-        if (request.PageSize > 0)
-        {
-            var paginatedResult = new Pagination<CarBrandResponse>
+        result = request.PageSize > 0
+            ? new Pagination<CarBrandResponse>
             {
                 PageIndex = request.PageNumber,
                 PageSize = request.PageSize,
                 Count = totalCount,
                 Data = carBrands
+            }
+            : new Pagination<CarBrandResponse>
+            {
+                PageIndex = 1,
+                PageSize = totalCount,
+                Count = totalCount,
+                Data = carBrands
             };
 
-            return Result.Success(paginatedResult);
-        }
-
-        var result = new Pagination<CarBrandResponse>
-        {
-            PageIndex = 1,
-            PageSize = totalCount,
-            Count = totalCount,
-            Data = carBrands
-        };
+        await cacheService.SetAsync(cacheKey, result, CacheExpiration, cancellationToken);
 
         return Result.Success(result);
+    }
+    
+    private static string CreateCacheKey(GetCarBrandsQuery request)
+    {
+        string baseKey = CacheKeys.CarBrands.GetList();
+        
+        string pagination = $"{request.PageNumber}_{request.PageSize}";
+        
+        return $"{baseKey}:{pagination}";
     }
 }

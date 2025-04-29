@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using Dapper;
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Abstractions.Pagination;
@@ -9,11 +10,23 @@ using EuroMotors.Domain.Products;
 
 namespace EuroMotors.Application.Products.GetProducts;
 
-internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionFactory)
+internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionFactory, ICacheService cacheService)
     : IQueryHandler<GetProductsQuery, Pagination<ProductResponse>>
 {
+    private static readonly TimeSpan CacheExpiration = TimeSpan.FromMinutes(10);
+    
     public async Task<Result<Pagination<ProductResponse>>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
     {
+        // Создаем ключ кеша на основе параметров запроса
+        string cacheKey = CreateCacheKey(request);
+        
+        // Проверяем кеш
+        var cachedResult = await cacheService.GetAsync<Pagination<ProductResponse>>(cacheKey, cancellationToken);
+        if (cachedResult != null)
+        {
+            return Result.Success(cachedResult);
+        }
+        
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
         string sortPriceDirection = string.Equals(request.SortOrder, "DESC", StringComparison.OrdinalIgnoreCase) ? "DESC" : "ASC";
@@ -94,13 +107,18 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
 
         if (!productIds.Any())
         {
-            return Result.Success(new Pagination<ProductResponse>
+            var emptyResult = new Pagination<ProductResponse>
             {
                 PageIndex = request.PageNumber,
                 PageSize = request.PageSize,
                 Count = totalItems,
                 Data = new List<ProductResponse>()
-            });
+            };
+            
+            // Кешируем результат
+            await cacheService.SetAsync(cacheKey, emptyResult, CacheExpiration, cancellationToken);
+            
+            return Result.Success(emptyResult);
         }
 
         string sql = $@"
@@ -188,6 +206,26 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
             Data = products
         };
 
+        // Кешируем результат
+        await cacheService.SetAsync(cacheKey, paginatedResult, CacheExpiration, cancellationToken);
+
         return Result.Success(paginatedResult);
+    }
+    
+    private static string CreateCacheKey(GetProductsQuery request)
+    {
+        string baseKey = CacheKeys.Products.GetList();
+        
+        // Добавляем параметры запроса к ключу
+        string categoryIds = request.CategoryIds?.Any() == true ? string.Join(",", request.CategoryIds) : "none";
+        string carModelIds = request.CarModelIds?.Any() == true ? string.Join(",", request.CarModelIds) : "none";
+        string searchTerm = !string.IsNullOrEmpty(request.SearchTerm) ? request.SearchTerm : "none";
+        string sortOrder = !string.IsNullOrEmpty(request.SortOrder) ? request.SortOrder : "default";
+        string isDiscounted = request.IsDiscounted?.ToString() ?? "all";
+        string isNew = request.IsNew?.ToString() ?? "all";
+        string isPopular = request.IsPopular?.ToString() ?? "all";
+        string pagination = $"{request.PageNumber}_{request.PageSize}";
+        
+        return $"{baseKey}:{categoryIds}:{carModelIds}:{searchTerm}:{sortOrder}:{isDiscounted}:{isNew}:{isPopular}:{pagination}";
     }
 }

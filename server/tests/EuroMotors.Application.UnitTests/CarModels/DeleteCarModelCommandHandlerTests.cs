@@ -1,3 +1,4 @@
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.CarModels.DeleteCarModel;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarBrands;
@@ -24,7 +25,8 @@ public class DeleteCarModelCommandHandlerTests
             .GetProperty("Id")
             ?.SetValue(_carBrand, _brandId);
 
-        _handler = new DeleteCarModelCommandHandler(_carModelRepository, _unitOfWork);
+        ICacheService? cacheService = Substitute.For<ICacheService>();
+        _handler = new DeleteCarModelCommandHandler(_carModelRepository, cacheService, _unitOfWork);
     }
 
     [Fact]

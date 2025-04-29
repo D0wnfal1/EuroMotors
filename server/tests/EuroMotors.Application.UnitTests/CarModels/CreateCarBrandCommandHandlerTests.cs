@@ -1,3 +1,4 @@
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.CarBrands.CreateCarBrand;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarBrands;
@@ -15,8 +16,10 @@ public class CreateCarBrandCommandHandlerTests
 
     public CreateCarBrandCommandHandlerTests()
     {
+        ICacheService? cacheService = Substitute.For<ICacheService>();
         _handler = new CreateCarBrandCommandHandler(
             _carBrandRepository,
+            cacheService,
             _unitOfWork);
     }
 

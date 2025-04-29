@@ -1,4 +1,5 @@
-﻿using EuroMotors.Application.Abstractions.Messaging;
+﻿using EuroMotors.Application.Abstractions.Caching;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Categories;
@@ -6,7 +7,12 @@ using EuroMotors.Domain.Products;
 
 namespace EuroMotors.Application.Products.CreateProduct;
 
-internal sealed class CreateProductCommandHandler(IProductRepository productRepository, ICategoryRepository categoryRepository, ICarModelRepository carModelRepository, IUnitOfWork unitOfWork) : ICommandHandler<CreateProductCommand, Guid>
+internal sealed class CreateProductCommandHandler(
+    IProductRepository productRepository, 
+    ICategoryRepository categoryRepository, 
+    ICarModelRepository carModelRepository, 
+    ICacheService cacheService,
+    IUnitOfWork unitOfWork) : ICommandHandler<CreateProductCommand, Guid>
 {
     public async Task<Result<Guid>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
     {
@@ -51,7 +57,22 @@ internal sealed class CreateProductCommandHandler(IProductRepository productRepo
         productRepository.Insert(result.Value);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        // Инвалидируем кеш продуктов после создания нового продукта
+        await InvalidateCacheAsync(result.Value, cancellationToken);
 
         return result.Value.Id;
+    }
+    
+    private async Task InvalidateCacheAsync(Product product, CancellationToken cancellationToken)
+    {
+        // Инвалидируем общий список продуктов
+        await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetAllPrefix(), cancellationToken);
+        
+        // Инвалидируем кеш категорий, связанных с продуктом
+        await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetByCategory(product.CategoryId), cancellationToken);
+        
+        // При создании продукта не нужно инвалидировать его детальный кеш,
+        // так как его еще не существует
     }
 }

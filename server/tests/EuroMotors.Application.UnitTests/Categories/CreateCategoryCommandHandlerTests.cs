@@ -1,3 +1,4 @@
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.Categories.CreateCategory;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Categories;
@@ -16,8 +17,10 @@ public class CreateCategoryCommandHandlerTests
 
     public CreateCategoryCommandHandlerTests()
     {
+        ICacheService? cacheService = Substitute.For<ICacheService>();
         _handler = new CreateCategoryCommandHandler(
             _categoryRepository,
+            cacheService,
             _unitOfWork);
     }
 

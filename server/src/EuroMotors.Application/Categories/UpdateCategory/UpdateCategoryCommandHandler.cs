@@ -1,10 +1,14 @@
-﻿using EuroMotors.Application.Abstractions.Messaging;
+﻿using EuroMotors.Application.Abstractions.Caching;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Categories;
 
 namespace EuroMotors.Application.Categories.UpdateCategory;
 
-internal sealed class UpdateCategoryCommandHandler(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork)
+internal sealed class UpdateCategoryCommandHandler(
+    ICategoryRepository categoryRepository, 
+    ICacheService cacheService,
+    IUnitOfWork unitOfWork)
     : ICommandHandler<UpdateCategoryCommand>
 {
     public async Task<Result> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
@@ -60,7 +64,28 @@ internal sealed class UpdateCategoryCommandHandler(ICategoryRepository categoryR
         }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        // Инвалидируем кеш после обновления категории
+        await InvalidateCacheAsync(category.Id, cancellationToken);
 
         return Result.Success();
+    }
+    
+    private async Task InvalidateCacheAsync(Guid categoryId, CancellationToken cancellationToken)
+    {
+        // Инвалидируем кеш категории по ID
+        await cacheService.RemoveAsync(CacheKeys.Categories.GetById(categoryId), cancellationToken);
+        
+        // Инвалидируем список категорий
+        await cacheService.RemoveAsync(CacheKeys.Categories.GetList(), cancellationToken);
+        
+        // Инвалидируем иерархический список категорий
+        await cacheService.RemoveAsync(CacheKeys.Categories.GetHierarchical(), cancellationToken);
+        
+        // Инвалидируем кеш продуктов, связанных с категорией
+        await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetByCategory(categoryId), cancellationToken);
+        
+        // Инвалидируем списки продуктов, так как изменение категории влияет на списки
+        await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetAllPrefix(), cancellationToken);
     }
 }

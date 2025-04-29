@@ -1,3 +1,4 @@
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.CarModels.CreateCarModel;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarBrands;
@@ -29,9 +30,11 @@ public class CreateCarModelCommandHandlerTests
         _carBrandRepository.GetByIdAsync(_brandId, Arg.Any<CancellationToken>())
             .Returns(_carBrand);
 
+        ICacheService? cacheService = Substitute.For<ICacheService>();
         _handler = new CreateCarModelCommandHandler(
             _carModelRepository,
             _carBrandRepository,
+            cacheService,
             _unitOfWork);
     }
 

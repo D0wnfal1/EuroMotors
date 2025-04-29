@@ -1,15 +1,28 @@
 ﻿using System.Data;
 using Dapper;
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 
 namespace EuroMotors.Application.CarModels.GetCarModelSelection;
 
-internal sealed class GetCarModelSelectionQueryHandler(IDbConnectionFactory dbConnectionFactory) : IQueryHandler<GetCarModelSelectionQuery, CarModelSelectionResponse>
+internal sealed class GetCarModelSelectionQueryHandler(
+    IDbConnectionFactory dbConnectionFactory,
+    ICacheService cacheService) : IQueryHandler<GetCarModelSelectionQuery, CarModelSelectionResponse>
 {
+    private static readonly TimeSpan CacheExpiration = TimeSpan.FromMinutes(30);
+    
     public async Task<Result<CarModelSelectionResponse>> Handle(GetCarModelSelectionQuery request, CancellationToken cancellationToken)
     {
+        string cacheKey = CreateCacheKey(request);
+        
+        CarModelSelectionResponse? cachedResult = await cacheService.GetAsync<CarModelSelectionResponse>(cacheKey, cancellationToken);
+        if (cachedResult != null)
+        {
+            return Result.Success(cachedResult);
+        }
+        
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
         Guid? brandIdFromName = null;
@@ -81,7 +94,7 @@ internal sealed class GetCarModelSelectionQueryHandler(IDbConnectionFactory dbCo
         IEnumerable<string> bodyTypes = await multi.ReadAsync<string>();
         IEnumerable<string> engineSpecs = await multi.ReadAsync<string>();
 
-        return new CarModelSelectionResponse()
+        var result = new CarModelSelectionResponse()
         {
             Ids = ids.ToList(),
             Brands = brands.ToList(),
@@ -90,5 +103,24 @@ internal sealed class GetCarModelSelectionQueryHandler(IDbConnectionFactory dbCo
             BodyTypes = bodyTypes.ToList(),
             EngineSpecs = engineSpecs.ToList(),
         };
+        
+        await cacheService.SetAsync(cacheKey, result, CacheExpiration, cancellationToken);
+
+        return Result.Success(result);
+    }
+    
+    private static string CreateCacheKey(GetCarModelSelectionQuery request)
+    {
+        string baseKey = CacheKeys.CarModels.GetSelection();
+        
+        string brandId = request.BrandId?.ToString() ?? "none";
+        string brand = !string.IsNullOrEmpty(request.Brand) ? request.Brand : "none";
+        string modelName = !string.IsNullOrEmpty(request.ModelName) ? request.ModelName : "none";
+#pragma warning disable CA1305
+        string startYear = request.StartYear?.ToString() ?? "none";
+#pragma warning restore CA1305
+        string bodyType = !string.IsNullOrEmpty(request.BodyType) ? request.BodyType : "none";
+        
+        return $"{baseKey}:{brandId}:{brand}:{modelName}:{startYear}:{bodyType}";
     }
 }

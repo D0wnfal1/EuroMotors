@@ -1,3 +1,4 @@
+using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.Categories.DeleteCategory;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Categories;
@@ -14,7 +15,8 @@ public class DeleteCategoryCommandHandlerTests
 
     public DeleteCategoryCommandHandlerTests()
     {
-        _handler = new DeleteCategoryCommandHandler(_categoryRepository, _unitOfWork);
+        ICacheService? cacheService = Substitute.For<ICacheService>();
+        _handler = new DeleteCategoryCommandHandler(_categoryRepository, cacheService, _unitOfWork);
     }
 
     [Fact]

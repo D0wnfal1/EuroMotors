@@ -167,7 +167,7 @@ export class AccountService {
     if (error.error instanceof ErrorEvent) {
       errorMessage = error.error.message;
     } else {
-      errorMessage = error.error?.error || error.message;
+      errorMessage = error.error?.error ?? error.message;
     }
 
     return throwError(() => new Error(errorMessage));
