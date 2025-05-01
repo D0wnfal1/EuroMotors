@@ -16,6 +16,7 @@ import { ProductImage } from '../../../shared/models/productImage';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import { CallbackComponent } from '../../../layout/callback/callback.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-product-item',
@@ -40,6 +41,7 @@ export class ProductItemComponent implements OnInit {
   private readonly imageService = inject(ImageService);
   private readonly imagePreloader = inject(ImagePreloaderService);
   private readonly dialog = inject(MatDialog);
+  private readonly snackBar = inject(MatSnackBar);
 
   lowQualityImageUrl = '';
   optimizedImageUrl = '';
@@ -78,6 +80,16 @@ export class ProductItemComponent implements OnInit {
         productId: this.product?.id,
         productName: this.product?.name,
       },
+    });
+  }
+
+  addToCart(productId: string) {
+    this.cartService.addItemToCart(productId);
+    this.snackBar.open('Product added to cart', 'Close', {
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['success-snackbar'],
     });
   }
 

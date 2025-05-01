@@ -1,4 +1,15 @@
-﻿namespace EuroMotors.Application.Payments;
+﻿using Newtonsoft.Json;
 
-public sealed record PaymentCallbackResponse(Guid PaymentId, Guid OrderId, string Status, decimal Amount);
+namespace EuroMotors.Application.Payments;
+public sealed class PaymentCallbackResponse
+{
+    [JsonProperty("order_id")]
+    public string OrderId { get; set; }
+
+    [JsonProperty("status")]
+    public string Status { get; set; }
+
+    [JsonProperty("amount")]
+    public decimal Amount { get; set; }
+}
 

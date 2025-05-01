@@ -1,4 +1,8 @@
-<header class="static lg:fixed top-0 w-full z-50 bg-white shadow-sm">
+<header
+  class="{{
+    isMenuOpen ? 'fixed' : 'static'
+  }} lg:fixed top-0 w-full z-50 bg-white shadow-sm"
+>
   @if (busyService.loading) {
   <mat-progress-bar
     mode="indeterminate"
@@ -6,11 +10,11 @@
   ></mat-progress-bar>
   }
 
-  <div class="container mx-auto px-4">
+  <div class="container mx-auto px-4" aria-label="Main navigation">
     <div class="flex items-center justify-between py-3">
       <a routerLink="/" class="text-xl font-bold">EuroMotors</a>
 
-      <nav class="hidden md:flex gap-6 uppercase text-sm lg:text-xl">
+      <nav class="hidden md:flex gap-6 uppercase text-sm lg:text-xl md:pl-4">
         <a
           routerLink="/"
           routerLinkActive="text-primary font-medium"
@@ -37,7 +41,7 @@
       <div class="flex items-center gap-2">
         <mat-card
           *ngIf="selectedCar && !isMobile"
-          class="cursor-pointer hidden sm:block"
+          class="cursor-pointer hidden md:block"
           (click)="selectedCarId && navigateToShop(selectedCarId)"
         >
           <div class="flex items-center justify-between px-2">
@@ -60,7 +64,7 @@
           <button
             mat-stroked-button
             routerLink="/admin"
-            class="hidden sm:block"
+            class="hidden md:block"
           >
             Admin
           </button>
@@ -76,7 +80,7 @@
           <mat-icon>shopping_cart</mat-icon>
         </a>
 
-        <div class="hidden sm:block">
+        <div class="hidden md:block">
           @if (accountService.currentUser()) {
           <button mat-button [matMenuTriggerFor]="menu">
             <span class="truncate max-w-xs">{{
@@ -484,4 +488,10 @@
 <div
   class="hidden lg:block"
   [style.height]="isMobile ? '150px' : '125px'"
+></div>
+
+<div
+  class="overlay fixed inset-0 bg-black bg-opacity-50 z-40"
+  *ngIf="isMenuOpen"
+  (click)="closeMobileMenu()"
 ></div>

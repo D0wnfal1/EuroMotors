@@ -28,8 +28,9 @@ internal sealed class PaymentService(
             amount = payment.Amount,
             currency = "UAH",
             description = $"Payment for order {payment.OrderId}",
-            order_id = payment.Id.ToString(),
+            order_id = payment.OrderId,
             result_url = _options.ResultUrl + $"/{payment.OrderId}",
+            server_url = _options.CallbackUrl
         };
 
         string jsonData = JsonConvert.SerializeObject(data);
@@ -62,7 +63,11 @@ internal sealed class PaymentService(
             return Result.Failure(PaymentErrors.InvalidData());
         }
 
-        Payment payment = await paymentRepository.GetByOrderIdAsync(paymentResponse.OrderId);
+        Payment? payment = await paymentRepository.GetByOrderIdAsync(Guid.Parse(paymentResponse.OrderId));
+        if (payment == null)
+        {
+            return Result.Failure(PaymentErrors.NotFound(Guid.Parse(paymentResponse.OrderId)));
+        }
 
         payment.ChangeStatus(paymentResponse.Status switch
         {

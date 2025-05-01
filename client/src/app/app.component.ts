@@ -4,7 +4,6 @@ import {
   HostListener,
   OnInit,
   OnDestroy,
-  Renderer2,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
@@ -16,6 +15,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { CallbackComponent } from './layout/callback/callback.component';
 import { NotificationService } from './core/services/notification.service';
 import { ImageOptimizationModule } from './shared/modules/image-optimization.module';
+import { AccountService } from './core/services/account.service';
+import { of } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -37,10 +39,9 @@ export class AppComponent implements OnInit, OnDestroy {
   private readonly dialog = inject(MatDialog);
   notification = inject(NotificationService);
   router = inject(Router);
-  private renderer = inject(Renderer2);
+  private readonly accountService = inject(AccountService);
 
   ngOnInit() {
-    // Add CSS to document to improve touch scrolling on mobile devices
     const style = document.createElement('style');
     style.innerHTML = `
       * {
@@ -49,6 +50,7 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     `;
     document.head.appendChild(style);
+    this.initializeAuth();
   }
 
   @HostListener('window:beforeunload', ['$event'])
@@ -64,5 +66,22 @@ export class AppComponent implements OnInit, OnDestroy {
     this.dialog.open(CallbackComponent, {
       width: '500px',
     });
+  }
+
+  private initializeAuth(): void {
+    this.accountService
+      .checkAuth()
+      .pipe(
+        catchError(() => {
+          return this.accountService.refreshToken().pipe(
+            switchMap(() => this.accountService.checkAuth()),
+            catchError((error) => {
+              console.log('Не удалось восстановить сессию', error);
+              return of({ isAuthenticated: false, user: null });
+            })
+          );
+        })
+      )
+      .subscribe();
   }
 }

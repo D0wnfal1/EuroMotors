@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewEncapsulation } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -12,18 +12,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-
 import { CartService } from '../../../core/services/cart.service';
 import { CheckoutService } from '../../../core/services/checkout.service';
 import { AccountService } from '../../../core/services/account.service';
 import { OrderService } from '../../../core/services/order.service';
 import { DeliveryPipe } from '../../../shared/pipes/delivery.pipe';
 import { PaymentPipe } from '../../../shared/pipes/payment.pipe';
-import {
-  DeliveryMethod,
-  PaymentMethod,
-  OrderItem,
-} from '../../../shared/models/order';
+import { DeliveryMethod, PaymentMethod } from '../../../shared/models/order';
 import { Warehouse } from '../../../shared/models/warehouse';
 import { Observable, debounceTime, of, switchMap, tap } from 'rxjs';
 import { Router } from '@angular/router';
@@ -50,15 +45,16 @@ import { PaymentService } from '../../../core/services/payment.service';
   ],
   templateUrl: './checkout-form.component.html',
   styleUrls: ['./checkout-form.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class CheckoutFormComponent implements OnInit {
-  private fb = inject(FormBuilder);
-  private orderService = inject(OrderService);
-  private cartService = inject(CartService);
-  private accountService = inject(AccountService);
-  private checkoutService = inject(CheckoutService);
-  private paymentService = inject(PaymentService);
-  private router = inject(Router);
+  private readonly fb = inject(FormBuilder);
+  private readonly orderService = inject(OrderService);
+  private readonly cartService = inject(CartService);
+  private readonly accountService = inject(AccountService);
+  private readonly checkoutService = inject(CheckoutService);
+  private readonly paymentService = inject(PaymentService);
+  private readonly router = inject(Router);
 
   checkoutForm!: FormGroup;
 
@@ -88,7 +84,7 @@ export class CheckoutFormComponent implements OnInit {
           ),
         ],
       ],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.email]],
       paymentMethod: [PaymentMethod.Prepaid, Validators.required],
     });
 
@@ -197,7 +193,7 @@ export class CheckoutFormComponent implements OnInit {
       shippingAddress = 'PickUp';
     }
 
-    const cartId = localStorage.getItem('cart_id') || '';
+    const cartId = localStorage.getItem('cart_id') ?? '';
     if (!cartId) {
       return;
     }
@@ -254,8 +250,8 @@ export class CheckoutFormComponent implements OnInit {
             firstName: auth.user.firstName,
             lastName: auth.user.lastName,
             email: auth.user.email,
-            phoneNumber: auth.user.phoneNumber || '',
-            city: auth.user.city || '',
+            phoneNumber: auth.user.phoneNumber ?? '',
+            city: auth.user.city ?? '',
           });
         }
       },

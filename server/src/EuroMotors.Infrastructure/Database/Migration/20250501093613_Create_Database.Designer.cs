@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250426205307_Create_Database")]
+    [Migration("20250501093613_Create_Database")]
     partial class Create_Database
     {
         /// <inheritdoc />
@@ -150,7 +150,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnName("id");
 
                     b.Property<string>("BuyerEmail")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("buyer_email");
 

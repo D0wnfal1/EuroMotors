@@ -1,4 +1,4 @@
-name: .NET Build, Test and SonarQube
+name: .NET Build, Angular Build, Test and SonarQube
 
 on:
   push:
@@ -15,6 +15,20 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Set up node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "22"
+
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli@19
+
+      - name: Install deps and build angular app
+        run: |
+          cd client
+          npm install
+          ng build
 
       - name: Set up .NET SDK
         uses: actions/setup-dotnet@v2

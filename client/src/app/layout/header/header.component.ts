@@ -11,7 +11,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatCardModule } from '@angular/material/card';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import {
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  NavigationEnd,
+} from '@angular/router';
 import { BusyService } from '../../core/services/busy.service';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { CartService } from '../../core/services/cart.service';
@@ -31,7 +36,7 @@ import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../core/services/product.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CallbackComponent } from '../callback/callback.component';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { LayoutService } from '../../core/services/layout.service';
 
 @Component({
@@ -91,6 +96,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isMobile = false;
   isMenuOpen = false;
 
+  private readonly MOBILE_BREAKPOINT = '(max-width: 767px)';
+
   ngOnInit() {
     this.shopParams.pageSize = this.pageSize;
     this.shopParams.pageNumber = this.pageNumber;
@@ -103,13 +110,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
     );
     this.subscriptions.push(
       this.breakpointObserver
-        .observe([Breakpoints.XSmall])
+        .observe([this.MOBILE_BREAKPOINT])
         .subscribe((result) => {
           this.isMobile = result.matches;
           if (!this.isMobile) {
             this.isMenuOpen = false;
           }
         })
+    );
+
+    this.subscriptions.push(
+      this.router.events.subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          this.isCatalogOpen = false;
+        }
+      })
     );
   }
 
@@ -306,10 +321,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   toggleMobileMenu() {
     this.isMenuOpen = !this.isMenuOpen;
+    this.updateBodyScroll();
   }
 
   closeMobileMenu() {
     this.isMenuOpen = false;
+    this.updateBodyScroll();
+  }
+
+  private updateBodyScroll() {
+    if (this.isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
   }
 
   toggleCategory(category: Category) {

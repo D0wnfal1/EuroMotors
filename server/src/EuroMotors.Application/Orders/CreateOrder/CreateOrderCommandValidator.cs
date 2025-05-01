@@ -9,6 +9,8 @@ internal sealed class CreateOrderCommandValidator : AbstractValidator<CreateOrde
     {
         RuleFor(c => c.CartId).NotEmpty();
         RuleFor(c => c.UserId).NotEmpty().When(c => c.UserId.HasValue);
+        RuleFor(c => c.BuyerName).NotEmpty();
+        RuleFor(c => c.BuyerPhoneNumber).NotEmpty();
         RuleFor(c => c.DeliveryMethod).NotEmpty();
         RuleFor(c => c.ShippingAddress)
             .NotEmpty()

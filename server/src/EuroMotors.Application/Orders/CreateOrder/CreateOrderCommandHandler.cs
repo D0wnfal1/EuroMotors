@@ -41,7 +41,6 @@ internal sealed class CreateOrderCommandHandler(
 
         foreach (CartItem cartItem in cart.CartItems)
         {
-            // This acquires a pessimistic lock or throws an exception if already locked.
             Product? product = await productRepository.GetWithLockAsync(
                 cartItem.ProductId,
                 cancellationToken);

@@ -147,7 +147,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnName("id");
 
                     b.Property<string>("BuyerEmail")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("buyer_email");
 

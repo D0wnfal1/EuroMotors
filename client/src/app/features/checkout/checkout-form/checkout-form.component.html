@@ -67,6 +67,8 @@
         <mat-autocomplete
           #auto="matAutocomplete"
           [displayWith]="displayWarehouse"
+          class="warehouse-autocomplete"
+          autoActiveFirstOption
         >
           <mat-option
             *ngFor="let warehouse of filteredWarehouses | async"
@@ -106,9 +108,6 @@
     <mat-form-field appearance="fill" class="w-full mb-3">
       <mat-label>E-mail</mat-label>
       <input matInput formControlName="email" placeholder="example@mail.com" />
-      <mat-error *ngIf="checkoutForm.get('email')?.hasError('required')">
-        Enter email
-      </mat-error>
       <mat-error *ngIf="checkoutForm.get('email')?.hasError('email')">
         Please enter a valid email address.
       </mat-error>

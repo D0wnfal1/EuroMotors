@@ -65,7 +65,7 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     user_id = table.Column<Guid>(type: "uuid", nullable: true),
                     buyer_name = table.Column<string>(type: "text", nullable: false),
                     buyer_phone_number = table.Column<string>(type: "text", nullable: false),
-                    buyer_email = table.Column<string>(type: "text", nullable: false),
+                    buyer_email = table.Column<string>(type: "text", nullable: true),
                     status = table.Column<string>(type: "text", nullable: false),
                     total_price = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     payment_id = table.Column<Guid>(type: "uuid", nullable: true),

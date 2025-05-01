@@ -13,7 +13,7 @@ public sealed class Order : Entity
     public Guid? UserId { get; private set; }
     public string BuyerName { get; private set; }
     public string BuyerPhoneNumber { get; private set; }
-    public string BuyerEmail { get; private set; }
+    public string? BuyerEmail { get; private set; }
     public OrderStatus Status { get; private set; }
     public decimal TotalPrice { get; private set; }
     public IReadOnlyCollection<OrderItem> OrderItems => _orderItems.AsReadOnly();
@@ -24,7 +24,7 @@ public sealed class Order : Entity
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime UpdatedAtUtc { get; private set; }
 
-    public static Order Create(Guid? userId, string buyerName, string buyerPhoneNumber, string buyerEmail, DeliveryMethod deliveryMethod, string? shippingAddress, PaymentMethod paymentMethod)
+    public static Order Create(Guid? userId, string buyerName, string buyerPhoneNumber, string? buyerEmail, DeliveryMethod deliveryMethod, string? shippingAddress, PaymentMethod paymentMethod)
     {
         var order = new Order
         {
