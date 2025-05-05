@@ -28,7 +28,12 @@ import { CategoryService } from '../../core/services/category.service';
 import { Category, HierarchicalCategory } from '../../shared/models/category';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { CarmodelService } from '../../core/services/carmodel.service';
-import { Subscription } from 'rxjs';
+import {
+  Subject,
+  Subscription,
+  debounceTime,
+  distinctUntilChanged,
+} from 'rxjs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ShopParams } from '../../shared/models/shopParams';
 import { SelectedCar } from '../../shared/models/carModel';
@@ -38,6 +43,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { CallbackComponent } from '../callback/callback.component';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { LayoutService } from '../../core/services/layout.service';
+import { ProductResponse } from '../../shared/models/product';
 
 @Component({
   selector: 'app-header',
@@ -73,7 +79,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   carModelService = inject(CarmodelService);
   productService = inject(ProductService);
   layoutService = inject(LayoutService);
-  private router = inject(Router);
+  private readonly router = inject(Router);
 
   categories: Category[] = [];
   hierarchicalCategories: HierarchicalCategory[] = [];
@@ -95,6 +101,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private readonly breakpointObserver = inject(BreakpointObserver);
   isMobile = false;
   isMenuOpen = false;
+
+  searchInputSubject = new Subject<string>();
+  productSuggestions: ProductResponse[] = [];
+  showSuggestions = false;
+  maxSuggestions = 5;
 
   private readonly MOBILE_BREAKPOINT = '(max-width: 767px)';
 
@@ -125,6 +136,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
           this.isCatalogOpen = false;
         }
       })
+    );
+
+    this.subscriptions.push(
+      this.searchInputSubject
+        .pipe(debounceTime(300), distinctUntilChanged())
+        .subscribe((searchTerm) => {
+          if (searchTerm && searchTerm.length >= 2) {
+            this.getProductSuggestions(searchTerm);
+          } else {
+            this.productSuggestions = [];
+            this.showSuggestions = false;
+          }
+        })
     );
   }
 
@@ -246,6 +270,45 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     this.router.navigate(['/shop'], { queryParams });
+    this.showSuggestions = false;
+  }
+
+  onSearchInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.searchInputSubject.next(input.value);
+  }
+
+  getProductSuggestions(searchTerm: string): void {
+    if (!searchTerm || searchTerm.trim().length < 2) {
+      this.productSuggestions = [];
+      this.showSuggestions = false;
+      return;
+    }
+
+    const params = new ShopParams();
+    params.searchTerm = searchTerm;
+    params.pageNumber = 1;
+    params.pageSize = this.maxSuggestions;
+
+    this.productService.getProducts(params, 'suggestion').subscribe({
+      next: (response) => {
+        this.productSuggestions = response.data;
+        this.showSuggestions = this.productSuggestions.length > 0;
+      },
+      error: (error) => {
+        console.error('Error fetching product suggestions', error);
+        this.productSuggestions = [];
+        this.showSuggestions = false;
+      },
+    });
+  }
+
+  selectSuggestion(product: ProductResponse): void {
+    this.router.navigate(['/shop/', product.id]);
+    this.showSuggestions = false;
+    if (this.isMenuOpen) {
+      this.closeMobileMenu();
+    }
   }
 
   logout() {
@@ -298,6 +361,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   handleClickOutside(event: MouseEvent) {
     const catalogElement = document.querySelector('.category-menu');
     const catalogButton = document.querySelector('.catalog-button');
+    const searchSuggestionsElement = document.querySelector(
+      '.search-suggestions'
+    );
+    const searchInputElement = document.querySelector('.search-input');
 
     if (
       this.isCatalogOpen &&
@@ -308,6 +375,30 @@ export class HeaderComponent implements OnInit, OnDestroy {
     ) {
       this.isCatalogOpen = false;
       this.activeCategory = null;
+    }
+
+    if (
+      this.showSuggestions &&
+      searchSuggestionsElement &&
+      !searchSuggestionsElement.contains(event.target as Node) &&
+      searchInputElement &&
+      !searchInputElement.contains(event.target as Node)
+    ) {
+      this.showSuggestions = false;
+    }
+  }
+
+  @HostListener('document:keydown.escape', ['$event'])
+  handleEscapeKey(event: KeyboardEvent) {
+    if (this.showSuggestions) {
+      this.showSuggestions = false;
+      event.preventDefault();
+    }
+
+    if (this.isCatalogOpen) {
+      this.isCatalogOpen = false;
+      this.activeCategory = null;
+      event.preventDefault();
     }
   }
 

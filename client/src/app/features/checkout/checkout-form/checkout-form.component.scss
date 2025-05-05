@@ -11,7 +11,6 @@
   width: 100%;
 }
 
-// For mobile devices
 @media screen and (max-width: 600px) {
   ::ng-deep .warehouse-panel {
     max-height: 40vh !important;

@@ -132,10 +132,11 @@
         >
           <input
             type="search"
-            class="block w-full p-2 md:p-3 text-sm text-gray-900 border border-gray-300 rounded-lg"
+            class="block w-full p-2 md:p-3 text-sm text-gray-900 border border-gray-300 rounded-lg search-input"
             placeholder="Part number or Product name"
             name="search"
             [(ngModel)]="shopParams.searchTerm"
+            (input)="onSearchInput($event)"
           />
           <button
             mat-icon-button
@@ -150,6 +151,50 @@
           >
             <mat-icon>search</mat-icon>
           </button>
+
+          <div
+            *ngIf="showSuggestions"
+            class="search-suggestions absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-80 overflow-y-auto"
+          >
+            <div
+              *ngFor="let product of productSuggestions"
+              class="p-2 hover:bg-gray-100 cursor-pointer border-b border-gray-100 flex items-center"
+              (click)="selectSuggestion(product)"
+            >
+              <div
+                *ngIf="product.images && product.images.length > 0"
+                class="flex-shrink-0 mr-2"
+              >
+                <img
+                  [src]="product.images[0].path"
+                  alt="{{ product.name }}"
+                  class="h-10 w-10 object-contain"
+                />
+              </div>
+              <div class="flex-grow">
+                <div class="text-sm font-medium">{{ product.name }}</div>
+                <div class="text-xs text-gray-500">
+                  {{ product.vendorCode }}
+                </div>
+              </div>
+              <div class="flex-shrink-0 text-sm font-medium">
+                <div *ngIf="product.discount > 0; else noSearchDiscount">
+                  <div class="text-xs text-gray-500 line-through">
+                    {{ product.price | currency : "UAH" : "symbol-narrow" }}
+                  </div>
+                  <div class="text-sm font-semibold text-red-600">
+                    {{
+                      product.price - product.discount
+                        | currency : "UAH" : "symbol-narrow"
+                    }}
+                  </div>
+                </div>
+                <ng-template #noSearchDiscount>
+                  {{ product.price | currency : "UAH" : "symbol-narrow" }}
+                </ng-template>
+              </div>
+            </div>
+          </div>
         </form>
         <div
           class="hidden md:flex items-center justify-end gap-4 flex-shrink-0"

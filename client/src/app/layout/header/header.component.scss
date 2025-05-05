@@ -1,7 +1,7 @@
 .custom-badge .mat-badge-content {
   width: 22px;
   height: 22px;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 24px;
 }
 
@@ -38,4 +38,32 @@ a {
 
 .icon-display {
   transform: scale(1.5);
+}
+
+.search-suggestions {
+  z-index: 1000;
+  max-height: 300px;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--mat-primary-500);
 }

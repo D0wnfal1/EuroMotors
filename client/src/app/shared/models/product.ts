@@ -19,3 +19,24 @@ export type ProductSpecification = {
   specificationName: string;
   specificationValue: string;
 };
+
+export type ProductResponse = {
+  id: string;
+  categoryId: string;
+  carModelIds: string[];
+  name: string;
+  vendorCode: string;
+  price: number;
+  discount: number;
+  stock: number;
+  isAvailable: boolean;
+  slug: string;
+  images: ProductImageResponse[];
+  specifications: ProductSpecification[];
+};
+
+export type ProductImageResponse = {
+  productImageId: string;
+  path: string;
+  productId: string;
+};

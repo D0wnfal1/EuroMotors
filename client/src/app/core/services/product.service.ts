@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, shareReplay } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Product } from '../../shared/models/product';
+import { Product, ProductResponse } from '../../shared/models/product';
 import { Pagination } from '../../shared/models/pagination';
 import { ShopParams } from '../../shared/models/shopParams';
 
@@ -11,15 +11,31 @@ import { ShopParams } from '../../shared/models/shopParams';
 })
 export class ProductService {
   baseUrl = environment.apiUrl;
-  private http = inject(HttpClient);
-  private productCache = new Map<string, Observable<Pagination<Product>>>();
-  private productDetailCache = new Map<string, Observable<Product>>();
+  private readonly http = inject(HttpClient);
+  private readonly productCache = new Map<
+    string,
+    Observable<Pagination<Product>>
+  >();
+  private readonly productDetailCache = new Map<string, Observable<Product>>();
 
-  getProducts(shopParams: ShopParams): Observable<Pagination<Product>> {
-    const cacheKey = this.getCacheKey(shopParams);
-
-    if (this.productCache.has(cacheKey)) {
-      return this.productCache.get(cacheKey)!;
+  getProducts(shopParams: ShopParams): Observable<Pagination<Product>>;
+  getProducts(
+    shopParams: ShopParams,
+    responseType: 'product'
+  ): Observable<Pagination<Product>>;
+  getProducts(
+    shopParams: ShopParams,
+    responseType: 'suggestion'
+  ): Observable<Pagination<ProductResponse>>;
+  getProducts(
+    shopParams: ShopParams,
+    responseType: 'product' | 'suggestion' = 'product'
+  ): Observable<Pagination<Product> | Pagination<ProductResponse>> {
+    if (responseType === 'product') {
+      const cacheKey = this.getCacheKey(shopParams);
+      if (this.productCache.has(cacheKey)) {
+        return this.productCache.get(cacheKey)!;
+      }
     }
 
     let params = new HttpParams();
@@ -62,15 +78,21 @@ export class ProductService {
     params = params.append('pageSize', shopParams.pageSize.toString());
     params = params.append('pageNumber', shopParams.pageNumber.toString());
 
-    const products$ = this.http
-      .get<Pagination<Product>>(this.baseUrl + '/products', {
-        params,
-      })
-      .pipe(shareReplay(1));
+    if (responseType === 'suggestion') {
+      return this.http.get<Pagination<ProductResponse>>(
+        this.baseUrl + '/products',
+        { params }
+      );
+    } else {
+      const products$ = this.http
+        .get<Pagination<Product>>(this.baseUrl + '/products', {
+          params,
+        })
+        .pipe(shareReplay(1));
 
-    this.productCache.set(cacheKey, products$);
-
-    return products$;
+      this.productCache.set(this.getCacheKey(shopParams), products$);
+      return products$;
+    }
   }
 
   getProductById(id: string): Observable<Product> {
@@ -92,9 +114,9 @@ export class ProductService {
     const modelKey = params.carModelIds?.join(',') || 'none';
     const sortKey = params.sortOrder || 'default';
     const searchKey = params.searchTerm || 'none';
-    const discountKey = params.isDiscounted?.toString() || 'all';
-    const newKey = params.isNew?.toString() || 'all';
-    const popularKey = params.isPopular?.toString() || 'all';
+    const discountKey = params.isDiscounted?.toString() ?? 'all';
+    const newKey = params.isNew?.toString() ?? 'all';
+    const popularKey = params.isPopular?.toString() ?? 'all';
     const paginationKey = `${params.pageNumber}_${params.pageSize}`;
 
     return `${categoryKey}_${modelKey}_${sortKey}_${searchKey}_${discountKey}_${newKey}_${popularKey}_${paginationKey}`;

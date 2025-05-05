@@ -37,7 +37,7 @@
     <img
       mat-card-image
       src="images/no-image.jpeg"
-      alt="No product image"
+      alt="No product"
       class="product-image max-w-full h-auto"
     />
   </ng-template>
@@ -56,10 +56,13 @@
         class="flex flex-col items-center"
       >
         <div class="text-xs sm:text-sm text-gray-500 line-through">
-          {{ product.price | currency }}
+          {{ product.price | currency : "UAH" : "symbol-narrow" }}
         </div>
         <div class="text-lg sm:text-xl font-semibold text-red-600">
-          {{ product.price - product.discount | currency }}
+          {{
+            product.price - product.discount
+              | currency : "UAH" : "symbol-narrow"
+          }}
         </div>
       </div>
 
@@ -68,10 +71,10 @@
           <div
             class="text-xs sm:text-sm text-transparent line-through select-none"
           >
-            {{ product.price | currency }}
+            {{ product.price | currency : "UAH" : "symbol-narrow" }}
           </div>
           <div class="text-lg sm:text-xl font-semibold text-black">
-            {{ product.price | currency }}
+            {{ product.price | currency : "UAH" : "symbol-narrow" }}
           </div>
         </div>
       </ng-template>

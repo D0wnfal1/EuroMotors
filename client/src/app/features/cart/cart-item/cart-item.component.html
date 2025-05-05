@@ -7,13 +7,13 @@
         <img
           *ngIf="product.images.length > 0; else noImage"
           [src]="getImageUrl(product.images[0].path)"
-          alt="product image"
+          alt="Product"
           class="h-24 w-24 md:h-32 md:w-32 object-cover"
         />
         <ng-template #noImage>
           <img
             src="images/no-image.jpeg"
-            alt="No product image"
+            alt="No product"
             class="h-24 w-24 md:h-32 md:w-32 object-cover"
           />
         </ng-template>
@@ -73,7 +73,7 @@
       class="w-full md:w-32 text-center md:text-right md:ml-auto mt-2 md:mt-0"
     >
       <p class="font-bold text-lg md:text-2xl">
-        {{ item?.totalPrice | currency }}
+        {{ item?.totalPrice | currency : "UAH" : "symbol-narrow" }}
       </p>
     </div>
   </div>

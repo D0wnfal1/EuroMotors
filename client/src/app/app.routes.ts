@@ -1,10 +1,6 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './features/home/home.component';
-import { ShopComponent } from './features/shop/shop.component';
-import { ProductDetailsComponent } from './features/shop/product-details/product-details.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
-import { CartComponent } from './features/cart/cart.component';
-import { CategoryItemsComponent } from './features/shop/category-items/category-items.component';
 import { CarBrandProductsComponent } from './features/car-brand/car-brand-products/car-brand-products.component';
 import { DeliveryPaymentComponent } from './features/home/delivery-payment/delivery-payment.component';
 import { WarrantyReturnsComponent } from './features/home/warranty-returns/warranty-returns.component';
@@ -12,14 +8,20 @@ import { PublicOfferComponent } from './features/home/public-offer/public-offer.
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'shop', component: ShopComponent },
+  {
+    path: 'shop',
+    loadChildren: () =>
+      import('./features/shop/shop.module').then((m) => m.ShopModule),
+  },
   { path: 'delivery-payment', component: DeliveryPaymentComponent },
   { path: 'warranty-returns', component: WarrantyReturnsComponent },
   { path: 'public-offer', component: PublicOfferComponent },
-  { path: 'shop/:id', component: ProductDetailsComponent },
-  { path: 'shop/category/:id', component: CategoryItemsComponent },
   { path: 'brand/:id', component: CarBrandProductsComponent },
-  { path: 'cart', component: CartComponent },
+  {
+    path: 'cart',
+    loadChildren: () =>
+      import('./features/cart/cart.module').then((m) => m.CartModule),
+  },
   {
     path: 'checkout',
     loadChildren: () =>

@@ -30,7 +30,7 @@ public sealed class AuthController : ControllerBase
 
         if (string.IsNullOrEmpty(refreshToken))
         {
-            return Unauthorized(new { error = "No refresh token provided" });
+            return NoContent();
         }
 
         var query = new RefreshTokenCommand(refreshToken);

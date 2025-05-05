@@ -44,13 +44,13 @@ import { MatDialog } from '@angular/material/dialog';
   styleUrl: './product-details.component.scss',
 })
 export class ProductDetailsComponent implements OnInit {
-  private productService = inject(ProductService);
-  private activatedRoute = inject(ActivatedRoute);
-  private imageService = inject(ImageService);
-  private cartService = inject(CartService);
-  private carModelService = inject(CarmodelService);
-  private carBrandService = inject(CarbrandService);
-  private dialog = inject(MatDialog);
+  private readonly productService = inject(ProductService);
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly imageService = inject(ImageService);
+  private readonly cartService = inject(CartService);
+  private readonly carModelService = inject(CarmodelService);
+  private readonly carBrandService = inject(CarbrandService);
+  private readonly dialog = inject(MatDialog);
 
   product?: Product;
   activeIndex: number = 0;
@@ -183,7 +183,7 @@ export class ProductDetailsComponent implements OnInit {
     this.quantityInCart =
       this.cartService
         .cart()
-        ?.cartItems.find((x) => x.productId === this.product?.id)?.quantity ||
+        ?.cartItems.find((x) => x.productId === this.product?.id)?.quantity ??
       0;
     this.quantity = this.quantityInCart || 1;
   }
@@ -207,8 +207,8 @@ export class ProductDetailsComponent implements OnInit {
         if (!model) return '';
 
         const brandName =
-          model.carBrand?.name ||
-          this.carBrands.find((b) => b.id === model.carBrandId)?.name ||
+          model.carBrand?.name ??
+          this.carBrands.find((b) => b.id === model.carBrandId)?.name ??
           '';
 
         return `${brandName} ${model.modelName} (${model.startYear})`;
