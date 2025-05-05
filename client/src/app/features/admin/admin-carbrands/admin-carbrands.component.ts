@@ -1,4 +1,4 @@
-import { NgFor, CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
@@ -30,9 +30,9 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './admin-carbrands.component.scss',
 })
 export class AdminCarbrandsComponent implements OnInit {
-  private carBrandService = inject(CarbrandService);
-  private carModelService = inject(CarmodelService);
-  private imageService = inject(ImageService);
+  private readonly carBrandService = inject(CarbrandService);
+  private readonly carModelService = inject(CarmodelService);
+  private readonly imageService = inject(ImageService);
   carBrands: CarBrand[] = [];
   totalItems = 0;
   shopParams = new ShopParams();

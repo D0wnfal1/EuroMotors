@@ -17,19 +17,19 @@ internal sealed class GetProductsByCategoryWithChildrenQueryHandler(
     : IQueryHandler<GetProductsByCategoryWithChildrenQuery, Pagination<ProductResponse>>
 {
     private static readonly TimeSpan CacheExpiration = TimeSpan.FromMinutes(10);
-    
+
     public async Task<Result<Pagination<ProductResponse>>> Handle(
         GetProductsByCategoryWithChildrenQuery request,
         CancellationToken cancellationToken)
     {
         string cacheKey = CreateCacheKey(request);
-        
+
         Pagination<ProductResponse>? cachedResult = await cacheService.GetAsync<Pagination<ProductResponse>>(cacheKey, cancellationToken);
         if (cachedResult != null)
         {
             return Result.Success(cachedResult);
         }
-        
+
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
         const string getCategoriesQuery = """
@@ -81,9 +81,9 @@ internal sealed class GetProductsByCategoryWithChildrenQueryHandler(
                 Count = 0,
                 Data = new List<ProductResponse>()
             };
-            
+
             await cacheService.SetAsync(cacheKey, emptyResult, CacheExpiration, cancellationToken);
-            
+
             return Result.Success(emptyResult);
         }
 
@@ -117,9 +117,9 @@ internal sealed class GetProductsByCategoryWithChildrenQueryHandler(
                 Count = totalItems,
                 Data = new List<ProductResponse>()
             };
-            
+
             await cacheService.SetAsync(cacheKey, emptyResult, CacheExpiration, cancellationToken);
-            
+
             return Result.Success(emptyResult);
         }
 
@@ -216,20 +216,20 @@ internal sealed class GetProductsByCategoryWithChildrenQueryHandler(
             Count = totalItems,
             Data = productDictionary.Values.ToList()
         };
-        
+
         await cacheService.SetAsync(cacheKey, result, CacheExpiration, cancellationToken);
 
         return Result.Success(result);
     }
-    
+
     private static string CreateCacheKey(GetProductsByCategoryWithChildrenQuery request)
     {
         string baseKey = CacheKeys.Products.GetByCategory(request.CategoryId);
-        
+
         string searchTerm = !string.IsNullOrEmpty(request.SearchTerm) ? request.SearchTerm : "none";
         string sortOrder = !string.IsNullOrEmpty(request.SortOrder) ? request.SortOrder : "default";
         string pagination = $"{request.PageNumber}_{request.PageSize}";
-        
+
         return $"{baseKey}:{searchTerm}:{sortOrder}:{pagination}";
     }
 }

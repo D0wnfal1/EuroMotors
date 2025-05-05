@@ -76,7 +76,6 @@ export class AppComponent implements OnInit, OnDestroy {
           return this.accountService.refreshToken().pipe(
             switchMap(() => this.accountService.checkAuth()),
             catchError((error) => {
-              console.log('Не удалось восстановить сессию', error);
               return of({ isAuthenticated: false, user: null });
             })
           );

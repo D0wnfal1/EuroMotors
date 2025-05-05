@@ -61,7 +61,7 @@ export class AccountService {
       );
   }
 
-  refreshToken(): Observable<any> {
+  refreshToken(): Observable<AuthState> {
     if (this.isRefreshing()) {
       return this.refreshTokenSubject.pipe(
         filter((result): result is boolean => result !== null),
@@ -72,25 +72,26 @@ export class AccountService {
               () => new Error('Previous refresh attempt failed')
             );
           }
-          return this.http.post(
-            `${this.baseUrl}/auth/refresh`,
-            {},
-            { withCredentials: true }
-          );
+          return this.checkAuth();
         })
       );
     }
 
     this.isRefreshing.set(true);
-
     return this.http
-      .post(`${this.baseUrl}/auth/refresh`, {}, { withCredentials: true })
+      .post<AuthenticationResponse>(
+        `${this.baseUrl}/auth/refresh`,
+        {},
+        { withCredentials: true }
+      )
       .pipe(
-        tap(() => {
+        tap((response) => {
           this.isRefreshing.set(false);
           this.refreshTokenSubject.next(true);
         }),
+        switchMap(() => this.checkAuth()),
         catchError((error) => {
+          console.error('Token refresh failed:', error);
           this.isRefreshing.set(false);
           this.refreshTokenSubject.next(false);
           return throwError(() => error);

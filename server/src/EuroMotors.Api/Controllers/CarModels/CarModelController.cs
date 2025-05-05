@@ -79,7 +79,7 @@ public sealed class CarModelController : ControllerBase
 
         var command = new CreateCarModelCommand(
             request.CarBrandId,
-            request.Model,
+            request.ModelName,
             request.StartYear,
             request.BodyType,
             engineSpec

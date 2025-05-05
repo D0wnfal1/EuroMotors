@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migration
 {
     /// <inheritdoc />
-    public partial class Create_Database : Microsoft.EntityFrameworkCore.Migrations.Migration
+    public partial class CreateDatabase : Microsoft.EntityFrameworkCore.Migrations.Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -137,7 +137,7 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         principalSchema: "public",
                         principalTable: "car_brands",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

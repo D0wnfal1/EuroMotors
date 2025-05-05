@@ -16,7 +16,6 @@ public class ProductImageControllerTests
         _sender = Substitute.For<ISender>();
         _controller = new ProductImageController(_sender)
         {
-            // Set up HttpContext for the controller
             ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext()

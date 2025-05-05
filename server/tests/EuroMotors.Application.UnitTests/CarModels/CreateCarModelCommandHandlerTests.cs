@@ -22,7 +22,6 @@ public class CreateCarModelCommandHandlerTests
     {
         _carBrand = CarBrand.Create("BMW");
 
-        // Set the brand ID for testing
         typeof(Entity)
             .GetProperty("Id")
             ?.SetValue(_carBrand, _brandId);

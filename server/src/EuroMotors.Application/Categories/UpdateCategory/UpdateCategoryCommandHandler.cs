@@ -6,7 +6,7 @@ using EuroMotors.Domain.Categories;
 namespace EuroMotors.Application.Categories.UpdateCategory;
 
 internal sealed class UpdateCategoryCommandHandler(
-    ICategoryRepository categoryRepository, 
+    ICategoryRepository categoryRepository,
     ICacheService cacheService,
     IUnitOfWork unitOfWork)
     : ICommandHandler<UpdateCategoryCommand>
@@ -64,22 +64,22 @@ internal sealed class UpdateCategoryCommandHandler(
         }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        
+
         await InvalidateCacheAsync(category.Id, cancellationToken);
 
         return Result.Success();
     }
-    
+
     private async Task InvalidateCacheAsync(Guid categoryId, CancellationToken cancellationToken)
     {
         await cacheService.RemoveAsync(CacheKeys.Categories.GetById(categoryId), cancellationToken);
-        
+
         await cacheService.RemoveAsync(CacheKeys.Categories.GetList(), cancellationToken);
-        
+
         await cacheService.RemoveAsync(CacheKeys.Categories.GetHierarchical(), cancellationToken);
-        
+
         await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetByCategory(categoryId), cancellationToken);
-        
+
         await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetAllPrefix(), cancellationToken);
     }
 }

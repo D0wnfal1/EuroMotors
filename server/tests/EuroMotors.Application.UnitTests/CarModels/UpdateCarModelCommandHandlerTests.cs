@@ -20,7 +20,6 @@ public class UpdateCarModelCommandHandlerTests
     {
         _carBrand = CarBrand.Create("BMW");
 
-        // Set the brand ID for testing
         typeof(Entity)
             .GetProperty("Id")
             ?.SetValue(_carBrand, _brandId);
@@ -80,7 +79,6 @@ public class UpdateCarModelCommandHandlerTests
         // Assert
         result.IsSuccess.ShouldBeTrue();
 
-        // Verify the model has been updated with new values
         carModel.ModelName.ShouldBe("Updated X5");
         carModel.StartYear.ShouldBe(2021);
         carModel.BodyType.ShouldBe(BodyType.Sedan);
@@ -100,7 +98,6 @@ public class UpdateCarModelCommandHandlerTests
         _carModelRepository.GetByIdAsync(carModelId, CancellationToken.None)
             .Returns(carModel);
 
-        // Only updating model name, leaving other fields null or default
         var command = new UpdateCarModelCommand(
             carModelId,
             "Updated X5");
@@ -111,12 +108,11 @@ public class UpdateCarModelCommandHandlerTests
         // Assert
         result.IsSuccess.ShouldBeTrue();
 
-        // Verify only model name was updated
         carModel.ModelName.ShouldBe("Updated X5");
-        carModel.StartYear.ShouldBe(2020);  // unchanged
-        carModel.BodyType.ShouldBe(BodyType.SUV);  // unchanged
-        carModel.EngineSpec.VolumeLiters.ShouldBe(2.0f);  // unchanged
-        carModel.EngineSpec.FuelType.ShouldBe(FuelType.Petrol);  // unchanged
+        carModel.StartYear.ShouldBe(2020);
+        carModel.BodyType.ShouldBe(BodyType.SUV);
+        carModel.EngineSpec.VolumeLiters.ShouldBe(2.0f);
+        carModel.EngineSpec.FuelType.ShouldBe(FuelType.Petrol);
 
         await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);
     }
@@ -131,7 +127,6 @@ public class UpdateCarModelCommandHandlerTests
         _carModelRepository.GetByIdAsync(carModelId, CancellationToken.None)
             .Returns(carModel);
 
-        // Only updating engine specs
         var command = new UpdateCarModelCommand(
             carModelId,
             "X5",
@@ -146,12 +141,11 @@ public class UpdateCarModelCommandHandlerTests
         // Assert
         result.IsSuccess.ShouldBeTrue();
 
-        // Verify only engine specs were updated
-        carModel.ModelName.ShouldBe("X5");  // unchanged
-        carModel.StartYear.ShouldBe(2020);  // unchanged
-        carModel.BodyType.ShouldBe(BodyType.SUV);  // unchanged
-        carModel.EngineSpec.VolumeLiters.ShouldBe(3.5f);  // updated
-        carModel.EngineSpec.FuelType.ShouldBe(FuelType.Diesel);  // updated
+        carModel.ModelName.ShouldBe("X5");
+        carModel.StartYear.ShouldBe(2020);
+        carModel.BodyType.ShouldBe(BodyType.SUV);
+        carModel.EngineSpec.VolumeLiters.ShouldBe(3.5f);
+        carModel.EngineSpec.FuelType.ShouldBe(FuelType.Diesel);
 
         await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);
     }
@@ -165,7 +159,6 @@ public class UpdateCarModelCommandHandlerTests
             BodyType.SUV,
             new EngineSpec(2.0f, FuelType.Petrol));
 
-        // Update the carModel's id via reflection for testing
         typeof(Entity)
             .GetProperty("Id")
             ?.SetValue(carModel, id);

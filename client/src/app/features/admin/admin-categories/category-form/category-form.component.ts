@@ -20,6 +20,7 @@ import {
 } from '@angular/material/chips';
 import { MatIcon } from '@angular/material/icon';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-category-form',
@@ -52,12 +53,12 @@ export class CategoryFormComponent implements OnInit {
   addOnBlur = true;
 
   constructor(
-    private fb: FormBuilder,
-    private categoryService: CategoryService,
-    private router: Router,
-    private activatedRoute: ActivatedRoute
+    private readonly fb: FormBuilder,
+    private readonly categoryService: CategoryService,
+    private readonly router: Router,
+    private readonly activatedRoute: ActivatedRoute,
+    private readonly snackbar: SnackbarService
   ) {}
-  loadCategories() {}
   ngOnInit(): void {
     this.initializeForm();
 
@@ -161,6 +162,7 @@ export class CategoryFormComponent implements OnInit {
 
   onSubmit() {
     if (this.categoryForm.invalid) {
+      this.snackbar.error('Please fix the errors in the form');
       return;
     }
 
@@ -183,19 +185,25 @@ export class CategoryFormComponent implements OnInit {
     if (this.isEditMode && this.categoryId) {
       this.categoryService.updateCategory(this.categoryId, formData).subscribe({
         next: () => {
+          this.categoryService.clearCache();
+          this.snackbar.success('Category updated successfully');
           this.router.navigate(['/admin/categories']);
         },
-        error: () => {
-          console.error('Error updating category');
+        error: (error) => {
+          this.snackbar.error('Failed to update category');
+          console.error('Error updating category:', error);
         },
       });
     } else {
       this.categoryService.createCategory(formData).subscribe({
         next: () => {
+          this.categoryService.clearCache();
+          this.snackbar.success('Category created successfully');
           this.router.navigate(['/admin/categories']);
         },
-        error: () => {
-          console.error('Error creating category');
+        error: (error) => {
+          this.snackbar.error('Failed to create category');
+          console.error('Error creating category:', error);
         },
       });
     }

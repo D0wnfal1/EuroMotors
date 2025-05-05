@@ -18,7 +18,7 @@ internal sealed class CarModelConfiguration : IEntityTypeConfiguration<CarModel>
         builder.HasOne(cm => cm.CarBrand)
             .WithMany(cb => cb.Models)
             .HasForeignKey(cm => cm.CarBrandId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(cm => cm.ModelName)
             .IsRequired()

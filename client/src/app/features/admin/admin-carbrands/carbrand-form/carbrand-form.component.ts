@@ -11,6 +11,7 @@ import { MatButton } from '@angular/material/button';
 import { MatFormFieldModule, MatError } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterLink, Router, ActivatedRoute } from '@angular/router';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-carbrand-form',
@@ -35,10 +36,11 @@ export class CarbrandFormComponent implements OnInit {
   selectedLogo: File | null = null;
 
   constructor(
-    private fb: FormBuilder,
-    private carBrandService: CarbrandService,
-    private router: Router,
-    private activatedRoute: ActivatedRoute
+    private readonly fb: FormBuilder,
+    private readonly carBrandService: CarbrandService,
+    private readonly router: Router,
+    private readonly activatedRoute: ActivatedRoute,
+    private readonly snackbar: SnackbarService
   ) {}
 
   ngOnInit(): void {
@@ -85,6 +87,7 @@ export class CarbrandFormComponent implements OnInit {
 
   onSubmit() {
     if (this.carBrandForm.invalid) {
+      this.snackbar.error('Please fix the errors in the form');
       return;
     }
 
@@ -98,17 +101,25 @@ export class CarbrandFormComponent implements OnInit {
     if (this.isEditMode && this.carBrandId) {
       this.carBrandService.updateCarBrand(this.carBrandId, formData).subscribe({
         next: () => {
+          this.carBrandService.clearCache();
+          this.snackbar.success('Car brand updated successfully');
           this.router.navigate(['/admin/carbrands']);
         },
-        error: () => {},
+        error: (error) => {
+          this.snackbar.error('Failed to update car brand');
+          console.error('Error updating car brand:', error);
+        },
       });
     } else {
       this.carBrandService.createCarBrand(formData).subscribe({
         next: (newCarBrandId) => {
+          this.carBrandService.clearCache();
+          this.snackbar.success('Car brand created successfully');
           this.router.navigate(['/admin/carbrands']);
         },
-        error: () => {
-          console.error('Error creating car brand');
+        error: (error) => {
+          this.snackbar.error('Failed to create car brand');
+          console.error('Error creating car brand:', error);
         },
       });
     }

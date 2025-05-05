@@ -9,22 +9,22 @@ using EuroMotors.Domain.Products;
 namespace EuroMotors.Application.Products.GetProductById;
 
 internal sealed class GetProductByIdQueryHandler(
-    IDbConnectionFactory dbConnectionFactory, 
+    IDbConnectionFactory dbConnectionFactory,
     ICacheService cacheService)
     : IQueryHandler<GetProductByIdQuery, ProductResponse>
 {
     private static readonly TimeSpan CacheExpiration = TimeSpan.FromMinutes(10);
-    
+
     public async Task<Result<ProductResponse>> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
     {
         string cacheKey = CacheKeys.Products.GetById(request.ProductId);
-        
+
         ProductResponse? cachedProduct = await cacheService.GetAsync<ProductResponse>(cacheKey, cancellationToken);
         if (cachedProduct != null)
         {
             return Result.Success(cachedProduct);
         }
-        
+
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
         const string productSql = """
@@ -94,7 +94,7 @@ internal sealed class GetProductByIdQueryHandler(
             new { request.ProductId }
         );
         product.Specifications = specifications.ToList();
-        
+
         await cacheService.SetAsync(cacheKey, product, CacheExpiration, cancellationToken);
 
         return Result.Success(product);

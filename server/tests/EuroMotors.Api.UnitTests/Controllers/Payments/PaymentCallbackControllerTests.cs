@@ -14,7 +14,6 @@ public class PaymentCallbackControllerTests
         _paymentService = Substitute.For<IPaymentService>();
         _controller = new PaymentCallbackController(_paymentService)
         {
-            // Set up HttpContext for the controller
             ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext()

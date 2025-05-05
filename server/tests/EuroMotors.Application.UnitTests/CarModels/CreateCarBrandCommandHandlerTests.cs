@@ -67,7 +67,6 @@ public class CreateCarBrandCommandHandlerTests
         // Arrange
         var command = new CreateCarBrandCommand("BMW X Series", null);
 
-        // We need to capture the created brand to check its slug
         _carBrandRepository.When(x => x.Insert(Arg.Any<CarBrand>()))
             .Do(info =>
             {

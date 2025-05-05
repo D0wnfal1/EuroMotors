@@ -13,17 +13,17 @@ internal sealed class GetCarModelByIdQueryHandler(
     ICacheService cacheService) : IQueryHandler<GetCarModelByIdQuery, CarModelResponse>
 {
     private static readonly TimeSpan CacheExpiration = TimeSpan.FromMinutes(30);
-    
+
     public async Task<Result<CarModelResponse>> Handle(GetCarModelByIdQuery request, CancellationToken cancellationToken)
     {
         string cacheKey = CacheKeys.CarModels.GetById(request.CarModelId);
-        
+
         CarModelResponse? cachedCarModel = await cacheService.GetAsync<CarModelResponse>(cacheKey, cancellationToken);
         if (cachedCarModel != null)
         {
             return Result.Success(cachedCarModel);
         }
-        
+
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
         const string sql =
@@ -49,7 +49,7 @@ internal sealed class GetCarModelByIdQueryHandler(
         {
             return Result.Failure<CarModelResponse>(CarModelErrors.ModelNotFound(request.CarModelId));
         }
-        
+
         await cacheService.SetAsync(cacheKey, carModel, CacheExpiration, cancellationToken);
 
         return Result.Success(carModel);

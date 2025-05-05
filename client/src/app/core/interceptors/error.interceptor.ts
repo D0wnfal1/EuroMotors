@@ -2,10 +2,11 @@ import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
+import { SnackbarService } from '../services/snackbar.service';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
-
+  const snackbar = inject(SnackbarService);
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
       if (err.status === 400) {
@@ -24,13 +25,13 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         }
 
         const errorDescription =
-          errorBody.description || 'Something went wrong';
+          errorBody.description ?? 'Something went wrong';
 
-        console.error('Error 400:', errorDescription);
+        snackbar.error(`${errorDescription}`);
       } else if (err.status === 401) {
-        console.error('Unauthorized');
+        snackbar.error('Unauthorized');
       } else if (err.status === 403) {
-        console.error('Forbidden');
+        snackbar.error('Forbidden');
       } else if (err.status === 404) {
         router.navigateByUrl('/not-found');
       }

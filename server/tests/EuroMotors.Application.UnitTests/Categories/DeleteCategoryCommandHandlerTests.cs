@@ -48,7 +48,6 @@ public class DeleteCategoryCommandHandlerTests
 
         var category = Category.Create("Test Category");
 
-        // Update the category's id via reflection for testing
         typeof(Entity)
             .GetProperty("Id")
             ?.SetValue(category, categoryId);

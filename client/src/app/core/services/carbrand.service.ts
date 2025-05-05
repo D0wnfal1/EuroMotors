@@ -101,4 +101,9 @@ export class CarbrandService {
       withCredentials: true,
     });
   }
+
+  clearCache(): void {
+    this.carBrandsSubject.next([]);
+    this.availableBrandsSubject.next([]);
+  }
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -27,23 +27,21 @@ import { CarBrand } from '../../../../shared/models/carBrand';
   templateUrl: './quick-brand-add.component.html',
   styleUrl: './quick-brand-add.component.scss',
 })
-export class QuickBrandAddComponent implements OnInit {
+export class QuickBrandAddComponent {
   @Output() brandAdded = new EventEmitter<CarBrand>();
 
   quickBrandForm: FormGroup;
   isSubmitting = false;
 
   constructor(
-    private fb: FormBuilder,
-    private carBrandService: CarbrandService,
+    private readonly fb: FormBuilder,
+    private readonly carBrandService: CarbrandService,
     public dialogRef: MatDialogRef<QuickBrandAddComponent>
   ) {
     this.quickBrandForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
     });
   }
-
-  ngOnInit(): void {}
 
   onSubmit(): void {
     if (this.quickBrandForm.invalid) {

@@ -3,7 +3,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProductService } from '../../../core/services/product.service';
 import { Product } from '../../../shared/models/product';
 import { RouterLink } from '@angular/router';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule, CurrencyPipe, NgFor } from '@angular/common';
 import { Pagination } from '../../../shared/models/pagination';
 import { ProductImage } from '../../../shared/models/productImage';
 import { ShopParams } from '../../../shared/models/shopParams';
@@ -12,11 +12,7 @@ import {
   MatSelectionList,
   MatListOption,
 } from '@angular/material/list';
-import {
-  MatButton,
-  MatButtonModule,
-  MatIconButton,
-} from '@angular/material/button';
+import { MatButtonModule, MatIconButton } from '@angular/material/button';
 import { PageEvent, MatPaginator } from '@angular/material/paginator';
 import { CarModel } from '../../../shared/models/carModel';
 import { Category } from '../../../shared/models/category';
@@ -26,7 +22,6 @@ import { MatTableModule } from '@angular/material/table';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIcon } from '@angular/material/icon';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
-import { NgFor, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-admin-products',
@@ -52,9 +47,9 @@ import { NgFor, NgIf } from '@angular/common';
   styleUrl: './admin-products.component.scss',
 })
 export class AdminProductsComponent implements OnInit {
-  private productService = inject(ProductService);
-  private categoryService = inject(CategoryService);
-  private carModelService = inject(CarmodelService);
+  private readonly productService = inject(ProductService);
+  private readonly categoryService = inject(CategoryService);
+  private readonly carModelService = inject(CarmodelService);
   categories: Category[] = [];
   carModels: CarModel[] = [];
   products?: Pagination<Product>;
@@ -171,6 +166,7 @@ export class AdminProductsComponent implements OnInit {
   copyProduct(productId: string): void {
     this.productService.copyProduct(productId).subscribe({
       next: () => {
+        this.productService.clearCache();
         this.getProducts();
       },
       error: (error) => {

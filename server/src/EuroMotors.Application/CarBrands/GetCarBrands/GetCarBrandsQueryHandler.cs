@@ -15,17 +15,17 @@ internal sealed class GetCarBrandsQueryHandler(
     : IQueryHandler<GetCarBrandsQuery, Pagination<CarBrandResponse>>
 {
     private static readonly TimeSpan CacheExpiration = TimeSpan.FromMinutes(30);
-    
+
     public async Task<Result<Pagination<CarBrandResponse>>> Handle(GetCarBrandsQuery request, CancellationToken cancellationToken)
     {
         string cacheKey = CreateCacheKey(request);
-        
+
         Pagination<CarBrandResponse>? cachedResult = await cacheService.GetAsync<Pagination<CarBrandResponse>>(cacheKey, cancellationToken);
         if (cachedResult != null)
         {
             return Result.Success(cachedResult);
         }
-        
+
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
         var sql = new StringBuilder();
@@ -54,7 +54,7 @@ internal sealed class GetCarBrandsQueryHandler(
         string countSql = "SELECT COUNT(*) FROM car_brands";
 
         int totalCount = await connection.ExecuteScalarAsync<int>(countSql);
-        
+
         Pagination<CarBrandResponse> result;
 
         result = request.PageSize > 0
@@ -77,13 +77,13 @@ internal sealed class GetCarBrandsQueryHandler(
 
         return Result.Success(result);
     }
-    
+
     private static string CreateCacheKey(GetCarBrandsQuery request)
     {
         string baseKey = CacheKeys.CarBrands.GetList();
-        
+
         string pagination = $"{request.PageNumber}_{request.PageSize}";
-        
+
         return $"{baseKey}:{pagination}";
     }
 }

@@ -199,4 +199,53 @@ export class ProductSliderComponent implements OnInit, OnDestroy {
   trackByProductId(index: number, item: Product): string {
     return item.id;
   }
+
+  allGroupsEmpty(): boolean {
+    if (!this.productGroups || this.productGroups.length === 0) {
+      return true;
+    }
+
+    return this.productGroups.every((group) => !group || group.length === 0);
+  }
+
+  getCategoryDisplayName(): string {
+    switch (this.activeFilter) {
+      case 'popular':
+        return 'Popular';
+      case 'discount':
+        return 'Discounted';
+      case 'new':
+        return 'New';
+      default:
+        return '';
+    }
+  }
+
+  hasAlternativeCategory(): boolean {
+    return true;
+  }
+
+  getAlternativeCategory(): 'popular' | 'new' | 'discount' {
+    if (this.activeFilter === 'popular') {
+      return 'new';
+    } else if (this.activeFilter === 'new') {
+      return 'discount';
+    } else {
+      return 'popular';
+    }
+  }
+
+  getAlternativeCategoryName(): string {
+    const alternative = this.getAlternativeCategory();
+    switch (alternative) {
+      case 'popular':
+        return 'Popular';
+      case 'discount':
+        return 'Discounted';
+      case 'new':
+        return 'New';
+      default:
+        return '';
+    }
+  }
 }

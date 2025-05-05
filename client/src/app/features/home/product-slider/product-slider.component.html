@@ -44,7 +44,37 @@
     </button>
   </div>
 
-  <div class="slider-wrapper">
+  <div
+    *ngIf="
+      !loading &&
+      (!productGroups || productGroups.length === 0 || allGroupsEmpty())
+    "
+    class="flex flex-col items-center justify-center py-10 md:py-14 lg:py-16"
+  >
+    <mat-icon
+      class="text-gray-400 text-4xl md:text-5xl lg:text-6xl mb-3 md:mb-4"
+      >inventory_2</mat-icon
+    >
+    <p class="text-lg md:text-xl text-gray-500 text-center">
+      No products found in the {{ getCategoryDisplayName() }} category.
+    </p>
+
+    <ng-container *ngIf="hasAlternativeCategory()">
+      <button
+        mat-raised-button
+        color="primary"
+        class="mt-4 text-sm md:text-base"
+        (click)="setFilter(getAlternativeCategory())"
+      >
+        Browse {{ getAlternativeCategoryName() }} products
+      </button>
+    </ng-container>
+  </div>
+
+  <div
+    class="slider-wrapper"
+    *ngIf="productGroups && productGroups.length > 0 && !allGroupsEmpty()"
+  >
     <button
       mat-icon-button
       class="flex-shrink-0 mx-1 md:mx-2 bg-white shadow-md rounded-full hover:bg-blue-100 hover:shadow-lg transition-all nav-button z-10"
@@ -102,7 +132,10 @@
     </button>
   </div>
 
-  <div class="flex justify-center mt-2 md:mt-3 lg:mt-4 space-x-1 md:space-x-2">
+  <div
+    *ngIf="productGroups && productGroups.length > 0 && !allGroupsEmpty()"
+    class="flex justify-center mt-2 md:mt-3 lg:mt-4 space-x-1 md:space-x-2"
+  >
     <button
       *ngFor="let group of productGroups; let i = index"
       class="w-2 h-2 md:w-2.5 md:h-2.5 lg:w-3 lg:h-3 rounded-full transition-all duration-300"

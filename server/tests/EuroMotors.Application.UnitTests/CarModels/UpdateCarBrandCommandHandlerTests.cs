@@ -51,7 +51,6 @@ public class UpdateCarBrandCommandHandlerTests
         var carBrand = CarBrand.Create("BMW");
         var command = new UpdateCarBrandCommand(brandId, "Updated BMW", null);
 
-        // Update the brand's id via reflection for testing
         typeof(Entity)
             .GetProperty("Id")
             ?.SetValue(carBrand, brandId);
@@ -83,7 +82,6 @@ public class UpdateCarBrandCommandHandlerTests
 
         var command = new UpdateCarBrandCommand(brandId, "Updated BMW", mockFile);
 
-        // Update the brand's id via reflection for testing
         typeof(Entity)
             .GetProperty("Id")
             ?.SetValue(carBrand, brandId);

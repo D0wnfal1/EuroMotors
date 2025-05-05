@@ -119,7 +119,7 @@ public static class DependencyInjection
         }
 
         services.TryAddSingleton<ICacheService, CacheService>();
-        
+
 
         return services;
     }

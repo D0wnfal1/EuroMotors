@@ -9,7 +9,7 @@ public sealed class CreateCarModelRequest
     public Guid CarBrandId { get; set; }
 
     [JsonRequired]
-    public string Model { get; set; }
+    public string ModelName { get; set; }
 
     [JsonRequired]
     public int StartYear { get; set; }
@@ -23,5 +23,4 @@ public sealed class CreateCarModelRequest
     [JsonRequired]
     public FuelType FuelType { get; set; }
 
-    public IFormFile? ImagePath { get; set; }
 }

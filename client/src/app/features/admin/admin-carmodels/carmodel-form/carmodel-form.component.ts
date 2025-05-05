@@ -17,6 +17,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { QuickBrandAddComponent } from '../quick-brand-add/quick-brand-add.component';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-carmodel-form',
@@ -38,19 +39,18 @@ export class CarmodelFormComponent implements OnInit {
   carModelForm: FormGroup = new FormGroup({});
   isEditMode: boolean = false;
   carModelId: string | null = null;
-  imageInvalid: boolean = false;
-  selectedImage: File | null = null;
   bodyTypes = Object.values(BodyType);
   fuelTypes = Object.values(FuelType);
   availableBrands: CarBrand[] = [];
 
   constructor(
-    private fb: FormBuilder,
-    private carModelService: CarmodelService,
-    private carBrandService: CarbrandService,
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private dialog: MatDialog
+    private readonly fb: FormBuilder,
+    private readonly carModelService: CarmodelService,
+    private readonly carBrandService: CarbrandService,
+    private readonly router: Router,
+    private readonly activatedRoute: ActivatedRoute,
+    private readonly dialog: MatDialog,
+    private readonly snackbar: SnackbarService
   ) {}
 
   ngOnInit(): void {
@@ -126,19 +126,9 @@ export class CarmodelFormComponent implements OnInit {
     }
   }
 
-  onImageSelected(event: any) {
-    const file = event.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-      this.selectedImage = file;
-      this.imageInvalid = false;
-    } else {
-      this.selectedImage = null;
-      this.imageInvalid = true;
-    }
-  }
-
   onSubmit() {
     if (this.carModelForm.invalid) {
+      this.snackbar.error('Please fix the errors in the form');
       return;
     }
 
@@ -156,26 +146,26 @@ export class CarmodelFormComponent implements OnInit {
       this.carModelForm.get('engineSpec.fuelType')?.value
     );
 
-    if (this.selectedImage) {
-      formData.append('image', this.selectedImage, this.selectedImage.name);
-    }
-
     if (this.isEditMode && this.carModelId) {
       this.carModelService.updateCarModel(this.carModelId, formData).subscribe({
         next: () => {
+          this.snackbar.success('Car model updated successfully');
           this.router.navigate(['/admin/carmodels']);
         },
-        error: () => {
-          console.error('Error updating car model');
+        error: (error) => {
+          this.snackbar.error('Failed to update car model');
+          console.error('Error updating car model:', error);
         },
       });
     } else {
       this.carModelService.createCarModel(formData).subscribe({
         next: () => {
+          this.snackbar.success('Car model created successfully');
           this.router.navigate(['/admin/carmodels']);
         },
-        error: () => {
-          console.error('Error creating car model');
+        error: (error) => {
+          this.snackbar.error('Failed to create car model');
+          console.error('Error creating car model:', error);
         },
       });
     }

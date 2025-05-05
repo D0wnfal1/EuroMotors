@@ -23,7 +23,6 @@ public class CarModelControllerTests
         _sender = Substitute.For<ISender>();
         _controller = new CarModelController(_sender)
         {
-            // Set up HttpContext for the controller
             ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext()
@@ -242,7 +241,7 @@ public class CarModelControllerTests
         var request = new CreateCarModelRequest
         {
             CarBrandId = brandId,
-            Model = "X5",
+            ModelName = "X5",
             StartYear = 2020,
             BodyType = BodyType.SUV,
             VolumeLiters = 2.0f,
@@ -266,7 +265,7 @@ public class CarModelControllerTests
         await _sender.Received(1).Send(
             Arg.Is<CreateCarModelCommand>(cmd =>
                 cmd.CarBrandId == request.CarBrandId &&
-                cmd.ModelName == request.Model &&
+                cmd.ModelName == request.ModelName &&
                 cmd.StartYear == request.StartYear &&
                 cmd.BodyType == request.BodyType),
             Arg.Any<CancellationToken>());
@@ -280,7 +279,7 @@ public class CarModelControllerTests
         var request = new CreateCarModelRequest
         {
             CarBrandId = brandId,
-            Model = "X5",
+            ModelName = "X5",
             StartYear = 2020,
             BodyType = BodyType.SUV,
             VolumeLiters = 2.0f,

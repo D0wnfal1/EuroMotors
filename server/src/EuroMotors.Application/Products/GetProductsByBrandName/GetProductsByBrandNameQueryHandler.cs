@@ -17,17 +17,17 @@ internal sealed class GetProductsByBrandNameQueryHandler(
     : IQueryHandler<GetProductsByBrandNameQuery, Pagination<ProductResponse>>
 {
     private static readonly TimeSpan CacheExpiration = TimeSpan.FromMinutes(10);
-    
+
     public async Task<Result<Pagination<ProductResponse>>> Handle(GetProductsByBrandNameQuery request, CancellationToken cancellationToken)
     {
         string cacheKey = CreateCacheKey(request);
-        
+
         Pagination<ProductResponse>? cachedResult = await cacheService.GetAsync<Pagination<ProductResponse>>(cacheKey, cancellationToken);
         if (cachedResult != null)
         {
             return Result.Success(cachedResult);
         }
-        
+
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
         string carModelSqlForBrand = @"
@@ -108,9 +108,9 @@ internal sealed class GetProductsByBrandNameQueryHandler(
                 Count = totalItems,
                 Data = new List<ProductResponse>()
             };
-            
+
             await cacheService.SetAsync(cacheKey, emptyResult, CacheExpiration, cancellationToken);
-            
+
             return Result.Success(emptyResult);
         }
 
@@ -198,20 +198,20 @@ internal sealed class GetProductsByBrandNameQueryHandler(
             Count = totalItems,
             Data = products
         };
-        
+
         await cacheService.SetAsync(cacheKey, paginatedResult, CacheExpiration, cancellationToken);
 
         return Result.Success(paginatedResult);
     }
-    
+
     private static string CreateCacheKey(GetProductsByBrandNameQuery request)
     {
         string baseKey = CacheKeys.Products.GetByBrandName(request.BrandName);
-        
+
         string searchTerm = !string.IsNullOrEmpty(request.SearchTerm) ? request.SearchTerm : "none";
         string sortOrder = !string.IsNullOrEmpty(request.SortOrder) ? request.SortOrder : "default";
         string pagination = $"{request.PageNumber}_{request.PageSize}";
-        
+
         return $"{baseKey}:{searchTerm}:{sortOrder}:{pagination}";
     }
 }

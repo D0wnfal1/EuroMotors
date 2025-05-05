@@ -7,7 +7,6 @@ internal sealed class UpdatedUserInformationDomainEventHandler : INotificationHa
 {
     public Task Handle(UserRegisteredDomainEvent notification, CancellationToken cancellationToken)
     {
-        // TODO: Send an email verification link, etc.
         return Task.CompletedTask;
     }
 }

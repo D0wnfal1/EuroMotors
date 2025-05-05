@@ -50,7 +50,6 @@ public class UpdateCategoryCommandHandlerTests
         var categoryId = Guid.NewGuid();
         var category = Category.Create("Original Category");
 
-        // Update the category's id via reflection for testing
         typeof(Entity)
             .GetProperty("Id")
             ?.SetValue(category, categoryId);
@@ -70,7 +69,6 @@ public class UpdateCategoryCommandHandlerTests
         // Assert
         result.IsSuccess.ShouldBeTrue();
 
-        // Verify the category has been updated with new name
         category.Name.ShouldBe("Updated Category");
 
         await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);
@@ -85,7 +83,6 @@ public class UpdateCategoryCommandHandlerTests
 
         var category = Category.Create("Original Category");
 
-        // Update the category's id via reflection for testing
         typeof(Entity)
             .GetProperty("Id")
             ?.SetValue(category, categoryId);
@@ -122,7 +119,6 @@ public class UpdateCategoryCommandHandlerTests
         var category = Category.Create("Original Category");
         var parentCategory = Category.Create("Parent Category");
 
-        // Update the categories' ids via reflection for testing
         typeof(Entity)
             .GetProperty("Id")
             ?.SetValue(category, categoryId);
@@ -149,7 +145,6 @@ public class UpdateCategoryCommandHandlerTests
         // Assert
         result.IsSuccess.ShouldBeTrue();
 
-        // Verify the category has been updated with new parent
         category.Name.ShouldBe("Updated Category");
         typeof(Category)
             .GetProperty("ParentCategoryId")

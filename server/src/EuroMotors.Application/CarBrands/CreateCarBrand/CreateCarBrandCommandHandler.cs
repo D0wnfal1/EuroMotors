@@ -38,18 +38,18 @@ internal sealed class CreateCarBrandCommandHandler(
 
         carBrandRepository.Insert(carBrand);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        
+
         await InvalidateCacheAsync(cancellationToken);
 
         return carBrand.Id;
     }
-    
+
     private async Task InvalidateCacheAsync(CancellationToken cancellationToken)
     {
         await cacheService.RemoveByPrefixAsync(CacheKeys.CarBrands.GetAllPrefix(), cancellationToken);
-        
+
         await cacheService.RemoveAsync(CacheKeys.CarBrands.GetAllForModels(), cancellationToken);
-        
+
         await cacheService.RemoveAsync(CacheKeys.CarModels.GetSelection(), cancellationToken);
     }
 }

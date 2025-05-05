@@ -8,7 +8,7 @@ namespace EuroMotors.Infrastructure.Caching;
 internal sealed class CacheService(IDistributedCache cache) : ICacheService
 {
     private const string KeysPrefix = "cache_keys:";
-    
+
     public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
     {
         byte[]? bytes = await cache.GetAsync(key, cancellationToken);
@@ -25,13 +25,13 @@ internal sealed class CacheService(IDistributedCache cache) : ICacheService
         byte[] bytes = Serialize(value);
 
         await cache.SetAsync(key, bytes, CacheOptions.Create(expiration), cancellationToken);
-        
+
         string prefix = GetPrefix(key);
         string keysKey = $"{KeysPrefix}{prefix}";
-        
+
         IEnumerable<string> keys = await GetKeysByPrefixCoreAsync(prefix, cancellationToken);
         var keysList = keys.ToList();
-        
+
         if (!keysList.Contains(key))
         {
             keysList.Add(key);
@@ -41,37 +41,37 @@ internal sealed class CacheService(IDistributedCache cache) : ICacheService
 
     public Task RemoveAsync(string key, CancellationToken cancellationToken = default) =>
         cache.RemoveAsync(key, cancellationToken);
-        
+
     public async Task RemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
     {
         IEnumerable<string> keys = await GetKeysByPrefixCoreAsync(prefix, cancellationToken);
-        
+
         foreach (string key in keys)
         {
             await RemoveAsync(key, cancellationToken);
         }
-        
+
         await RemoveAsync($"{KeysPrefix}{prefix}", cancellationToken);
     }
-    
+
     public async Task<IEnumerable<string>> GetKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
     {
         return await GetKeysByPrefixCoreAsync(prefix, cancellationToken);
     }
-    
+
     private async Task<IEnumerable<string>> GetKeysByPrefixCoreAsync(string prefix, CancellationToken cancellationToken)
     {
         string keysKey = $"{KeysPrefix}{prefix}";
         byte[]? bytes = await cache.GetAsync(keysKey, cancellationToken);
-        
+
         if (bytes == null)
         {
             return Enumerable.Empty<string>();
         }
-        
+
         return Deserialize<List<string>>(bytes) ?? new List<string>();
     }
-    
+
     private static string GetPrefix(string key)
     {
         int separatorIndex = key.IndexOf(':');

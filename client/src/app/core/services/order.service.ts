@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Order, OrderStatus } from '../../shared/models/order';
+import { Order } from '../../shared/models/order';
 import { OrderParams } from '../../shared/models/orderParams';
 import { Pagination } from '../../shared/models/pagination';
 
@@ -12,7 +12,7 @@ import { Pagination } from '../../shared/models/pagination';
 export class OrderService {
   baseUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   createOrder(orderData: any): Observable<{ orderId: string }> {
     return this.http.post<{ orderId: string }>(

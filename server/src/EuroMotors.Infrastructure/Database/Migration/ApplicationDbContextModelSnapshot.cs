@@ -505,7 +505,7 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     b.HasOne("EuroMotors.Domain.CarBrands.CarBrand", "CarBrand")
                         .WithMany("Models")
                         .HasForeignKey("CarBrandId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_car_models_car_brands_car_brand_id");
 

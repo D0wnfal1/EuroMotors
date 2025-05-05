@@ -12,17 +12,17 @@ internal sealed class GetCarModelSelectionQueryHandler(
     ICacheService cacheService) : IQueryHandler<GetCarModelSelectionQuery, CarModelSelectionResponse>
 {
     private static readonly TimeSpan CacheExpiration = TimeSpan.FromMinutes(30);
-    
+
     public async Task<Result<CarModelSelectionResponse>> Handle(GetCarModelSelectionQuery request, CancellationToken cancellationToken)
     {
         string cacheKey = CreateCacheKey(request);
-        
+
         CarModelSelectionResponse? cachedResult = await cacheService.GetAsync<CarModelSelectionResponse>(cacheKey, cancellationToken);
         if (cachedResult != null)
         {
             return Result.Success(cachedResult);
         }
-        
+
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
         Guid? brandIdFromName = null;
@@ -103,16 +103,16 @@ internal sealed class GetCarModelSelectionQueryHandler(
             BodyTypes = bodyTypes.ToList(),
             EngineSpecs = engineSpecs.ToList(),
         };
-        
+
         await cacheService.SetAsync(cacheKey, result, CacheExpiration, cancellationToken);
 
         return Result.Success(result);
     }
-    
+
     private static string CreateCacheKey(GetCarModelSelectionQuery request)
     {
         string baseKey = CacheKeys.CarModels.GetSelection();
-        
+
         string brandId = request.BrandId?.ToString() ?? "none";
         string brand = !string.IsNullOrEmpty(request.Brand) ? request.Brand : "none";
         string modelName = !string.IsNullOrEmpty(request.ModelName) ? request.ModelName : "none";
@@ -120,7 +120,7 @@ internal sealed class GetCarModelSelectionQueryHandler(
         string startYear = request.StartYear?.ToString() ?? "none";
 #pragma warning restore CA1305
         string bodyType = !string.IsNullOrEmpty(request.BodyType) ? request.BodyType : "none";
-        
+
         return $"{baseKey}:{brandId}:{brand}:{modelName}:{startYear}:{bodyType}";
     }
 }

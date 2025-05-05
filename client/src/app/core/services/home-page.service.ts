@@ -28,9 +28,7 @@ export class HomePageService {
 
       this.cachedMainCategories = this.categoryService
         .getHierarchicalCategories(params)
-        .pipe(
-          shareReplay({ bufferSize: 1, refCount: false }) // Сохраняем кеш даже после отписки всех подписчиков
-        );
+        .pipe(shareReplay({ bufferSize: 1, refCount: false }));
     }
 
     return this.cachedMainCategories;

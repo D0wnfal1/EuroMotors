@@ -33,18 +33,18 @@ internal sealed class CopyProductCommandHandler(
         productRepository.Insert(copiedProduct);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        
+
         await InvalidateCacheAsync(copiedProduct, cancellationToken);
 
         return copiedProduct.Id;
     }
-    
+
     private async Task InvalidateCacheAsync(Product product, CancellationToken cancellationToken)
     {
         await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetAllPrefix(), cancellationToken);
-        
+
         await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetByCategory(product.CategoryId), cancellationToken);
-        
+
         foreach (CarModel carModel in product.CarModels)
         {
             await cacheService.RemoveByPrefixAsync($"{CacheKeys.Products.GetAllPrefix()}:brand:", cancellationToken);

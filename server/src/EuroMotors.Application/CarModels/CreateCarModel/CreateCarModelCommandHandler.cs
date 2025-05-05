@@ -30,18 +30,18 @@ internal sealed class CreateCarModelCommandHandler(
 
         carModelRepository.Insert(carModel);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        
-        await InvalidateCacheAsync( carBrand.Id, cancellationToken);
+
+        await InvalidateCacheAsync(carBrand.Id, cancellationToken);
 
         return carModel.Id;
     }
-    
-    private async Task InvalidateCacheAsync( Guid brandId, CancellationToken cancellationToken)
+
+    private async Task InvalidateCacheAsync(Guid brandId, CancellationToken cancellationToken)
     {
         await cacheService.RemoveByPrefixAsync(CacheKeys.CarModels.GetAllPrefix(), cancellationToken);
-        
+
         await cacheService.RemoveByPrefixAsync(CacheKeys.CarModels.GetByBrandId(brandId), cancellationToken);
-        
+
         await cacheService.RemoveAsync(CacheKeys.CarModels.GetSelection(), cancellationToken);
     }
 }

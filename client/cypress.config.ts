@@ -4,9 +4,7 @@ export default defineConfig({
   projectId: 'jvg29w',
   e2e: {
     baseUrl: 'https://localhost:4200',
-    setupNodeEvents(on, config) {
-      // implement node event listeners here
-    },
+    setupNodeEvents(on, config) {},
   },
 
   component: {

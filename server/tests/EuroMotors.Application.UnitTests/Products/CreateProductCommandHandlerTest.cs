@@ -25,7 +25,6 @@ public class CreateProductCommandHandlerTests
     {
         _carBrand = CarBrand.Create("Test Brand");
 
-        // Set the brand ID for testing
         typeof(Entity)
             .GetProperty("Id")
             ?.SetValue(_carBrand, _brandId);

@@ -28,6 +28,7 @@ import {
 } from '@angular/material/expansion';
 import { CarbrandService } from '../../../../core/services/carbrand.service';
 import { CarBrand } from '../../../../shared/models/carBrand';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-product-form',
@@ -60,14 +61,15 @@ export class ProductFormComponent implements OnInit {
   isSaving = false;
 
   constructor(
-    private fb: FormBuilder,
-    private productService: ProductService,
-    private categoryService: CategoryService,
-    private carModelService: CarmodelService,
+    private readonly fb: FormBuilder,
+    private readonly productService: ProductService,
+    private readonly categoryService: CategoryService,
+    private readonly carModelService: CarmodelService,
     private readonly carBrandService: CarbrandService,
-    private imageService: ImageService,
-    private route: ActivatedRoute,
-    private router: Router
+    private readonly imageService: ImageService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly snackbar: SnackbarService
   ) {}
 
   ngOnInit() {
@@ -221,10 +223,12 @@ export class ProductFormComponent implements OnInit {
         next: () => {
           button?.removeChild(savingEl);
           button?.removeAttribute('disabled');
+          this.snackbar.success('Car models updated successfully');
         },
         error: (error) => {
           console.error('Error saving car models:', error);
           console.error('Request payload:', carModelIds);
+          this.snackbar.error('Failed to update car models');
 
           button?.removeChild(savingEl);
           button?.removeAttribute('disabled');
@@ -249,19 +253,30 @@ export class ProductFormComponent implements OnInit {
                         next: () => {
                           uploadCount++;
                           if (uploadCount === this.selectedFiles.length) {
+                            this.productService.clearCache();
+                            this.snackbar.success(
+                              'Product updated successfully'
+                            );
                             this.router.navigate(['/admin/products']);
                           }
                         },
-                        error: (err) =>
-                          console.error('Error uploading image', err),
+                        error: (err) => {
+                          console.error('Error uploading image', err);
+                          this.snackbar.error('Failed to upload image');
+                        },
                       });
                   }
                 }
               } else {
+                this.productService.clearCache();
+                this.snackbar.success('Product updated successfully');
                 this.router.navigate(['/admin/products']);
               }
             },
-            error: (err) => console.error('Error updating product', err),
+            error: (err) => {
+              console.error('Error updating product', err);
+              this.snackbar.error('Failed to update product');
+            },
           });
       } else {
         this.productService.createProduct(this.productForm.value).subscribe({
@@ -271,11 +286,15 @@ export class ProductFormComponent implements OnInit {
               this.productService
                 .updateProductCarModels(id, carModelIds)
                 .subscribe({
-                  error: (err) =>
+                  error: (err) => {
                     console.error(
                       'Error saving car models for new product',
                       err
-                    ),
+                    );
+                    this.snackbar.error(
+                      'Failed to attach car models to product'
+                    );
+                  },
                 });
             }
 
@@ -286,19 +305,32 @@ export class ProductFormComponent implements OnInit {
                   next: () => {
                     uploadCount++;
                     if (uploadCount === this.selectedFiles.length) {
+                      this.productService.clearCache();
+                      this.snackbar.success('Product created successfully');
                       this.router.navigate(['/admin/products']);
                     }
                   },
-                  error: (err) => console.error('Error uploading image', err),
+                  error: (err) => {
+                    console.error('Error uploading image', err);
+                    this.snackbar.error('Failed to upload image');
+                  },
                 });
               }
             } else {
+              this.productService.clearCache();
+              this.snackbar.success('Product created successfully');
               this.router.navigate(['/admin/products']);
             }
           },
-          error: (err) => console.error('Error creating product', err),
+          error: (err) => {
+            console.error('Error creating product', err);
+            this.snackbar.error('Failed to create product');
+          },
         });
       }
+    } else {
+      this.markFormGroupTouched(this.productForm);
+      this.snackbar.error('Please fix the errors in the form');
     }
   }
 

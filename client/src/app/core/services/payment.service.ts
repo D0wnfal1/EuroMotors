@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
 })
 export class PaymentService {
   baseUrl = environment.apiUrl;
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   createPayment(orderId: string) {
     return this.http.post<{ data: string; signature: string }>(

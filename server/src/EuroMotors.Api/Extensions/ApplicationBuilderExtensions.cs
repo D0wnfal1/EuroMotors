@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.SpaServices.Extensions;
-using Microsoft.Extensions.FileProviders;
+﻿using Microsoft.Extensions.FileProviders;
 
 namespace EuroMotors.Api.Extensions;
 

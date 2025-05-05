@@ -10,10 +10,10 @@ import { PaginationParams } from '../../shared/models/paginationParams';
 })
 export class CategoryService {
   baseUrl = environment.apiUrl;
-  private http = inject(HttpClient);
-  private categoriesSubject = new BehaviorSubject<Category[]>([]);
+  private readonly http = inject(HttpClient);
+  private readonly categoriesSubject = new BehaviorSubject<Category[]>([]);
   categories$ = this.categoriesSubject.asObservable();
-  private totalItemsSubject = new BehaviorSubject<number>(0);
+  private readonly totalItemsSubject = new BehaviorSubject<number>(0);
   totalItems$ = this.totalItemsSubject.asObservable();
 
   private cachedHierarchicalCategories: {
@@ -82,5 +82,10 @@ export class CategoryService {
     return this.http.delete<void>(`${this.baseUrl}/categories/${id}`, {
       withCredentials: true,
     });
+  }
+
+  clearCache(): void {
+    this.cachedCategories = null;
+    this.cachedHierarchicalCategories = {};
   }
 }

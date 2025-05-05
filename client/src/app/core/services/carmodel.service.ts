@@ -10,10 +10,10 @@ import { PaginationParams } from '../../shared/models/paginationParams';
 })
 export class CarmodelService {
   baseUrl = environment.apiUrl;
-  private http = inject(HttpClient);
-  private carModelsSubject = new BehaviorSubject<CarModel[]>([]);
+  private readonly http = inject(HttpClient);
+  private readonly carModelsSubject = new BehaviorSubject<CarModel[]>([]);
   carModels$ = this.carModelsSubject.asObservable();
-  private totalItemsSubject = new BehaviorSubject<number>(0);
+  private readonly totalItemsSubject = new BehaviorSubject<number>(0);
   totalItems$ = this.totalItemsSubject.asObservable();
 
   private readonly carIdsSubject = new BehaviorSubject<string[]>([]);

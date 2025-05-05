@@ -8,9 +8,9 @@ using EuroMotors.Domain.Products;
 namespace EuroMotors.Application.Products.CreateProduct;
 
 internal sealed class CreateProductCommandHandler(
-    IProductRepository productRepository, 
-    ICategoryRepository categoryRepository, 
-    ICarModelRepository carModelRepository, 
+    IProductRepository productRepository,
+    ICategoryRepository categoryRepository,
+    ICarModelRepository carModelRepository,
     ICacheService cacheService,
     IUnitOfWork unitOfWork) : ICommandHandler<CreateProductCommand, Guid>
 {
@@ -57,17 +57,17 @@ internal sealed class CreateProductCommandHandler(
         productRepository.Insert(result.Value);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        
+
         await InvalidateCacheAsync(result.Value, cancellationToken);
 
         return result.Value.Id;
     }
-    
+
     private async Task InvalidateCacheAsync(Product product, CancellationToken cancellationToken)
     {
         await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetAllPrefix(), cancellationToken);
-        
+
         await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetByCategory(product.CategoryId), cancellationToken);
-        
+
     }
 }

@@ -49,7 +49,6 @@ public class DeleteCarBrandCommandHandlerTests
 
         var carBrand = CarBrand.Create("BMW");
 
-        // Update the brand's id via reflection for testing
         typeof(Entity)
             .GetProperty("Id")
             ?.SetValue(carBrand, brandId);

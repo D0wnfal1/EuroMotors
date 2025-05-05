@@ -52,7 +52,6 @@ export class RegisterComponent {
         error: (error) => {
           console.error('Registration failed:', error);
           if (error.error?.errors) {
-            // Handle validation errors from API
             this.validationErrors = [];
             for (const key in error.error.errors) {
               if (error.error.errors[key]) {
@@ -69,7 +68,6 @@ export class RegisterComponent {
             this.validationErrors = ['Registration failed. Please try again.'];
           }
 
-          // Display first error in snackbar
           if (this.validationErrors && this.validationErrors.length > 0) {
             this.snackBar.open(this.validationErrors[0], 'Close', {
               duration: 5000,

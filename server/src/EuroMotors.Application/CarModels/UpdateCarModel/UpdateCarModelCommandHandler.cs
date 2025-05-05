@@ -18,7 +18,7 @@ internal sealed class UpdateCarModelCommandHandler(
         {
             return Result.Failure(CarModelErrors.ModelNotFound(request.Id));
         }
-        
+
         Guid brandId = carModel.CarBrandId;
 
         carModel.Update(request.ModelName, request.StartYear, request.BodyType);
@@ -29,22 +29,22 @@ internal sealed class UpdateCarModelCommandHandler(
         }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        
+
         await InvalidateCacheAsync(request.Id, brandId, cancellationToken);
 
         return Result.Success();
     }
-    
+
     private async Task InvalidateCacheAsync(Guid modelId, Guid brandId, CancellationToken cancellationToken)
     {
         await cacheService.RemoveAsync(CacheKeys.CarModels.GetById(modelId), cancellationToken);
-        
+
         await cacheService.RemoveByPrefixAsync(CacheKeys.CarModels.GetAllPrefix(), cancellationToken);
-        
+
         await cacheService.RemoveByPrefixAsync(CacheKeys.CarModels.GetByBrandId(brandId), cancellationToken);
-        
+
         await cacheService.RemoveAsync(CacheKeys.CarModels.GetSelection(), cancellationToken);
-        
+
         await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetAllPrefix(), cancellationToken);
     }
 }

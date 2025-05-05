@@ -6,8 +6,7 @@ import { HttpResponse } from '@angular/common/http';
 })
 export class HttpCacheService {
   private readonly cache = new Map<string, CacheEntry>();
-  private readonly DEFAULT_MAX_AGE = 5 * 60 * 1000; // 5 минут в миллисекундах
-
+  private readonly DEFAULT_MAX_AGE = 5 * 60 * 1000;
   constructor() {}
 
   get(url: string): HttpResponse<any> | undefined {

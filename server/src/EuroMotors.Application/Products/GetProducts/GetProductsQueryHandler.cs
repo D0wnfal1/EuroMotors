@@ -14,17 +14,17 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
     : IQueryHandler<GetProductsQuery, Pagination<ProductResponse>>
 {
     private static readonly TimeSpan CacheExpiration = TimeSpan.FromMinutes(10);
-    
+
     public async Task<Result<Pagination<ProductResponse>>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
     {
         string cacheKey = CreateCacheKey(request);
-        
+
         Pagination<ProductResponse>? cachedResult = await cacheService.GetAsync<Pagination<ProductResponse>>(cacheKey, cancellationToken);
         if (cachedResult != null)
         {
             return Result.Success(cachedResult);
         }
-        
+
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
 
         string sortPriceDirection = string.Equals(request.SortOrder, "DESC", StringComparison.OrdinalIgnoreCase) ? "DESC" : "ASC";
@@ -112,10 +112,9 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
                 Count = totalItems,
                 Data = new List<ProductResponse>()
             };
-            
-            // Кешируем результат
+
             await cacheService.SetAsync(cacheKey, emptyResult, CacheExpiration, cancellationToken);
-            
+
             return Result.Success(emptyResult);
         }
 
@@ -208,11 +207,11 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
 
         return Result.Success(paginatedResult);
     }
-    
+
     private static string CreateCacheKey(GetProductsQuery request)
     {
         string baseKey = CacheKeys.Products.GetList();
-        
+
         string categoryIds = request.CategoryIds?.Any() == true ? string.Join(",", request.CategoryIds) : "none";
         string carModelIds = request.CarModelIds?.Any() == true ? string.Join(",", request.CarModelIds) : "none";
         string searchTerm = !string.IsNullOrEmpty(request.SearchTerm) ? request.SearchTerm : "none";
@@ -221,7 +220,7 @@ internal sealed class GetProductsQueryHandler(IDbConnectionFactory dbConnectionF
         string isNew = request.IsNew?.ToString() ?? "all";
         string isPopular = request.IsPopular?.ToString() ?? "all";
         string pagination = $"{request.PageNumber}_{request.PageSize}";
-        
+
         return $"{baseKey}:{categoryIds}:{carModelIds}:{searchTerm}:{sortOrder}:{isDiscounted}:{isNew}:{isPopular}:{pagination}";
     }
 }

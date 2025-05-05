@@ -20,7 +20,6 @@ public class DeleteCarModelCommandHandlerTests
     {
         _carBrand = CarBrand.Create("BMW");
 
-        // Set the brand ID for testing
         typeof(Entity)
             .GetProperty("Id")
             ?.SetValue(_carBrand, _brandId);
@@ -63,7 +62,6 @@ public class DeleteCarModelCommandHandlerTests
             BodyType.SUV,
             new EngineSpec(2.0f, FuelType.Diesel));
 
-        // Update the carModel's id via reflection for testing
         typeof(Entity)
             .GetProperty("Id")
             ?.SetValue(carModel, carModelId);

@@ -10,7 +10,7 @@ import { catchError } from 'rxjs/operators';
 })
 export class ImageService {
   baseUrl = environment.apiUrl;
-  private http = inject(HttpClient);
+  private readonly http = inject(HttpClient);
 
   private readonly DEFAULT_IMAGE = '/images/no-image.jpeg';
   private readonly DEFAULT_BRAND_LOGO = '/images/no-image.jpeg';

@@ -27,7 +27,7 @@ internal sealed class UpdateProductCommandHandler(
         {
             return Result.Failure(CategoryErrors.NotFound(request.CategoryId));
         }
-        
+
         Guid oldCategoryId = product.CategoryId;
 
         IEnumerable<(string SpecificationName, string SpecificationValue)> specs = request.Specifications
@@ -44,23 +44,23 @@ internal sealed class UpdateProductCommandHandler(
             request.Stock);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        
+
         await InvalidateCacheAsync(product, oldCategoryId, cancellationToken);
 
         return Result.Success();
     }
-    
+
     private async Task InvalidateCacheAsync(Product product, Guid oldCategoryId, CancellationToken cancellationToken)
     {
         await cacheService.RemoveAsync(CacheKeys.Products.GetById(product.Id), cancellationToken);
-        
+
         await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetAllPrefix(), cancellationToken);
-        
+
         if (oldCategoryId != product.CategoryId)
         {
             await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetByCategory(oldCategoryId), cancellationToken);
         }
-        
+
         await cacheService.RemoveByPrefixAsync(CacheKeys.Products.GetByCategory(product.CategoryId), cancellationToken);
     }
 }
