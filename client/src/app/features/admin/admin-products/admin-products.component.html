@@ -65,6 +65,20 @@
     </div>
   </div>
 
+  <div class="actions-container">
+    <button mat-button color="primary" (click)="fileInput.click()">
+      <mat-icon>upload_file</mat-icon>
+      Import Products
+    </button>
+    <input
+      #fileInput
+      type="file"
+      accept=".csv"
+      style="display: none"
+      (change)="onFileSelected($event)"
+    />
+  </div>
+
   <div class="overflow-x-auto mt-4 responsive-table">
     <table
       mat-table

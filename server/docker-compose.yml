@@ -1,6 +1,7 @@
 services:
   euromotors.api:
-    image: ${DOCKER_REGISTRY-}euromotorsapi
+    image: d0wnfall/euromotorsapi:dev
+    pull_policy: never
     container_name: Euromotors.Api
     build:
       context: .

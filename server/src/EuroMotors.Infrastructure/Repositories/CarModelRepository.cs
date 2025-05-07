@@ -9,6 +9,11 @@ internal sealed class CarModelRepository : Repository<CarModel>, ICarModelReposi
     {
     }
 
+    public IQueryable<CarModel> GetAll()
+    {
+        return _dbContext.Set<CarModel>();
+    }
+
     public async Task Delete(Guid carModelId)
     {
         CarModel? carModel = await GetByIdAsync(carModelId);

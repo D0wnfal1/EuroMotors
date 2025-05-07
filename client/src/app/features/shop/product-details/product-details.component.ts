@@ -24,6 +24,8 @@ import { CarBrand } from '../../../shared/models/carBrand';
 import { CarbrandService } from '../../../core/services/carbrand.service';
 import { CallbackComponent } from '../../../layout/callback/callback.component';
 import { MatDialog } from '@angular/material/dialog';
+import { SeoService } from '../../../core/services/seo.service';
+import { SchemaService } from '../../../core/services/schema.service';
 
 @Component({
   selector: 'app-product-details',
@@ -51,6 +53,8 @@ export class ProductDetailsComponent implements OnInit {
   private readonly carModelService = inject(CarmodelService);
   private readonly carBrandService = inject(CarbrandService);
   private readonly dialog = inject(MatDialog);
+  private readonly seoService = inject(SeoService);
+  private readonly schemaService = inject(SchemaService);
 
   product?: Product;
   activeIndex: number = 0;
@@ -132,20 +136,19 @@ export class ProductDetailsComponent implements OnInit {
     this.loadCarBrands();
   }
 
-  loadProduct() {
-    const id = this.activatedRoute.snapshot.paramMap.get('id');
-    if (!id) return;
-
-    this.productService.getProductById(id).subscribe({
-      next: (product) => {
+  private loadProduct() {
+    const productId = this.activatedRoute.snapshot.paramMap.get('id');
+    if (productId) {
+      this.productService.getProductById(productId).subscribe((product) => {
         this.product = product;
+        this.updateSeoMetadata();
+        this.updateStructuredData();
         this.updateQuantityInCart();
-      },
-      error: (error) => console.error(error),
-    });
+      });
+    }
   }
 
-  loadCarModels() {
+  private loadCarModels() {
     this.carModelService.carModels$.subscribe((carModels) => {
       this.carModels = carModels;
     });
@@ -153,12 +156,41 @@ export class ProductDetailsComponent implements OnInit {
     this.carModelService.getCarModels({ pageNumber: 1, pageSize: 0 });
   }
 
-  loadCarBrands() {
+  private loadCarBrands() {
     this.carBrandService.carBrands$.subscribe((carBrands) => {
       this.carBrands = carBrands;
     });
 
     this.carBrandService.getCarBrands({ pageNumber: 1, pageSize: 0 });
+  }
+
+  private updateSeoMetadata() {
+    if (this.product) {
+      const specifications = this.product.specifications
+        ?.map((spec) => `${spec.specificationName}: ${spec.specificationValue}`)
+        .join(', ');
+
+      this.seoService.updateSeoTags({
+        title: `${this.product.name} | EuroMotors`,
+        description: `${this.product.name} - ${
+          specifications || 'Автозапчастини'
+        }. Ціна: ${this.product.price}₴`,
+        keywords: `${this.product.name}, автозапчастини, ${
+          specifications || ''
+        }`,
+        ogTitle: this.product.name,
+        ogDescription: `Купити ${this.product.name} в магазині EuroMotors`,
+        ogImage: this.product.images?.[0]?.path,
+      });
+
+      this.seoService.setCanonicalLink();
+    }
+  }
+
+  private updateStructuredData() {
+    if (this.product) {
+      this.schemaService.addProductSchema(this.product);
+    }
   }
 
   updateCart() {

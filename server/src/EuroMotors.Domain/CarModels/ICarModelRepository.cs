@@ -7,4 +7,6 @@ public interface ICarModelRepository
     void Insert(CarModel carModel);
 
     Task Delete(Guid carModelId);
+
+    IQueryable<CarModel> GetAll();
 }

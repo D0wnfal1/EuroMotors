@@ -7,4 +7,8 @@ public interface ICategoryRepository
     void Insert(Category category);
 
     Task Delete(Guid categoryId);
+
+    Task Update(Category category);
+
+    IQueryable<Category> GetAll();
 }

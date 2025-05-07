@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Dapper;
+using EuroMotors.Api.Services;
 using EuroMotors.Application.Abstractions.Authentication;
 using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.Abstractions.Callback;
@@ -77,6 +78,9 @@ public static class DependencyInjection
         services.AddScoped<IPaymentRepository, PaymentRepository>();
 
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
+
+        services.AddScoped<SitemapService>();
+
 
         return services;
     }

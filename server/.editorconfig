@@ -419,3 +419,6 @@ end_of_line = crlf
 dotnet_style_coalesce_expression = true:error
 dotnet_style_predefined_type_for_locals_parameters_members = true:error
 dotnet_diagnostic.CA1054.severity = suggestion
+dotnet_style_null_propagation = true:error
+dotnet_style_prefer_is_null_check_over_reference_equality_method = true:error
+dotnet_diagnostic.CA1304.severity = suggestion

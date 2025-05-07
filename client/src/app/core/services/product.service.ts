@@ -2,7 +2,11 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, shareReplay } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Product, ProductResponse } from '../../shared/models/product';
+import {
+  ImportProductsResult,
+  Product,
+  ProductResponse,
+} from '../../shared/models/product';
 import { Pagination } from '../../shared/models/pagination';
 import { ShopParams } from '../../shared/models/shopParams';
 
@@ -225,6 +229,22 @@ export class ProductService {
     return this.http.get<Pagination<Product>>(
       `${this.baseUrl}/products/by-category/${categoryId}`,
       { params }
+    );
+  }
+
+  importProducts(file: File): Observable<ImportProductsResult> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+
+    return this.http.post<ImportProductsResult>(
+      `${this.baseUrl}/products/import`,
+      formData,
+      {
+        withCredentials: true,
+        headers: {
+          Accept: 'application/json',
+        },
+      }
     );
   }
 }

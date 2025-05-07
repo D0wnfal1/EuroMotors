@@ -21,4 +21,25 @@ internal sealed class CategoryRepository : Repository<Category>, ICategoryReposi
         _dbContext.Remove(category);
         await _dbContext.SaveChangesAsync();
     }
+
+    public async Task Update(Category category)
+    {
+        Category? existingCategory = await GetByIdAsync(category.Id);
+        if (existingCategory is null)
+        {
+            return;
+        }
+
+        existingCategory.ChangeName(category.Name);
+        existingCategory.SetImagePath(category.ImagePath ?? string.Empty);
+
+        _dbContext.Update(existingCategory);
+        await _dbContext.SaveChangesAsync();
+    }
+
+
+    public IQueryable<Category> GetAll()
+    {
+        return _dbContext.Categories.AsQueryable();
+    }
 }

@@ -6,6 +6,7 @@ using EuroMotors.Application.Products.GetProductById;
 using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Application.Products.GetProductsByBrandName;
 using EuroMotors.Application.Products.GetProductsByCategoryWithChildren;
+using EuroMotors.Application.Products.ImportProducts;
 using EuroMotors.Application.Products.SetProductAvailability;
 using EuroMotors.Application.Products.UpdateProduct;
 using EuroMotors.Application.Products.UpdateProductCarModels;
@@ -183,6 +184,28 @@ public class ProductController : ControllerBase
         var query = new GetProductsByCategoryWithChildrenQuery(categoryId, sortOrder, searchTerm, pageNumber, pageSize);
 
         Result<Pagination<ProductResponse>> result = await _sender.Send(query, cancellationToken);
+
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+    }
+
+    [HttpPost("import")]
+    [Authorize(Roles = Roles.Admin)]
+    public async Task<IActionResult> ImportProducts(IFormFile file, CancellationToken cancellationToken)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest("No file was uploaded.");
+        }
+
+        if (!file.FileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+        {
+            return BadRequest("Only CSV files are allowed.");
+        }
+
+        using var stream = file.OpenReadStream();
+        var command = new ImportProductsCommand(stream, file.FileName);
+
+        Result<ImportProductsResult> result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }

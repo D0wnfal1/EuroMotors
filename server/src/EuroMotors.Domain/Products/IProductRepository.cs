@@ -12,4 +12,7 @@ public interface IProductRepository
 
     Task Delete(Guid id);
 
+    Task AddAsync(Product product, CancellationToken cancellationToken = default);
+
+    IQueryable<Product> GetAll();
 }

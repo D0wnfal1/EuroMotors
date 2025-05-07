@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProductService } from '../../../core/services/product.service';
-import { Product } from '../../../shared/models/product';
+import { ImportProductsResult, Product } from '../../../shared/models/product';
 import { RouterLink } from '@angular/router';
 import { CommonModule, CurrencyPipe, NgFor } from '@angular/common';
 import { Pagination } from '../../../shared/models/pagination';
@@ -22,6 +22,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIcon } from '@angular/material/icon';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-admin-products',
@@ -50,6 +51,7 @@ export class AdminProductsComponent implements OnInit {
   private readonly productService = inject(ProductService);
   private readonly categoryService = inject(CategoryService);
   private readonly carModelService = inject(CarmodelService);
+  private readonly snackBar = inject(MatSnackBar);
   categories: Category[] = [];
   carModels: CarModel[] = [];
   products?: Pagination<Product>;
@@ -173,5 +175,49 @@ export class AdminProductsComponent implements OnInit {
         console.error(error);
       },
     });
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files?.length) {
+      const file = input.files[0];
+
+      if (file.type !== 'text/csv') {
+        this.snackBar.open('Please select a CSV file', 'Close', {
+          duration: 3000,
+        });
+        return;
+      }
+
+      this.productService.importProducts(file).subscribe({
+        next: (result: ImportProductsResult) => {
+          this.snackBar.open(
+            `Import completed. Successfully imported ${result.successfullyImported} of ${result.totalProcessed} products.`,
+            'Close',
+            { duration: 5000 }
+          );
+
+          if (result.errors.length > 0) {
+            this.snackBar.open(
+              `Errors occurred during import: ${result.errors.join(', ')}`,
+              'Close',
+              { duration: 7000 }
+            );
+          }
+
+          this.productService.clearCache();
+          this.getProducts();
+
+          input.value = '';
+        },
+        error: (error) => {
+          console.error('Import failed:', error);
+          this.snackBar.open('Import failed. Please try again.', 'Close', {
+            duration: 3000,
+          });
+          input.value = '';
+        },
+      });
+    }
   }
 }

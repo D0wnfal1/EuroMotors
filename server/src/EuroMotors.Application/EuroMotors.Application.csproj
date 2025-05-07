@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<ItemGroup>
+		<PackageReference Include="CsvHelper" />
 		<PackageReference Include="Dapper" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
 		<PackageReference Include="MediatR" />
@@ -11,6 +12,8 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
 		<PackageReference Include="Newtonsoft.Json" />
 		<PackageReference Include="Serilog" />
+		<PackageReference Include="System.Collections" />
+		<PackageReference Include="System.Linq" />
 	</ItemGroup>
 
 	<ItemGroup>

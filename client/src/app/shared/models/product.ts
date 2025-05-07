@@ -40,3 +40,10 @@ export type ProductImageResponse = {
   path: string;
   productId: string;
 };
+
+export interface ImportProductsResult {
+  totalProcessed: number;
+  successfullyImported: number;
+  failed: number;
+  errors: string[];
+}

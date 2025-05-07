@@ -44,4 +44,14 @@ public class ProductRepository : Repository<Product>, IProductRepository
 
         _dbContext.Remove(product);
     }
+
+    public async Task AddAsync(Product product, CancellationToken cancellationToken = default)
+    {
+        await _dbContext.Products.AddAsync(product, cancellationToken);
+    }
+
+    public IQueryable<Product> GetAll()
+    {
+        return _dbContext.Products;
+    }
 }

@@ -132,7 +132,7 @@
       </mat-card>
     </div>
 
-    <div *ngIf="mainCategories.length > 10" class="flex justify-center mt-6 md:mt-8">
+    <div *ngIf="mainCategories.length > 5 && (isMobile || isTablet)" class="flex justify-center mt-6 md:mt-8">
       <button
         mat-raised-button
         color="primary"
