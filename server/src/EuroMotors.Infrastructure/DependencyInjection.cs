@@ -88,7 +88,7 @@ public static class DependencyInjection
 
     private static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        string? connectionString = configuration.GetConnectionString("Database") ??
+        string? connectionString = configuration.GetConnectionString("DefaultConnection") ??
                                    throw new ArgumentNullException(nameof(configuration));
 
         services.AddDbContext<ApplicationDbContext>(
@@ -131,10 +131,15 @@ public static class DependencyInjection
 
     private static IServiceCollection AddHealthChecks(this IServiceCollection services, IConfiguration configuration)
     {
+        string defaultConnectionString = configuration.GetConnectionString("DefaultConnection") ??
+                                          throw new ArgumentNullException(nameof(configuration));
+
+        string cacheConnectionString = configuration.GetConnectionString("Cache") ??
+                                        throw new ArgumentNullException(nameof(configuration));
         services
             .AddHealthChecks()
-            .AddNpgSql(configuration.GetConnectionString("Database")!)
-            .AddRedis(configuration.GetConnectionString("Cache")!);
+            .AddNpgSql(defaultConnectionString)
+            .AddRedis(cacheConnectionString);
 
         return services;
     }

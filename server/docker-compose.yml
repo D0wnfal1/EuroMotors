@@ -1,14 +1,24 @@
 services:
   euromotors.api:
-    image: d0wnfall/euromotorsapi:dev
-    pull_policy: never
+    image: d0wnfal1/euromotorsapi:dev
+    pull_policy: always
     container_name: Euromotors.Api
     build:
       context: .
       dockerfile: src/EuroMotors.Api/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ConnectionStrings__DefaultConnection=Host=euromotors.db;Port=5432;Database=euromotors;Username=postgres;Password=postgres
+      - ConnectionStrings__Cache=euromotors.redis:6379
     ports:
-      - 5000:8080
-      - 5001:8081
+      - 80:80
+      - 443:443
+    volumes:
+      - ./src/EuroMotors.Api/ssl:/app/ssl:ro
+    depends_on:
+      - euromotors.db
+      - euromotors.redis
     networks:
       - server-network
 
@@ -46,28 +56,6 @@ services:
     networks:
       - server-network
 
-  # euromotors.sonarqube:
-  #   image: sonarqube:latest
-  #   container_name: Euromotors.SonarQube
-  #   environment:
-  #     - SONARQUBE_JDBC_URL=jdbc:postgresql://euromotors.db:5432/sonar
-  #     - SONARQUBE_JDBC_USERNAME=postgres
-  #     - SONARQUBE_JDBC_PASSWORD=postgres
-  #   ports:
-  #     - 9000:9000
-  #   volumes:
-  #     - sonarqube-data:/opt/sonarqube/data
-  #     - sonarqube-extensions:/opt/sonarqube/extensions
-  #   networks:
-  #     - server-network
-  #   depends_on:
-  #     - euromotors.db
-
-
 networks:
   server-network:
     driver: bridge
-
-# volumes:
-#   sonarqube-data:
-#   sonarqube-extensions:

@@ -1,4 +1,4 @@
-name: .NET Build, Angular Build, Test and SonarQube
+name: Build, Test, Push to Registry, Deploy via SSH
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - master
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -62,6 +62,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            cd EuroMotors/app
+            cd EuroMotors
+            docker-compose down
             docker-compose pull
             docker-compose up -d

@@ -388,8 +388,8 @@ testem.log
 
 # System Files
 .DS_Store
+
 Thumbs.db
 
 *.cursorrules
-/server/src/EuroMotors.Api/wwwroot
 /client/public/.well-known/pki-validation

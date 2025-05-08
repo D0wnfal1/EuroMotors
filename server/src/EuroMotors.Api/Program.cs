@@ -1,3 +1,5 @@
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 using EuroMotors.Api;
 using EuroMotors.Api.Extensions;
 using EuroMotors.Application;
@@ -5,6 +7,7 @@ using EuroMotors.Application.Abstractions.Authentication;
 using EuroMotors.Infrastructure;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Serilog;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -24,6 +27,24 @@ builder.Services
 //        .AllowAnyHeader()
 //        .AllowAnyMethod()
 //        .AllowCredentials()));
+
+X509Certificate2 cert = X509CertificateLoader.LoadPkcs12FromFile(
+    Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development" 
+        ? "./ssl/euromotors_tech.pfx"
+        : "/app/ssl/euromotors_tech.pfx",
+    "656bb9bb-16d7-496c-90a7-5dc7ae559128"
+);
+
+builder.WebHost.UseKestrel(options =>
+{
+    options.ListenAnyIP(80);
+    options.ListenAnyIP(443, listenOptions => listenOptions.UseHttps(new HttpsConnectionAdapterOptions
+    {
+        ClientCertificateMode = ClientCertificateMode.NoCertificate,
+        SslProtocols = SslProtocols.Tls12,
+        ServerCertificate = cert,
+    }));
+});
 
 WebApplication app = builder.Build();
 
@@ -50,7 +71,7 @@ app.UseSerilogRequestLogging();
 
 app.UseExceptionHandler();
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 

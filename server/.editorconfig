@@ -422,3 +422,4 @@ dotnet_diagnostic.CA1054.severity = suggestion
 dotnet_style_null_propagation = true:error
 dotnet_style_prefer_is_null_check_over_reference_equality_method = true:error
 dotnet_diagnostic.CA1304.severity = suggestion
+dotnet_diagnostic.CA5398.severity = suggestion

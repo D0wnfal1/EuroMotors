@@ -8,6 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
+using Microsoft.Extensions.Configuration;
 using Testcontainers.PostgreSql;
 using Testcontainers.Redis;
 
@@ -26,8 +30,24 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsy
         .WithImage("redis:latest")
         .Build();
 
+    private readonly X509Certificate2 _testCertificate;
+
+    public IntegrationTestWebAppFactory()
+    {
+        using var rsa = RSA.Create(2048);
+        var request = new CertificateRequest("cn=Test Certificate", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+        _testCertificate = request.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddYears(1));
+    }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.ConfigureAppConfiguration((context, config) =>
+            config.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:DefaultConnection"] = _dbContainer.GetConnectionString(),
+                ["ConnectionStrings:Cache"] = _redisContainer.GetConnectionString()
+            }));
+
         builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<DbContextOptions<ApplicationDbContext>>();
@@ -44,6 +64,19 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsy
 
             services.Configure<RedisCacheOptions>(redisCacheOptions =>
                 redisCacheOptions.Configuration = _redisContainer.GetConnectionString());
+
+            services.AddSingleton(_testCertificate);
+        });
+
+        builder.UseEnvironment("Test");
+
+        builder.ConfigureKestrel(options =>
+        {
+            options.ListenAnyIP(80);
+            options.ListenAnyIP(443, listenOptions => listenOptions.UseHttps(new HttpsConnectionAdapterOptions
+            {
+                ServerCertificate = _testCertificate
+            }));
         });
     }
 
@@ -57,5 +90,6 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsy
     {
         await _dbContainer.StopAsync();
         await _redisContainer.StopAsync();
+        _testCertificate.Dispose();
     }
 }
