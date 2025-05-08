@@ -3,30 +3,34 @@ using EuroMotors.Domain.Categories;
 using EuroMotors.Domain.Products;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
-namespace EuroMotors.Api.Services;
+namespace EuroMotors.Infrastructure.Sitemap;
 
 public class SitemapService
 {
     private readonly IProductRepository _productRepository;
     private readonly ICategoryRepository _categoryRepository;
     private readonly string _baseUrl;
+    private readonly string _namespaceUri;
 
     public SitemapService(
         IProductRepository productRepository,
         ICategoryRepository categoryRepository,
-        IConfiguration configuration)
+        IOptions<AppSettings> appSettings,
+        IOptions<SitemapOptions> sitemapOptions)
     {
         _productRepository = productRepository;
         _categoryRepository = categoryRepository;
-        _baseUrl = configuration["BaseUrl"] ?? "https://euromotors.ua";
+        _baseUrl = appSettings.Value.BaseUrl;
+        _namespaceUri = sitemapOptions.Value.NamespaceUri;
     }
 
     public async Task<string> GenerateSitemapAsync()
     {
         var sitemap = new XDocument(
             new XDeclaration("1.0", "utf-8", null),
-            new XElement(XName.Get("urlset", "http://www.sitemaps.org/schemas/sitemap/0.9")));
+            new XElement(XName.Get("urlset", _namespaceUri)));
 
         AddUrl(sitemap.Root!, _baseUrl, changefreq: "daily", priority: "1.0");
 

@@ -1,4 +1,4 @@
-using EuroMotors.Api.Services;
+using EuroMotors.Infrastructure.Sitemap;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EuroMotors.Api.Controllers.Sitemap;
@@ -17,7 +17,7 @@ public class SitemapController : ControllerBase
     [HttpGet("sitemap.xml")]
     public async Task<ContentResult> GetSitemap()
     {
-        var sitemap = await _sitemapService.GenerateSitemapAsync();
+        string sitemap = await _sitemapService.GenerateSitemapAsync();
         return Content(sitemap, "application/xml");
     }
 }

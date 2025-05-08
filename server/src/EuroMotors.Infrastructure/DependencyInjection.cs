@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using Dapper;
-using EuroMotors.Api.Services;
 using EuroMotors.Application.Abstractions.Authentication;
 using EuroMotors.Application.Abstractions.Caching;
 using EuroMotors.Application.Abstractions.Callback;
@@ -26,6 +25,7 @@ using EuroMotors.Infrastructure.Database;
 using EuroMotors.Infrastructure.Delivery;
 using EuroMotors.Infrastructure.Payments;
 using EuroMotors.Infrastructure.Repositories;
+using EuroMotors.Infrastructure.Sitemap;
 using EuroMotors.Infrastructure.Time;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -49,6 +49,7 @@ public static class DependencyInjection
             .AddDatabase(configuration)
             .AddCaching(configuration)
             .AddHealthChecks(configuration)
+            .AddSitemap(configuration)
             .AddPayment(configuration)
             .AddDelivery(configuration)
             .AddCallback(configuration)
@@ -79,7 +80,7 @@ public static class DependencyInjection
 
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
 
-        services.AddScoped<SitemapService>();
+
 
 
         return services;
@@ -134,6 +135,17 @@ public static class DependencyInjection
             .AddHealthChecks()
             .AddNpgSql(configuration.GetConnectionString("Database")!)
             .AddRedis(configuration.GetConnectionString("Cache")!);
+
+        return services;
+    }
+
+    private static IServiceCollection AddSitemap(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<SitemapOptions>(configuration.GetSection("Sitemap:NamespaceUri")!);
+
+        services.Configure<AppSettings>(configuration.GetSection("AppSettings:BaseUrl")!);
+
+        services.AddScoped<SitemapService>();
 
         return services;
     }

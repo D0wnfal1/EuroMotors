@@ -202,7 +202,7 @@ public class ProductController : ControllerBase
             return BadRequest("Only CSV files are allowed.");
         }
 
-        using var stream = file.OpenReadStream();
+        using Stream stream = file.OpenReadStream();
         var command = new ImportProductsCommand(stream, file.FileName);
 
         Result<ImportProductsResult> result = await _sender.Send(command, cancellationToken);
