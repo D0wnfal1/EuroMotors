@@ -21,60 +21,49 @@ builder.Services
     .AddPresentation()
     .AddInfrastructure(builder.Configuration);
 
-//builder.Services.AddCors(options =>
-//    options.AddPolicy("Client", corsPolicyBuilder => corsPolicyBuilder
-//        .WithOrigins("http://localhost:4200", "https://localhost:4200")
-//        .AllowAnyHeader()
-//        .AllowAnyMethod()
-//        .AllowCredentials()));
-
-X509Certificate2 cert = X509CertificateLoader.LoadPkcs12FromFile(
-    Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development" 
-        ? "./ssl/euromotors_tech.pfx"
-        : "/app/ssl/euromotors_tech.pfx",
-    "656bb9bb-16d7-496c-90a7-5dc7ae559128"
-);
-
-builder.WebHost.UseKestrel(options =>
+if (!builder.Environment.IsEnvironment("Testing"))
 {
-    options.ListenAnyIP(80);
-    options.ListenAnyIP(443, listenOptions => listenOptions.UseHttps(new HttpsConnectionAdapterOptions
+    X509Certificate2 cert = X509CertificateLoader.LoadPkcs12FromFile(
+        builder.Environment.IsDevelopment()
+            ? "./ssl/euromotors_tech.pfx"
+            : "/app/ssl/euromotors_tech.pfx",
+        "656bb9bb-16d7-496c-90a7-5dc7ae559128"
+    );
+
+    builder.WebHost.UseKestrel(options =>
     {
-        ClientCertificateMode = ClientCertificateMode.NoCertificate,
-        SslProtocols = SslProtocols.Tls12,
-        ServerCertificate = cert,
-    }));
-});
+        options.ListenAnyIP(80);
+        options.ListenAnyIP(443, listenOptions => listenOptions.UseHttps(new HttpsConnectionAdapterOptions
+        {
+            ClientCertificateMode = ClientCertificateMode.NoCertificate,
+            SslProtocols = SslProtocols.Tls12,
+            ServerCertificate = cert,
+        }));
+    });
+}
 
 WebApplication app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || builder.Environment.IsEnvironment("Testing"))
 {
     app.UseSwaggerWithUi();
-
     app.ApplyMigrations();
 
     IPasswordHasher passwordHasher = app.Services.GetRequiredService<IPasswordHasher>();
     app.SeedData(passwordHasher);
 }
 
-app.MapHealthChecks("health", new HealthCheckOptions
-{
-    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-});
+
 
 app.UseRequestContextLogging();
 
 app.UseSerilogRequestLogging();
-
-//app.UseCors("Client");
 
 app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.UseDefaultFiles();
@@ -82,7 +71,14 @@ app.UseStaticFiles();
 
 app.MapControllers();
 
-app.UseSpaFallback();
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    app.MapHealthChecks("health", new HealthCheckOptions
+    {
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+    });
+    app.UseSpaFallback();
+}
 
 await app.RunAsync();
 

@@ -48,14 +48,13 @@ public static class DependencyInjection
             .AddServices()
             .AddDatabase(configuration)
             .AddCaching(configuration)
-            .AddHealthChecks(configuration)
             .AddSitemap(configuration)
             .AddPayment(configuration)
             .AddDelivery(configuration)
             .AddCallback(configuration)
             .AddAuthenticationInternal(configuration)
-            .AddAuthorizationInternal();
-
+            .AddAuthorizationInternal()
+            .AddHealthChecks(configuration);
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
@@ -79,9 +78,6 @@ public static class DependencyInjection
         services.AddScoped<IPaymentRepository, PaymentRepository>();
 
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
-
-
-
 
         return services;
     }

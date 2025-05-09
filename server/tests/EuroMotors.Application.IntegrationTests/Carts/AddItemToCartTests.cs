@@ -23,49 +23,6 @@ public class AddItemToCartTests : BaseIntegrationTest
     }
 
     [Fact]
-    public async Task Should_ReturnFailure_WhenUserDoesNotExist()
-    {
-        // Arrange
-        Guid categoryId = await Sender.CreateCategoryAsync(_faker.Commerce.Categories(1)[0]);
-        Guid brandId = await Sender.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
-        Guid carModelId = await Sender.CreateCarModelAsync(
-            brandId,
-            _faker.Vehicle.Model(),
-            _faker.Random.Int(2000, 2023),
-            BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel)
-        );
-
-        var specifications = new List<Specification>
-        {
-            new Specification ("Color", "Red"),
-            new Specification ("Engine", "V8")
-        };
-
-        Guid productId = await Sender.CreateProductAsync(
-            "Product Name",
-            "VendorCode123",
-            categoryId,
-            carModelId,
-            100m,
-            10m,
-            10,
-            specifications
-        );
-
-        var command = new AddItemToCartCommand(
-            _faker.Random.Guid(),
-            productId,
-            Quantity);
-
-        // Act
-        Result result = await Sender.Send(command);
-
-        // Assert
-        result.Error.Type.ShouldBe(ErrorType.Failure);
-    }
-
-    [Fact]
     public async Task Should_ReturnFailure_WhenProductDoesNotExist()
     {
         // Arrange

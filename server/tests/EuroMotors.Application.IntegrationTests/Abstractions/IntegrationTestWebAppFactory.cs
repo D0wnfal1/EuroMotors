@@ -68,7 +68,7 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsy
             services.AddSingleton(_testCertificate);
         });
 
-        builder.UseEnvironment("Test");
+        builder.UseEnvironment("Testing");
 
         builder.ConfigureKestrel(options =>
         {

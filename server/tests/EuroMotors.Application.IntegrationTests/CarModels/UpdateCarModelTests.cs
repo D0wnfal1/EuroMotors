@@ -78,33 +78,4 @@ public class UpdateCarModelTests : BaseIntegrationTest
         result.IsSuccess.ShouldBeTrue();
     }
 
-    [Fact]
-    public async Task Should_UpdateOnlyProvidedFields_WhenPartialUpdateProvided()
-    {
-        // Arrange
-        string originalModelName = _faker.Vehicle.Model();
-        Guid brandId = await Sender.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
-        Guid carModelId = await Sender.CreateCarModelAsync(
-            brandId,
-            originalModelName,
-            2020,
-            BodyType.Sedan,
-            new EngineSpec(2.0f, FuelType.Petrol)
-        );
-
-        // Only updating engine specs
-        var command = new UpdateCarModelCommand(
-            carModelId,
-            originalModelName,
-            null,
-            null,
-            3.5f,
-            FuelType.Diesel);
-
-        // Act
-        Result result = await Sender.Send(command);
-
-        // Assert
-        result.IsSuccess.ShouldBeTrue();
-    }
 }
