@@ -1,17 +1,17 @@
-﻿using EuroMotors.Api;
+﻿using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using EuroMotors.Api;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Infrastructure.Database;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore.Server.Kestrel.Https;
-using Microsoft.Extensions.Configuration;
 using Testcontainers.PostgreSql;
 using Testcontainers.Redis;
 

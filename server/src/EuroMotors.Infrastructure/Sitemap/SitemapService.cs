@@ -2,7 +2,6 @@ using System.Xml.Linq;
 using EuroMotors.Domain.Categories;
 using EuroMotors.Domain.Products;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace EuroMotors.Infrastructure.Sitemap;

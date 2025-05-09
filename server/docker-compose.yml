@@ -1,6 +1,6 @@
 services:
   euromotors.api:
-    image: d0wnfal1/euromotorsapi:dev
+    image: d0wnfal1/euromotorsapi:latest
     pull_policy: always
     container_name: Euromotors.Api
     build:
@@ -9,7 +9,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ConnectionStrings__DefaultConnection=Host=euromotors.db;Port=5432;Database=euromotors;Username=postgres;Password=postgres
+      - ConnectionStrings__DefaultConnection=Host=host.docker.internal;Port=5432;Database=euromotors;Username=postgres;Password=postgres
       - ConnectionStrings__Cache=euromotors.redis:6379
     ports:
       - 80:80
@@ -25,6 +25,7 @@ services:
   euromotors.db:
     image: postgres:17
     container_name: Euromotors.Db
+    restart: always
     environment:
       - POSTGRES_DB=euromotors
       - POSTGRES_USER=postgres

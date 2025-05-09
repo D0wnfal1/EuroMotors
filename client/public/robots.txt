@@ -4,4 +4,4 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /auth/
 
-Sitemap: https://euromotors.ua/sitemap.xml 
+Sitemap: https://euromotors.tech/sitemap.xml 

@@ -65,10 +65,10 @@ jobs:
         run: |
             cd server
             docker build \
-              -t ${{ secrets.DOCKER_USERNAME }}/euromotors:latest \
+              -t ${{ secrets.DOCKER_USERNAME }}/euromotorsapi:latest \  
               -f src/EuroMotors.Api/Dockerfile \
               .
-            docker push ${{ secrets.DOCKER_USERNAME }}/euromotors:latest
+            docker push ${{ secrets.DOCKER_USERNAME }}/euromotorsapi:latest
 
       - name: Deploy to server via SSH (pull latest image)
         uses: appleboy/ssh-action@v1.0.0

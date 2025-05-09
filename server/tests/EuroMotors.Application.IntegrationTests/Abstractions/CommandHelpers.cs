@@ -2,7 +2,6 @@
 using EuroMotors.Application.CarBrands.CreateCarBrand;
 using EuroMotors.Application.CarModels.CreateCarModel;
 using EuroMotors.Application.Categories.CreateCategory;
-using EuroMotors.Application.ProductImages.UploadProductImage;
 using EuroMotors.Application.Products.CreateProduct;
 using EuroMotors.Application.Users.Register;
 using EuroMotors.Domain.Abstractions;

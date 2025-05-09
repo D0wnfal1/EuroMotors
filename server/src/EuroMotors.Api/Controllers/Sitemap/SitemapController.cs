@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace EuroMotors.Api.Controllers.Sitemap;
 
 [ApiController]
-[Route("[controller]")]
+[Route("sitemap.xml")]
 public class SitemapController : ControllerBase
 {
     private readonly SitemapService _sitemapService;
@@ -14,7 +14,7 @@ public class SitemapController : ControllerBase
         _sitemapService = sitemapService;
     }
 
-    [HttpGet("sitemap.xml")]
+    [HttpGet]
     public async Task<ContentResult> GetSitemap()
     {
         string sitemap = await _sitemapService.GenerateSitemapAsync();

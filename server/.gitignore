@@ -402,3 +402,6 @@ FodyWeavers.xsd
 *ssl
 wwwroot/*
 !.gitignore
+
+
+/src/EuroMotors.Api/appsettings.json
