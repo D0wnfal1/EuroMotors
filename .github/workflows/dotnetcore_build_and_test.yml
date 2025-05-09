@@ -65,8 +65,8 @@ jobs:
         run: |
             cd server
             docker build \
-              -t ${{ secrets.DOCKER_USERNAME }}/euromotorsapi:latest \ 
-              -f src/EuroMotors.Api/Dockerfile \ 
+              -t ${{ secrets.DOCKER_USERNAME }}/euromotorsapi:latest \
+              -f src/EuroMotors.Api/Dockerfile \
               .
             docker push ${{ secrets.DOCKER_USERNAME }}/euromotorsapi:latest
 
