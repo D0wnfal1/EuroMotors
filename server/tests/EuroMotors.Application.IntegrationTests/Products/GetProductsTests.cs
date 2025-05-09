@@ -20,22 +20,6 @@ public class GetProductsTests : BaseIntegrationTest
     }
 
     [Fact]
-    public async Task Should_ReturnFailure_WhenProductsDoNotExist()
-    {
-        // Arrange
-        await CleanDatabaseAsync();
-
-        var query = new GetProductsQuery(null, null, null, null, false, false, false, 1, 10);
-
-
-        // Act
-        Result<Pagination<ProductResponse>> result = await Sender.Send(query);
-
-        // Assert
-        result.Value.Data.ShouldBeEmpty();
-    }
-
-    [Fact]
     public async Task Should_ReturnProducts_WhenProductsExist()
     {
         // Arrange

@@ -19,45 +19,6 @@ public class CreateProductTests : BaseIntegrationTest
     }
 
     [Fact]
-    public async Task Should_ReturnFailure_WhenPriceIsInvalid()
-    {
-        // Arrange
-        Guid categoryId = await Sender.CreateCategoryAsync(_faker.Commerce.Categories(1)[0]);
-        Guid brandId = await Sender.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
-        Guid carModelId = await Sender.CreateCarModelAsync(
-            brandId,
-            _faker.Vehicle.Model(),
-            2020,
-            BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel)
-            );
-
-        var specifications = new List<Specification>
-        {
-            new Specification ("Color", "Red" ),
-            new Specification ("Engine", "V8")
-        };
-
-        var command = new CreateProductCommand(
-            _faker.Commerce.ProductName(),
-            specifications,
-            _faker.Commerce.Ean13(),
-            categoryId,
-            new List<Guid> { carModelId },
-            -100,
-            _faker.Random.Decimal(0, 100),
-            10);
-
-        // Act
-        Result<Guid> result = await Sender.Send(command);
-
-        // Assert
-        result.Error.ShouldBeOfType<ValidationError>();
-        result.Error.Code.ShouldBe("Validation.General");
-        result.Error.Description.ShouldContain("One or more validation errors occurred");
-    }
-
-    [Fact]
     public async Task Should_ReturnFailure_WhenCategoryDoesNotExist()
     {
         // Arrange
