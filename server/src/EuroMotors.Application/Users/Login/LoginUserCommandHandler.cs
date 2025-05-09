@@ -50,16 +50,16 @@ internal sealed class LoginUserCommandHandler(
             response.Cookies.Append("AccessToken", accessToken, new CookieOptions
             {
                 HttpOnly = true,
-                //Secure = true,
-                SameSite = SameSiteMode.Strict,
+                Secure = true,
+                SameSite = SameSiteMode.None,
                 Expires = DateTimeOffset.UtcNow.AddMinutes(expirationInMinutes)
             });
 
             response.Cookies.Append("RefreshToken", refreshToken, new CookieOptions
             {
                 HttpOnly = true,
-                //Secure = true,
-                SameSite = SameSiteMode.Strict,
+                Secure = true,
+                SameSite = SameSiteMode.None,
                 Expires = DateTimeOffset.UtcNow.AddDays(refreshTokenExpirationInDays)
             });
         }

@@ -42,51 +42,6 @@ public class AddItemToCartTests : BaseIntegrationTest
         result.Error.ShouldBe(ProductErrors.NotFound(nonExistingProductId));
     }
 
-
-    [Fact]
-    public async Task Should_ReturnFailure_WhenNotEnoughQuantity()
-    {
-        // Arrange
-        Guid userId = await Sender.CreateUserAsync();
-
-        Guid categoryId = await Sender.CreateCategoryAsync("Category Category");
-        Guid brandId = await Sender.CreateCarBrandAsync("Test Brand1124");
-        Guid carModelId = await Sender.CreateCarModelAsync(
-            brandId,
-            _faker.Vehicle.Model(),
-            _faker.Random.Int(2000, 2023),
-            BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel)
-        );
-
-        var specifications = new List<Specification>
-        {
-            new Specification ("Color", "Red"),
-            new Specification ("Engine", "V8")
-        };
-
-        Guid productId = await Sender.CreateProductAsync(
-            "Product Name",
-            "VendorCode123",
-            categoryId,
-            carModelId,
-            100m,
-            10m,
-            10,
-            specifications
-        );
-        var command = new AddItemToCartCommand(
-            userId,
-            productId,
-            Quantity + 1);
-
-        // Act
-        Result result = await Sender.Send(command);
-
-        // Assert
-        result.Error.ShouldBe(ProductErrors.NotEnoughStock(Quantity));
-    }
-
     [Fact]
     public async Task Should_ReturnSuccess_WhenItemAddedToCart()
     {

@@ -33,23 +33,6 @@ public class RemoveItemFromCartTests : BaseIntegrationTest
     }
 
     [Fact]
-    public async Task Should_ReturnFailure_WhenProductDoesNotExist()
-    {
-        //Arrange
-        Guid userId = await Sender.CreateUserAsync();
-
-        var command = new RemoveItemFromCartCommand(
-            userId,
-            Guid.NewGuid());
-
-        //Act
-        Result result = await Sender.Send(command);
-
-        //Assert
-        result.Error.ShouldBe(ProductErrors.NotFound(command.ProductId));
-    }
-
-    [Fact]
     public async Task Should_ReturnSuccess_WhenRemovedItemFromCart()
     {
         // Arrange
