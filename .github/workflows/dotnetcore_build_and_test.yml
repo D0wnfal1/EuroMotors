@@ -50,6 +50,17 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Prepare SSL certificates
+        run: |
+            mkdir -p server/src/EuroMotors.Api/ssl
+            echo "${{ secrets.EUROMOTORS_PFX_B64 }}"  | base64 --decode > server/src/EuroMotors.Api/ssl/euromotors_tech.pfx
+            echo "${{ secrets.EUROMOTORS_CRT_B64 }}"  | base64 --decode > server/src/EuroMotors.Api/ssl/euromotors_tech.crt
+            echo "${{ secrets.EUROMOTORS_CA_B64 }}"   | base64 --decode > server/src/EuroMotors.Api/ssl/euromotors_tech.ca-bundle
+        env:
+            EUROMOTORS_PFX_B64: ${{ secrets.EUROMOTORS_PFX_B64 }}
+            EUROMOTORS_CRT_B64: ${{ secrets.EUROMOTORS_CRT_B64 }}
+            EUROMOTORS_CA_B64:  ${{ secrets.EUROMOTORS_CA_B64 }}
+
       - name: Build and push Docker image
         run: |
             cd server
