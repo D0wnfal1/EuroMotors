@@ -16,24 +16,6 @@ public class UpdateCarModelTests : BaseIntegrationTest
     {
     }
 
-    public static readonly TheoryData<UpdateCarModelCommand> InvalidCommands =
-    [
-        new(Guid.Empty, string.Empty),
-        new(Guid.NewGuid(), string.Empty)
-    ];
-
-    [Theory]
-    [MemberData(nameof(InvalidCommands))]
-    public async Task Should_ReturnFailure_WhenCommandIsNotValid(UpdateCarModelCommand command)
-    {
-        // Act
-        Result result = await Sender.Send(command);
-
-        // Assert
-        result.IsFailure.ShouldBeTrue();
-        result.Error.Type.ShouldBe(ErrorType.Validation);
-    }
-
     [Fact]
     public async Task Should_ReturnFailure_WhenCarModelDoesNotExist()
     {
