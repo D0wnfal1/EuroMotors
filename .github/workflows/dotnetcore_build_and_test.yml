@@ -52,7 +52,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/euromotors:latest -f Dockerfile .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/euromotors:latest -f server/src/EuroMotors.Api/Dockerfile server/src/EuroMotors.Api
           docker push ${{ secrets.DOCKER_USERNAME }}/euromotors:latest
 
       - name: Deploy to server via SSH (pull latest image)
