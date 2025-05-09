@@ -52,12 +52,13 @@ jobs:
 
       - name: Build and push Docker image
         run: |
+            cd server
             docker build \
               -t ${{ secrets.DOCKER_USERNAME }}/euromotors:latest \
-              -f server/src/EuroMotors.Api/Dockerfile \
+              -f src/EuroMotors.Api/Dockerfile \
               .
             docker push ${{ secrets.DOCKER_USERNAME }}/euromotors:latest
-            
+
       - name: Deploy to server via SSH (pull latest image)
         uses: appleboy/ssh-action@v1.0.0
         with:
