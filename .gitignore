@@ -393,3 +393,5 @@ Thumbs.db
 
 *.cursorrules
 /client/public/.well-known/pki-validation
+/server/src/EuroMotors.Api/appsettings.json
+/server/src/EuroMotors.Api/appsettings.json
