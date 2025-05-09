@@ -55,12 +55,6 @@ internal static class CommandHelpers
         return result.Value;
     }
 
-    public static async Task<Guid> CreateCarModelWithBrandAsync(this ISender sender, string brandName, string modelName, int startYear, BodyType bodyType, EngineSpec engineSpec)
-    {
-        Guid brandId = await sender.CreateCarBrandAsync(brandName);
-        return await sender.CreateCarModelAsync(brandId, modelName, startYear, bodyType, engineSpec);
-    }
-
     public static async Task<Guid> CreateProductAsync(
         this ISender sender,
         string productName,
@@ -87,14 +81,6 @@ internal static class CommandHelpers
 
         result.IsSuccess.ShouldBeTrue();
 
-        return result.Value;
-    }
-
-    public static async Task<Guid> CreateProductImageAsync(this ISender sender, Guid productId, IFormFile file)
-    {
-        var createProductImageCommand = new UploadProductImageCommand(file, productId);
-        Result<Guid> result = await sender.Send(createProductImageCommand);
-        result.IsSuccess.ShouldBeTrue();
         return result.Value;
     }
 }
