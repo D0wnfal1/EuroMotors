@@ -57,6 +57,44 @@ services:
     networks:
       - server-network
 
+  euromotors.prometheus:
+    image: prom/prometheus:latest
+    container_name: Euromotors.Prometheus
+    restart: always
+    ports:
+      - 9090:9090
+    volumes:
+      - ./.containers/prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - server-network
+
+  euromotors.grafana:
+    image: grafana/grafana:latest
+    container_name: Euromotors.Grafana
+    restart: always
+    ports:
+      - 3000:3000
+    volumes:
+      - ./.containers/grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - euromotors.prometheus
+    networks:
+      - server-network
+
 networks:
   server-network:
     driver: bridge
+
+volumes:
+  prometheus_data: {}
