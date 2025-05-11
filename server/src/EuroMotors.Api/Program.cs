@@ -2,6 +2,7 @@ using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using EuroMotors.Api;
 using EuroMotors.Api.Extensions;
+using EuroMotors.Api.Middleware;
 using EuroMotors.Application;
 using EuroMotors.Application.Abstractions.Authentication;
 using EuroMotors.Infrastructure;
@@ -54,6 +55,8 @@ if (app.Environment.IsDevelopment() || builder.Environment.IsEnvironment("Testin
     IPasswordHasher passwordHasher = app.Services.GetRequiredService<IPasswordHasher>();
     app.SeedData(passwordHasher);
 }
+
+app.UsePrometheusMetrics();
 
 app.UseHttpMetrics();
 
