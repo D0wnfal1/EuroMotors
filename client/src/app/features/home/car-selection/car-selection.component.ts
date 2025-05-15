@@ -27,6 +27,8 @@ import { CarBrand } from '../../../shared/models/carBrand';
 import { CarmodelService } from '../../../core/services/carmodel.service';
 import { CarSelectionResponse } from '../../../shared/models/carModel';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { BodyTypePipe } from '../../../shared/pipes/body-type.pipe';
+import { EngineSpecPipe } from '../../../shared/pipes/engine-spec.pipe';
 
 @Component({
   selector: 'app-car-selection',
@@ -41,6 +43,8 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
     MatButtonModule,
     MatCardModule,
     MatStepperModule,
+    BodyTypePipe,
+    EngineSpecPipe,
   ],
   templateUrl: './car-selection.component.html',
   styleUrl: './car-selection.component.scss',
