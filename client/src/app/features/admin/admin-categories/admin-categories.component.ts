@@ -1,5 +1,9 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import {
+  MatPaginator,
+  PageEvent,
+  MatPaginatorIntl,
+} from '@angular/material/paginator';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,6 +27,7 @@ import {
   HierarchicalCategory,
 } from '../../../shared/models/category';
 import { ShopParams } from '../../../shared/models/shopParams';
+import { UkrainianPaginatorIntl } from '../../../shared/i18n/ukrainian-paginator-intl';
 
 @Component({
   selector: 'app-admin-categories',
@@ -39,6 +44,7 @@ import { ShopParams } from '../../../shared/models/shopParams';
     MatSlideToggleModule,
     MatProgressSpinnerModule,
   ],
+  providers: [{ provide: MatPaginatorIntl, useClass: UkrainianPaginatorIntl }],
   templateUrl: './admin-categories.component.html',
   styleUrl: './admin-categories.component.scss',
 })

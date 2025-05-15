@@ -1,16 +1,16 @@
 <div class="p-3 sm:p-6 max-w-xl mx-auto">
   <h1 class="text-xl sm:text-2xl font-bold text-center mb-4 sm:mb-6">
-    {{ isEditMode ? "Edit" : "Create" }} Category
+    {{ isEditMode ? "Редагувати" : "Створити" }} Категорію
   </h1>
 
   <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
     <div class="mb-3 sm:mb-4">
       <mat-form-field appearance="fill" class="w-full">
-        <mat-label>Category Name</mat-label>
+        <mat-label>Назва Категорії</mat-label>
         <input
           matInput
           formControlName="name"
-          placeholder="Enter category name"
+          placeholder="Введіть назву категорії"
           [class.is-invalid]="
             categoryForm.get('name')?.invalid &&
             categoryForm.get('name')?.touched
@@ -20,19 +20,19 @@
           *ngIf="categoryForm?.get('name')?.hasError('required')"
           class="text-xs sm:text-sm"
         >
-          Category name is required
+          Назва категорії обов'язкова
         </mat-error>
       </mat-form-field>
     </div>
 
     <div class="mb-3 sm:mb-4">
       <mat-form-field appearance="fill" class="w-full">
-        <mat-label>Parent Category (Optional)</mat-label>
+        <mat-label>Батьківська Категорія (Необов'язково)</mat-label>
         <mat-select
           formControlName="parentCategoryId"
           [disabled]="childCategoryNames.length > 0"
         >
-          <mat-option [value]="null">None</mat-option>
+          <mat-option [value]="null">Відсутня</mat-option>
           <mat-option *ngFor="let cat of allCategories" [value]="cat.id">
             {{ cat.name }}
           </mat-option>
@@ -42,23 +42,23 @@
 
     <div class="mb-3 sm:mb-4" *ngIf="isEditMode == false">
       <mat-form-field appearance="fill" class="w-full">
-        <mat-label>Subcategory Names (Optional)</mat-label>
-        <mat-chip-grid #chipGrid aria-label="Subcategory list">
+        <mat-label>Назви Підкатегорій (Необов'язково)</mat-label>
+        <mat-chip-grid #chipGrid aria-label="Список підкатегорій">
           <mat-chip-row
             *ngFor="let name of childCategoryNames; trackBy: trackByName"
             (removed)="removeChildCategory(name)"
             [editable]="true"
             (edited)="editChildCategory(name, $event)"
-            [aria-description]="'press enter to edit ' + name"
+            [aria-description]="'натисніть enter для редагування ' + name"
             class="text-xs sm:text-sm"
           >
             {{ name }}
-            <button matChipRemove [attr.aria-label]="'remove ' + name">
+            <button matChipRemove [attr.aria-label]="'видалити ' + name">
               <mat-icon class="text-base">cancel</mat-icon>
             </button>
           </mat-chip-row>
           <input
-            placeholder="New subcategory..."
+            placeholder="Нова підкатегорія..."
             [matChipInputFor]="chipGrid"
             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
             [matChipInputAddOnBlur]="addOnBlur"
@@ -78,7 +78,7 @@
           for="image"
           class="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
         >
-          Category Image (Optional)
+          Зображення Категорії (Необов'язково)
         </label>
         <input
           type="file"
@@ -91,7 +91,7 @@
         *ngIf="imageInvalid && selectedImage"
         class="text-xs sm:text-sm mt-1"
       >
-        Please select a valid image.
+        Будь ласка, виберіть дійсне зображення.
       </mat-error>
     </div>
 
@@ -102,7 +102,7 @@
         [routerLink]="['/admin/categories']"
         class="bg-gray-500 text-white w-full sm:w-auto order-2 sm:order-1"
       >
-        Cancel
+        Скасувати
       </button>
       <button
         mat-raised-button
@@ -111,7 +111,7 @@
         [disabled]="categoryForm.invalid"
         class="w-full sm:w-auto order-1 sm:order-2"
       >
-        {{ isEditMode ? "Update" : "Create" }} Category
+        {{ isEditMode ? "Оновити" : "Створити" }} Категорію
       </button>
     </div>
   </form>

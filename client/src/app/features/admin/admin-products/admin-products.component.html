@@ -9,7 +9,7 @@
       <input
         type="search"
         class="block w-full p-2 sm:p-4 text-sm text-gray-900 border border-gray-300 rounded-lg"
-        placeholder="Search products..."
+        placeholder="Пошук товарів..."
         name="search"
         [(ngModel)]="shopParams.searchTerm"
       />
@@ -24,7 +24,7 @@
     <h2
       class="text-xl sm:text-2xl font-semibold text-gray-800 text-center md:text-right"
     >
-      Admin Products
+      Адміністрування товарів
     </h2>
     <button
       mat-raised-button
@@ -33,7 +33,7 @@
       class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm w-full md:w-auto"
     >
       <mat-icon>add</mat-icon>
-      Create New Product
+      Створити новий товар
     </button>
   </div>
 
@@ -48,7 +48,7 @@
       [showFirstLastButtons]="true"
       [pageSizeOptions]="pageSizeOptions"
       [pageIndex]="shopParams.pageNumber - 1"
-      aria-label="Select page"
+      aria-label="Вибрати сторінку"
       style="touch-action: auto"
     >
     </mat-paginator>
@@ -57,10 +57,10 @@
       <button
         mat-stroked-button
         [matMenuTriggerFor]="sortMenu"
-        class="w-full sm:w-auto"
+        class="wide-sort-menu"
       >
         <mat-icon>swap_vert</mat-icon>
-        Sort
+        Сортування
       </button>
     </div>
   </div>
@@ -68,7 +68,7 @@
   <div class="actions-container">
     <button mat-button color="primary" (click)="fileInput.click()">
       <mat-icon>upload_file</mat-icon>
-      Import Products
+      Імпорт товарів
     </button>
     <input
       #fileInput
@@ -86,7 +86,7 @@
       class="mat-elevation-z8 w-full"
     >
       <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef class="text-center">Name</th>
+        <th mat-header-cell *matHeaderCellDef class="text-center">Назва</th>
         <td mat-cell *matCellDef="let product" class="text-center">
           {{ product.name }}
         </td>
@@ -98,7 +98,7 @@
           *matHeaderCellDef
           class="text-center hidden md:table-cell"
         >
-          Category
+          Категорія
         </th>
         <td
           mat-cell
@@ -115,7 +115,7 @@
           *matHeaderCellDef
           class="text-center hidden lg:table-cell"
         >
-          Car Models
+          Моделі авто
         </th>
         <td
           mat-cell
@@ -132,7 +132,7 @@
           *matHeaderCellDef
           class="text-center hidden sm:table-cell"
         >
-          VendorCode
+          Артикул
         </th>
         <td
           mat-cell
@@ -144,7 +144,7 @@
       </ng-container>
 
       <ng-container matColumnDef="price">
-        <th mat-header-cell *matHeaderCellDef class="text-center">Price</th>
+        <th mat-header-cell *matHeaderCellDef class="text-center">Ціна</th>
         <td mat-cell *matCellDef="let product" class="text-center">
           {{ product.price | currency : "UAH" : "symbol-narrow" }}
         </td>
@@ -156,7 +156,7 @@
           *matHeaderCellDef
           class="text-center hidden sm:table-cell"
         >
-          Discount
+          Знижка
         </th>
         <td
           mat-cell
@@ -173,7 +173,7 @@
           *matHeaderCellDef
           class="text-center hidden md:table-cell"
         >
-          Stock
+          Залишок
         </th>
         <td
           mat-cell
@@ -185,7 +185,9 @@
       </ng-container>
 
       <ng-container matColumnDef="isAvailable">
-        <th mat-header-cell *matHeaderCellDef class="text-center">Available</th>
+        <th mat-header-cell *matHeaderCellDef class="text-center">
+          Доступність
+        </th>
         <td mat-cell *matCellDef="let product" class="text-center">
           <mat-slide-toggle
             [checked]="product.isAvailable"
@@ -198,7 +200,7 @@
       </ng-container>
 
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="text-center">Actions</th>
+        <th mat-header-cell *matHeaderCellDef class="text-center">Дії</th>
         <td mat-cell *matCellDef="let product" class="text-center">
           <div class="flex flex-wrap justify-center gap-1">
             <button

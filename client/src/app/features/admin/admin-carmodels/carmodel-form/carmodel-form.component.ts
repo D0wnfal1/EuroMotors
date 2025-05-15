@@ -18,6 +18,8 @@ import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { QuickBrandAddComponent } from '../quick-brand-add/quick-brand-add.component';
 import { SnackbarService } from '../../../../core/services/snackbar.service';
+import { FuelTypePipe } from '../../../../shared/pipes/fuel-type.pipe';
+import { BodyTypePipe } from '../../../../shared/pipes/body-type.pipe';
 
 @Component({
   selector: 'app-carmodel-form',
@@ -31,6 +33,8 @@ import { SnackbarService } from '../../../../core/services/snackbar.service';
     MatError,
     RouterLink,
     MatDialogModule,
+    BodyTypePipe,
+    FuelTypePipe,
   ],
   templateUrl: './carmodel-form.component.html',
   styleUrl: './carmodel-form.component.scss',

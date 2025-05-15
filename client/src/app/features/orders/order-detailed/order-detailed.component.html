@@ -6,12 +6,12 @@
 >
   <mat-card class="bg-white shadow-md rounded-lg p-3 sm:p-6">
     <h2 class="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4">
-      Order Details
+      Деталі Замовлення
     </h2>
 
     <div class="flex flex-col sm:flex-row sm:justify-between mb-3 sm:mb-4">
       <div class="w-full sm:w-1/2">
-        <div class="mb-1 sm:mb-2 text-base sm:text-lg font-medium">Status</div>
+        <div class="mb-1 sm:mb-2 text-base sm:text-lg font-medium">Статус</div>
         <div class="text-xs sm:text-sm text-gray-600">
           {{ order.status | status }}
         </div>
@@ -21,22 +21,28 @@
     <div class="flex flex-col sm:flex-row sm:justify-between mb-3 sm:mb-4">
       <div class="w-full sm:w-1/2 sm:pr-4 mb-3 sm:mb-0">
         <div class="mb-1 sm:mb-2 text-base sm:text-lg font-medium">
-          Total Price
+          Загальна Ціна
         </div>
         <div class="text-xs sm:text-sm text-gray-600">
-          {{ order.totalPrice | currency }}
+          {{ order.totalPrice | currency : "UAH" : "symbol-narrow" }}
         </div>
         <div class="mb-3 sm:mb-4 mt-3 sm:mt-4">
           <div class="mb-1 sm:mb-2 text-base sm:text-lg font-medium">
-            Delivery Method
+            Спосіб Доставки
           </div>
           <div class="text-xs sm:text-sm text-gray-600">
             {{ order.deliveryMethod | delivery }}
           </div>
         </div>
-        <div *ngIf="order.shippingAddress" class="mb-3 sm:mb-4">
+        <div
+          *ngIf="
+            order.shippingAddress &&
+            order.deliveryMethod === DeliveryMethod.Delivery
+          "
+          class="mb-3 sm:mb-4"
+        >
           <div class="mb-1 sm:mb-2 text-base sm:text-lg font-medium">
-            Shipping Address
+            Адреса Доставки
           </div>
           <div class="text-xs sm:text-sm text-gray-600">
             {{ order.shippingAddress }}
@@ -45,7 +51,7 @@
       </div>
       <div class="w-full sm:w-1/2 sm:pl-4">
         <div class="mb-1 sm:mb-2 text-base sm:text-lg font-medium">
-          Payment Method
+          Спосіб Оплати
         </div>
         <div class="text-xs sm:text-sm text-gray-600">
           {{ order.paymentMethod | payment }}
@@ -53,7 +59,7 @@
       </div>
       <div *ngIf="order.paymentId" class="w-full sm:w-1/2 sm:pl-4 mt-3 sm:mt-0">
         <div class="mb-1 sm:mb-2 text-base sm:text-lg font-medium">
-          Payment ID
+          ID Платежу
         </div>
         <div class="text-xs sm:text-sm text-gray-600">
           {{ order.paymentId }}
@@ -63,16 +69,16 @@
 
     <div class="mb-3 sm:mb-4">
       <div class="mb-1 sm:mb-2 text-base sm:text-lg font-medium">
-        Buyer Information
+        Інформація про Покупця
       </div>
       <div class="text-xs sm:text-sm">
-        <strong>Name: </strong>
+        <strong>Ім'я: </strong>
         <span class="text-xs sm:text-sm text-gray-600">{{
           order.buyerName
         }}</span>
       </div>
       <div class="text-xs sm:text-sm">
-        <strong>Phone: </strong>
+        <strong>Телефон: </strong>
         <span class="text-xs sm:text-sm text-gray-600">{{
           order.buyerPhoneNumber
         }}</span>
@@ -87,13 +93,13 @@
 
     <div class="mb-3 sm:mb-4">
       <div class="mb-1 sm:mb-2 text-base sm:text-lg font-medium">
-        Order Items
+        Товари в Замовленні
       </div>
       <div
         *ngIf="order.orderItems.length === 0"
         class="text-xs sm:text-sm text-gray-600"
       >
-        No items in this order.
+        У цьому замовленні немає товарів.
       </div>
       <div
         *ngFor="let item of order.orderItems"
@@ -101,15 +107,15 @@
       >
         <div class="w-full sm:w-1/2 mb-1 sm:mb-0">
           <div class="text-xs sm:text-sm text-gray-600">
-            {{ productNames[item.productId] || "Loading..." }}
+            {{ productNames[item.productId] || "Завантаження..." }}
           </div>
         </div>
         <div class="flex justify-between sm:w-1/2">
           <div class="text-xs sm:text-sm text-gray-600">
-            Quantity: {{ item.quantity }}
+            Кількість: {{ item.quantity }}
           </div>
           <div class="text-xs sm:text-sm text-gray-600">
-            {{ item.price | currency }}
+            {{ item.price | currency : "UAH" : "symbol-narrow" }}
           </div>
         </div>
       </div>
@@ -130,7 +136,7 @@
           (click)="changeOrderStatus()"
           class="px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
-          Change Status to {{ nextStatus }}
+          Змінити статус на {{ nextStatus }}
         </button>
         <button
           *ngIf="
@@ -143,7 +149,7 @@
           (click)="refundOrder()"
           class="px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
         >
-          Refund Order
+          Повернути Кошти
         </button>
 
         <button
@@ -153,7 +159,7 @@
           (click)="cancelOrder()"
           class="px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-hidden focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
         >
-          Cancel Order
+          Скасувати Замовлення
         </button>
         <button
           *ngIf="order.status === OrderStatus.Canceled"
@@ -162,7 +168,7 @@
           (click)="deleteOrder()"
           class="px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-hidden focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
         >
-          Delete Order
+          Видалити Замовлення
         </button>
       </div>
       <button
@@ -170,7 +176,7 @@
         (click)="onReturnClick()"
         class="px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
       >
-        Back to Orders
+        Назад до Замовлень
       </button>
     </div>
   </mat-card>

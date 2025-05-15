@@ -1,10 +1,9 @@
 <div class="mx-auto mt-2 sm:mt-4 px-2 sm:px-4">
   <h2 class="font-semibold text-xl sm:text-2xl text-center mb-3 sm:mb-4">
-    My orders
+    Мої замовлення
   </h2>
   <div class="flex flex-col">
     <div *ngIf="orders && orders.length > 0; else emptyOrders" class="w-full">
-      <!-- Desktop view with table -->
       <div class="hidden sm:block overflow-x-auto">
         <table
           mat-table
@@ -17,33 +16,33 @@
               *matHeaderCellDef
               class="text-center px-3 sm:px-6 py-2 sm:py-3"
             >
-              Order
+              Замовлення
             </th>
             <td
               mat-cell
               *matCellDef="let order; let i = index"
               class="text-center px-3 sm:px-6 py-2 sm:py-3 text-sm"
             >
-              # {{ i + 1 }}
+              № {{ i + 1 }}
             </td>
           </ng-container>
 
           <ng-container matColumnDef="date">
-            <th mat-header-cell *matHeaderCellDef class="text-left">Date</th>
+            <th mat-header-cell *matHeaderCellDef class="text-left">Дата</th>
             <td mat-cell *matCellDef="let order" class="text-left text-sm">
               {{ order.createdAtUtc | date : "d MMMM yyyy HH:mm" }}
             </td>
           </ng-container>
 
           <ng-container matColumnDef="total">
-            <th mat-header-cell *matHeaderCellDef class="text-left">Total</th>
+            <th mat-header-cell *matHeaderCellDef class="text-left">Сума</th>
             <td mat-cell *matCellDef="let order" class="text-left text-sm">
-              {{ order.totalPrice | currency }}
+              {{ order.totalPrice | currency : "UAH" : "symbol-narrow" }}
             </td>
           </ng-container>
 
           <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef class="text-left">Status</th>
+            <th mat-header-cell *matHeaderCellDef class="text-left">Статус</th>
             <td mat-cell *matCellDef="let order" class="text-left text-sm">
               {{ order.status | status }}
             </td>
@@ -59,7 +58,6 @@
         </table>
       </div>
 
-      <!-- Mobile view with cards -->
       <div class="sm:hidden">
         <div
           *ngFor="let order of orders; let i = index"
@@ -67,19 +65,19 @@
           [routerLink]="['/orders', order.id]"
         >
           <div class="flex justify-between border-b pb-2 mb-2">
-            <span class="font-medium text-sm">Order #{{ i + 1 }}</span>
+            <span class="font-medium text-sm">Замовлення №{{ i + 1 }}</span>
             <span class="text-xs text-gray-500">{{
               order.createdAtUtc | date : "d MMM yyyy"
             }}</span>
           </div>
           <div class="flex justify-between items-center">
-            <span class="text-sm">Total:</span>
+            <span class="text-sm">Сума:</span>
             <span class="font-semibold text-sm">{{
-              order.totalPrice | currency
+              order.totalPrice | currency : "UAH" : "symbol-narrow"
             }}</span>
           </div>
           <div class="flex justify-between items-center mt-1">
-            <span class="text-sm">Status:</span>
+            <span class="text-sm">Статус:</span>
             <span
               class="text-xs py-1 px-2 bg-blue-100 text-blue-800 rounded-full"
               >{{ order.status | status }}</span

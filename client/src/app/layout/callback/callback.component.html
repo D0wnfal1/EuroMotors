@@ -1,6 +1,6 @@
 <div class="p-4 sm:p-6 max-w-md w-full">
   <div class="flex justify-between items-center mb-4 sm:mb-6">
-    <h2 class="text-lg sm:text-xl font-semibold">Callback link</h2>
+    <h2 class="text-lg sm:text-xl font-semibold">Зворотний дзвінок</h2>
     <button mat-icon-button (click)="close()" class="focus:outline-none">
       <mat-icon>close</mat-icon>
     </button>
@@ -12,15 +12,15 @@
     class="flex flex-col gap-4 sm:gap-6"
   >
     <mat-form-field appearance="outline" class="w-full">
-      <mat-label>Your name</mat-label>
+      <mat-label>Ваше ім'я</mat-label>
       <input matInput formControlName="name" required />
       <mat-error *ngIf="callbackForm.get('name')?.invalid"
-        >Name is required.</mat-error
+        >Ім'я обов'язкове.</mat-error
       >
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="w-full">
-      <mat-label>Phone number</mat-label>
+      <mat-label>Номер телефону</mat-label>
       <input
         matInput
         formControlName="phone"
@@ -28,10 +28,10 @@
         required
       />
       <mat-error *ngIf="callbackForm.get('phone')?.hasError('required')">
-        Enter a phone number
+        Введіть номер телефону
       </mat-error>
       <mat-error *ngIf="callbackForm.get('phone')?.hasError('pattern')">
-        Please enter a valid phone number.
+        Будь ласка, введіть дійсний номер телефону.
       </mat-error>
     </mat-form-field>
 
@@ -42,7 +42,7 @@
       class="py-2 sm:py-3 bg-lime-400 hover:bg-lime-500 text-black font-medium rounded w-full text-sm sm:text-base"
       [disabled]="callbackForm.invalid"
     >
-      Call me back
+      Передзвоніть мені
     </button>
   </form>
 

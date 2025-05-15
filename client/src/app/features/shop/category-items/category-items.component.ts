@@ -2,7 +2,11 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import {
+  MatPaginatorModule,
+  PageEvent,
+  MatPaginatorIntl,
+} from '@angular/material/paginator';
 import { CategoryService } from '../../../core/services/category.service';
 import { ProductService } from '../../../core/services/product.service';
 import { Category } from '../../../shared/models/category';
@@ -19,6 +23,7 @@ import {
 } from '@angular/material/list';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
+import { UkrainianPaginatorIntl } from '../../../shared/i18n/ukrainian-paginator-intl';
 
 @Component({
   selector: 'app-category-items',
@@ -35,6 +40,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatListOption,
     MatButtonModule,
   ],
+  providers: [{ provide: MatPaginatorIntl, useClass: UkrainianPaginatorIntl }],
   templateUrl: './category-items.component.html',
   styleUrl: './category-items.component.scss',
 })
@@ -52,9 +58,9 @@ export class CategoryItemsComponent implements OnInit, OnDestroy {
   totalItems = 0;
   searchTerm: string = '';
   sortOptions = [
-    { name: 'Alphabetical', value: '' },
-    { name: 'Price: Low-High', value: 'ASC' },
-    { name: 'Price: High-Low', value: 'DESC' },
+    { name: 'За алфавітом', value: '' },
+    { name: 'Ціна: від низької до високої', value: 'ASC' },
+    { name: 'Ціна: від високої до низької', value: 'DESC' },
   ];
 
   ngOnInit() {

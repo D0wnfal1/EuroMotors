@@ -6,17 +6,21 @@ import {
   OnChanges,
   SimpleChanges,
   inject,
-  HostListener,
 } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatStepperModule } from '@angular/material/stepper';
 import { CarbrandService } from '../../../core/services/carbrand.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription, forkJoin } from 'rxjs';
 import { Router } from '@angular/router';
 import { CarBrand } from '../../../shared/models/carBrand';
@@ -54,15 +58,15 @@ export class CarSelectionComponent implements OnInit, OnDestroy, OnChanges {
   isSmallScreen = false;
 
   carSelectionForm: FormGroup;
-  private subscriptions: Subscription[] = [];
+  private readonly subscriptions: Subscription[] = [];
   private isInitialLoad = true;
   private isFormSetupComplete = false;
 
   constructor(
-    private carBrandService: CarbrandService,
-    private fb: FormBuilder,
-    private router: Router,
-    private breakpointObserver: BreakpointObserver
+    private readonly carBrandService: CarbrandService,
+    private readonly fb: FormBuilder,
+    private readonly router: Router,
+    private readonly breakpointObserver: BreakpointObserver
   ) {
     this.carSelectionForm = this.fb.group({
       brand: [null, Validators.required],
@@ -265,7 +269,6 @@ export class CarSelectionComponent implements OnInit, OnDestroy, OnChanges {
       } else {
         console.error('No car IDs match the current selection');
       }
-    } else {
     }
   }
 

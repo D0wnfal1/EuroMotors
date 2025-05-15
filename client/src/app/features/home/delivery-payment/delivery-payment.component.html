@@ -1,103 +1,105 @@
 <div class="p-6 space-y-8 bg-gray-50">
-  <h1 class="text-2xl text-center font-semibold mb-4">Delivery and Payment</h1>
+  <h1 class="text-2xl text-center font-semibold mb-4">Доставка та оплата</h1>
 
-  <mat-card class="rounded-lg shadow-lg p-6">
-    <h2 class="text-xl font-semibold mb-4">Delivery</h2>
-    <div class="space-y-6">
-      <div>
-        <h3 class="text-lg font-medium mb-2">Delivery Times</h3>
-        <ul class="list-disc list-inside space-y-1 text-gray-700">
-          <li>Within the same city: <strong>up to 1 business day</strong></li>
-          <li>
-            Between regional centers or large cities:
-            <strong>1–2 business days</strong>
-          </li>
-          <li>To remote settlements: <strong>up to 3 business days</strong></li>
-        </ul>
-      </div>
+  <div>
+    <mat-card class="rounded-lg shadow-lg p-6">
+      <h2 class="text-xl font-semibold mb-4" appEditableContent>Доставка</h2>
+      <div class="space-y-6">
+        <div appEditableContent>
+          <h3 class="text-lg font-medium mb-2">Терміни доставки</h3>
+          <ul class="list-disc list-inside space-y-1 text-gray-700">
+            <li>У межах одного міста: <strong>до 1 робочого дня</strong></li>
+            <li>
+              Між обласними центрами або великими містами:
+              <strong>1–2 робочих дні</strong>
+            </li>
+            <li>
+              До віддалених населених пунктів:
+              <strong>до 3 робочих днів</strong>
+            </li>
+          </ul>
+        </div>
 
-      <div>
-        <h3 class="text-lg font-medium mb-2">Delivery Cost</h3>
-        <table class="w-full text-left text-gray-700">
-          <thead>
-            <tr>
-              <th class="pb-2">Parcel Weight</th>
-              <th class="pb-2">Within the City</th>
-              <th class="pb-2">Across Ukraine</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="py-1">Up to 2 kg</td>
-              <td class="py-1">60 ₴</td>
-              <td class="py-1">80 ₴</td>
-            </tr>
-            <tr class="bg-gray-100">
-              <td class="py-1">Up to 10 kg</td>
-              <td class="py-1">90 ₴</td>
-              <td class="py-1">110 ₴</td>
-            </tr>
-            <tr>
-              <td class="py-1">Up to 30 kg</td>
-              <td class="py-1">140 ₴</td>
-              <td class="py-1">160 ₴</td>
-            </tr>
-            <tr class="bg-gray-100">
-              <td class="py-1">Courier Delivery (up to 30 kg)</td>
-              <td colspan="2" class="py-1">+35 ₴</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+        <div appEditableContent>
+          <h3 class="text-lg font-medium mb-2">Вартість доставки</h3>
+          <table class="w-full text-left text-gray-700">
+            <thead>
+              <tr>
+                <th class="pb-2">Вага посилки</th>
+                <th class="pb-2">По місту</th>
+                <th class="pb-2">По Україні</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="py-1">До 2 кг</td>
+                <td class="py-1">60 ₴</td>
+                <td class="py-1">80 ₴</td>
+              </tr>
+              <tr class="bg-gray-100">
+                <td class="py-1">До 10 кг</td>
+                <td class="py-1">90 ₴</td>
+                <td class="py-1">110 ₴</td>
+              </tr>
+              <tr>
+                <td class="py-1">До 30 кг</td>
+                <td class="py-1">140 ₴</td>
+                <td class="py-1">160 ₴</td>
+              </tr>
+              <tr class="bg-gray-100">
+                <td class="py-1">Кур'єрська доставка (до 30 кг)</td>
+                <td colspan="2" class="py-1">+35 ₴</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-      <div>
-        <h3 class="text-lg font-medium mb-2">Storage and Tracking</h3>
-        <p class="text-gray-700">
-          After arrival, the parcel is stored at the branch free of charge for 7
-          days. From the eighth day onwards — according to Nova Poshta's
-          tariffs.
-        </p>
-        <p class="text-gray-700">
-          You will receive a tracking number (TTN) for online tracking in the
-          mobile app or on the website.
-        </p>
+        <div appEditableContent>
+          <h3 class="text-lg font-medium mb-2">Зберігання та відстеження</h3>
+          <p class="text-gray-700">
+            Після прибуття посилка безкоштовно зберігається у відділенні
+            протягом 7 днів. З восьмого дня — згідно з тарифами Нової Пошти.
+          </p>
+          <p class="text-gray-700">
+            Ви отримаєте номер відстеження (ТТН) для онлайн-відстеження в
+            мобільному додатку або на сайті.
+          </p>
+        </div>
       </div>
-    </div>
-  </mat-card>
+    </mat-card>
 
-  <mat-card class="rounded-lg shadow-lg p-6">
-    <h2 class="text-xl font-semibold mb-4">Payment</h2>
-    <div class="space-y-6">
-      <div>
-        <h3 class="text-lg font-medium mb-2">Prepayment via LiqPay</h3>
-        <ol class="list-decimal list-inside space-y-1 text-gray-700">
-          <li>Select LiqPay in the cart and proceed to the payment form.</li>
-          <li>Enter your card details and confirm the payment.</li>
-          <li>
-            A commission fee of 1.5% of the payment amount applies. Funds are
-            transferred online immediately after confirmation.
-          </li>
-          <li>
-            The payment is secured and activated instantly after confirmation.
-          </li>
-        </ol>
-      </div>
+    <mat-card class="rounded-lg shadow-lg p-6 mt-6">
+      <h2 class="text-xl font-semibold mb-4" appEditableContent>Оплата</h2>
+      <div class="space-y-6">
+        <div appEditableContent>
+          <h3 class="text-lg font-medium mb-2">Передоплата через LiqPay</h3>
+          <ol class="list-decimal list-inside space-y-1 text-gray-700">
+            <li>Виберіть LiqPay у кошику та перейдіть до форми оплати.</li>
+            <li>Введіть дані картки та підтвердіть оплату.</li>
+            <li>
+              Комісія становить 1,5% від суми платежу. Кошти переказуються
+              онлайн одразу після підтвердження.
+            </li>
+            <li>Оплата захищена та активується миттєво після підтвердження.</li>
+          </ol>
+        </div>
 
-      <div>
-        <h3 class="text-lg font-medium mb-2">
-          Payment Upon Receipt (Cash on Delivery)
-        </h3>
-        <p class="text-gray-700">
-          Pay for your order at the branch when receiving the parcel.
-        </p>
-        <ul class="list-disc list-inside space-y-1 text-gray-700">
-          <li>Commission fee — 2% of the amount + 20 ₴.</li>
-          <li>
-            Cash on delivery allows you to inspect the goods before payment.
-          </li>
-          <li>No charges apply if you refuse to accept the parcel.</li>
-        </ul>
+        <div appEditableContent>
+          <h3 class="text-lg font-medium mb-2">
+            Оплата при отриманні (Накладений платіж)
+          </h3>
+          <p class="text-gray-700">
+            Оплатіть замовлення у відділенні при отриманні посилки.
+          </p>
+          <ul class="list-disc list-inside space-y-1 text-gray-700">
+            <li>Комісія — 2% від суми + 20 ₴.</li>
+            <li>Накладений платіж дозволяє оглянути товар перед оплатою.</li>
+            <li>
+              Оплата не стягується, якщо ви відмовляєтеся прийняти посилку.
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
-  </mat-card>
+    </mat-card>
+  </div>
 </div>

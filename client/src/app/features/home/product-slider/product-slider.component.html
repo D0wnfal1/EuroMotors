@@ -4,7 +4,7 @@
   <h2
     class="text-lg md:text-xl lg:text-2xl font-bold mb-3 md:mb-4 lg:mb-8 text-center uppercase"
   >
-    Popular Products
+    Популярні Товари
   </h2>
   <div
     class="flex gap-1 md:gap-2 justify-center mb-3 md:mb-4 lg:mb-6 flex-wrap"
@@ -12,35 +12,35 @@
     <button
       mat-raised-button
       color="primary"
-      [class.mat-accent]="activeFilter === 'discount'"
-      (click)="setFilter('discount')"
+      [class.mat-accent]="activeFilter === 'зі знижкою'"
+      (click)="setFilter('зі знижкою')"
       [disabled]="loading"
       class="text-xs md:text-sm"
     >
       <mat-icon class="text-xs md:text-sm lg:text-base">local_offer</mat-icon>
-      Discounts
+      Знижки
     </button>
     <button
       mat-raised-button
       color="primary"
-      [class.mat-accent]="activeFilter === 'new'"
-      (click)="setFilter('new')"
+      [class.mat-accent]="activeFilter === 'нові'"
+      (click)="setFilter('нові')"
       [disabled]="loading"
       class="text-xs md:text-sm"
     >
       <mat-icon class="text-xs md:text-sm lg:text-base">new_releases</mat-icon>
-      New
+      Нові
     </button>
     <button
       mat-raised-button
       color="primary"
-      [class.mat-accent]="activeFilter === 'popular'"
-      (click)="setFilter('popular')"
+      [class.mat-accent]="activeFilter === 'популярні'"
+      (click)="setFilter('популярні')"
       [disabled]="loading"
       class="text-xs md:text-sm"
     >
       <mat-icon class="text-xs md:text-sm lg:text-base">trending_up</mat-icon>
-      Popular
+      Популярні
     </button>
   </div>
 
@@ -56,7 +56,7 @@
       >inventory_2</mat-icon
     >
     <p class="text-lg md:text-xl text-gray-500 text-center">
-      No products found in the {{ getCategoryDisplayName() }} category.
+      Не знайдено товарів у категорії {{ getCategoryDisplayName() }}.
     </p>
 
     <ng-container *ngIf="hasAlternativeCategory()">
@@ -66,7 +66,7 @@
         class="mt-4 text-sm md:text-base"
         (click)="setFilter(getAlternativeCategory())"
       >
-        Browse {{ getAlternativeCategoryName() }} products
+        Переглянути товари категорії {{ getAlternativeCategoryName() }}
       </button>
     </ng-container>
   </div>
@@ -145,7 +145,7 @@
       }"
       (click)="goToSlide(i)"
       [disabled]="loading"
-      aria-label="Slide pagination dot"
+      aria-label="Точка пагінації слайдера"
     ></button>
   </div>
 </div>

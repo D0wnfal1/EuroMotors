@@ -3,7 +3,7 @@
 
   <div class=>
     <h2 class="text-xl md:text-2xl font-bold mb-4 text-center uppercase">
-      Car Brands
+      Марки автомобілів
     </h2>
 
     <div
@@ -28,7 +28,7 @@
             />
           </div>
           <span class="text-sm md:text-base text-left flex-1">
-            Spare Parts For {{ brand.name }}
+            Запчастини для {{ brand.name }}
           </span>
         </div>
       </button>
@@ -41,7 +41,7 @@
         class="px-4 md:px-6 py-1 md:py-2 text-sm md:text-base"
         (click)="viewAllBrands()"
       >
-        {{ showAllBrands ? "Show less" : "All Brands" }}
+        {{ showAllBrands ? "Показати менше" : "Всі марки" }}
       </button>
     </div>
   </div>
@@ -50,7 +50,7 @@
     <h2
       class="text-xl md:text-2xl font-bold mb-4 md:mb-8 text-center uppercase"
     >
-      Product Categories
+      Категорії товарів
     </h2>
 
     <div
@@ -111,7 +111,7 @@
             "
             class="py-3 md:py-4 text-center text-gray-500 text-sm md:text-base"
           >
-            No subcategories available
+            Немає підкатегорій
           </div>
         </mat-card-content>
 
@@ -126,7 +126,7 @@
               pageSize: 10
             }"
           >
-            Explore Category
+            Переглянути категорію
           </button>
         </mat-card-actions>
       </mat-card>
@@ -139,7 +139,7 @@
         class="px-4 md:px-6 py-1 md:py-2 text-sm md:text-base"
         (click)="viewAllCategories()"
       >
-        {{ showAllCategories ? "Show less" : "All Categories" }}
+        {{ showAllCategories ? "Показати менше" : "Всі категорії" }}
       </button>
     </div>
   </div>

@@ -8,11 +8,11 @@ export class PaymentPipe implements PipeTransform {
   transform(value: PaymentMethod | number): string {
     switch (value) {
       case PaymentMethod.Prepaid:
-        return 'Prepaid';
+        return 'Передоплата';
       case PaymentMethod.Postpaid:
-        return 'Postpaid';
+        return 'Післяплата';
       default:
-        return 'Unknown';
+        return 'Невідомо';
     }
   }
 }

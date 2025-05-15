@@ -2,13 +2,12 @@
   <mat-card class="mb-4 sm:mb-6">
     <mat-card-header>
       <mat-card-title class="text-lg sm:text-xl font-bold mb-2 sm:mb-4">
-        Car Selection
+        Вибір Автомобіля
       </mat-card-title>
     </mat-card-header>
 
     <mat-card-content>
       <form [formGroup]="carSelectionForm" (ngSubmit)="saveSelection()">
-        <!-- Use responsive stepper with orientation adjustment -->
         <mat-stepper
           [orientation]="isSmallScreen ? 'vertical' : 'horizontal'"
           linear
@@ -17,11 +16,11 @@
         >
           <mat-step
             [stepControl]="carSelectionForm.get('brand')!"
-            label="Select Brand"
+            label="Вибрати Марку"
           >
             <div class="p-2 sm:p-4">
               <mat-form-field appearance="fill" class="w-full">
-                <mat-label>Brand</mat-label>
+                <mat-label>Марка</mat-label>
                 <mat-select formControlName="brand">
                   <mat-option *ngFor="let brand of carBrands" [value]="brand">
                     {{ brand.name }}
@@ -30,7 +29,7 @@
                 <mat-error
                   *ngIf="carSelectionForm.get('brand')?.hasError('required')"
                 >
-                  Brand is required
+                  Марка обов'язкова для вибору
                 </mat-error>
               </mat-form-field>
               <div class="flex justify-end mt-4">
@@ -41,7 +40,7 @@
                   type="button"
                   class="bg-blue-500 text-white px-4 py-1 rounded"
                 >
-                  Next
+                  Далі
                 </button>
               </div>
             </div>
@@ -49,11 +48,11 @@
 
           <mat-step
             [stepControl]="carSelectionForm.get('model')!"
-            label="Select Model"
+            label="Вибрати Модель"
           >
             <div class="p-2 sm:p-4">
               <mat-form-field appearance="fill" class="w-full">
-                <mat-label>Model</mat-label>
+                <mat-label>Модель</mat-label>
                 <mat-select formControlName="model">
                   <mat-option *ngFor="let model of models" [value]="model">
                     {{ model }}
@@ -62,7 +61,7 @@
                 <mat-error
                   *ngIf="carSelectionForm.get('model')?.hasError('required')"
                 >
-                  Model is required
+                  Модель обов'язкова для вибору
                 </mat-error>
               </mat-form-field>
               <div class="flex flex-col sm:flex-row justify-between mt-4 gap-2">
@@ -72,7 +71,7 @@
                   type="button"
                   class="w-full sm:w-auto"
                 >
-                  Back
+                  Назад
                 </button>
                 <button
                   mat-button
@@ -81,7 +80,7 @@
                   type="button"
                   class="bg-blue-500 text-white px-4 py-1 rounded w-full sm:w-auto"
                 >
-                  Next
+                  Далі
                 </button>
               </div>
             </div>
@@ -89,11 +88,11 @@
 
           <mat-step
             [stepControl]="carSelectionForm.get('year')!"
-            label="Select Year"
+            label="Вибрати Рік"
           >
             <div class="p-2 sm:p-4">
               <mat-form-field appearance="fill" class="w-full">
-                <mat-label>Year</mat-label>
+                <mat-label>Рік</mat-label>
                 <mat-select formControlName="year">
                   <mat-option *ngFor="let year of years" [value]="year">
                     {{ year }}
@@ -102,7 +101,7 @@
                 <mat-error
                   *ngIf="carSelectionForm.get('year')?.hasError('required')"
                 >
-                  Year is required
+                  Рік обов'язковий для вибору
                 </mat-error>
               </mat-form-field>
               <div class="flex flex-col sm:flex-row justify-between mt-4 gap-2">
@@ -112,7 +111,7 @@
                   type="button"
                   class="w-full sm:w-auto"
                 >
-                  Back
+                  Назад
                 </button>
                 <button
                   mat-button
@@ -121,7 +120,7 @@
                   type="button"
                   class="bg-blue-500 text-white px-4 py-1 rounded w-full sm:w-auto"
                 >
-                  Next
+                  Далі
                 </button>
               </div>
             </div>
@@ -129,23 +128,23 @@
 
           <mat-step
             [stepControl]="carSelectionForm.get('bodyType')!"
-            label="Select Body Type"
+            label="Вибрати Тип Кузова"
           >
             <div class="p-2 sm:p-4">
               <mat-form-field appearance="fill" class="w-full">
-                <mat-label>Body Type</mat-label>
+                <mat-label>Тип Кузова</mat-label>
                 <mat-select formControlName="bodyType">
                   <mat-option
                     *ngFor="let bodyType of bodyTypes"
                     [value]="bodyType"
                   >
-                    {{ bodyType }}
+                    {{ bodyType | bodyType }}
                   </mat-option>
                 </mat-select>
                 <mat-error
                   *ngIf="carSelectionForm.get('bodyType')?.hasError('required')"
                 >
-                  Body type is required
+                  Тип кузова обов'язковий для вибору
                 </mat-error>
               </mat-form-field>
               <div class="flex flex-col sm:flex-row justify-between mt-4 gap-2">
@@ -155,7 +154,7 @@
                   type="button"
                   class="w-full sm:w-auto"
                 >
-                  Back
+                  Назад
                 </button>
                 <button
                   mat-button
@@ -164,7 +163,7 @@
                   type="button"
                   class="bg-blue-500 text-white px-4 py-1 rounded w-full sm:w-auto"
                 >
-                  Next
+                  Далі
                 </button>
               </div>
             </div>
@@ -172,14 +171,14 @@
 
           <mat-step
             [stepControl]="carSelectionForm.get('engineSpec')!"
-            label="Engine Specifications"
+            label="Специфікації Двигуна"
           >
             <div class="p-2 sm:p-4">
               <mat-form-field appearance="fill" class="w-full">
-                <mat-label>Engine Specification</mat-label>
+                <mat-label>Специфікація Двигуна</mat-label>
                 <mat-select formControlName="engineSpec">
                   <mat-option *ngFor="let spec of engineSpecs" [value]="spec">
-                    {{ spec }}
+                    {{ spec | engineSpec }}
                   </mat-option>
                 </mat-select>
                 <mat-error
@@ -187,7 +186,7 @@
                     carSelectionForm.get('engineSpec')?.hasError('required')
                   "
                 >
-                  Engine specification is required
+                  Специфікація двигуна обов'язкова для вибору
                 </mat-error>
               </mat-form-field>
 
@@ -198,7 +197,7 @@
                   type="button"
                   class="w-full sm:w-auto"
                 >
-                  Back
+                  Назад
                 </button>
                 <button
                   mat-button
@@ -206,7 +205,7 @@
                   [disabled]="!carSelectionForm.valid"
                   class="bg-blue-500 text-white px-4 py-1 rounded w-full sm:w-auto"
                 >
-                  Save Selection
+                  Зберегти Вибір
                 </button>
               </div>
             </div>

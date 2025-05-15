@@ -9,10 +9,11 @@
       [pageSize]="shopParams.pageSize"
       (page)="handlePageEvent($event)"
       showFirstLastButtons
+      aria-label="Вибрати сторінку"
       style="touch-action: auto"
     ></mat-paginator>
     <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 text-center">
-      Admin Categories
+      Категорії товарів
     </h2>
     <button
       mat-raised-button
@@ -21,7 +22,7 @@
       class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm w-full md:w-auto"
     >
       <mat-icon>add</mat-icon>
-      Create New Category
+      Створити нову категорію
     </button>
   </div>
 
@@ -46,7 +47,7 @@
           <div class="w-12 h-12 sm:w-16 sm:h-16 mr-2 sm:mr-4">
             <img
               [src]="getCategoryImage(node.imagePath)"
-              alt="Category"
+              alt="Категорія"
               class="w-full h-full object-cover rounded-sm"
             />
           </div>
@@ -94,7 +95,7 @@
           <div class="w-12 h-12 sm:w-16 sm:h-16 mr-2 sm:mr-4">
             <img
               [src]="getCategoryImage(node.imagePath)"
-              alt="Category"
+              alt="Категорія"
               class="w-full h-full object-cover rounded-sm"
             />
           </div>
@@ -140,21 +141,23 @@
             mode="indeterminate"
             class="mr-2"
           ></mat-progress-spinner>
-          <span class="text-gray-500 text-sm sm:text-base">Loading...</span>
+          <span class="text-gray-500 text-sm sm:text-base"
+            >Завантаження...</span
+          >
         </div>
       </mat-tree-node>
 
       <ng-container *ngIf="dataSource.data.length === 0">
         <div class="p-4 sm:p-8 text-center text-gray-500">
           <mat-icon class="text-3xl sm:text-4xl mb-2">category</mat-icon>
-          <p class="text-sm sm:text-base">No categories found</p>
+          <p class="text-sm sm:text-base">Категорії не знайдено</p>
           <button
             mat-raised-button
             color="primary"
             [routerLink]="['/admin/categories/create']"
             class="mt-4 text-sm sm:text-base"
           >
-            Create your first category
+            Створити першу категорію
           </button>
         </div>
       </ng-container>

@@ -44,6 +44,9 @@ import { CallbackComponent } from '../callback/callback.component';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { LayoutService } from '../../core/services/layout.service';
 import { ProductResponse } from '../../shared/models/product';
+import { BodyTypePipe } from '../../shared/pipes/body-type.pipe';
+import { FuelTypePipe } from '../../shared/pipes/fuel-type.pipe';
+import { EngineSpecPipe } from '../../shared/pipes/engine-spec.pipe';
 
 @Component({
   selector: 'app-header',
@@ -67,6 +70,7 @@ import { ProductResponse } from '../../shared/models/product';
     FormsModule,
     MatListModule,
     MatSidenavModule,
+    EngineSpecPipe,
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',

@@ -9,7 +9,7 @@
       [showFirstLastButtons]="true"
       [pageSizeOptions]="pageSizeOptions"
       [pageIndex]="shopParams.pageNumber - 1"
-      aria-label="Select page"
+      aria-label="Вибрати сторінку"
       style="touch-action: auto"
     >
     </mat-paginator>
@@ -17,7 +17,7 @@
     <div class="flex mt-2 sm:mt-0">
       <button mat-stroked-button [matMenuTriggerFor]="sortMenu" class="mr-4">
         <mat-icon>swap_vert</mat-icon>
-        Sort
+        Сортувати
       </button>
     </div>
   </div>
@@ -32,7 +32,7 @@
 </div>
 }
 
-<mat-menu #sortMenu="matMenu">
+<mat-menu #sortMenu="matMenu" class="wide-sort-menu">
   <mat-selection-list
     [multiple]="false"
     (selectionChange)="onSortChange($event)"

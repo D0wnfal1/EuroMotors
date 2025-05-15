@@ -12,7 +12,7 @@
         [showFirstLastButtons]="true"
         [pageSizeOptions]="pageSizeOptions"
         [pageIndex]="shopParams.pageNumber - 1"
-        aria-label="Select page"
+        aria-label="Вибрати сторінку"
         style="touch-action: auto"
       >
       </mat-paginator>
@@ -20,7 +20,7 @@
       <div class="flex">
         <button mat-stroked-button [matMenuTriggerFor]="sortMenu" class="mr-4">
           <mat-icon>swap_vert</mat-icon>
-          Sort
+          Сортувати
         </button>
       </div>
     </div>
@@ -36,11 +36,11 @@
     </div>
     <ng-template #noProducts>
       <div class="text-center text-gray-500">
-        There are no products in this category.
+        У цій категорії немає товарів.
       </div>
     </ng-template>
   </ng-container>
-  <mat-menu #sortMenu="matMenu">
+  <mat-menu #sortMenu="matMenu" class="wide-sort-menu">
     <mat-selection-list
       [multiple]="false"
       (selectionChange)="onSortChange($event)"

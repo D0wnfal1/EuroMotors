@@ -1,17 +1,21 @@
 <div class="p-3 sm:p-6 max-w-xl mx-auto">
   <h1 class="text-xl sm:text-2xl font-bold text-center mb-4 sm:mb-6">
-    {{ isEditMode ? "Edit" : "Create" }} Car Brand
+    {{ isEditMode ? "Редагувати" : "Створити" }} Марку Автомобіля
   </h1>
 
   <form [formGroup]="carBrandForm" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="fill" class="w-full mb-3 sm:mb-4">
-      <mat-label>Brand Name</mat-label>
-      <input matInput formControlName="name" placeholder="Enter brand name" />
+      <mat-label>Назва Марки</mat-label>
+      <input
+        matInput
+        formControlName="name"
+        placeholder="Введіть назву марки"
+      />
       <mat-error *ngIf="carBrandForm.get('name')?.hasError('required')">
-        Brand name is required
+        Назва марки обов'язкова
       </mat-error>
       <mat-error *ngIf="carBrandForm.get('name')?.hasError('maxlength')">
-        Brand name must be less than 100 characters
+        Назва марки має бути менше 100 символів
       </mat-error>
     </mat-form-field>
 
@@ -22,7 +26,7 @@
         <label
           for="logo"
           class="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
-          >Brand Logo (optional)</label
+          >Логотип Марки (необов'язково)</label
         >
         <input
           type="file"
@@ -35,7 +39,7 @@
         *ngIf="logoInvalid && selectedLogo"
         class="text-xs sm:text-sm mt-1"
       >
-        Please select a valid image.
+        Будь ласка, виберіть дійсне зображення.
       </mat-error>
     </div>
 
@@ -48,7 +52,7 @@
         [routerLink]="['/admin/carbrands']"
         class="bg-gray-500 text-white w-full sm:w-auto order-2 sm:order-1"
       >
-        Cancel
+        Скасувати
       </button>
       <button
         mat-raised-button
@@ -57,7 +61,7 @@
         [disabled]="carBrandForm.invalid"
         class="w-full sm:w-auto order-1 sm:order-2"
       >
-        {{ isEditMode ? "Update" : "Create" }} Car Brand
+        {{ isEditMode ? "Оновити" : "Створити" }} Марку Автомобіля
       </button>
     </div>
   </form>

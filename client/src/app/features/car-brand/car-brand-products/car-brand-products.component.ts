@@ -14,7 +14,11 @@ import { CarBrand } from '../../../shared/models/carBrand';
 import { Product } from '../../../shared/models/product';
 import { ProductItemComponent } from '../../shop/product-item/product-item.component';
 import { CartService } from '../../../core/services/cart.service';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import {
+  MatPaginatorModule,
+  PageEvent,
+  MatPaginatorIntl,
+} from '@angular/material/paginator';
 import { Pagination } from '../../../shared/models/pagination';
 import {
   MatListOption,
@@ -22,6 +26,7 @@ import {
   MatSelectionListChange,
 } from '@angular/material/list';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
+import { UkrainianPaginatorIntl } from '../../../shared/i18n/ukrainian-paginator-intl';
 
 @Component({
   selector: 'app-car-brand-products',
@@ -41,6 +46,7 @@ import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
     MatSelectionList,
     MatListOption,
   ],
+  providers: [{ provide: MatPaginatorIntl, useClass: UkrainianPaginatorIntl }],
   templateUrl: './car-brand-products.component.html',
   styleUrls: ['./car-brand-products.component.scss'],
 })

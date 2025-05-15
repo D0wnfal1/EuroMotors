@@ -37,7 +37,7 @@
     <img
       mat-card-image
       src="images/no-image.jpeg"
-      alt="No product"
+      alt="Немає зображення"
       class="product-image max-w-full h-auto"
     />
   </ng-template>
@@ -49,7 +49,7 @@
       *ngIf="product.isAvailable; else isNotAvailable"
       class="flex flex-col items-center text-center justify-center gap-1 sm:gap-2 mt-1 sm:mt-2 min-h-[80px] sm:min-h-[100px]"
     >
-      <div class="text-xs sm:text-sm text-green-700">Is Available</div>
+      <div class="text-xs sm:text-sm text-green-700">В наявності</div>
 
       <div
         *ngIf="product.discount > 0; else noDiscount"
@@ -89,7 +89,7 @@
           (click)="addToCart(product.id)"
         >
           <mat-icon class="text-base">add_shopping_cart</mat-icon>
-          Add to cart
+          Додати до кошика
         </button>
       </mat-card-actions>
     </div>
@@ -98,7 +98,7 @@
       <div
         class="text-xs sm:text-sm text-red-700 mt-1 sm:mt-2 translate-y-[-2px]"
       >
-        Is Not Available
+        Немає в наявності
       </div>
       <div class="text-lg sm:text-xl font-semibold text-blue-200">
         {{ product.price | currency }}
@@ -109,7 +109,7 @@
         class="mt-1 sm:mt-2 text-xs sm:text-sm"
       >
         <mat-icon class="text-base">support_agent</mat-icon>
-        <span>Confirm Availability</span>
+        <span>Уточнити наявність</span>
       </button>
       <button
         mat-stroked-button
@@ -117,7 +117,7 @@
         disabled
       >
         <mat-icon class="text-base">add_shopping_cart</mat-icon>
-        Add to cart
+        Додати до кошика
       </button>
     </ng-template>
   </div>

@@ -8,7 +8,10 @@ import { CategoryItemsComponent } from './category-items/category-items.componen
 import { ProductItemComponent } from './product-item/product-item.component';
 import { RelatedProductsComponent } from './related-products/related-products.component';
 import { ImageOptimizationModule } from '../../shared/modules/image-optimization.module';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import {
+  MatPaginatorModule,
+  MatPaginatorIntl,
+} from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -17,6 +20,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { UkrainianPaginatorIntl } from '../../shared/i18n/ukrainian-paginator-intl';
 
 @NgModule({
   declarations: [],
@@ -40,5 +44,6 @@ import { MatInputModule } from '@angular/material/input';
     ProductItemComponent,
     RelatedProductsComponent,
   ],
+  providers: [{ provide: MatPaginatorIntl, useClass: UkrainianPaginatorIntl }],
 })
 export class ShopModule {}

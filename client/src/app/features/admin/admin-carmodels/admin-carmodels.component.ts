@@ -3,17 +3,24 @@ import { Component, OnInit, inject } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatSelectionListChange } from '@angular/material/list';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import {
+  MatPaginator,
+  PageEvent,
+  MatPaginatorIntl,
+} from '@angular/material/paginator';
 import { RouterLink } from '@angular/router';
 import { ShopParams } from '../../../shared/models/shopParams';
 import { CarmodelService } from '../../../core/services/carmodel.service';
 import { CarbrandService } from '../../../core/services/carbrand.service';
 import { CarModel } from '../../../shared/models/carModel';
-import { ImageService } from '../../../core/services/image.service';
 import { MatTableModule } from '@angular/material/table';
 import { forkJoin } from 'rxjs';
 import { CarBrand } from '../../../shared/models/carBrand';
 import { MatIconModule } from '@angular/material/icon';
+import { UkrainianPaginatorIntl } from '../../../shared/i18n/ukrainian-paginator-intl';
+import { BodyTypePipe } from '../../../shared/pipes/body-type.pipe';
+import { FuelTypePipe } from '../../../shared/pipes/fuel-type.pipe';
+import { EngineSpecPipe } from '../../../shared/pipes/engine-spec.pipe';
 
 @Component({
   selector: 'app-admin-carmodels',
@@ -26,6 +33,12 @@ import { MatIconModule } from '@angular/material/icon';
     FormsModule,
     MatTableModule,
     MatIconModule,
+    BodyTypePipe,
+    EngineSpecPipe,
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: UkrainianPaginatorIntl },
+    EngineSpecPipe,
   ],
   templateUrl: './admin-carmodels.component.html',
   styleUrl: './admin-carmodels.component.scss',

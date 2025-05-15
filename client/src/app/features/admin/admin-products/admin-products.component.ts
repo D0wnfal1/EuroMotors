@@ -13,7 +13,11 @@ import {
   MatListOption,
 } from '@angular/material/list';
 import { MatButtonModule, MatIconButton } from '@angular/material/button';
-import { PageEvent, MatPaginator } from '@angular/material/paginator';
+import {
+  PageEvent,
+  MatPaginator,
+  MatPaginatorIntl,
+} from '@angular/material/paginator';
 import { CarModel } from '../../../shared/models/carModel';
 import { Category } from '../../../shared/models/category';
 import { CarmodelService } from '../../../core/services/carmodel.service';
@@ -23,6 +27,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIcon } from '@angular/material/icon';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { UkrainianPaginatorIntl } from '../../../shared/i18n/ukrainian-paginator-intl';
 
 @Component({
   selector: 'app-admin-products',
@@ -44,6 +49,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     NgFor,
     MatMenuTrigger,
   ],
+  providers: [{ provide: MatPaginatorIntl, useClass: UkrainianPaginatorIntl }],
   templateUrl: './admin-products.component.html',
   styleUrl: './admin-products.component.scss',
 })
@@ -57,9 +63,9 @@ export class AdminProductsComponent implements OnInit {
   products?: Pagination<Product>;
   productImages: { [key: string]: ProductImage[] } = {};
   sortOptions = [
-    { name: 'Alphabetical', value: '' },
-    { name: 'Price: Low-High', value: 'ASC' },
-    { name: 'Price: High-Low', value: 'DESC' },
+    { name: 'За алфавітом', value: '' },
+    { name: 'Ціна: від низької до високої', value: 'ASC' },
+    { name: 'Ціна: від високої до низької', value: 'DESC' },
   ];
   shopParams = new ShopParams();
   pageSizeOptions = [5, 10, 15, 20];

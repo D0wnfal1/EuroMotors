@@ -8,11 +8,11 @@ export class DeliveryPipe implements PipeTransform {
   transform(value: DeliveryMethod | number): string {
     switch (value) {
       case DeliveryMethod.Pickup:
-        return 'Pickup From Store';
+        return 'Самовивіз з Магазину';
       case DeliveryMethod.Delivery:
-        return 'Delivery By NovaPoshta';
+        return 'Доставка Новою Поштою';
       default:
-        return 'Unknown';
+        return 'Невідомо';
     }
   }
 }

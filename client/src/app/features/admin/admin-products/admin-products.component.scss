@@ -4,3 +4,13 @@
   margin-bottom: 1rem;
   align-items: center;
 }
+
+::ng-deep .wide-sort-menu {
+  .mat-mdc-menu-content,
+  .mat-mdc-menu-panel,
+  .mat-mdc-select-panel,
+  .mat-mdc-list-option {
+    min-width: 300px !important;
+    max-width: 350px !important;
+  }
+}

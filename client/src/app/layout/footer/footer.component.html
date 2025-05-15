@@ -3,75 +3,75 @@
     @if (isMobile) {
     <div class="flex flex-col gap-6">
       <div>
-        <h3 class="text-primary mb-2">Navigation</h3>
+        <h3 class="text-primary mb-2">Навігація</h3>
         <div class="grid grid-cols-2 gap-2">
           <a
             routerLink="/"
             class="text-gray-600 hover:text-primary flex items-center gap-1"
           >
             <mat-icon class="scale-75">home</mat-icon>
-            Home
+            Головна
           </a>
           <a
             routerLink="/delivery-payment"
             class="text-gray-600 hover:text-primary flex items-center gap-1"
           >
             <mat-icon class="scale-75">local_shipping</mat-icon>
-            Delivery
+            Доставка
           </a>
           <a
             routerLink="/warranty-returns"
             class="text-gray-600 hover:text-primary flex items-center gap-1"
           >
             <mat-icon class="scale-75">security</mat-icon>
-            Warranty
+            Гарантія
           </a>
           <a
             routerLink="/public-offer"
             class="text-gray-600 hover:text-primary flex items-center gap-1"
           >
             <mat-icon class="scale-75">description</mat-icon>
-            Offer
+            Оферта
           </a>
         </div>
       </div>
 
       <div>
-        <h3 class="text-primary mb-2">Account</h3>
+        <h3 class="text-primary mb-2">Акаунт</h3>
         <div class="grid grid-cols-2 gap-2">
           <a
             routerLink="/account/login"
             class="text-gray-600 hover:text-primary flex items-center gap-1"
           >
             <mat-icon class="scale-75">login</mat-icon>
-            Login
+            Увійти
           </a>
           <a
             routerLink="/account/register"
             class="text-gray-600 hover:text-primary flex items-center gap-1"
           >
             <mat-icon class="scale-75">person_add</mat-icon>
-            Register
+            Реєстрація
           </a>
           <a
             routerLink="/cart"
             class="text-gray-600 hover:text-primary flex items-center gap-1"
           >
             <mat-icon class="scale-75">shopping_cart</mat-icon>
-            Cart
+            Кошик
           </a>
           <a
             routerLink="/orders"
             class="text-gray-600 hover:text-primary flex items-center gap-1"
           >
             <mat-icon class="scale-75">receipt_long</mat-icon>
-            Orders
+            Замовлення
           </a>
         </div>
       </div>
 
       <div>
-        <h3 class="text-primary mb-2">Contact Us</h3>
+        <h3 class="text-primary mb-2">Контакти</h3>
         <div class="flex flex-col gap-2">
           <a
             href="tel:+380951111111"
@@ -98,9 +98,9 @@
       </div>
 
       <div>
-        <h3 class="text-primary mb-2">About EuroMotors</h3>
+        <h3 class="text-primary mb-2">Про EuroMotors</h3>
         <p class="text-gray-600 text-sm mb-2">
-          Your trusted partner in European auto parts and accessories.
+          Ваш надійний партнер з європейських автозапчастин та аксесуарів.
         </p>
         <div class="flex gap-2 mb-4">
           <a
@@ -121,82 +121,82 @@
           </a>
         </div>
         <p class="text-sm text-gray-500">
-          &copy; 2025 EuroMotors. All rights reserved.
+          &copy; 2025 EuroMotors. Усі права захищені.
         </p>
       </div>
     </div>
     } @if (!isMobile) {
     <div class="grid grid-cols-12 gap-4 items-start">
       <div class="col-span-3">
-        <h3 class="text-primary mb-2">Navigation</h3>
+        <h3 class="text-primary mb-2">Навігація</h3>
         <div class="flex flex-col gap-1">
           <a
             routerLink="/"
             class="text-gray-600 hover:text-primary flex items-center gap-2"
           >
             <mat-icon class="scale-75">home</mat-icon>
-            Home
+            Головна
           </a>
           <a
             routerLink="/delivery-payment"
             class="text-gray-600 hover:text-primary flex items-center gap-2"
           >
             <mat-icon class="scale-75">local_shipping</mat-icon>
-            Delivery & Payment
+            Доставка і оплата
           </a>
           <a
             routerLink="/warranty-returns"
             class="text-gray-600 hover:text-primary flex items-center gap-2"
           >
             <mat-icon class="scale-75">security</mat-icon>
-            Warranty & Returns
+            Гарантія і повернення
           </a>
           <a
             routerLink="/public-offer"
             class="text-gray-600 hover:text-primary flex items-center gap-2"
           >
             <mat-icon class="scale-75">description</mat-icon>
-            Public Offer
+            Публічна оферта
           </a>
         </div>
       </div>
 
       <div class="col-span-2">
-        <h3 class="text-primary mb-2">Account</h3>
+        <h3 class="text-primary mb-2">Акаунт</h3>
         <div class="flex flex-col gap-1">
           <a
             routerLink="/account/login"
             class="text-gray-600 hover:text-primary flex items-center gap-2"
           >
             <mat-icon class="scale-75">login</mat-icon>
-            Login
+            Увійти
           </a>
           <a
             routerLink="/account/register"
             class="text-gray-600 hover:text-primary flex items-center gap-2"
           >
             <mat-icon class="scale-75">person_add</mat-icon>
-            Register
+            Реєстрація
           </a>
           <a
             routerLink="/cart"
             class="text-gray-600 hover:text-primary flex items-center gap-2"
           >
             <mat-icon class="scale-75">shopping_cart</mat-icon>
-            Shopping Cart
+            Кошик
           </a>
           <a
             routerLink="/orders"
             class="text-gray-600 hover:text-primary flex items-center gap-2"
           >
             <mat-icon class="scale-75">receipt_long</mat-icon>
-            My Orders
+            Мої замовлення
           </a>
         </div>
       </div>
 
       <div class="col-span-3">
-        <h3 class="text-primary mb-2">Contact Us</h3>
+        <h3 class="text-primary mb-2">Контакти</h3>
         <div class="flex flex-col gap-1">
           <a
             href="tel:+380951111111"
@@ -223,9 +223,9 @@
       </div>
 
       <div class="col-span-4">
-        <h3 class="text-primary mb-2">About EuroMotors</h3>
+        <h3 class="text-primary mb-2">Про EuroMotors</h3>
         <p class="text-gray-600 text-sm mb-2">
-          Your trusted partner in European auto parts and accessories.
+          Ваш надійний партнер з європейських автозапчастин та аксесуарів.
         </p>
         <div class="flex gap-2">
           <a
@@ -247,7 +247,7 @@
         </div>
         <div class="flex items-center justify-between">
           <p class="text-sm text-gray-500">
-            &copy; 2025 EuroMotors. All rights reserved.
+            &copy; 2025 EuroMotors. Усі права захищені.
           </p>
         </div>
       </div>

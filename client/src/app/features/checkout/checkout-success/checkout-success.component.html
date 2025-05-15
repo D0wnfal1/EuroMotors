@@ -2,7 +2,7 @@
   <h1
     class="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 text-center text-primary"
   >
-    Thank you for your order!
+    Дякуємо за ваше замовлення!
   </h1>
 
   <div *ngIf="isLoading" class="flex justify-center my-4 sm:my-6">
@@ -20,51 +20,50 @@
     <h2
       class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-3 sm:mb-4"
     >
-      Order Details
+      Деталі замовлення
     </h2>
 
     <div class="space-y-2 sm:space-y-4 text-sm sm:text-base">
       <p>
-        <strong class="font-semibold text-gray-700">Buyer:</strong>
+        <strong class="font-semibold text-gray-700">Покупець:</strong>
         {{ order.buyerName }}
       </p>
       <p>
-        <strong class="font-semibold text-gray-700">Total Price:</strong>
-        {{ order.totalPrice | currency }}
+        <strong class="font-semibold text-gray-700">Загальна сума:</strong>
+        {{ order.totalPrice | currency : "UAH" : "symbol-narrow" }}
       </p>
       <p *ngIf="order.paymentId">
-        <strong class="font-semibold text-gray-700">Payment ID:</strong>
+        <strong class="font-semibold text-gray-700">ID платежу:</strong>
         {{ order.paymentId }}
       </p>
 
       <p>
-        <strong class="font-semibold text-gray-700">Delivery Method:</strong>
+        <strong class="font-semibold text-gray-700">Спосіб доставки:</strong>
         {{ order.deliveryMethod | delivery }}
       </p>
 
       <p *ngIf="order.deliveryMethod === deliveryMethod.Delivery">
-        <strong class="font-semibold text-gray-700">Shipping Address:</strong>
+        <strong class="font-semibold text-gray-700">Адреса доставки:</strong>
         {{ order.shippingAddress }}
       </p>
 
       <p>
-        <strong class="font-semibold text-gray-700">Payment Method:</strong>
+        <strong class="font-semibold text-gray-700">Спосіб оплати:</strong>
         {{ order.paymentMethod | payment }}
       </p>
 
       <p>
-        <strong class="font-semibold text-gray-700">Created At:</strong>
+        <strong class="font-semibold text-gray-700">Створено:</strong>
         {{ order.createdAtUtc | date : "d MMMM yyyy HH:mm" }}
       </p>
       <p>
-        <strong class="font-semibold text-gray-700">Order Status:</strong>
+        <strong class="font-semibold text-gray-700">Статус замовлення:</strong>
         {{ order.status | status }}
       </p>
     </div>
 
-    <h3 class="text-base sm:text-lg font-semibold mt-4">Order Items</h3>
+    <h3 class="text-base sm:text-lg font-semibold mt-4">Товари у замовленні</h3>
 
-    <!-- Desktop Table View -->
     <div class="hidden sm:block overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200 mt-2">
         <thead class="bg-gray-50">
@@ -72,17 +71,17 @@
             <th
               class="px-4 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
-              Product Name
+              Назва товару
             </th>
             <th
               class="px-4 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
-              Unit Price
+              Ціна за одиницю
             </th>
             <th
               class="px-4 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
-              Quantity
+              Кількість
             </th>
           </tr>
         </thead>
@@ -106,7 +105,6 @@
       </table>
     </div>
 
-    <!-- Mobile List View -->
     <div class="sm:hidden mt-2">
       <div class="border rounded-lg overflow-hidden">
         <div
@@ -119,13 +117,13 @@
           </div>
           <div class="flex justify-between mt-2">
             <div class="flex items-center">
-              <span class="text-xs text-gray-500 mr-1">Price:</span>
+              <span class="text-xs text-gray-500 mr-1">Ціна:</span>
               <span class="text-xs">{{
                 item.price | currency : "UAH" : "symbol-narrow"
               }}</span>
             </div>
             <div class="flex items-center">
-              <span class="text-xs text-gray-500 mr-1">Qty:</span>
+              <span class="text-xs text-gray-500 mr-1">К-сть:</span>
               <span class="text-xs">{{ item.quantity }}</span>
             </div>
           </div>
@@ -140,7 +138,7 @@
       routerLink="/"
       class="px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-lg transition-colors duration-300"
     >
-      Go to Home
+      На головну
     </button>
   </div>
 </div>

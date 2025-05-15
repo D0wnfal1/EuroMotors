@@ -3,16 +3,14 @@
 >
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
     <div class="text-center mb-4 md:mb-6">
-      <h1 class="text-2xl md:text-3xl font-semibold text-primary">Register</h1>
+      <h1 class="text-2xl md:text-3xl font-semibold text-primary">
+        Зареєструватися
+      </h1>
     </div>
-    <app-text-input label="Email address" formControlName="email" />
-    <app-text-input label="First name" formControlName="firstName" />
-    <app-text-input label="Last name" formControlName="lastName" />
-    <app-text-input
-      label="Password"
-      formControlName="password"
-      type="password"
-    />
+    <app-text-input label="Електронна адреса" formControlName="email" />
+    <app-text-input label="Ім'я" formControlName="firstName" />
+    <app-text-input label="Прізвище" formControlName="lastName" />
+    <app-text-input label="Пароль" formControlName="password" type="password" />
 
     <button
       [disabled]="registerForm.invalid"
@@ -20,7 +18,7 @@
       type="submit"
       class="w-full py-1.5 md:py-2"
     >
-      Register
+      Зареєструватися
     </button>
   </form>
 </mat-card>

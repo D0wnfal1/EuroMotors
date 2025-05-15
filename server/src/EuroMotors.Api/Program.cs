@@ -47,10 +47,11 @@ if (!builder.Environment.IsEnvironment("Testing"))
 
 WebApplication app = builder.Build();
 
+app.ApplyMigrations();
+
 if (app.Environment.IsDevelopment() || builder.Environment.IsEnvironment("Testing"))
 {
     app.UseSwaggerWithUi();
-    app.ApplyMigrations();
 
     IPasswordHasher passwordHasher = app.Services.GetRequiredService<IPasswordHasher>();
     app.SeedData(passwordHasher);

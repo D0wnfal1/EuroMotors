@@ -5,7 +5,11 @@ import {
   MatSelectionList,
   MatListOption,
 } from '@angular/material/list';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import {
+  MatPaginator,
+  PageEvent,
+  MatPaginatorIntl,
+} from '@angular/material/paginator';
 import { Pagination } from '../../shared/models/pagination';
 import { Product } from '../../shared/models/product';
 import { ProductImage } from '../../shared/models/productImage';
@@ -17,6 +21,7 @@ import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { MatIcon } from '@angular/material/icon';
 import { NgFor } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
+import { UkrainianPaginatorIntl } from '../../shared/i18n/ukrainian-paginator-intl';
 
 @Component({
   selector: 'app-shop',
@@ -33,6 +38,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatMenuTrigger,
     MatButtonModule,
   ],
+  providers: [{ provide: MatPaginatorIntl, useClass: UkrainianPaginatorIntl }],
   templateUrl: './shop.component.html',
   styleUrl: './shop.component.scss',
 })
@@ -42,9 +48,9 @@ export class ShopComponent implements OnInit {
   products?: Pagination<Product>;
   productImages: { [key: string]: ProductImage[] } = {};
   sortOptions = [
-    { name: 'Alphabetical', value: '' },
-    { name: 'Price: Low-High', value: 'ASC' },
-    { name: 'Price: High-Low', value: 'DESC' },
+    { name: 'За алфавітом', value: '' },
+    { name: 'Ціна: від низької до високої', value: 'ASC' },
+    { name: 'Ціна: від високої до низької', value: 'DESC' },
   ];
   shopParams = new ShopParams();
   pageSizeOptions = [5, 10, 15, 20];

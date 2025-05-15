@@ -6,14 +6,14 @@
   <div class="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6">
     <div class="col-span-1 md:col-span-3">
       <mat-form-field class="w-full">
-        <mat-label>Name</mat-label>
+        <mat-label>Назва</mat-label>
         <input matInput formControlName="name" type="text" required />
       </mat-form-field>
 
       <mat-accordion class="w-full">
         <mat-expansion-panel #specPanel="matExpansionPanel">
           <mat-expansion-panel-header>
-            <mat-panel-title>Specifications</mat-panel-title>
+            <mat-panel-title>Характеристики</mat-panel-title>
           </mat-expansion-panel-header>
 
           <div
@@ -26,12 +26,12 @@
               class="flex flex-col sm:flex-row w-full items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4"
             >
               <mat-form-field class="flex-1 w-full">
-                <mat-label>Specification Name</mat-label>
+                <mat-label>Назва Характеристики</mat-label>
                 <input matInput formControlName="specificationName" required />
               </mat-form-field>
 
               <mat-form-field class="flex-1 w-full">
-                <mat-label>Specification Value</mat-label>
+                <mat-label>Значення Характеристики</mat-label>
                 <input matInput formControlName="specificationValue" required />
               </mat-form-field>
 
@@ -60,12 +60,12 @@
       </mat-accordion>
 
       <mat-form-field class="w-full pt-4 sm:pt-6">
-        <mat-label>Vendor Code</mat-label>
+        <mat-label>Код Товару</mat-label>
         <input matInput formControlName="vendorCode" type="text" required />
       </mat-form-field>
 
       <mat-form-field class="w-full">
-        <mat-label>Category</mat-label>
+        <mat-label>Категорія</mat-label>
         <mat-select formControlName="categoryId">
           <mat-option *ngFor="let category of categories" [value]="category.id">
             {{ category.name }}
@@ -75,7 +75,7 @@
 
       <div class="flex flex-col sm:flex-row sm:items-center mt-2 gap-2">
         <mat-form-field class="w-full">
-          <mat-label>Car Models</mat-label>
+          <mat-label>Моделі Автомобілів</mat-label>
           <mat-select formControlName="carModelIds" multiple>
             <mat-option *ngFor="let model of carModels" [value]="model.id">
               {{ getCarBrandNameForModel(model) }} {{ model.brandName }}
@@ -94,22 +94,22 @@
           "
           class="sm:ml-4 sm:mb-4 w-full sm:w-auto"
         >
-          <mat-icon>save</mat-icon> Save Car Models
+          <mat-icon>save</mat-icon> Зберегти Моделі
         </button>
       </div>
 
       <mat-form-field class="w-full">
-        <mat-label>Price</mat-label>
+        <mat-label>Ціна</mat-label>
         <input matInput formControlName="price" type="number" required />
       </mat-form-field>
 
       <mat-form-field class="w-full">
-        <mat-label>Discount</mat-label>
+        <mat-label>Знижка</mat-label>
         <input matInput formControlName="discount" type="number" />
       </mat-form-field>
 
       <mat-form-field class="w-full">
-        <mat-label>Stock Quantity</mat-label>
+        <mat-label>Кількість на Складі</mat-label>
         <input matInput formControlName="stock" type="number" required />
       </mat-form-field>
     </div>
@@ -118,7 +118,7 @@
       class="col-span-1 space-y-3 sm:space-y-4 bg-gray-100 border border-gray-300 rounded px-3 sm:px-4 py-2"
     >
       <mat-label class="text-base sm:text-lg font-semibold"
-        >Product Image(s)</mat-label
+        >Зображення Товару</mat-label
       >
 
       <div *ngIf="productImages.length > 0" class="space-y-3 sm:space-y-4">
@@ -128,7 +128,7 @@
         >
           <img
             [src]="getImageUrl(image.path)"
-            alt="Product Image"
+            alt="Зображення Товару"
             class="w-full sm:w-48 h-48 object-cover rounded-lg shadow-lg transition-transform transform hover:scale-105"
           />
           <button
@@ -137,7 +137,7 @@
             (click)="deleteImage(image.productImageId, $event)"
             class="text-sm font-semibold px-4 py-2 rounded-md border-2 border-red-500 hover:bg-red-500 hover:text-white transition-all"
           >
-            Delete
+            Видалити
           </button>
         </div>
       </div>
@@ -149,7 +149,7 @@
         <img
           *ngFor="let img of selectedImages"
           [src]="img"
-          alt="Selected Image"
+          alt="Вибране Зображення"
           class="w-24 sm:w-32 h-24 sm:h-32 object-cover rounded-lg shadow-xl border-2 border-gray-300"
         />
       </div>
@@ -173,10 +173,10 @@
     [disabled]="productForm.invalid || isSaving"
   >
     <span *ngIf="!isSaving">{{
-      isEditMode ? "Update Product" : "Create Product"
+      isEditMode ? "Оновити Товар" : "Створити Товар"
     }}</span>
     <span *ngIf="isSaving">
-      <i class="fas fa-spinner fa-spin mr-2"></i> Saving...
+      <i class="fas fa-spinner fa-spin mr-2"></i> Збереження...
     </span>
   </button>
 </form>

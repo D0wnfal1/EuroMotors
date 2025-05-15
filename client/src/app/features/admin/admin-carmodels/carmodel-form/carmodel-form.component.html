@@ -1,13 +1,13 @@
 <div class="p-3 sm:p-6 max-w-xl mx-auto">
   <h1 class="text-xl sm:text-2xl font-bold text-center mb-4 sm:mb-6">
-    {{ isEditMode ? "Edit" : "Create" }} Car Model
+    {{ isEditMode ? "Редагувати" : "Створити" }} Модель Автомобіля
   </h1>
 
   <form [formGroup]="carModelForm" (ngSubmit)="onSubmit()">
     <div class="mb-3 sm:mb-4">
       <div class="flex flex-col sm:flex-row gap-2 w-full">
         <mat-form-field appearance="fill" class="flex-grow">
-          <mat-label>Car Brand</mat-label>
+          <mat-label>Марка Автомобіля</mat-label>
           <mat-select formControlName="carBrandId">
             <mat-option
               *ngFor="let brand of availableBrands"
@@ -19,7 +19,7 @@
           <mat-error
             *ngIf="carModelForm.get('carBrandId')?.hasError('required')"
           >
-            Car Brand is required
+            Марка автомобіля обов'язкова
           </mat-error>
         </mat-form-field>
         <button
@@ -29,43 +29,43 @@
           class="h-auto sm:h-14 mb-2 sm:mb-0 py-2 sm:py-0 whitespace-nowrap"
           (click)="openQuickAddBrandDialog()"
         >
-          Add Brand
+          Додати Марку
         </button>
       </div>
     </div>
 
     <mat-form-field appearance="fill" class="w-full mb-3 sm:mb-4">
-      <mat-label>Model Name</mat-label>
+      <mat-label>Назва Моделі</mat-label>
       <input
         matInput
         formControlName="modelName"
-        placeholder="Enter model name"
+        placeholder="Введіть назву моделі"
       />
       <mat-error *ngIf="carModelForm.get('modelName')?.hasError('required')">
-        Model name is required
+        Назва моделі обов'язкова
       </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="w-full mb-3 sm:mb-4">
-      <mat-label>Start Year</mat-label>
+      <mat-label>Рік Початку</mat-label>
       <input
         matInput
         type="number"
         formControlName="startYear"
-        placeholder="e.g. 2010"
+        placeholder="напр. 2010"
       />
     </mat-form-field>
 
     <div class="mb-3 sm:mb-4">
       <mat-form-field appearance="fill" class="w-full">
-        <mat-label>Body Type</mat-label>
+        <mat-label>Тип Кузова</mat-label>
         <mat-select formControlName="bodyType">
           <mat-option *ngFor="let type of bodyTypes" [value]="type">{{
-            type
+            type | bodyType
           }}</mat-option>
         </mat-select>
         <mat-error *ngIf="carModelForm.get('bodyType')?.hasError('required')">
-          Body Type is required
+          Тип кузова обов'язковий
         </mat-error>
       </mat-form-field>
     </div>
@@ -75,26 +75,26 @@
       class="border p-3 sm:p-4 rounded mb-3 sm:mb-4"
     >
       <legend class="text-base sm:text-lg font-semibold mb-2">
-        Engine Specifications
+        Специфікації Двигуна
       </legend>
 
       <mat-form-field appearance="fill" class="w-full mb-3 sm:mb-4">
-        <mat-label>Volume (L)</mat-label>
+        <mat-label>Об'єм (Л)</mat-label>
         <input
           matInput
           type="number"
           formControlName="volumeLiters"
-          placeholder="e.g. 2.0"
+          placeholder="напр. 2.0"
           step="0.1"
         />
       </mat-form-field>
 
       <div class="mb-3 sm:mb-4">
         <mat-form-field appearance="fill" class="w-full">
-          <mat-label>Fuel Type</mat-label>
+          <mat-label>Тип Палива</mat-label>
           <mat-select formControlName="fuelType">
             <mat-option *ngFor="let fuel of fuelTypes" [value]="fuel">{{
-              fuel
+              fuel | fuelType
             }}</mat-option>
           </mat-select>
           <mat-error
@@ -102,7 +102,7 @@
               carModelForm.get('engineSpec.fuelType')?.hasError('required')
             "
           >
-            Fuel Type is required
+            Тип палива обов'язковий
           </mat-error>
         </mat-form-field>
       </div>
@@ -117,7 +117,7 @@
         [routerLink]="['/admin/carmodels']"
         class="bg-gray-500 text-white w-full sm:w-auto order-2 sm:order-1"
       >
-        Cancel
+        Скасувати
       </button>
       <button
         mat-raised-button
@@ -126,7 +126,7 @@
         [disabled]="carModelForm.invalid"
         class="w-full sm:w-auto order-1 sm:order-2"
       >
-        {{ isEditMode ? "Update" : "Create" }} Car Model
+        {{ isEditMode ? "Оновити" : "Створити" }} Модель Автомобіля
       </button>
     </div>
   </form>

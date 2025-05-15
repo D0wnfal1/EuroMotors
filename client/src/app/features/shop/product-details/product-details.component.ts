@@ -221,7 +221,7 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   getButtonText() {
-    return this.quantityInCart > 0 ? 'Update cart' : 'Add to cart';
+    return this.quantityInCart > 0 ? 'Оновити кошик' : 'Додати до кошика';
   }
 
   getCompatibleCarModels(): string {
@@ -230,7 +230,7 @@ export class ProductDetailsComponent implements OnInit {
       !this.product.carModelIds ||
       this.product.carModelIds.length === 0
     ) {
-      return 'This product does not fit any specific car model';
+      return 'Цей товар не підходить для конкретної моделі автомобіля';
     }
 
     return this.product.carModelIds

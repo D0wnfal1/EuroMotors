@@ -7,13 +7,13 @@
         <img
           *ngIf="product.images.length > 0; else noImage"
           [src]="getImageUrl(product.images[0].path)"
-          alt="Product"
+          alt="Товар"
           class="h-24 w-24 md:h-32 md:w-32 object-cover"
         />
         <ng-template #noImage>
           <img
             src="images/no-image.jpeg"
-            alt="No product"
+            alt="Немає фото"
             class="h-24 w-24 md:h-32 md:w-32 object-cover"
           />
         </ng-template>
@@ -37,21 +37,21 @@
           color="warn"
           (click)="removeItemFromCart()"
           class="text-xs md:text-sm"
-          aria-label="Remove item"
+          aria-label="Видалити товар"
         >
           <mat-icon class="text-sm md:text-base">delete</mat-icon>
-          Delete
+          Видалити
         </button>
       </div>
     </div>
     <div class="flex flex-col items-center mt-2 md:mt-0">
-      <p class="text-sm md:text-xl text-gray-500">Quantity:</p>
+      <p class="text-sm md:text-xl text-gray-500">Кількість:</p>
       <div class="flex items-center gap-2 w-32 md:w-64 justify-center">
         <button
           mat-icon-button
           (click)="decrementQuantity()"
           class="decrement"
-          aria-label="Decrease quantity"
+          aria-label="Зменшити кількість"
         >
           <mat-icon class="text-red-600 text-sm md:text-base">remove</mat-icon>
         </button>
@@ -62,7 +62,7 @@
           mat-icon-button
           (click)="incrementQuantity()"
           class="increment"
-          aria-label="Increase quantity"
+          aria-label="Збільшити кількість"
         >
           <mat-icon class="text-green-600 text-sm md:text-base">add</mat-icon>
         </button>

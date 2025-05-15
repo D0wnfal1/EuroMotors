@@ -6,10 +6,26 @@ import { OrderStatus } from '../models/order';
   standalone: true,
 })
 export class StatusPipe implements PipeTransform {
-  transform(value: OrderStatus | undefined): string {
+  transform(value: OrderStatus | string | undefined): string {
     if (value === undefined || value === null) {
-      return 'Unknown';
+      return 'Невідомо';
     }
-    return OrderStatus[value] ?? 'Unknown';
+
+    switch (value) {
+      case OrderStatus.Pending:
+        return 'В обробці';
+      case OrderStatus.Paid:
+        return 'Оплачено';
+      case OrderStatus.Shipped:
+        return 'Відправлено';
+      case OrderStatus.Completed:
+        return 'Завершено';
+      case OrderStatus.Canceled:
+        return 'Скасовано';
+      case OrderStatus.Refunded:
+        return 'Повернено';
+      default:
+        return String(value);
+    }
   }
 }

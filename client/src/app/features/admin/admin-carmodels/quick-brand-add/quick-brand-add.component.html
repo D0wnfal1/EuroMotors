@@ -1,15 +1,19 @@
 <div class="quick-brand-dialog">
-  <h2 class="dialog-title">Add New Brand</h2>
+  <h2 class="dialog-title">Додати Нову Марку</h2>
 
   <form [formGroup]="quickBrandForm" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="fill" class="w-full">
-      <mat-label>Brand Name</mat-label>
-      <input matInput formControlName="name" placeholder="Enter brand name" />
+      <mat-label>Назва Марки</mat-label>
+      <input
+        matInput
+        formControlName="name"
+        placeholder="Введіть назву марки"
+      />
       <mat-error *ngIf="quickBrandForm.get('name')?.hasError('required')">
-        Brand name is required
+        Назва марки обов'язкова
       </mat-error>
       <mat-error *ngIf="quickBrandForm.get('name')?.hasError('maxlength')">
-        Brand name must be less than 100 characters
+        Назва марки має бути менше 100 символів
       </mat-error>
     </mat-form-field>
 
@@ -20,7 +24,7 @@
         (click)="onCancel()"
         [disabled]="isSubmitting"
       >
-        Cancel
+        Скасувати
       </button>
       <button
         mat-raised-button
@@ -28,8 +32,8 @@
         type="submit"
         [disabled]="quickBrandForm.invalid || isSubmitting"
       >
-        <span *ngIf="isSubmitting">Adding...</span>
-        <span *ngIf="!isSubmitting">Add Brand</span>
+        <span *ngIf="isSubmitting">Додавання...</span>
+        <span *ngIf="!isSubmitting">Додати Марку</span>
       </button>
     </div>
   </form>

@@ -5,6 +5,7 @@ import {
   Order,
   OrderStatus,
   PaymentMethod,
+  DeliveryMethod,
 } from '../../../shared/models/order';
 import { CurrencyPipe, NgIf, NgFor } from '@angular/common';
 import { MatButton } from '@angular/material/button';
@@ -34,6 +35,7 @@ import { Product } from '../../../shared/models/product';
 export class OrderDetailedComponent implements OnInit {
   public OrderStatus = OrderStatus;
   public PaymentMethod = PaymentMethod;
+  public DeliveryMethod = DeliveryMethod;
 
   private orderService = inject(OrderService);
   accountService = inject(AccountService);
@@ -108,7 +110,17 @@ export class OrderDetailedComponent implements OnInit {
     ];
     const currentIndex = statuses.indexOf(this.order.status);
     if (currentIndex !== -1 && currentIndex < statuses.length - 1) {
-      this.nextStatus = OrderStatus[statuses[currentIndex + 1]];
+      const nextStatusEnum = statuses[currentIndex + 1];
+      switch (nextStatusEnum) {
+        case OrderStatus.Shipped:
+          this.nextStatus = 'Відправлено';
+          break;
+        case OrderStatus.Completed:
+          this.nextStatus = 'Завершено';
+          break;
+        default:
+          this.nextStatus = OrderStatus[nextStatusEnum];
+      }
     } else {
       this.nextStatus = '';
     }

@@ -1,42 +1,42 @@
 <section class="w-full max-w-lg mx-auto px-2 sm:px-4">
   <h2 class="text-lg sm:text-xl font-bold text-center mb-4 sm:mb-6 uppercase">
-    ENTER YOUR DELIVERY DETAILS
+    ВВЕДІТЬ ДАНІ ДЛЯ ДОСТАВКИ
   </h2>
 
   <form [formGroup]="checkoutForm" (ngSubmit)="submitOrder()">
     <div class="flex flex-col sm:flex-row gap-2 sm:gap-0">
       <mat-form-field appearance="fill" class="w-full sm:w-1/2 sm:mr-2 mb-3">
-        <mat-label>First Name</mat-label>
-        <input matInput formControlName="firstName" placeholder="First Name" />
+        <mat-label>Ім'я</mat-label>
+        <input matInput formControlName="firstName" placeholder="Ім'я" />
         <mat-error *ngIf="checkoutForm.get('firstName')?.hasError('required')">
-          This field is required.
+          Це поле обов'язкове.
         </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="w-full sm:w-1/2 sm:ml-2 mb-3">
-        <mat-label>Last Name</mat-label>
-        <input matInput formControlName="lastName" placeholder="Last Name" />
+        <mat-label>Прізвище</mat-label>
+        <input matInput formControlName="lastName" placeholder="Прізвище" />
         <mat-error *ngIf="checkoutForm.get('lastName')?.hasError('required')">
-          This field is required.
+          Це поле обов'язкове.
         </mat-error>
       </mat-form-field>
     </div>
 
     <mat-form-field appearance="fill" class="w-full mb-3">
-      <mat-label>City</mat-label>
+      <mat-label>Місто</mat-label>
       <input
         matInput
         formControlName="city"
-        placeholder="Select a city"
+        placeholder="Оберіть місто"
         (input)="onCityInput()"
       />
       <mat-error *ngIf="checkoutForm.get('city')?.hasError('required')">
-        Select a city
+        Оберіть місто
       </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="w-full mb-3">
-      <mat-label>Delivery Method</mat-label>
+      <mat-label>Спосіб доставки</mat-label>
       <mat-select
         formControlName="deliveryMethod"
         (selectionChange)="onDeliveryMethodChange($event.value)"
@@ -48,7 +48,7 @@
       <mat-error
         *ngIf="checkoutForm.get('deliveryMethod')?.hasError('required')"
       >
-        Choose a delivery method
+        Оберіть спосіб доставки
       </mat-error>
     </mat-form-field>
 
@@ -56,13 +56,13 @@
       *ngIf="checkoutForm.get('deliveryMethod')?.value === deliveryMethods[1]"
     >
       <mat-form-field appearance="fill" class="w-full">
-        <mat-label>Select Warehouse*</mat-label>
+        <mat-label>Оберіть відділення*</mat-label>
         <input
           type="text"
           matInput
           formControlName="warehouseQuery"
           [matAutocomplete]="auto"
-          placeholder="Select Warehouse"
+          placeholder="Оберіть відділення"
         />
         <mat-autocomplete
           #auto="matAutocomplete"
@@ -77,7 +77,7 @@
           >
             {{ warehouse.description }}
           </mat-option>
-          <mat-option *ngIf="isLoading" disabled>Loading...</mat-option>
+          <mat-option *ngIf="isLoading" disabled>Завантаження...</mat-option>
         </mat-autocomplete>
         <mat-error
           *ngIf="
@@ -85,23 +85,23 @@
             checkoutForm.get('deliveryMethod')?.value === 'delivery'
           "
         >
-          Select warehouse
+          Оберіть відділення
         </mat-error>
       </mat-form-field>
 
       <p class="mb-6 text-xs sm:text-sm text-gray-600">
-        Delivery cost according to Nova Poshta tariffs
+        Вартість доставки згідно з тарифами Нової Пошти
       </p>
     </ng-container>
 
     <mat-form-field appearance="fill" class="w-full mb-3">
-      <mat-label>Phone Number</mat-label>
+      <mat-label>Номер телефону</mat-label>
       <input matInput formControlName="phoneNumber" placeholder="+380" />
       <mat-error *ngIf="checkoutForm.get('phoneNumber')?.hasError('required')">
-        Enter a phone number
+        Введіть номер телефону
       </mat-error>
       <mat-error *ngIf="checkoutForm.get('phoneNumber')?.hasError('pattern')">
-        Please enter a valid phone number.
+        Будь ласка, введіть дійсний номер телефону.
       </mat-error>
     </mat-form-field>
 
@@ -109,12 +109,12 @@
       <mat-label>E-mail</mat-label>
       <input matInput formControlName="email" placeholder="example@mail.com" />
       <mat-error *ngIf="checkoutForm.get('email')?.hasError('email')">
-        Please enter a valid email address.
+        Будь ласка, введіть дійсну електронну адресу.
       </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="w-full mb-4">
-      <mat-label>Payment Method</mat-label>
+      <mat-label>Спосіб оплати</mat-label>
       <mat-select formControlName="paymentMethod">
         <mat-option *ngFor="let method of paymentMethods" [value]="method">
           {{ method | payment }}
@@ -123,7 +123,7 @@
       <mat-error
         *ngIf="checkoutForm.get('paymentMethod')?.hasError('required')"
       >
-        Choose a payment method
+        Оберіть спосіб оплати
       </mat-error>
     </mat-form-field>
 
@@ -134,7 +134,7 @@
         [disabled]="checkoutForm.invalid"
         class="bg-blue-500 text-white px-6 sm:px-8 py-2 rounded-full w-28 sm:w-32 text-sm sm:text-base uppercase font-medium"
       >
-        BUY
+        КУПИТИ
       </button>
     </div>
   </form>

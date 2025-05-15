@@ -3,7 +3,7 @@
   <mat-card *ngIf="selectedCar" class="p-3 md:p-4 mt-3 md:mt-4">
     <mat-card-header>
       <mat-card-title class="text-base md:text-lg font-semibold"
-        >Your Selected Car</mat-card-title
+        >Вибране вами авто</mat-card-title
       >
     </mat-card-header>
 
@@ -11,25 +11,25 @@
       <div
         class="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-4 text-sm md:text-base"
       >
-        <div class="font-medium">Brand:</div>
+        <div class="font-medium">Марка:</div>
         <div>{{ selectedCar.brand }}</div>
 
-        <div class="font-medium">Model:</div>
+        <div class="font-medium">Модель:</div>
         <div>{{ selectedCar.model }}</div>
 
-        <div class="font-medium">Year:</div>
+        <div class="font-medium">Рік:</div>
         <div>{{ selectedCar.startYear }}</div>
 
-        <div class="font-medium">Body Type:</div>
-        <div>{{ selectedCar.bodyType }}</div>
+        <div class="font-medium">Тип кузова:</div>
+        <div>{{ selectedCar.bodyType | bodyType }}</div>
 
-        <div class="font-medium">Engine Specification:</div>
-        <div>{{ selectedCar.engineSpec }}</div>
+        <div class="font-medium">Специфікація двигуна:</div>
+        <div>{{ selectedCar.engineSpec | engineSpec }}</div>
       </div>
     </mat-card-content>
 
     <mat-card-actions align="end" class="px-2 md:px-4 pb-2 md:pb-4">
-      <button mat-button (click)="clearSelection()">Clear Selection</button>
+      <button mat-button (click)="clearSelection()">Очистити вибір</button>
     </mat-card-actions>
   </mat-card>
 

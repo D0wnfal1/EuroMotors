@@ -32,7 +32,7 @@ export class ProductSliderComponent implements OnInit, OnDestroy {
   private breakpointSubscription?: Subscription;
   private readonly autoSlideInterval = 10000;
 
-  activeFilter: 'popular' | 'new' | 'discount' = 'discount';
+  activeFilter: 'популярні' | 'нові' | 'зі знижкою' = 'зі знижкою';
   loading = false;
 
   constructor(
@@ -102,13 +102,13 @@ export class ProductSliderComponent implements OnInit, OnDestroy {
     params.isDiscounted = false;
 
     switch (this.activeFilter) {
-      case 'popular':
+      case 'популярні':
         params.isPopular = true;
         break;
-      case 'new':
+      case 'нові':
         params.isNew = true;
         break;
-      case 'discount':
+      case 'зі знижкою':
         params.isDiscounted = true;
         params.sortOrder = '';
         break;
@@ -186,7 +186,7 @@ export class ProductSliderComponent implements OnInit, OnDestroy {
     this.currentSlide = index;
   }
 
-  setFilter(filter: 'popular' | 'new' | 'discount'): void {
+  setFilter(filter: 'популярні' | 'нові' | 'зі знижкою'): void {
     if (this.activeFilter === filter) return;
     this.activeFilter = filter;
     this.loadProducts();
@@ -210,12 +210,12 @@ export class ProductSliderComponent implements OnInit, OnDestroy {
 
   getCategoryDisplayName(): string {
     switch (this.activeFilter) {
-      case 'popular':
-        return 'Popular';
-      case 'discount':
-        return 'Discounted';
-      case 'new':
-        return 'New';
+      case 'популярні':
+        return 'Популярні';
+      case 'зі знижкою':
+        return 'Зі знижкою';
+      case 'нові':
+        return 'Нові';
       default:
         return '';
     }
@@ -225,25 +225,25 @@ export class ProductSliderComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  getAlternativeCategory(): 'popular' | 'new' | 'discount' {
-    if (this.activeFilter === 'popular') {
-      return 'new';
-    } else if (this.activeFilter === 'new') {
-      return 'discount';
+  getAlternativeCategory(): 'популярні' | 'нові' | 'зі знижкою' {
+    if (this.activeFilter === 'популярні') {
+      return 'нові';
+    } else if (this.activeFilter === 'нові') {
+      return 'зі знижкою';
     } else {
-      return 'popular';
+      return 'популярні';
     }
   }
 
   getAlternativeCategoryName(): string {
     const alternative = this.getAlternativeCategory();
     switch (alternative) {
-      case 'popular':
-        return 'Popular';
-      case 'discount':
-        return 'Discounted';
-      case 'new':
-        return 'New';
+      case 'популярні':
+        return 'Популярні';
+      case 'зі знижкою':
+        return 'Зі знижкою';
+      case 'нові':
+        return 'Нові';
       default:
         return '';
     }

@@ -3,7 +3,11 @@ import { Component, OnInit, inject } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatSelectionListChange } from '@angular/material/list';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import {
+  MatPaginator,
+  PageEvent,
+  MatPaginatorIntl,
+} from '@angular/material/paginator';
 import { RouterLink } from '@angular/router';
 import { ShopParams } from '../../../shared/models/shopParams';
 import { CarbrandService } from '../../../core/services/carbrand.service';
@@ -12,6 +16,7 @@ import { ImageService } from '../../../core/services/image.service';
 import { MatTableModule } from '@angular/material/table';
 import { CarmodelService } from '../../../core/services/carmodel.service';
 import { MatIconModule } from '@angular/material/icon';
+import { UkrainianPaginatorIntl } from '../../../shared/i18n/ukrainian-paginator-intl';
 
 @Component({
   selector: 'app-admin-carbrands',
@@ -26,6 +31,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatTableModule,
     MatIconModule,
   ],
+  providers: [{ provide: MatPaginatorIntl, useClass: UkrainianPaginatorIntl }],
   templateUrl: './admin-carbrands.component.html',
   styleUrl: './admin-carbrands.component.scss',
 })

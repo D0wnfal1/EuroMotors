@@ -7,6 +7,9 @@ import { CommonModule, NgIf } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { Subscription } from 'rxjs';
 import { CompatibleProductsComponent } from './compatible-products/compatible-products.component';
+import { BodyTypePipe } from '../../../shared/pipes/body-type.pipe';
+import { FuelTypePipe } from '../../../shared/pipes/fuel-type.pipe';
+import { EngineSpecPipe } from '../../../shared/pipes/engine-spec.pipe';
 
 @Component({
   selector: 'app-customer-car',
@@ -18,15 +21,18 @@ import { CompatibleProductsComponent } from './compatible-products/compatible-pr
     NgIf,
     MatButtonModule,
     CompatibleProductsComponent,
+    BodyTypePipe,
+    EngineSpecPipe,
   ],
+  providers: [EngineSpecPipe],
   templateUrl: './customer-car.component.html',
   styleUrls: ['./customer-car.component.scss'],
 })
 export class CustomerCarComponent implements OnInit {
-  private carModelService = inject(CarmodelService);
+  private readonly carModelService = inject(CarmodelService);
   selectedCar: SelectedCar | null = null;
   selectedCarId: string | null = null;
-  private subs = new Subscription();
+  private readonly subs = new Subscription();
 
   ngOnInit(): void {
     this.loadSelectedCar();

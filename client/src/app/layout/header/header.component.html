@@ -19,22 +19,22 @@
           routerLink="/"
           routerLinkActive="text-primary font-medium"
           [routerLinkActiveOptions]="{ exact: true }"
-          >Home</a
+          >Головна</a
         >
         <a
           routerLink="/delivery-payment"
           routerLinkActive="text-primary font-medium"
-          >Delivery & Payment</a
+          >Доставка і оплата</a
         >
         <a
           routerLink="/warranty-returns"
           routerLinkActive="text-primary font-medium"
-          >Warranty & Returns</a
+          >Гарантія і повернення</a
         >
         <a
           routerLink="/public-offer"
           routerLinkActive="text-primary font-medium"
-          >Public offer</a
+          >Публічна оферта</a
         >
       </nav>
 
@@ -47,7 +47,7 @@
           <div class="flex items-center justify-between px-2">
             <span class="font-medium leading-tight text-xs">
               {{ selectedCar.brand }} {{ selectedCar.model }}
-              {{ selectedCar.engineSpec }}
+              {{ selectedCar.engineSpec | engineSpec }}
             </span>
             <button
               mat-icon-button
@@ -66,7 +66,7 @@
             routerLink="/admin"
             class="hidden md:block"
           >
-            Admin
+            Адмін
           </button>
         </ng-container>
 
@@ -91,14 +91,14 @@
           } @else {
           <div class="flex gap-2">
             <button routerLink="/account/login" mat-stroked-button size="small">
-              Login
+              Увійти
             </button>
             <button
               routerLink="/account/register"
               mat-stroked-button
               size="small"
             >
-              Register
+              Реєстрація
             </button>
           </div>
           }
@@ -122,7 +122,7 @@
         >
           <div class="flex items-center gap-2">
             <mat-icon>menu</mat-icon>
-            <span class="text-base">Catalog</span>
+            <span class="text-base">Каталог</span>
           </div>
         </button>
 
@@ -133,7 +133,7 @@
           <input
             type="search"
             class="block w-full p-2 md:p-3 text-sm text-gray-900 border border-gray-300 rounded-lg search-input"
-            placeholder="Part number or Product name"
+            placeholder="Номер деталі або назва товару"
             name="search"
             [(ngModel)]="shopParams.searchTerm"
             (input)="onSearchInput($event)"
@@ -215,7 +215,7 @@
             (click)="openCallbackDialog()"
           >
             <mat-icon>support_agent</mat-icon>
-            <span class="hidden lg:inline-block">Request a call</span>
+            <span class="hidden lg:inline-block">Замовити дзвінок</span>
           </button>
         </div>
       </div>
@@ -337,7 +337,7 @@
               pageSize: 10
             }"
           >
-            Explore Category
+            Переглянути категорію
           </button>
           }
 
@@ -387,28 +387,28 @@
           [routerLinkActiveOptions]="{ exact: true }"
           (click)="closeMobileMenu()"
           class="py-3 border-b"
-          >Home</a
+          >Головна</a
         >
         <a
           routerLink="/delivery-payment"
           routerLinkActive="text-primary font-medium"
           (click)="closeMobileMenu()"
           class="py-3 border-b"
-          >Delivery & Payment</a
+          >Доставка і оплата</a
         >
         <a
           routerLink="/warranty-returns"
           routerLinkActive="text-primary font-medium"
           (click)="closeMobileMenu()"
           class="py-3 border-b"
-          >Warranty & Returns</a
+          >Гарантія і повернення</a
         >
         <a
           routerLink="/public-offer"
           routerLinkActive="text-primary font-medium"
           (click)="closeMobileMenu()"
           class="py-3 border-b"
-          >Public offer</a
+          >Публічна оферта</a
         >
 
         @if (accountService.currentUser()) {
@@ -422,7 +422,7 @@
               color="warn"
               (click)="logout(); closeMobileMenu()"
             >
-              Logout
+              Вихід
             </button>
           </div>
           <div class="grid grid-cols-2 gap-2 mt-2">
@@ -432,7 +432,7 @@
               class="bg-gray-100 p-2 rounded text-center"
             >
               <mat-icon>shopping_cart</mat-icon>
-              <div class="text-xs">Cart</div>
+              <div class="text-base sm:text-lg font-medium">Мій кошик</div>
             </a>
             <a
               routerLink="/orders"
@@ -440,7 +440,7 @@
               class="bg-gray-100 p-2 rounded text-center"
             >
               <mat-icon>history</mat-icon>
-              <div class="text-xs">Orders</div>
+              <div class="text-base sm:text-lg font-medium">Мої замовлення</div>
             </a>
             <a
               routerLink="/account/customer-car"
@@ -448,7 +448,7 @@
               class="bg-gray-100 p-2 rounded text-center"
             >
               <mat-icon>directions_car</mat-icon>
-              <div class="text-xs">My Car</div>
+              <div class="text-base sm:text-lg font-medium">Моя машина</div>
             </a>
             @if (accountService.isAdmin()) {
             <a
@@ -457,7 +457,7 @@
               class="bg-gray-100 p-2 rounded text-center"
             >
               <mat-icon>admin_panel_settings</mat-icon>
-              <div class="text-xs">Admin</div>
+              <div class="text-base sm:text-lg font-medium">Адмін</div>
             </a>
             }
           </div>
@@ -471,7 +471,7 @@
             color="primary"
             class="flex-1"
           >
-            Login
+            Увійти
           </button>
           <button
             routerLink="/account/register"
@@ -479,13 +479,13 @@
             mat-stroked-button
             class="flex-1"
           >
-            Register
+            Реєстрація
           </button>
         </div>
         }
 
         <div class="py-3 mt-2">
-          <h3 class="font-medium mb-3">Contact Us:</h3>
+          <h3 class="font-medium mb-3">Зв'язатись з нами:</h3>
           <div class="flex flex-col gap-2">
             <a href="tel:+380951111111" class="flex items-center gap-2">
               <mat-icon>phone</mat-icon> +380 95 11 11 111
@@ -500,7 +500,7 @@
               (click)="openCallbackDialog(); closeMobileMenu()"
             >
               <mat-icon>support_agent</mat-icon>
-              <span>Request a call</span>
+              <span>Замовити дзвінок</span>
             </button>
           </div>
         </div>
@@ -513,20 +513,20 @@
 <mat-menu #menu="matMenu">
   <button mat-menu-item routerLink="/cart">
     <mat-icon>shopping_cart</mat-icon>
-    My cart
+    Мій кошик
   </button>
   <button mat-menu-item routerLink="/orders">
     <mat-icon>history</mat-icon>
-    My orders
+    Мої замовлення
   </button>
   <button mat-menu-item routerLink="/account/customer-car">
     <mat-icon>directions_car</mat-icon>
-    My car
+    Моя машина
   </button>
   <mat-divider></mat-divider>
   <button mat-menu-item (click)="logout()">
     <mat-icon>logout</mat-icon>
-    Logout
+    Вихід
   </button>
 </mat-menu>
 
