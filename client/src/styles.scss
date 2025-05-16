@@ -51,6 +51,19 @@ button.match-input-height {
   --mdc-snackbar-supporting-text-color: #fff;
 }
 
+/* Стили для уведомлений */
+.error-snackbar {
+  --mdc-snackbar-container-color: #f44336 !important;
+  --mat-snack-bar-button-color: white !important;
+  --mdc-snackbar-supporting-text-color: white !important;
+}
+
+.success-snackbar {
+  --mdc-snackbar-container-color: #4caf50 !important;
+  --mat-snack-bar-button-color: white !important;
+  --mdc-snackbar-supporting-text-color: white !important;
+}
+
 .responsive-table {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;

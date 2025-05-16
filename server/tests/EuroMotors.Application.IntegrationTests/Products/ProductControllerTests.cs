@@ -41,6 +41,6 @@ public class ProductControllerTests
         responseContent.ShouldNotBeNullOrEmpty();
         responseContent.ShouldContain("pageIndex");
         responseContent.ShouldContain("pageSize");
-        responseContent.ShouldContain("5"); 
+        responseContent.ShouldContain("5");
     }
 }

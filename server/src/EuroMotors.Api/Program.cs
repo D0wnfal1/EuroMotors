@@ -96,9 +96,9 @@ if (!builder.Environment.IsEnvironment("Testing"))
     {
         ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
     });
-    
+
     app.MapMetrics().WithMetadata(new EuroMotors.Api.HttpsRedirectionDisableMetadata());
-    
+
     app.UseSpaFallback();
 }
 
@@ -107,7 +107,7 @@ await app.RunAsync();
 namespace EuroMotors.Api
 {
     public partial class Program;
-    
+
     public class HttpsRedirectionDisableMetadata
     {
     }

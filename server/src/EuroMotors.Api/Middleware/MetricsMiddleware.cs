@@ -1,5 +1,3 @@
-using Prometheus;
-
 namespace EuroMotors.Api.Middleware;
 
 public class MetricsMiddleware
@@ -16,7 +14,7 @@ public class MetricsMiddleware
         if (context.Request.Path.StartsWithSegments("/prometheus-metrics"))
         {
             context.Response.ContentType = "text/plain; version=0.0.4; charset=utf-8";
-            
+
             await Prometheus.Metrics.DefaultRegistry.CollectAndExportAsTextAsync(context.Response.Body);
             return;
         }
@@ -31,4 +29,4 @@ public static class MetricsMiddlewareExtensions
     {
         return builder.UseMiddleware<MetricsMiddleware>();
     }
-} 
+}

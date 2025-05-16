@@ -7,8 +7,18 @@
     matInput
   />
   @if (control.hasError('required')) {
-  <mat-error>{{ label }} is required</mat-error>
+  <mat-error>{{ label }} обов'язковий</mat-error>
   } @if (control.hasError('email')) {
-  <mat-error>Email is invalid</mat-error>
+  <mat-error>Електронна адреса невірна</mat-error>
+  } @if (control.hasError('minlength')) {
+  <mat-error
+    >{{ label }} повинен містити мінімум
+    {{control.errors?.['minlength'].requiredLength}} символів</mat-error
+  >
+  } @if (control.hasError('passwordStrength')) {
+  <mat-error
+    >Пароль повинен містити великі літери, малі літери, цифри та спеціальні
+    символи</mat-error
+  >
   }
 </mat-form-field>
