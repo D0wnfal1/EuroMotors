@@ -9,15 +9,19 @@ internal sealed class CallbackService(IOptions<CallbackOptions> callbackOptions,
 
     public async Task SendMessageAsync(string name, string phone)
     {
-        string message = $"📞 New call request:\nName: {name}\nPhone Number: {phone}";
+        string message = $"📞 Новий запит на дзвінок:\nІм'я: {name}\nНомер телефону: {phone}";
         string url = $"https://api.telegram.org/bot{_options.BotToken}/sendMessage";
-        var payload = new Dictionary<string, string>
-        {
-            { "chat_id", _options.ChatId },
-            { "text", message }
-        };
 
-        using var content = new FormUrlEncodedContent(payload);
-        await httpClient.PostAsync(url, content);
+        foreach (var chatId in _options.ChatIds)
+        {
+            var payload = new Dictionary<string, string>
+            {
+                { "chat_id", chatId },
+                { "text", message }
+            };
+
+            using var content = new FormUrlEncodedContent(payload);
+            await httpClient.PostAsync(url, content);
+        }
     }
 }
