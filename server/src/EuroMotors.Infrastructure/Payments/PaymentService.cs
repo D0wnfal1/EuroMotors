@@ -20,6 +20,15 @@ internal sealed class PaymentService(
 
     public async Task<Dictionary<string, string>> CreatePaymentAsync(Payment payment)
     {
+        Order? order = await orderRepository.GetByIdAsync(payment.OrderId);
+        
+        if (order == null)
+        {
+            return await Task.FromResult(new Dictionary<string, string>());
+        }
+        
+        string description = $"Замовлення №{payment.OrderId.ToString().Substring(0, 8)}... ";
+        
         var data = new
         {
             version = _options.ApiVersion,
@@ -27,10 +36,10 @@ internal sealed class PaymentService(
             action = "pay",
             amount = payment.Amount,
             currency = "UAH",
-            description = $"Payment for order {payment.OrderId}",
+            description,
             order_id = payment.OrderId,
             result_url = _options.ResultUrl + $"/{payment.OrderId}",
-            server_url = _options.CallbackUrl
+            server_url = _options.CallbackUrl,
         };
 
         string jsonData = JsonConvert.SerializeObject(data);

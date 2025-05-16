@@ -85,7 +85,7 @@ export class ProductItemComponent implements OnInit {
 
   addToCart(productId: string) {
     this.cartService.addItemToCart(productId);
-    this.snackBar.open('Product added to cart', 'Close', {
+    this.snackBar.open('Товар додано до кошика', 'Закрити', {
       duration: 3000,
       horizontalPosition: 'end',
       verticalPosition: 'top',

@@ -132,7 +132,7 @@ export class CarmodelFormComponent implements OnInit {
 
   onSubmit() {
     if (this.carModelForm.invalid) {
-      this.snackbar.error('Please fix the errors in the form');
+      this.snackbar.error('Будь ласка, виправте помилки у формі');
       return;
     }
 
@@ -153,22 +153,22 @@ export class CarmodelFormComponent implements OnInit {
     if (this.isEditMode && this.carModelId) {
       this.carModelService.updateCarModel(this.carModelId, formData).subscribe({
         next: () => {
-          this.snackbar.success('Car model updated successfully');
+          this.snackbar.success('Модель автомобіля успішно оновлено');
           this.router.navigate(['/admin/carmodels']);
         },
         error: (error) => {
-          this.snackbar.error('Failed to update car model');
+          this.snackbar.error('Не вдалося оновити модель автомобіля');
           console.error('Error updating car model:', error);
         },
       });
     } else {
       this.carModelService.createCarModel(formData).subscribe({
         next: () => {
-          this.snackbar.success('Car model created successfully');
+          this.snackbar.success('Модель автомобіля успішно створена');
           this.router.navigate(['/admin/carmodels']);
         },
         error: (error) => {
-          this.snackbar.error('Failed to create car model');
+          this.snackbar.error('Не вдалося створити модель автомобіля');
           console.error('Error creating car model:', error);
         },
       });

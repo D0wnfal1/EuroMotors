@@ -64,7 +64,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   openCallbackDialog() {
     this.dialog.open(CallbackComponent, {
-      width: '500px',
+      width: '400px',
+      panelClass: 'callback-dialog',
+      disableClose: false,
     });
   }
 

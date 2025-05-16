@@ -31,7 +31,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       } else if (err.status === 401) {
         console.log('Unauthorized');
       } else if (err.status === 403) {
-        snackbar.error('Forbidden');
+        snackbar.error('Заборонено');
       } else if (err.status === 404) {
         router.navigateByUrl('/not-found');
       }

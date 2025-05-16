@@ -244,6 +244,11 @@
               </div>
             </mat-list-item>
             <mat-divider></mat-divider>
+            } @if (!categories || categories.length === 0) {
+            <div class="p-4 text-center text-gray-500">
+              <mat-icon class="mb-2">category</mat-icon>
+              <p>Категорії не знайдено</p>
+            </div>
             }
           </mat-nav-list>
         </div>
@@ -341,6 +346,20 @@
           }
 
           <mat-divider></mat-divider>
+          } @if (!categories || categories.length === 0) {
+          <div class="p-6 text-center text-gray-500">
+            <mat-icon class="mb-2">category</mat-icon>
+            <p>Категорії не знайдено</p>
+            <button
+              mat-raised-button
+              color="primary"
+              class="mt-3"
+              routerLink="/shop"
+              (click)="isCatalogOpen = false"
+            >
+              Перейти до магазину
+            </button>
+          </div>
           }
         </mat-nav-list>
       </div>

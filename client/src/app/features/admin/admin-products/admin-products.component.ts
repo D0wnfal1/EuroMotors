@@ -189,7 +189,7 @@ export class AdminProductsComponent implements OnInit {
       const file = input.files[0];
 
       if (file.type !== 'text/csv') {
-        this.snackBar.open('Please select a CSV file', 'Close', {
+        this.snackBar.open('Виберіть файл CSV', 'Close', {
           duration: 3000,
         });
         return;
@@ -198,14 +198,14 @@ export class AdminProductsComponent implements OnInit {
       this.productService.importProducts(file).subscribe({
         next: (result: ImportProductsResult) => {
           this.snackBar.open(
-            `Import completed. Successfully imported ${result.successfullyImported} of ${result.totalProcessed} products.`,
+            `Імпорт завершено. Успішно імпортовано ${result.successfullyImported} з ${result.totalProcessed} товарів.`,
             'Close',
             { duration: 5000 }
           );
 
           if (result.errors.length > 0) {
             this.snackBar.open(
-              `Errors occurred during import: ${result.errors.join(', ')}`,
+              `Сталася помилка під час імпорту: ${result.errors.join(', ')}`,
               'Close',
               { duration: 7000 }
             );
@@ -218,9 +218,13 @@ export class AdminProductsComponent implements OnInit {
         },
         error: (error) => {
           console.error('Import failed:', error);
-          this.snackBar.open('Import failed. Please try again.', 'Close', {
-            duration: 3000,
-          });
+          this.snackBar.open(
+            'Імпорт не вдався. Будь ласка, спробуйте ще раз.',
+            'Close',
+            {
+              duration: 3000,
+            }
+          );
           input.value = '';
         },
       });

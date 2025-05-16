@@ -223,12 +223,12 @@ export class ProductFormComponent implements OnInit {
         next: () => {
           button?.removeChild(savingEl);
           button?.removeAttribute('disabled');
-          this.snackbar.success('Car models updated successfully');
+          this.snackbar.success('Моделі автомобілів успішно оновлено');
         },
         error: (error) => {
           console.error('Error saving car models:', error);
           console.error('Request payload:', carModelIds);
-          this.snackbar.error('Failed to update car models');
+          this.snackbar.error('Не вдалося оновити моделі автомобілів');
 
           button?.removeChild(savingEl);
           button?.removeAttribute('disabled');
@@ -254,28 +254,28 @@ export class ProductFormComponent implements OnInit {
                           uploadCount++;
                           if (uploadCount === this.selectedFiles.length) {
                             this.productService.clearCache();
-                            this.snackbar.success(
-                              'Product updated successfully'
-                            );
+                            this.snackbar.success('Товар успішно оновлено');
                             this.router.navigate(['/admin/products']);
                           }
                         },
                         error: (err) => {
                           console.error('Error uploading image', err);
-                          this.snackbar.error('Failed to upload image');
+                          this.snackbar.error(
+                            'Не вдалося завантажити зображення'
+                          );
                         },
                       });
                   }
                 }
               } else {
                 this.productService.clearCache();
-                this.snackbar.success('Product updated successfully');
+                this.snackbar.success('Товар успішно оновлено');
                 this.router.navigate(['/admin/products']);
               }
             },
             error: (err) => {
               console.error('Error updating product', err);
-              this.snackbar.error('Failed to update product');
+              this.snackbar.error('Не вдалося оновити товар');
             },
           });
       } else {
@@ -292,7 +292,7 @@ export class ProductFormComponent implements OnInit {
                       err
                     );
                     this.snackbar.error(
-                      'Failed to attach car models to product'
+                      'Не вдалося приєднати моделі автомобілів до товару'
                     );
                   },
                 });
@@ -306,31 +306,31 @@ export class ProductFormComponent implements OnInit {
                     uploadCount++;
                     if (uploadCount === this.selectedFiles.length) {
                       this.productService.clearCache();
-                      this.snackbar.success('Product created successfully');
+                      this.snackbar.success('Товар успішно створений');
                       this.router.navigate(['/admin/products']);
                     }
                   },
                   error: (err) => {
                     console.error('Error uploading image', err);
-                    this.snackbar.error('Failed to upload image');
+                    this.snackbar.error('Не вдалося завантажити зображення');
                   },
                 });
               }
             } else {
               this.productService.clearCache();
-              this.snackbar.success('Product created successfully');
+              this.snackbar.success('Товар успішно створений');
               this.router.navigate(['/admin/products']);
             }
           },
           error: (err) => {
             console.error('Error creating product', err);
-            this.snackbar.error('Failed to create product');
+            this.snackbar.error('Не вдалося створити товар');
           },
         });
       }
     } else {
       this.markFormGroupTouched(this.productForm);
-      this.snackbar.error('Please fix the errors in the form');
+      this.snackbar.error('Будь ласка, виправте помилки у формі');
     }
   }
 

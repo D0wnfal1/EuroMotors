@@ -87,7 +87,7 @@ export class CarbrandFormComponent implements OnInit {
 
   onSubmit() {
     if (this.carBrandForm.invalid) {
-      this.snackbar.error('Please fix the errors in the form');
+      this.snackbar.error('Будь ласка, виправте помилки у формі');
       return;
     }
 
@@ -102,7 +102,7 @@ export class CarbrandFormComponent implements OnInit {
       this.carBrandService.updateCarBrand(this.carBrandId, formData).subscribe({
         next: () => {
           this.carBrandService.clearCache();
-          this.snackbar.success('Car brand updated successfully');
+          this.snackbar.success('Бренд автомобіля успішно оновлено');
           this.router.navigate(['/admin/carbrands']);
         },
         error: (error) => {
@@ -114,11 +114,11 @@ export class CarbrandFormComponent implements OnInit {
       this.carBrandService.createCarBrand(formData).subscribe({
         next: (newCarBrandId) => {
           this.carBrandService.clearCache();
-          this.snackbar.success('Car brand created successfully');
+          this.snackbar.success('Бренд автомобіля успішно створено');
           this.router.navigate(['/admin/carbrands']);
         },
         error: (error) => {
-          this.snackbar.error('Failed to create car brand');
+          this.snackbar.error('Не вдалося створити бренд автомобіля');
           console.error('Error creating car brand:', error);
         },
       });

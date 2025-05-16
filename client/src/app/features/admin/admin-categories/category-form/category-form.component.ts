@@ -162,7 +162,7 @@ export class CategoryFormComponent implements OnInit {
 
   onSubmit() {
     if (this.categoryForm.invalid) {
-      this.snackbar.error('Please fix the errors in the form');
+      this.snackbar.error('Будь ласка, виправте помилки у формі');
       return;
     }
 
@@ -186,11 +186,11 @@ export class CategoryFormComponent implements OnInit {
       this.categoryService.updateCategory(this.categoryId, formData).subscribe({
         next: () => {
           this.categoryService.clearCache();
-          this.snackbar.success('Category updated successfully');
+          this.snackbar.success('Категорія успішно оновлена');
           this.router.navigate(['/admin/categories']);
         },
         error: (error) => {
-          this.snackbar.error('Failed to update category');
+          this.snackbar.error('Не вдалося оновити категорію');
           console.error('Error updating category:', error);
         },
       });
@@ -198,11 +198,11 @@ export class CategoryFormComponent implements OnInit {
       this.categoryService.createCategory(formData).subscribe({
         next: () => {
           this.categoryService.clearCache();
-          this.snackbar.success('Category created successfully');
+          this.snackbar.success('Категорія успішно створена');
           this.router.navigate(['/admin/categories']);
         },
         error: (error) => {
-          this.snackbar.error('Failed to create category');
+          this.snackbar.error('Не вдалося створити категорію');
           console.error('Error creating category:', error);
         },
       });
