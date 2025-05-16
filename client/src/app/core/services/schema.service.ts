@@ -77,7 +77,7 @@ export class SchemaService {
       sku: product.vendorCode,
       brand: {
         '@type': 'Brand',
-        name: 'EuroMotors',
+        name: 'AutoRSD',
       },
       offers: {
         '@type': 'Offer',
@@ -101,7 +101,7 @@ export class SchemaService {
     const schema: OrganizationSchema = {
       '@context': 'https://schema.org',
       '@type': 'AutoPartsStore',
-      name: 'EuroMotors',
+      name: 'AutoRSD',
       description: 'Магазин автозапчастей для європейських автомобілів',
       url: window.location.origin,
       address: {
@@ -118,7 +118,7 @@ export class SchemaService {
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
       name: category.name,
-      description: `Автозапчастини категорії ${category.name} в магазині EuroMotors`,
+      description: `Автозапчастини категорії ${category.name} в магазині AutoRSD`,
       url: window.location.href,
     };
 

@@ -171,7 +171,7 @@ export class ProductDetailsComponent implements OnInit {
         .join(', ');
 
       this.seoService.updateSeoTags({
-        title: `${this.product.name} | EuroMotors`,
+        title: `${this.product.name} | AutoRSD`,
         description: `${this.product.name} - ${
           specifications || 'Автозапчастини'
         }. Ціна: ${this.product.price}₴`,
@@ -179,7 +179,7 @@ export class ProductDetailsComponent implements OnInit {
           specifications || ''
         }`,
         ogTitle: this.product.name,
-        ogDescription: `Купити ${this.product.name} в магазині EuroMotors`,
+        ogDescription: `Купити ${this.product.name} в магазині AutoRSD`,
         ogImage: this.product.images?.[0]?.path,
       });
 

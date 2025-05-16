@@ -5,7 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EuroMotors.Application.IntegrationTests.Abstractions;
 
-public abstract class BaseIntegrationTest : IClassFixture<IntegrationTestWebAppFactory>
+[Collection(nameof(IntegrationTestCollection))]
+public abstract class BaseIntegrationTest
 {
     private readonly IServiceScope _scope;
     protected readonly ISender Sender;

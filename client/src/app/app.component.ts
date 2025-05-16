@@ -35,7 +35,7 @@ import { catchError, switchMap } from 'rxjs/operators';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = 'EuroMotors';
+  title = 'AutoRSD';
   private readonly dialog = inject(MatDialog);
   notification = inject(NotificationService);
   router = inject(Router);

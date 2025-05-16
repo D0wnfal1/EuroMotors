@@ -17,7 +17,8 @@ public class CreateCarModelTests : BaseIntegrationTest
     public async Task Should_CreateCarModel_WhenCommandIsValid()
     {
         // Arrange
-        Guid brandId = await Sender.CreateCarBrandAsync("TestBrand");
+        await CleanDatabaseAsync();
+        Guid brandId = await Sender.CreateCarBrandAsync("TestBrand1");
         var command = new CreateCarModelCommand(
             brandId,
             "X5",
@@ -38,6 +39,7 @@ public class CreateCarModelTests : BaseIntegrationTest
     public async Task Should_ReturnFailure_WhenBrandDoesNotExist()
     {
         // Arrange
+        await CleanDatabaseAsync();
         var command = new CreateCarModelCommand(
             Guid.NewGuid(),
             "X5",
@@ -58,6 +60,7 @@ public class CreateCarModelTests : BaseIntegrationTest
     public async Task Should_ReturnFailure_WhenCommandIsNotValid()
     {
         // Arrange
+        await CleanDatabaseAsync();
         Guid brandId = await Sender.CreateCarBrandAsync("TestBrand2");
         var command = new CreateCarModelCommand(
             brandId,
