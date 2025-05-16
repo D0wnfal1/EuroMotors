@@ -19,30 +19,39 @@
             label="Вибрати Марку"
           >
             <div class="p-2 sm:p-4">
-              <mat-form-field appearance="fill" class="w-full">
-                <mat-label>Марка</mat-label>
-                <mat-select formControlName="brand">
-                  <mat-option *ngFor="let brand of carBrands" [value]="brand">
-                    {{ brand.name }}
-                  </mat-option>
-                </mat-select>
-                <mat-error
-                  *ngIf="carSelectionForm.get('brand')?.hasError('required')"
-                >
-                  Марка обов'язкова для вибору
-                </mat-error>
-              </mat-form-field>
-              <div class="flex justify-end mt-4">
-                <button
-                  mat-button
-                  matStepperNext
-                  [disabled]="!carSelectionForm.get('brand')?.valid"
-                  type="button"
-                  class="bg-blue-500 text-white px-4 py-1 rounded"
-                >
-                  Далі
-                </button>
+              <div *ngIf="carBrands && carBrands.length > 0; else noBrands">
+                <mat-form-field appearance="fill" class="w-full">
+                  <mat-label>Марка</mat-label>
+                  <mat-select formControlName="brand">
+                    <mat-option *ngFor="let brand of carBrands" [value]="brand">
+                      {{ brand.name }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error
+                    *ngIf="carSelectionForm.get('brand')?.hasError('required')"
+                  >
+                    Марка обов'язкова для вибору
+                  </mat-error>
+                </mat-form-field>
+                <div class="flex justify-end mt-4">
+                  <button
+                    mat-button
+                    matStepperNext
+                    [disabled]="!carSelectionForm.get('brand')?.valid"
+                    type="button"
+                    class="bg-blue-500 text-white px-4 py-1 rounded"
+                  >
+                    Далі
+                  </button>
+                </div>
               </div>
+              <ng-template #noBrands>
+                <div class="py-4 text-center">
+                  <p class="text-gray-500 text-lg">
+                    Немає доступних марок автомобілів
+                  </p>
+                </div>
+              </ng-template>
             </div>
           </mat-step>
 
@@ -51,38 +60,55 @@
             label="Вибрати Модель"
           >
             <div class="p-2 sm:p-4">
-              <mat-form-field appearance="fill" class="w-full">
-                <mat-label>Модель</mat-label>
-                <mat-select formControlName="model">
-                  <mat-option *ngFor="let model of models" [value]="model">
-                    {{ model }}
-                  </mat-option>
-                </mat-select>
-                <mat-error
-                  *ngIf="carSelectionForm.get('model')?.hasError('required')"
+              <div *ngIf="models && models.length > 0; else noModels">
+                <mat-form-field appearance="fill" class="w-full">
+                  <mat-label>Модель</mat-label>
+                  <mat-select formControlName="model">
+                    <mat-option *ngFor="let model of models" [value]="model">
+                      {{ model }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error
+                    *ngIf="carSelectionForm.get('model')?.hasError('required')"
+                  >
+                    Модель обов'язкова для вибору
+                  </mat-error>
+                </mat-form-field>
+                <div
+                  class="flex flex-col sm:flex-row justify-between mt-4 gap-2"
                 >
-                  Модель обов'язкова для вибору
-                </mat-error>
-              </mat-form-field>
-              <div class="flex flex-col sm:flex-row justify-between mt-4 gap-2">
-                <button
-                  mat-button
-                  matStepperPrevious
-                  type="button"
-                  class="w-full sm:w-auto"
-                >
-                  Назад
-                </button>
-                <button
-                  mat-button
-                  matStepperNext
-                  [disabled]="!carSelectionForm.get('model')?.valid"
-                  type="button"
-                  class="bg-blue-500 text-white px-4 py-1 rounded w-full sm:w-auto"
-                >
-                  Далі
-                </button>
+                  <button
+                    mat-button
+                    matStepperPrevious
+                    type="button"
+                    class="w-full sm:w-auto"
+                  >
+                    Назад
+                  </button>
+                  <button
+                    mat-button
+                    matStepperNext
+                    [disabled]="!carSelectionForm.get('model')?.valid"
+                    type="button"
+                    class="bg-blue-500 text-white px-4 py-1 rounded w-full sm:w-auto"
+                  >
+                    Далі
+                  </button>
+                </div>
               </div>
+              <ng-template #noModels>
+                <div class="py-4 text-center">
+                  <p class="text-gray-500 text-lg">Немає доступних моделей</p>
+                  <button
+                    mat-button
+                    matStepperPrevious
+                    type="button"
+                    class="mt-4"
+                  >
+                    Назад
+                  </button>
+                </div>
+              </ng-template>
             </div>
           </mat-step>
 
@@ -91,38 +117,55 @@
             label="Вибрати Рік"
           >
             <div class="p-2 sm:p-4">
-              <mat-form-field appearance="fill" class="w-full">
-                <mat-label>Рік</mat-label>
-                <mat-select formControlName="year">
-                  <mat-option *ngFor="let year of years" [value]="year">
-                    {{ year }}
-                  </mat-option>
-                </mat-select>
-                <mat-error
-                  *ngIf="carSelectionForm.get('year')?.hasError('required')"
+              <div *ngIf="years && years.length > 0; else noYears">
+                <mat-form-field appearance="fill" class="w-full">
+                  <mat-label>Рік</mat-label>
+                  <mat-select formControlName="year">
+                    <mat-option *ngFor="let year of years" [value]="year">
+                      {{ year }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error
+                    *ngIf="carSelectionForm.get('year')?.hasError('required')"
+                  >
+                    Рік обов'язковий для вибору
+                  </mat-error>
+                </mat-form-field>
+                <div
+                  class="flex flex-col sm:flex-row justify-between mt-4 gap-2"
                 >
-                  Рік обов'язковий для вибору
-                </mat-error>
-              </mat-form-field>
-              <div class="flex flex-col sm:flex-row justify-between mt-4 gap-2">
-                <button
-                  mat-button
-                  matStepperPrevious
-                  type="button"
-                  class="w-full sm:w-auto"
-                >
-                  Назад
-                </button>
-                <button
-                  mat-button
-                  matStepperNext
-                  [disabled]="!carSelectionForm.get('year')?.valid"
-                  type="button"
-                  class="bg-blue-500 text-white px-4 py-1 rounded w-full sm:w-auto"
-                >
-                  Далі
-                </button>
+                  <button
+                    mat-button
+                    matStepperPrevious
+                    type="button"
+                    class="w-full sm:w-auto"
+                  >
+                    Назад
+                  </button>
+                  <button
+                    mat-button
+                    matStepperNext
+                    [disabled]="!carSelectionForm.get('year')?.valid"
+                    type="button"
+                    class="bg-blue-500 text-white px-4 py-1 rounded w-full sm:w-auto"
+                  >
+                    Далі
+                  </button>
+                </div>
               </div>
+              <ng-template #noYears>
+                <div class="py-4 text-center">
+                  <p class="text-gray-500 text-lg">Немає доступних років</p>
+                  <button
+                    mat-button
+                    matStepperPrevious
+                    type="button"
+                    class="mt-4"
+                  >
+                    Назад
+                  </button>
+                </div>
+              </ng-template>
             </div>
           </mat-step>
 
@@ -131,41 +174,62 @@
             label="Вибрати Тип Кузова"
           >
             <div class="p-2 sm:p-4">
-              <mat-form-field appearance="fill" class="w-full">
-                <mat-label>Тип Кузова</mat-label>
-                <mat-select formControlName="bodyType">
-                  <mat-option
-                    *ngFor="let bodyType of bodyTypes"
-                    [value]="bodyType"
+              <div *ngIf="bodyTypes && bodyTypes.length > 0; else noBodyTypes">
+                <mat-form-field appearance="fill" class="w-full">
+                  <mat-label>Тип Кузова</mat-label>
+                  <mat-select formControlName="bodyType">
+                    <mat-option
+                      *ngFor="let bodyType of bodyTypes"
+                      [value]="bodyType"
+                    >
+                      {{ bodyType | bodyType }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error
+                    *ngIf="
+                      carSelectionForm.get('bodyType')?.hasError('required')
+                    "
                   >
-                    {{ bodyType | bodyType }}
-                  </mat-option>
-                </mat-select>
-                <mat-error
-                  *ngIf="carSelectionForm.get('bodyType')?.hasError('required')"
+                    Тип кузова обов'язковий для вибору
+                  </mat-error>
+                </mat-form-field>
+                <div
+                  class="flex flex-col sm:flex-row justify-between mt-4 gap-2"
                 >
-                  Тип кузова обов'язковий для вибору
-                </mat-error>
-              </mat-form-field>
-              <div class="flex flex-col sm:flex-row justify-between mt-4 gap-2">
-                <button
-                  mat-button
-                  matStepperPrevious
-                  type="button"
-                  class="w-full sm:w-auto"
-                >
-                  Назад
-                </button>
-                <button
-                  mat-button
-                  matStepperNext
-                  [disabled]="!carSelectionForm.get('bodyType')?.valid"
-                  type="button"
-                  class="bg-blue-500 text-white px-4 py-1 rounded w-full sm:w-auto"
-                >
-                  Далі
-                </button>
+                  <button
+                    mat-button
+                    matStepperPrevious
+                    type="button"
+                    class="w-full sm:w-auto"
+                  >
+                    Назад
+                  </button>
+                  <button
+                    mat-button
+                    matStepperNext
+                    [disabled]="!carSelectionForm.get('bodyType')?.valid"
+                    type="button"
+                    class="bg-blue-500 text-white px-4 py-1 rounded w-full sm:w-auto"
+                  >
+                    Далі
+                  </button>
+                </div>
               </div>
+              <ng-template #noBodyTypes>
+                <div class="py-4 text-center">
+                  <p class="text-gray-500 text-lg">
+                    Немає доступних типів кузова
+                  </p>
+                  <button
+                    mat-button
+                    matStepperPrevious
+                    type="button"
+                    class="mt-4"
+                  >
+                    Назад
+                  </button>
+                </div>
+              </ng-template>
             </div>
           </mat-step>
 
@@ -174,40 +238,64 @@
             label="Специфікації Двигуна"
           >
             <div class="p-2 sm:p-4">
-              <mat-form-field appearance="fill" class="w-full">
-                <mat-label>Специфікація Двигуна</mat-label>
-                <mat-select formControlName="engineSpec">
-                  <mat-option *ngFor="let spec of engineSpecs" [value]="spec">
-                    {{ spec | engineSpec }}
-                  </mat-option>
-                </mat-select>
-                <mat-error
-                  *ngIf="
-                    carSelectionForm.get('engineSpec')?.hasError('required')
-                  "
-                >
-                  Специфікація двигуна обов'язкова для вибору
-                </mat-error>
-              </mat-form-field>
+              <div
+                *ngIf="
+                  engineSpecs && engineSpecs.length > 0;
+                  else noEngineSpecs
+                "
+              >
+                <mat-form-field appearance="fill" class="w-full">
+                  <mat-label>Специфікація Двигуна</mat-label>
+                  <mat-select formControlName="engineSpec">
+                    <mat-option *ngFor="let spec of engineSpecs" [value]="spec">
+                      {{ spec | engineSpec }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error
+                    *ngIf="
+                      carSelectionForm.get('engineSpec')?.hasError('required')
+                    "
+                  >
+                    Специфікація двигуна обов'язкова для вибору
+                  </mat-error>
+                </mat-form-field>
 
-              <div class="flex flex-col sm:flex-row justify-between mt-4 gap-2">
-                <button
-                  mat-button
-                  matStepperPrevious
-                  type="button"
-                  class="w-full sm:w-auto"
+                <div
+                  class="flex flex-col sm:flex-row justify-between mt-4 gap-2"
                 >
-                  Назад
-                </button>
-                <button
-                  mat-button
-                  type="submit"
-                  [disabled]="!carSelectionForm.valid"
-                  class="bg-blue-500 text-white px-4 py-1 rounded w-full sm:w-auto"
-                >
-                  Зберегти Вибір
-                </button>
+                  <button
+                    mat-button
+                    matStepperPrevious
+                    type="button"
+                    class="w-full sm:w-auto"
+                  >
+                    Назад
+                  </button>
+                  <button
+                    mat-button
+                    type="submit"
+                    [disabled]="!carSelectionForm.valid"
+                    class="bg-blue-500 text-white px-4 py-1 rounded w-full sm:w-auto"
+                  >
+                    Зберегти Вибір
+                  </button>
+                </div>
               </div>
+              <ng-template #noEngineSpecs>
+                <div class="py-4 text-center">
+                  <p class="text-gray-500 text-lg">
+                    Немає доступних специфікацій двигуна
+                  </p>
+                  <button
+                    mat-button
+                    matStepperPrevious
+                    type="button"
+                    class="mt-4"
+                  >
+                    Назад
+                  </button>
+                </div>
+              </ng-template>
             </div>
           </mat-step>
         </mat-stepper>
