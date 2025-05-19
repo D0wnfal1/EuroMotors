@@ -1,10 +1,12 @@
 ﻿using Bogus;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Abstractions.Pagination;
 using EuroMotors.Application.CarModels.GetCarModelById;
 using EuroMotors.Application.CarModels.GetCarModels;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.CarModels;
@@ -27,7 +29,8 @@ public class GetCarModelsTests : BaseIntegrationTest
         var query = new GetCarModelsQuery(null, null, 1, 10);
 
         // Act
-        Result<Pagination<CarModelResponse>> result = await Sender.Send(query);
+        IQueryHandler<GetCarModelsQuery, Pagination<CarModelResponse>> handler = ServiceProvider.GetRequiredService<IQueryHandler<GetCarModelsQuery, Pagination<CarModelResponse>>>();
+        Result<Pagination<CarModelResponse>> result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
@@ -40,8 +43,8 @@ public class GetCarModelsTests : BaseIntegrationTest
         // Arrange
         await CleanDatabaseAsync();
 
-        Guid brandId1 = await Sender.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
-        await Sender.CreateCarModelAsync(
+        Guid brandId1 = await ServiceProvider.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
+        await ServiceProvider.CreateCarModelAsync(
             brandId1,
             _faker.Vehicle.Model(),
             _faker.Random.Int(2000, 2023),
@@ -49,8 +52,8 @@ public class GetCarModelsTests : BaseIntegrationTest
             new EngineSpec(_faker.Random.Int(3, 12), FuelType.Diesel)
         );
 
-        Guid brandId2 = await Sender.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
-        await Sender.CreateCarModelAsync(
+        Guid brandId2 = await ServiceProvider.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
+        await ServiceProvider.CreateCarModelAsync(
             brandId2,
             _faker.Vehicle.Model(),
             _faker.Random.Int(2000, 2023),
@@ -61,7 +64,8 @@ public class GetCarModelsTests : BaseIntegrationTest
         var query = new GetCarModelsQuery(null, null, 1, 10);
 
         // Act
-        Result<Pagination<CarModelResponse>> result = await Sender.Send(query);
+        IQueryHandler<GetCarModelsQuery, Pagination<CarModelResponse>> handler = ServiceProvider.GetRequiredService<IQueryHandler<GetCarModelsQuery, Pagination<CarModelResponse>>>();
+        Result<Pagination<CarModelResponse>> result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();

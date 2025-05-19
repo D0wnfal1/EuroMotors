@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Abstractions.Pagination;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Application.Products.GetProductById;
@@ -6,6 +7,7 @@ using EuroMotors.Application.Products.GetProducts;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Products;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.Products;
@@ -25,9 +27,9 @@ public class GetProductsTests : BaseIntegrationTest
         // Arrange
         await CleanDatabaseAsync();
 
-        Guid categoryId = await Sender.CreateCategoryAsync(_faker.Commerce.Categories(1)[0]);
-        Guid brandId = await Sender.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
-        Guid carModelId = await Sender.CreateCarModelAsync(
+        Guid categoryId = await ServiceProvider.CreateCategoryAsync(_faker.Commerce.Categories(1)[0]);
+        Guid brandId = await ServiceProvider.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
+        Guid carModelId = await ServiceProvider.CreateCarModelAsync(
             brandId,
             _faker.Vehicle.Model(),
             2020,
@@ -39,7 +41,7 @@ public class GetProductsTests : BaseIntegrationTest
             new Specification ( "Color", "Red" ),
             new Specification ("Engine", "V8")
         };
-        await Sender.CreateProductAsync(
+        await ServiceProvider.CreateProductAsync(
             "Product1",
             _faker.Commerce.ProductName(),
             categoryId,
@@ -50,7 +52,7 @@ public class GetProductsTests : BaseIntegrationTest
             specifications
         );
 
-        await Sender.CreateProductAsync(
+        await ServiceProvider.CreateProductAsync(
             "Product2",
             _faker.Commerce.ProductName(),
             categoryId,
@@ -61,11 +63,11 @@ public class GetProductsTests : BaseIntegrationTest
             specifications
         );
 
-
         var query = new GetProductsQuery(null, null, null, null, false, false, false, 1, 10);
 
         // Act
-        Result<Pagination<ProductResponse>> result = await Sender.Send(query);
+        IQueryHandler<GetProductsQuery, Pagination<ProductResponse>> handler = ServiceProvider.GetRequiredService<IQueryHandler<GetProductsQuery, Pagination<ProductResponse>>>();
+        Result<Pagination<ProductResponse>> result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
         result.Value.Count.ShouldBe(2);

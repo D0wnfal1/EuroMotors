@@ -1,4 +1,5 @@
 using EuroMotors.Api.Controllers.Delivery;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Delivery.GetWarehouse;
 using Microsoft.AspNetCore.Http;
 
@@ -6,13 +7,13 @@ namespace EuroMotors.Api.UnitTests.Controllers.Delivery;
 
 public class DeliveryControllerTests
 {
-    private readonly ISender _sender;
     private readonly DeliveryController _controller;
+    private readonly IQueryHandler<GetWarehousesQuery, WarehousesResponse<Warehouse>> _getWarehousesHandler;
 
     public DeliveryControllerTests()
     {
-        _sender = Substitute.For<ISender>();
-        _controller = new DeliveryController(_sender)
+        _getWarehousesHandler = Substitute.For<IQueryHandler<GetWarehousesQuery, WarehousesResponse<Warehouse>>>();
+        _controller = new DeliveryController()
         {
             ControllerContext = new ControllerContext
             {
@@ -54,17 +55,17 @@ public class DeliveryControllerTests
             Warnings = []
         };
 
-        _sender.Send(Arg.Any<GetWarehousesQuery>(), Arg.Any<CancellationToken>())
+        _getWarehousesHandler.Handle(Arg.Any<GetWarehousesQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(response));
 
         // Act
-        IActionResult result = await _controller.GetWarehouses(request);
+        IActionResult result = await _controller.GetWarehouses(request, _getWarehousesHandler, CancellationToken.None);
 
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(response);
 
-        await _sender.Received(1).Send(
+        await _getWarehousesHandler.Received(1).Handle(
             Arg.Is<GetWarehousesQuery>(query =>
                 query.City == request.City &&
                 query.Query == request.Query),
@@ -81,11 +82,11 @@ public class DeliveryControllerTests
             Query = "Unknown"
         };
 
-        _sender.Send(Arg.Any<GetWarehousesQuery>(), Arg.Any<CancellationToken>())
+        _getWarehousesHandler.Handle(Arg.Any<GetWarehousesQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<WarehousesResponse<Warehouse>>(Error.NotFound("Warehouses.NotFound", "Warehouses not found")));
 
         // Act
-        IActionResult result = await _controller.GetWarehouses(request);
+        IActionResult result = await _controller.GetWarehouses(request, _getWarehousesHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NotFoundResult>();

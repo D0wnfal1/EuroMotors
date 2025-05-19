@@ -1,4 +1,5 @@
 using EuroMotors.Api.Controllers.CarBrands;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Abstractions.Pagination;
 using EuroMotors.Application.CarBrands.CreateCarBrand;
 using EuroMotors.Application.CarBrands.DeleteCarBrand;
@@ -11,15 +12,23 @@ namespace EuroMotors.Api.UnitTests.Controllers.CarModels;
 
 public sealed class CarBrandControllerTests
 {
-    private readonly ISender _sender;
     private readonly CarBrandController _controller;
+    private readonly IQueryHandler<GetCarBrandsQuery, Pagination<CarBrandResponse>> _getCarBrandsHandler;
+    private readonly IQueryHandler<GetCarBrandByIdQuery, CarBrandResponse> _getCarBrandByIdHandler;
+    private readonly ICommandHandler<CreateCarBrandCommand, Guid> _createCarBrandHandler;
+    private readonly ICommandHandler<UpdateCarBrandCommand> _updateCarBrandHandler;
+    private readonly ICommandHandler<DeleteCarBrandCommand> _deleteCarBrandHandler;
 
     public CarBrandControllerTests()
     {
-        _sender = Substitute.For<ISender>();
-        _controller = new CarBrandController(_sender)
+        _getCarBrandsHandler = Substitute.For<IQueryHandler<GetCarBrandsQuery, Pagination<CarBrandResponse>>>();
+        _getCarBrandByIdHandler = Substitute.For<IQueryHandler<GetCarBrandByIdQuery, CarBrandResponse>>();
+        _createCarBrandHandler = Substitute.For<ICommandHandler<CreateCarBrandCommand, Guid>>();
+        _updateCarBrandHandler = Substitute.For<ICommandHandler<UpdateCarBrandCommand>>();
+        _deleteCarBrandHandler = Substitute.For<ICommandHandler<DeleteCarBrandCommand>>();
+
+        _controller = new CarBrandController()
         {
-            // Set up HttpContext for the controller
             ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext()
@@ -50,17 +59,17 @@ public sealed class CarBrandControllerTests
             Data = carBrands
         };
 
-        _sender.Send(Arg.Any<GetCarBrandsQuery>(), Arg.Any<CancellationToken>())
+        _getCarBrandsHandler.Handle(Arg.Any<GetCarBrandsQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(pagination));
 
         // Act
-        IActionResult result = await _controller.GetCarBrands(CancellationToken.None);
+        IActionResult result = await _controller.GetCarBrands(_getCarBrandsHandler, CancellationToken.None);
 
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(pagination);
 
-        await _sender.Received(1).Send(
+        await _getCarBrandsHandler.Received(1).Handle(
             Arg.Is<GetCarBrandsQuery>(query =>
                 query.PageNumber == 1 &&
                 query.PageSize == 10),
@@ -71,12 +80,12 @@ public sealed class CarBrandControllerTests
     public async Task GetCarBrands_ShouldReturnNotFound_WhenBrandsNotFound()
     {
         // Arrange
-        _sender.Send(Arg.Any<GetCarBrandsQuery>(), Arg.Any<CancellationToken>())
+        _getCarBrandsHandler.Handle(Arg.Any<GetCarBrandsQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<Pagination<CarBrandResponse>>(
                 Error.NotFound("CarBrands.NotFound", "Car brands not found")));
 
         // Act
-        IActionResult result = await _controller.GetCarBrands(CancellationToken.None);
+        IActionResult result = await _controller.GetCarBrands(_getCarBrandsHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NotFoundResult>();
@@ -95,17 +104,17 @@ public sealed class CarBrandControllerTests
             LogoPath = "/images/brands/bmw.jpg"
         };
 
-        _sender.Send(Arg.Any<GetCarBrandByIdQuery>(), Arg.Any<CancellationToken>())
+        _getCarBrandByIdHandler.Handle(Arg.Any<GetCarBrandByIdQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(carBrand));
 
         // Act
-        IActionResult result = await _controller.GetCarBrandById(id, CancellationToken.None);
+        IActionResult result = await _controller.GetCarBrandById(_getCarBrandByIdHandler, id, CancellationToken.None);
 
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(carBrand);
 
-        await _sender.Received(1).Send(
+        await _getCarBrandByIdHandler.Received(1).Handle(
             Arg.Is<GetCarBrandByIdQuery>(query => query.CarBrandId == id),
             Arg.Any<CancellationToken>());
     }
@@ -116,12 +125,12 @@ public sealed class CarBrandControllerTests
         // Arrange
         var id = Guid.NewGuid();
 
-        _sender.Send(Arg.Any<GetCarBrandByIdQuery>(), Arg.Any<CancellationToken>())
+        _getCarBrandByIdHandler.Handle(Arg.Any<GetCarBrandByIdQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<CarBrandResponse>(
                 Error.NotFound("CarBrand.NotFound", "Car brand not found")));
 
         // Act
-        IActionResult result = await _controller.GetCarBrandById(id, CancellationToken.None);
+        IActionResult result = await _controller.GetCarBrandById(_getCarBrandByIdHandler, id, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NotFoundResult>();
@@ -138,11 +147,11 @@ public sealed class CarBrandControllerTests
 
         var brandId = Guid.NewGuid();
 
-        _sender.Send(Arg.Any<CreateCarBrandCommand>(), Arg.Any<CancellationToken>())
+        _createCarBrandHandler.Handle(Arg.Any<CreateCarBrandCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(brandId));
 
         // Act
-        IActionResult result = await _controller.CreateCarBrand(request, CancellationToken.None);
+        IActionResult result = await _controller.CreateCarBrand(request, _createCarBrandHandler, CancellationToken.None);
 
         // Assert
         CreatedAtActionResult createdResult = result.ShouldBeOfType<CreatedAtActionResult>();
@@ -150,7 +159,7 @@ public sealed class CarBrandControllerTests
         createdResult.RouteValues?["id"].ShouldBe(brandId);
         createdResult.Value.ShouldBe(brandId);
 
-        await _sender.Received(1).Send(
+        await _createCarBrandHandler.Received(1).Handle(
             Arg.Is<CreateCarBrandCommand>(cmd =>
                 cmd.Name == request.Name),
             Arg.Any<CancellationToken>());
@@ -167,11 +176,11 @@ public sealed class CarBrandControllerTests
 
         var error = Error.Failure("CarBrand.InvalidData", "Invalid car brand data");
 
-        _sender.Send(Arg.Any<CreateCarBrandCommand>(), Arg.Any<CancellationToken>())
+        _createCarBrandHandler.Handle(Arg.Any<CreateCarBrandCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<Guid>(error));
 
         // Act
-        IActionResult result = await _controller.CreateCarBrand(request, CancellationToken.None);
+        IActionResult result = await _controller.CreateCarBrand(request, _createCarBrandHandler, CancellationToken.None);
 
         // Assert
         BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();
@@ -188,16 +197,16 @@ public sealed class CarBrandControllerTests
             Name = "BMW Updated"
         };
 
-        _sender.Send(Arg.Any<UpdateCarBrandCommand>(), Arg.Any<CancellationToken>())
+        _updateCarBrandHandler.Handle(Arg.Any<UpdateCarBrandCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
         // Act
-        IActionResult result = await _controller.UpdateCarBrand(id, request, CancellationToken.None);
+        IActionResult result = await _controller.UpdateCarBrand(id, request, _updateCarBrandHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
 
-        await _sender.Received(1).Send(
+        await _updateCarBrandHandler.Received(1).Handle(
             Arg.Is<UpdateCarBrandCommand>(cmd =>
                 cmd.CarBrandId == id &&
                 cmd.Name == request.Name),
@@ -216,11 +225,11 @@ public sealed class CarBrandControllerTests
 
         var error = Error.NotFound("CarBrand.NotFound", "Car brand not found");
 
-        _sender.Send(Arg.Any<UpdateCarBrandCommand>(), Arg.Any<CancellationToken>())
+        _updateCarBrandHandler.Handle(Arg.Any<UpdateCarBrandCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure(error));
 
         // Act
-        IActionResult result = await _controller.UpdateCarBrand(id, request, CancellationToken.None);
+        IActionResult result = await _controller.UpdateCarBrand(id, request, _updateCarBrandHandler, CancellationToken.None);
 
         // Assert
         BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();
@@ -233,16 +242,16 @@ public sealed class CarBrandControllerTests
         // Arrange
         var id = Guid.NewGuid();
 
-        _sender.Send(Arg.Any<DeleteCarBrandCommand>(), Arg.Any<CancellationToken>())
+        _deleteCarBrandHandler.Handle(Arg.Any<DeleteCarBrandCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
         // Act
-        IActionResult result = await _controller.DeleteCarBrand(id, CancellationToken.None);
+        IActionResult result = await _controller.DeleteCarBrand(id, _deleteCarBrandHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
 
-        await _sender.Received(1).Send(
+        await _deleteCarBrandHandler.Received(1).Handle(
             Arg.Is<DeleteCarBrandCommand>(cmd => cmd.CarBrandId == id),
             Arg.Any<CancellationToken>());
     }
@@ -255,11 +264,11 @@ public sealed class CarBrandControllerTests
 
         var error = Error.NotFound("CarBrand.NotFound", "Car brand not found");
 
-        _sender.Send(Arg.Any<DeleteCarBrandCommand>(), Arg.Any<CancellationToken>())
+        _deleteCarBrandHandler.Handle(Arg.Any<DeleteCarBrandCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure(error));
 
         // Act
-        IActionResult result = await _controller.DeleteCarBrand(id, CancellationToken.None);
+        IActionResult result = await _controller.DeleteCarBrand(id, _deleteCarBrandHandler, CancellationToken.None);
 
         // Assert
         BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();

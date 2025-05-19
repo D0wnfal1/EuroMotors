@@ -1,6 +1,8 @@
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Application.Payments.CreatePayment;
 using EuroMotors.Domain.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.Payments;
@@ -20,7 +22,8 @@ public class CreatePaymentTests : BaseIntegrationTest
         var command = new CreatePaymentCommand(nonExistingOrderId);
 
         // Act
-        Result<Dictionary<string, string>> result = await Sender.Send(command);
+        ICommandHandler<CreatePaymentCommand, Dictionary<string, string>> handler = ServiceProvider.GetRequiredService<ICommandHandler<CreatePaymentCommand, Dictionary<string, string>>>();
+        Result<Dictionary<string, string>> result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsFailure.ShouldBeTrue();

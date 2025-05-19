@@ -1,8 +1,10 @@
-﻿using EuroMotors.Application.Categories.DeleteCategory;
+﻿using EuroMotors.Application.Abstractions.Messaging;
+using EuroMotors.Application.Categories.DeleteCategory;
 using EuroMotors.Application.Categories.GetByIdCategory;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Categories;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.Categories;
@@ -21,7 +23,8 @@ public class DeleteCategoryTests : BaseIntegrationTest
         var command = new DeleteCategoryCommand(Guid.NewGuid());
 
         // Act
-        Result result = await Sender.Send(command);
+        ICommandHandler<DeleteCategoryCommand> handler = ServiceProvider.GetRequiredService<ICommandHandler<DeleteCategoryCommand>>();
+        Result result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsFailure.ShouldBeTrue();
@@ -33,18 +36,20 @@ public class DeleteCategoryTests : BaseIntegrationTest
     {
         // Arrange
         string CategoryName = "Test Category";
-        Guid CategoryId = await Sender.CreateCategoryAsync(CategoryName);
+        Guid CategoryId = await ServiceProvider.CreateCategoryAsync(CategoryName);
 
         var command = new DeleteCategoryCommand(CategoryId);
 
         // Act
-        Result result = await Sender.Send(command);
+        ICommandHandler<DeleteCategoryCommand> handler = ServiceProvider.GetRequiredService<ICommandHandler<DeleteCategoryCommand>>();
+        Result result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
 
         var getCategoryQuery = new GetCategoryByIdQuery(CategoryId);
-        Result<CategoryResponse> getResult = await Sender.Send(getCategoryQuery);
+        IQueryHandler<GetCategoryByIdQuery, CategoryResponse> getHandler = ServiceProvider.GetRequiredService<IQueryHandler<GetCategoryByIdQuery, CategoryResponse>>();
+        Result<CategoryResponse> getResult = await getHandler.Handle(getCategoryQuery, CancellationToken.None);
 
         getResult.IsFailure.ShouldBeTrue();
         getResult.Error.ShouldBe(CategoryErrors.NotFound(CategoryId));

@@ -1,8 +1,10 @@
 ﻿using Bogus;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Categories.GetByIdCategory;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Categories;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.Categories;
@@ -21,7 +23,8 @@ public class GetCategoryTests : BaseIntegrationTest
         var query = new GetCategoryByIdQuery(Guid.NewGuid());
 
         // Act
-        Result result = await Sender.Send(query);
+        IQueryHandler<GetCategoryByIdQuery, CategoryResponse> handler = ServiceProvider.GetRequiredService<IQueryHandler<GetCategoryByIdQuery, CategoryResponse>>();
+        Result<CategoryResponse> result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
         result.Error.ShouldBe(CategoryErrors.NotFound(query.CategoryId));
@@ -32,12 +35,13 @@ public class GetCategoryTests : BaseIntegrationTest
     {
         // Arrange
         var faker = new Faker();
-        Guid CategoryId = await Sender.CreateCategoryAsync(faker.Music.Genre());
+        Guid CategoryId = await ServiceProvider.CreateCategoryAsync(faker.Music.Genre());
 
         var query = new GetCategoryByIdQuery(CategoryId);
 
         // Act
-        Result<CategoryResponse> result = await Sender.Send(query);
+        IQueryHandler<GetCategoryByIdQuery, CategoryResponse> handler = ServiceProvider.GetRequiredService<IQueryHandler<GetCategoryByIdQuery, CategoryResponse>>();
+        Result<CategoryResponse> result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();

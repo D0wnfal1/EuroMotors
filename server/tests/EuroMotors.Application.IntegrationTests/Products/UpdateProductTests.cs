@@ -1,10 +1,12 @@
 using Bogus;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Application.Products.UpdateProduct;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Categories;
 using EuroMotors.Domain.Products;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.Products;
@@ -34,7 +36,8 @@ public class UpdateProductTests : BaseIntegrationTest
             _faker.Random.Int(1, 100));
 
         // Act
-        Result result = await Sender.Send(command);
+        ICommandHandler<UpdateProductCommand> handler = ServiceProvider.GetRequiredService<ICommandHandler<UpdateProductCommand>>();
+        Result result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Error.ShouldBe(ProductErrors.NotFound(nonExistingProductId));
@@ -44,9 +47,9 @@ public class UpdateProductTests : BaseIntegrationTest
     public async Task Should_ReturnFailure_WhenCategoryDoesNotExist()
     {
         // Arrange
-        Guid categoryId = await Sender.CreateCategoryAsync("Test Category11111");
-        Guid brandId = await Sender.CreateCarBrandAsync("Test Brand11111");
-        Guid carModelId = await Sender.CreateCarModelAsync(
+        Guid categoryId = await ServiceProvider.CreateCategoryAsync("Test Category11111");
+        Guid brandId = await ServiceProvider.CreateCarBrandAsync("Test Brand11111");
+        Guid carModelId = await ServiceProvider.CreateCarModelAsync(
             brandId,
             _faker.Vehicle.Model(),
             _faker.Random.Int(2000, 2023),
@@ -60,7 +63,7 @@ public class UpdateProductTests : BaseIntegrationTest
             new Specification("Engine", "V8")
         };
 
-        Guid productId = await Sender.CreateProductAsync(
+        Guid productId = await ServiceProvider.CreateProductAsync(
             _faker.Commerce.ProductName(),
             _faker.Commerce.Ean13(),
             categoryId,
@@ -85,7 +88,8 @@ public class UpdateProductTests : BaseIntegrationTest
         );
 
         // Act
-        Result result = await Sender.Send(command);
+        ICommandHandler<UpdateProductCommand> handler = ServiceProvider.GetRequiredService<ICommandHandler<UpdateProductCommand>>();
+        Result result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Error.ShouldBe(CategoryErrors.NotFound(nonExistCategory));
@@ -95,9 +99,9 @@ public class UpdateProductTests : BaseIntegrationTest
     public async Task Should_ReturnSuccess_WhenUpdateIsValid()
     {
         // Arrange
-        Guid categoryId = await Sender.CreateCategoryAsync("Test Category11");
-        Guid brandId = await Sender.CreateCarBrandAsync("Test Brand1111");
-        Guid carModelId = await Sender.CreateCarModelAsync(
+        Guid categoryId = await ServiceProvider.CreateCategoryAsync("Test Category11");
+        Guid brandId = await ServiceProvider.CreateCarBrandAsync("Test Brand1111");
+        Guid carModelId = await ServiceProvider.CreateCarModelAsync(
             brandId,
             "TestModel",
             _faker.Random.Int(2000, 2023),
@@ -111,7 +115,7 @@ public class UpdateProductTests : BaseIntegrationTest
             new Specification("Engine", "V8")
         };
 
-        Guid productId = await Sender.CreateProductAsync(
+        Guid productId = await ServiceProvider.CreateProductAsync(
             _faker.Commerce.ProductName(),
             _faker.Commerce.Ean13(),
             categoryId,
@@ -142,7 +146,8 @@ public class UpdateProductTests : BaseIntegrationTest
           );
 
         // Act
-        Result result = await Sender.Send(command);
+        ICommandHandler<UpdateProductCommand> handler = ServiceProvider.GetRequiredService<ICommandHandler<UpdateProductCommand>>();
+        Result result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();

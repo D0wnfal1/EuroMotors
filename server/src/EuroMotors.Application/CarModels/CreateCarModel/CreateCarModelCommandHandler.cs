@@ -33,7 +33,7 @@ internal sealed class CreateCarModelCommandHandler(
 
         await InvalidateCacheAsync(carBrand.Id, cancellationToken);
 
-        return carModel.Id;
+        return Result.Success(carModel.Id);
     }
 
     private async Task InvalidateCacheAsync(Guid brandId, CancellationToken cancellationToken)

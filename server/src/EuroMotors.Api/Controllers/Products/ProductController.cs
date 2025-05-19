@@ -1,4 +1,5 @@
-﻿using EuroMotors.Application.Abstractions.Pagination;
+﻿using EuroMotors.Application.Abstractions.Messaging;
+using EuroMotors.Application.Abstractions.Pagination;
 using EuroMotors.Application.Products.CopyProduct;
 using EuroMotors.Application.Products.CreateProduct;
 using EuroMotors.Application.Products.DeleteProduct;
@@ -12,7 +13,6 @@ using EuroMotors.Application.Products.UpdateProduct;
 using EuroMotors.Application.Products.UpdateProductCarModels;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Products;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,15 +22,9 @@ namespace EuroMotors.Api.Controllers.Products;
 [ApiController]
 public class ProductController : ControllerBase
 {
-    private readonly ISender _sender;
-
-    public ProductController(ISender sender)
-    {
-        _sender = sender;
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetProducts(
+        IQueryHandler<GetProductsQuery, Pagination<ProductResponse>> handler,
         [FromQuery] List<Guid>? categoryIds,
         [FromQuery] List<Guid>? carModelIds,
         [FromQuery] string? sortOrder,
@@ -53,24 +47,24 @@ public class ProductController : ControllerBase
             pageNumber,
             pageSize);
 
-        Result<Pagination<ProductResponse>> result = await _sender.Send(query, cancellationToken);
+        Result<Pagination<ProductResponse>> result = await handler.Handle(query, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetProductById(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetProductById(IQueryHandler<GetProductByIdQuery, ProductResponse> handler, Guid id, CancellationToken cancellationToken)
     {
         var query = new GetProductByIdQuery(id);
 
-        Result<ProductResponse> result = await _sender.Send(query, cancellationToken);
+        Result<ProductResponse> result = await handler.Handle(query, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
 
     [HttpPost]
     [Authorize(Roles = Roles.Admin)]
-    public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest request, ICommandHandler<CreateProductCommand, Guid> handler, CancellationToken cancellationToken)
     {
         var command = new CreateProductCommand(
             request.Name,
@@ -83,7 +77,7 @@ public class ProductController : ControllerBase
             request.Stock
         );
 
-        Result<Guid> result = await _sender.Send(command, cancellationToken);
+        Result<Guid> result = await handler.Handle(command, cancellationToken);
 
         return result.IsSuccess
             ? CreatedAtAction(nameof(GetProductById), new { id = result.Value }, result.Value)
@@ -92,11 +86,11 @@ public class ProductController : ControllerBase
 
     [HttpPost("{id}/copy")]
     [Authorize(Roles = Roles.Admin)]
-    public async Task<IActionResult> CopyProduct(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> CopyProduct(Guid id, ICommandHandler<CopyProductCommand, Guid> handler, CancellationToken cancellationToken)
     {
         var command = new CopyProductCommand(id);
 
-        Result<Guid> result = await _sender.Send(command, cancellationToken);
+        Result<Guid> result = await handler.Handle(command, cancellationToken);
 
         return result.IsSuccess
             ? CreatedAtAction(nameof(GetProductById), new { id = result.Value }, result.Value)
@@ -105,7 +99,7 @@ public class ProductController : ControllerBase
 
     [HttpPut("{id}")]
     [Authorize(Roles = Roles.Admin)]
-    public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] UpdateProductRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] UpdateProductRequest request, ICommandHandler<UpdateProductCommand> handler, CancellationToken cancellationToken)
     {
         var command = new UpdateProductCommand(
             id,
@@ -118,46 +112,47 @@ public class ProductController : ControllerBase
             request.Stock
         );
 
-        Result result = await _sender.Send(command, cancellationToken);
+        Result result = await handler.Handle(command, cancellationToken);
 
         return result.IsSuccess ? NoContent() : BadRequest(result.Error);
     }
 
     [HttpPatch("{id}")]
     [Authorize(Roles = Roles.Admin)]
-    public async Task<IActionResult> SetProductAvailability(Guid id, [FromBody] SetProductAvailabilityRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> SetProductAvailability(Guid id, [FromBody] SetProductAvailabilityRequest request, ICommandHandler<SetProductAvailabilityCommand> handler, CancellationToken cancellationToken)
     {
         var command = new SetProductAvailabilityCommand(id, request.IsAvailable);
 
-        Result result = await _sender.Send(command, cancellationToken);
+        Result result = await handler.Handle(command, cancellationToken);
 
         return result.IsSuccess ? NoContent() : BadRequest(result.Error);
     }
 
     [HttpDelete("{id}")]
     [Authorize(Roles = Roles.Admin)]
-    public async Task<IActionResult> DeleteProduct(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteProduct(Guid id, ICommandHandler<DeleteProductCommand> handler, CancellationToken cancellationToken)
     {
         var command = new DeleteProductCommand(id);
 
-        Result result = await _sender.Send(command, cancellationToken);
+        Result result = await handler.Handle(command, cancellationToken);
 
         return result.IsSuccess ? NoContent() : NotFound(result.Error);
     }
 
     [HttpPut("{productId}/car-models")]
     [Authorize(Roles = Roles.Admin)]
-    public async Task<IActionResult> UpdateProductCarModels(Guid productId, [FromBody] List<Guid> carModelIds, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateProductCarModels(Guid productId, [FromBody] List<Guid> carModelIds, ICommandHandler<UpdateProductCarModelsCommand> handler, CancellationToken cancellationToken)
     {
         var command = new UpdateProductCarModelsCommand(productId, carModelIds);
 
-        Result result = await _sender.Send(command, cancellationToken);
+        Result result = await handler.Handle(command, cancellationToken);
 
         return result.IsSuccess ? NoContent() : BadRequest(result.Error);
     }
 
     [HttpGet("by-brand-name")]
     public async Task<IActionResult> GetProductsByBrandName(
+        IQueryHandler<GetProductsByBrandNameQuery, Pagination<ProductResponse>> handler,
         [FromQuery] string brandName,
         [FromQuery] string? sortOrder,
         [FromQuery] string? searchTerm,
@@ -167,13 +162,14 @@ public class ProductController : ControllerBase
     {
         var query = new GetProductsByBrandNameQuery(brandName, sortOrder, searchTerm, pageNumber, pageSize);
 
-        Result<Pagination<ProductResponse>> result = await _sender.Send(query, cancellationToken);
+        Result<Pagination<ProductResponse>> result = await handler.Handle(query, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 
     [HttpGet("by-category/{categoryId}")]
     public async Task<IActionResult> GetProductsByCategoryWithChildren(
+        IQueryHandler<GetProductsByCategoryWithChildrenQuery, Pagination<ProductResponse>> handler,
         Guid categoryId,
         [FromQuery] string? sortOrder,
         [FromQuery] string? searchTerm,
@@ -183,14 +179,14 @@ public class ProductController : ControllerBase
     {
         var query = new GetProductsByCategoryWithChildrenQuery(categoryId, sortOrder, searchTerm, pageNumber, pageSize);
 
-        Result<Pagination<ProductResponse>> result = await _sender.Send(query, cancellationToken);
+        Result<Pagination<ProductResponse>> result = await handler.Handle(query, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 
     [HttpPost("import")]
     [Authorize(Roles = Roles.Admin)]
-    public async Task<IActionResult> ImportProducts(IFormFile file, CancellationToken cancellationToken)
+    public async Task<IActionResult> ImportProducts(IFormFile file, ICommandHandler<ImportProductsCommand, ImportProductsResult> handler, CancellationToken cancellationToken)
     {
         if (file == null || file.Length == 0)
         {
@@ -205,7 +201,7 @@ public class ProductController : ControllerBase
         using Stream stream = file.OpenReadStream();
         var command = new ImportProductsCommand(stream, file.FileName);
 
-        Result<ImportProductsResult> result = await _sender.Send(command, cancellationToken);
+        Result<ImportProductsResult> result = await handler.Handle(command, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }

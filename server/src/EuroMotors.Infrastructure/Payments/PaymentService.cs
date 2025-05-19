@@ -21,14 +21,14 @@ internal sealed class PaymentService(
     public async Task<Dictionary<string, string>> CreatePaymentAsync(Payment payment)
     {
         Order? order = await orderRepository.GetByIdAsync(payment.OrderId);
-        
+
         if (order == null)
         {
             return await Task.FromResult(new Dictionary<string, string>());
         }
-        
+
         string description = $"Замовлення №{payment.OrderId.ToString().Substring(0, 8)}... ";
-        
+
         var data = new
         {
             version = _options.ApiVersion,

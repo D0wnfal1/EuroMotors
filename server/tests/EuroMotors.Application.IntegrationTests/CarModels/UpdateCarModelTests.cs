@@ -1,8 +1,10 @@
 ﻿using Bogus;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.CarModels.UpdateCarModel;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.CarModels;
@@ -25,7 +27,8 @@ public class UpdateCarModelTests : BaseIntegrationTest
             _faker.Vehicle.Model());
 
         // Act
-        Result result = await Sender.Send(command);
+        ICommandHandler<UpdateCarModelCommand> handler = ServiceProvider.GetRequiredService<ICommandHandler<UpdateCarModelCommand>>();
+        Result result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsFailure.ShouldBeTrue();
@@ -36,8 +39,8 @@ public class UpdateCarModelTests : BaseIntegrationTest
     public async Task Should_UpdateCarModel_WhenCarModelExists()
     {
         // Arrange
-        Guid brandId = await Sender.CreateCarBrandAsync("Test Brand1");
-        Guid carModelId = await Sender.CreateCarModelAsync(
+        Guid brandId = await ServiceProvider.CreateCarBrandAsync("Test Brand1");
+        Guid carModelId = await ServiceProvider.CreateCarModelAsync(
             brandId,
             _faker.Vehicle.Model(),
             2020,
@@ -54,10 +57,10 @@ public class UpdateCarModelTests : BaseIntegrationTest
             FuelType.Diesel);
 
         // Act
-        Result result = await Sender.Send(command);
+        ICommandHandler<UpdateCarModelCommand> handler = ServiceProvider.GetRequiredService<ICommandHandler<UpdateCarModelCommand>>();
+        Result result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
     }
-
 }

@@ -41,7 +41,7 @@ internal sealed class CreateCarBrandCommandHandler(
 
         await InvalidateCacheAsync(cancellationToken);
 
-        return carBrand.Id;
+        return Result.Success(carBrand.Id);
     }
 
     private async Task InvalidateCacheAsync(CancellationToken cancellationToken)

@@ -1,6 +1,8 @@
-﻿using EuroMotors.Application.Categories.CreateCategory;
+﻿using EuroMotors.Application.Abstractions.Messaging;
+using EuroMotors.Application.Categories.CreateCategory;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Domain.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.Categories;
@@ -19,7 +21,8 @@ public class CreateCategoryTests : BaseIntegrationTest
         var command = new CreateCategoryCommand("Category name", null, null, null);
 
         // Act
-        Result<Guid> result = await Sender.Send(command);
+        ICommandHandler<CreateCategoryCommand, Guid> handler = ServiceProvider.GetRequiredService<ICommandHandler<CreateCategoryCommand, Guid>>();
+        Result<Guid> result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
@@ -33,7 +36,8 @@ public class CreateCategoryTests : BaseIntegrationTest
         var command = new CreateCategoryCommand("", null, null, null);
 
         // Act
-        Result<Guid> result = await Sender.Send(command);
+        ICommandHandler<CreateCategoryCommand, Guid> handler = ServiceProvider.GetRequiredService<ICommandHandler<CreateCategoryCommand, Guid>>();
+        Result<Guid> result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsFailure.ShouldBeTrue();

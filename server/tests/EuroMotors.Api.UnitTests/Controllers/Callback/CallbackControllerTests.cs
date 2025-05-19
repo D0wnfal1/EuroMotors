@@ -1,4 +1,5 @@
 using EuroMotors.Api.Controllers.Callback;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Callback.RequestCallback;
 using Microsoft.AspNetCore.Http;
 
@@ -6,13 +7,13 @@ namespace EuroMotors.Api.UnitTests.Controllers.Callback;
 
 public class CallbackControllerTests
 {
-    private readonly ISender _sender;
+    private readonly ICommandHandler<RequestCallbackCommand> _requestCallbackHandler;
     private readonly CallbackController _controller;
 
     public CallbackControllerTests()
     {
-        _sender = Substitute.For<ISender>();
-        _controller = new CallbackController(_sender)
+        _requestCallbackHandler = Substitute.For<ICommandHandler<RequestCallbackCommand>>();
+        _controller = new CallbackController()
         {
             ControllerContext = new ControllerContext
             {
@@ -31,15 +32,15 @@ public class CallbackControllerTests
             Phone = "+380123456789"
         };
 
-        _sender.Send(Arg.Any<RequestCallbackCommand>(), Arg.Any<CancellationToken>())
+        _requestCallbackHandler.Handle(Arg.Any<RequestCallbackCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
         // Act
-        IActionResult result = await _controller.RequestCallback(request);
+        IActionResult result = await _controller.RequestCallback(request, _requestCallbackHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<OkObjectResult>();
-        await _sender.Received(1).Send(
+        await _requestCallbackHandler.Received(1).Handle(
             Arg.Is<RequestCallbackCommand>(cmd =>
                 cmd.Name == request.Name &&
                 cmd.Phone == request.Phone),
@@ -56,11 +57,11 @@ public class CallbackControllerTests
             Phone = "+380123456789"
         };
 
-        _sender.Send(Arg.Any<RequestCallbackCommand>(), Arg.Any<CancellationToken>())
+        _requestCallbackHandler.Handle(Arg.Any<RequestCallbackCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure(Error.Failure("Callback.Failed", "Failed to process callback request")));
 
         // Act
-        IActionResult result = await _controller.RequestCallback(request);
+        IActionResult result = await _controller.RequestCallback(request, _requestCallbackHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NotFoundResult>();

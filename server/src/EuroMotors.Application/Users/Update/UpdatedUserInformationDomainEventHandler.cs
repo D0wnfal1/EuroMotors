@@ -1,9 +1,9 @@
-﻿using EuroMotors.Domain.Users.Events;
-using MediatR;
+﻿using EuroMotors.Application.Abstractions.Behaviors;
+using EuroMotors.Domain.Users.Events;
 
 namespace EuroMotors.Application.Users.Update;
 
-internal sealed class UpdatedUserInformationDomainEventHandler : INotificationHandler<UserRegisteredDomainEvent>
+internal sealed class UpdatedUserInformationDomainEventHandler : IDomainEventHandler<UserRegisteredDomainEvent>
 {
     public Task Handle(UserRegisteredDomainEvent notification, CancellationToken cancellationToken)
     {

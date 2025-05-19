@@ -1,5 +1,3 @@
-﻿using MediatR;
+﻿namespace EuroMotors.Domain.Abstractions;
 
-namespace EuroMotors.Domain.Abstractions;
-
-public interface IDomainEvent : INotification;
+public interface IDomainEvent;

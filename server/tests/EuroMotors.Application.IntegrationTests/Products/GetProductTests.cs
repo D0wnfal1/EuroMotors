@@ -1,9 +1,11 @@
 ﻿using Bogus;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Application.Products.GetProductById;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Products;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.Products;
@@ -24,7 +26,8 @@ public class GetProductTests : BaseIntegrationTest
         var query = new GetProductByIdQuery(Guid.NewGuid());
 
         // Act
-        Result<ProductResponse> result = await Sender.Send(query);
+        IQueryHandler<GetProductByIdQuery, ProductResponse> handler = ServiceProvider.GetRequiredService<IQueryHandler<GetProductByIdQuery, ProductResponse>>();
+        Result<ProductResponse> result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
         result.Error.ShouldBe(ProductErrors.NotFound(query.ProductId));
@@ -36,9 +39,9 @@ public class GetProductTests : BaseIntegrationTest
         // Arrange
         await CleanDatabaseAsync();
 
-        Guid categoryId = await Sender.CreateCategoryAsync(_faker.Commerce.Categories(1)[0]);
-        Guid brandId = await Sender.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
-        Guid carModelId = await Sender.CreateCarModelAsync(
+        Guid categoryId = await ServiceProvider.CreateCategoryAsync(_faker.Commerce.Categories(1)[0]);
+        Guid brandId = await ServiceProvider.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
+        Guid carModelId = await ServiceProvider.CreateCarModelAsync(
             brandId,
             _faker.Vehicle.Model(),
             2020,
@@ -52,7 +55,7 @@ public class GetProductTests : BaseIntegrationTest
             new Specification ("Engine", "V8")
         };
 
-        Guid productId = await Sender.CreateProductAsync(
+        Guid productId = await ServiceProvider.CreateProductAsync(
             "Product Name",
             "VendorCode123",
             categoryId,
@@ -61,13 +64,13 @@ public class GetProductTests : BaseIntegrationTest
             10m,
             10,
             specifications
-
         );
 
         var query = new GetProductByIdQuery(productId);
 
         // Act
-        Result<ProductResponse> result = await Sender.Send(query);
+        IQueryHandler<GetProductByIdQuery, ProductResponse> handler = ServiceProvider.GetRequiredService<IQueryHandler<GetProductByIdQuery, ProductResponse>>();
+        Result<ProductResponse> result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();

@@ -3,17 +3,17 @@ using System.Text;
 using CsvHelper;
 using CsvHelper.Configuration;
 using EuroMotors.Application.Abstractions.Caching;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Categories;
 using EuroMotors.Domain.Products;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace EuroMotors.Application.Products.ImportProducts;
 
 
-public sealed class ImportProductsCommandHandler : IRequestHandler<ImportProductsCommand, Result<ImportProductsResult>>
+public sealed class ImportProductsCommandHandler : ICommandHandler<ImportProductsCommand, ImportProductsResult>
 {
     private readonly IProductRepository _productRepository;
     private readonly ICategoryRepository _categoryRepository;

@@ -23,6 +23,7 @@ using EuroMotors.Infrastructure.Caching;
 using EuroMotors.Infrastructure.Callback;
 using EuroMotors.Infrastructure.Database;
 using EuroMotors.Infrastructure.Delivery;
+using EuroMotors.Infrastructure.DomainEvents;
 using EuroMotors.Infrastructure.Payments;
 using EuroMotors.Infrastructure.Repositories;
 using EuroMotors.Infrastructure.Sitemap;
@@ -78,6 +79,8 @@ public static class DependencyInjection
         services.AddScoped<IPaymentRepository, PaymentRepository>();
 
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
+
+        services.AddScoped<IDomainEventsDispatcher, DomainEventsDispatcher>();
 
         return services;
     }

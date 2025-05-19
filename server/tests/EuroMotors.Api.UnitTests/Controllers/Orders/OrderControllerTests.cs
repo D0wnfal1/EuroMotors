@@ -1,4 +1,5 @@
 using EuroMotors.Api.Controllers.Orders;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Abstractions.Pagination;
 using EuroMotors.Application.Orders.ChangeOrderStatus;
 using EuroMotors.Application.Orders.CreateOrder;
@@ -13,13 +14,24 @@ namespace EuroMotors.Api.UnitTests.Controllers.Orders;
 
 public class OrderControllerTests
 {
-    private readonly ISender _sender;
     private readonly OrderController _controller;
+    private readonly IQueryHandler<GetOrderByIdQuery, OrderResponse> _getOrderByIdHandler;
+    private readonly IQueryHandler<GetUserOrdersQuery, IReadOnlyCollection<OrdersResponse>> _getUserOrdersHandler;
+    private readonly IQueryHandler<GetOrdersQuery, Pagination<OrdersResponse>> _getOrdersHandler;
+    private readonly ICommandHandler<CreateOrderCommand, Guid> _createOrderHandler;
+    private readonly ICommandHandler<ChangeOrderStatusCommand> _changeOrderStatusHandler;
+    private readonly ICommandHandler<DeleteOrderCommand> _deleteOrderHandler;
 
     public OrderControllerTests()
     {
-        _sender = Substitute.For<ISender>();
-        _controller = new OrderController(_sender)
+        _getOrderByIdHandler = Substitute.For<IQueryHandler<GetOrderByIdQuery, OrderResponse>>();
+        _getUserOrdersHandler = Substitute.For<IQueryHandler<GetUserOrdersQuery, IReadOnlyCollection<OrdersResponse>>>();
+        _getOrdersHandler = Substitute.For<IQueryHandler<GetOrdersQuery, Pagination<OrdersResponse>>>();
+        _createOrderHandler = Substitute.For<ICommandHandler<CreateOrderCommand, Guid>>();
+        _changeOrderStatusHandler = Substitute.For<ICommandHandler<ChangeOrderStatusCommand>>();
+        _deleteOrderHandler = Substitute.For<ICommandHandler<DeleteOrderCommand>>();
+
+        _controller = new OrderController()
         {
             ControllerContext = new ControllerContext
             {
@@ -48,17 +60,17 @@ public class OrderControllerTests
             DateTime.UtcNow
         );
 
-        _sender.Send(Arg.Any<GetOrderByIdQuery>(), Arg.Any<CancellationToken>())
+        _getOrderByIdHandler.Handle(Arg.Any<GetOrderByIdQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(order));
 
         // Act
-        IActionResult result = await _controller.GetOrderById(orderId, CancellationToken.None);
+        IActionResult result = await _controller.GetOrderById(_getOrderByIdHandler, orderId, CancellationToken.None);
 
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(order);
 
-        await _sender.Received(1).Send(
+        await _getOrderByIdHandler.Received(1).Handle(
             Arg.Is<GetOrderByIdQuery>(query => query.OrderId == orderId),
             Arg.Any<CancellationToken>());
     }
@@ -69,11 +81,11 @@ public class OrderControllerTests
         // Arrange
         var orderId = Guid.NewGuid();
 
-        _sender.Send(Arg.Any<GetOrderByIdQuery>(), Arg.Any<CancellationToken>())
+        _getOrderByIdHandler.Handle(Arg.Any<GetOrderByIdQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<OrderResponse>(Error.NotFound("Order.NotFound", "Order not found")));
 
         // Act
-        IActionResult result = await _controller.GetOrderById(orderId, CancellationToken.None);
+        IActionResult result = await _controller.GetOrderById(_getOrderByIdHandler, orderId, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NotFoundResult>();
@@ -100,17 +112,17 @@ public class OrderControllerTests
             }
         };
 
-        _sender.Send(Arg.Any<GetUserOrdersQuery>(), Arg.Any<CancellationToken>())
+        _getUserOrdersHandler.Handle(Arg.Any<GetUserOrdersQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success<IReadOnlyCollection<OrdersResponse>>(orders));
 
         // Act
-        IActionResult result = await _controller.GetUserOrders(userId, CancellationToken.None);
-
+        IActionResult result = await _controller.GetUserOrders(_getUserOrdersHandler, userId, CancellationToken.None);
+        
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(orders);
 
-        await _sender.Received(1).Send(
+        await _getUserOrdersHandler.Received(1).Handle(
             Arg.Is<GetUserOrdersQuery>(query => query.UserId == userId),
             Arg.Any<CancellationToken>());
     }
@@ -121,11 +133,11 @@ public class OrderControllerTests
         // Arrange
         var userId = Guid.NewGuid();
 
-        _sender.Send(Arg.Any<GetUserOrdersQuery>(), Arg.Any<CancellationToken>())
+        _getUserOrdersHandler.Handle(Arg.Any<GetUserOrdersQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<IReadOnlyCollection<OrdersResponse>>(Error.NotFound("Orders.NotFound", "Orders not found")));
 
         // Act
-        IActionResult result = await _controller.GetUserOrders(userId, CancellationToken.None);
+        IActionResult result = await _controller.GetUserOrders(_getUserOrdersHandler, userId, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NotFoundResult>();
@@ -159,17 +171,17 @@ public class OrderControllerTests
             Data = orders
         };
 
-        _sender.Send(Arg.Any<GetOrdersQuery>(), Arg.Any<CancellationToken>())
+        _getOrdersHandler.Handle(Arg.Any<GetOrdersQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(pagination));
 
         // Act
-        IActionResult result = await _controller.GetOrders(CancellationToken.None);
+        IActionResult result = await _controller.GetOrders(_getOrdersHandler, CancellationToken.None);
 
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(pagination);
 
-        await _sender.Received(1).Send(
+        await _getOrdersHandler.Received(1).Handle(
             Arg.Is<GetOrdersQuery>(query =>
                 query.PageNumber == 1 &&
                 query.PageSize == 10 &&
@@ -189,7 +201,7 @@ public class OrderControllerTests
             Data = new List<OrdersResponse>()
         };
 
-        _sender.Send(Arg.Any<GetOrdersQuery>(), Arg.Any<CancellationToken>())
+        _getOrdersHandler.Handle(Arg.Any<GetOrdersQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(pagination));
 
         OrderStatus status = OrderStatus.Paid;
@@ -197,10 +209,10 @@ public class OrderControllerTests
         int pageSize = 20;
 
         // Act
-        await _controller.GetOrders(CancellationToken.None, pageNumber, pageSize, status);
+        await _controller.GetOrders(_getOrdersHandler, CancellationToken.None, pageNumber, pageSize, status);
 
         // Assert
-        await _sender.Received(1).Send(
+        await _getOrdersHandler.Received(1).Handle(
             Arg.Is<GetOrdersQuery>(query =>
                 query.PageNumber == pageNumber &&
                 query.PageSize == pageSize &&
@@ -212,11 +224,11 @@ public class OrderControllerTests
     public async Task GetOrders_ShouldReturnNotFound_WhenOrdersNotFound()
     {
         // Arrange
-        _sender.Send(Arg.Any<GetOrdersQuery>(), Arg.Any<CancellationToken>())
+        _getOrdersHandler.Handle(Arg.Any<GetOrdersQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<Pagination<OrdersResponse>>(Error.NotFound("Orders.NotFound", "Orders not found")));
 
         // Act
-        IActionResult result = await _controller.GetOrders(CancellationToken.None);
+        IActionResult result = await _controller.GetOrders(_getOrdersHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NotFoundResult>();
@@ -238,11 +250,11 @@ public class OrderControllerTests
             PaymentMethod = PaymentMethod.Postpaid
         };
 
-        _sender.Send(Arg.Any<CreateOrderCommand>(), Arg.Any<CancellationToken>())
+        _createOrderHandler.Handle(Arg.Any<CreateOrderCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<Guid>(Error.Failure("Order.CreationFailed", "Failed to create order")));
 
         // Act
-        IActionResult result = await _controller.CreateOrder(request, CancellationToken.None);
+        IActionResult result = await _controller.CreateOrder(request, _createOrderHandler, CancellationToken.None);
 
         // Assert
         BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();
@@ -256,16 +268,16 @@ public class OrderControllerTests
         var orderId = Guid.NewGuid();
         OrderStatus status = OrderStatus.Paid;
 
-        _sender.Send(Arg.Any<ChangeOrderStatusCommand>(), Arg.Any<CancellationToken>())
+        _changeOrderStatusHandler.Handle(Arg.Any<ChangeOrderStatusCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
         // Act
-        IActionResult result = await _controller.ChangeOrderStatus(orderId, status, CancellationToken.None);
+        IActionResult result = await _controller.ChangeOrderStatus(orderId, status, _changeOrderStatusHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
 
-        await _sender.Received(1).Send(
+        await _changeOrderStatusHandler.Received(1).Handle(
             Arg.Is<ChangeOrderStatusCommand>(cmd =>
                 cmd.OrderId == orderId &&
                 cmd.Status == status),
@@ -279,11 +291,11 @@ public class OrderControllerTests
         var orderId = Guid.NewGuid();
         OrderStatus status = OrderStatus.Paid;
 
-        _sender.Send(Arg.Any<ChangeOrderStatusCommand>(), Arg.Any<CancellationToken>())
+        _changeOrderStatusHandler.Handle(Arg.Any<ChangeOrderStatusCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure(Error.NotFound("Order.NotFound", "Order not found")));
 
         // Act
-        IActionResult result = await _controller.ChangeOrderStatus(orderId, status, CancellationToken.None);
+        IActionResult result = await _controller.ChangeOrderStatus(orderId, status, _changeOrderStatusHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NotFoundResult>();
@@ -295,16 +307,16 @@ public class OrderControllerTests
         // Arrange
         var orderId = Guid.NewGuid();
 
-        _sender.Send(Arg.Any<DeleteOrderCommand>(), Arg.Any<CancellationToken>())
+        _deleteOrderHandler.Handle(Arg.Any<DeleteOrderCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
         // Act
-        IActionResult result = await _controller.DeleteOrder(orderId, CancellationToken.None);
+        IActionResult result = await _controller.DeleteOrder(orderId, _deleteOrderHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
 
-        await _sender.Received(1).Send(
+        await _deleteOrderHandler.Received(1).Handle(
             Arg.Is<DeleteOrderCommand>(cmd => cmd.OrderId == orderId),
             Arg.Any<CancellationToken>());
     }
@@ -315,11 +327,11 @@ public class OrderControllerTests
         // Arrange
         var orderId = Guid.NewGuid();
 
-        _sender.Send(Arg.Any<DeleteOrderCommand>(), Arg.Any<CancellationToken>())
+        _deleteOrderHandler.Handle(Arg.Any<DeleteOrderCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure(Error.NotFound("Order.NotFound", "Order not found")));
 
         // Act
-        IActionResult result = await _controller.DeleteOrder(orderId, CancellationToken.None);
+        IActionResult result = await _controller.DeleteOrder(orderId, _deleteOrderHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NotFoundResult>();

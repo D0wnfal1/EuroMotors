@@ -1,4 +1,5 @@
 using EuroMotors.Api.Controllers.Payments;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Payments.CreatePayment;
 using EuroMotors.Application.Payments.GetPaymentById;
 using EuroMotors.Application.Payments.GetPaymentByOrderId;
@@ -10,13 +11,20 @@ namespace EuroMotors.Api.UnitTests.Controllers.Payments;
 
 public class PaymentControllerTests
 {
-    private readonly ISender _sender;
     private readonly PaymentController _controller;
+    private readonly IQueryHandler<GetPaymentByIdQuery, PaymentResponse> _getPaymentByIdHandler;
+    private readonly IQueryHandler<GetPaymentByOrderIdQuery, PaymentResponse> _getPaymentByOrderIdHandler;
+    private readonly IQueryHandler<GetPaymentByStatusQuery, PaymentResponse> _getPaymentByStatusHandler;
+    private readonly ICommandHandler<CreatePaymentCommand, Dictionary<string, string>> _createPaymentHandler;
 
     public PaymentControllerTests()
     {
-        _sender = Substitute.For<ISender>();
-        _controller = new PaymentController(_sender)
+        _getPaymentByIdHandler = Substitute.For<IQueryHandler<GetPaymentByIdQuery, PaymentResponse>>();
+        _getPaymentByOrderIdHandler = Substitute.For<IQueryHandler<GetPaymentByOrderIdQuery, PaymentResponse>>();
+        _getPaymentByStatusHandler = Substitute.For<IQueryHandler<GetPaymentByStatusQuery, PaymentResponse>>();
+        _createPaymentHandler = Substitute.For<ICommandHandler<CreatePaymentCommand, Dictionary<string, string>>>();
+
+        _controller = new PaymentController()
         {
             ControllerContext = new ControllerContext
             {
@@ -39,17 +47,17 @@ public class PaymentControllerTests
             DateTime.UtcNow
         );
 
-        _sender.Send(Arg.Any<GetPaymentByIdQuery>(), Arg.Any<CancellationToken>())
+        _getPaymentByIdHandler.Handle(Arg.Any<GetPaymentByIdQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(payment));
 
         // Act
-        IActionResult result = await _controller.GetPaymentById(paymentId, CancellationToken.None);
+        IActionResult result = await _controller.GetPaymentById(_getPaymentByIdHandler, paymentId, CancellationToken.None);
 
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(payment);
 
-        await _sender.Received(1).Send(
+        await _getPaymentByIdHandler.Received(1).Handle(
             Arg.Is<GetPaymentByIdQuery>(query => query.PaymentId == paymentId),
             Arg.Any<CancellationToken>());
     }
@@ -60,11 +68,11 @@ public class PaymentControllerTests
         // Arrange
         var paymentId = Guid.NewGuid();
 
-        _sender.Send(Arg.Any<GetPaymentByIdQuery>(), Arg.Any<CancellationToken>())
+        _getPaymentByIdHandler.Handle(Arg.Any<GetPaymentByIdQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<PaymentResponse>(Error.NotFound("Payment.NotFound", "Payment not found")));
 
         // Act
-        IActionResult result = await _controller.GetPaymentById(paymentId, CancellationToken.None);
+        IActionResult result = await _controller.GetPaymentById(_getPaymentByIdHandler, paymentId, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NotFoundResult>();
@@ -84,17 +92,17 @@ public class PaymentControllerTests
             DateTime.UtcNow
         );
 
-        _sender.Send(Arg.Any<GetPaymentByOrderIdQuery>(), Arg.Any<CancellationToken>())
+        _getPaymentByOrderIdHandler.Handle(Arg.Any<GetPaymentByOrderIdQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(payment));
 
         // Act
-        IActionResult result = await _controller.GetPaymentByOrderId(orderId, CancellationToken.None);
+        IActionResult result = await _controller.GetPaymentByOrderId(_getPaymentByOrderIdHandler, orderId, CancellationToken.None);
 
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(payment);
 
-        await _sender.Received(1).Send(
+        await _getPaymentByOrderIdHandler.Received(1).Handle(
             Arg.Is<GetPaymentByOrderIdQuery>(query => query.OrderId == orderId),
             Arg.Any<CancellationToken>());
     }
@@ -105,11 +113,11 @@ public class PaymentControllerTests
         // Arrange
         var orderId = Guid.NewGuid();
 
-        _sender.Send(Arg.Any<GetPaymentByOrderIdQuery>(), Arg.Any<CancellationToken>())
+        _getPaymentByOrderIdHandler.Handle(Arg.Any<GetPaymentByOrderIdQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<PaymentResponse>(Error.NotFound("Payment.NotFound", "Payment for order not found")));
 
         // Act
-        IActionResult result = await _controller.GetPaymentByOrderId(orderId, CancellationToken.None);
+        IActionResult result = await _controller.GetPaymentByOrderId(_getPaymentByOrderIdHandler, orderId, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NotFoundResult>();
@@ -129,17 +137,17 @@ public class PaymentControllerTests
             DateTime.UtcNow
         );
 
-        _sender.Send(Arg.Any<GetPaymentByStatusQuery>(), Arg.Any<CancellationToken>())
+        _getPaymentByStatusHandler.Handle(Arg.Any<GetPaymentByStatusQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(payment));
 
         // Act
-        IActionResult result = await _controller.GetPaymentByStatus(status, CancellationToken.None);
+        IActionResult result = await _controller.GetPaymentByStatus(_getPaymentByStatusHandler, status, CancellationToken.None);
 
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(payment);
 
-        await _sender.Received(1).Send(
+        await _getPaymentByStatusHandler.Received(1).Handle(
             Arg.Is<GetPaymentByStatusQuery>(query => query.Status == status),
             Arg.Any<CancellationToken>());
     }
@@ -150,11 +158,11 @@ public class PaymentControllerTests
         // Arrange
         PaymentStatus status = PaymentStatus.Pending;
 
-        _sender.Send(Arg.Any<GetPaymentByStatusQuery>(), Arg.Any<CancellationToken>())
+        _getPaymentByStatusHandler.Handle(Arg.Any<GetPaymentByStatusQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<PaymentResponse>(Error.NotFound("Payments.NotFound", "Payments with specified status not found")));
 
         // Act
-        IActionResult result = await _controller.GetPaymentByStatus(status, CancellationToken.None);
+        IActionResult result = await _controller.GetPaymentByStatus(_getPaymentByStatusHandler, status, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NotFoundResult>();
@@ -171,17 +179,17 @@ public class PaymentControllerTests
             { "signature", "paymentsignature" }
         };
 
-        _sender.Send(Arg.Any<CreatePaymentCommand>(), Arg.Any<CancellationToken>())
+        _createPaymentHandler.Handle(Arg.Any<CreatePaymentCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(paymentData));
 
         // Act
-        IActionResult result = await _controller.CreatePayment(orderId, CancellationToken.None);
+        IActionResult result = await _controller.CreatePayment(orderId, _createPaymentHandler, CancellationToken.None);
 
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(paymentData);
 
-        await _sender.Received(1).Send(
+        await _createPaymentHandler.Received(1).Handle(
             Arg.Is<CreatePaymentCommand>(cmd => cmd.OrderId == orderId),
             Arg.Any<CancellationToken>());
     }
@@ -193,11 +201,11 @@ public class PaymentControllerTests
         var orderId = Guid.NewGuid();
         var error = Error.Failure("Payment.CreationFailed", "Failed to create payment");
 
-        _sender.Send(Arg.Any<CreatePaymentCommand>(), Arg.Any<CancellationToken>())
+        _createPaymentHandler.Handle(Arg.Any<CreatePaymentCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<Dictionary<string, string>>(error));
 
         // Act
-        IActionResult result = await _controller.CreatePayment(orderId, CancellationToken.None);
+        IActionResult result = await _controller.CreatePayment(orderId, _createPaymentHandler, CancellationToken.None);
 
         // Assert
         BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();

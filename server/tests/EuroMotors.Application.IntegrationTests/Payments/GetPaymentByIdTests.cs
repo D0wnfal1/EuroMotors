@@ -1,6 +1,8 @@
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Application.Payments.GetPaymentById;
 using EuroMotors.Domain.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.Payments;
@@ -20,12 +22,11 @@ public class GetPaymentByIdTests : BaseIntegrationTest
         var query = new GetPaymentByIdQuery(nonExistingPaymentId);
 
         // Act
-        Result<PaymentResponse> result = await Sender.Send(query);
+        IQueryHandler<GetPaymentByIdQuery, PaymentResponse> handler = ServiceProvider.GetRequiredService<IQueryHandler<GetPaymentByIdQuery, PaymentResponse>>();
+        Result<PaymentResponse> result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldNotBeNull();
     }
-
-
 }

@@ -1,7 +1,9 @@
-﻿using EuroMotors.Application.CarModels.CreateCarModel;
+﻿using EuroMotors.Application.Abstractions.Messaging;
+using EuroMotors.Application.CarModels.CreateCarModel;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.CarModels;
@@ -18,17 +20,18 @@ public class CreateCarModelTests : BaseIntegrationTest
     {
         // Arrange
         await CleanDatabaseAsync();
-        Guid brandId = await Sender.CreateCarBrandAsync("TestBrand1");
+        Guid brandId = await ServiceProvider.CreateCarBrandAsync("Test Brand");
         var command = new CreateCarModelCommand(
             brandId,
-            "X5",
+            "Test Model",
             2020,
             BodyType.Sedan,
             new EngineSpec(6, FuelType.Diesel)
             );
 
         // Act
-        Result<Guid> result = await Sender.Send(command);
+        ICommandHandler<CreateCarModelCommand, Guid> handler = ServiceProvider.GetRequiredService<ICommandHandler<CreateCarModelCommand, Guid>>();
+        Result<Guid> result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
@@ -39,17 +42,17 @@ public class CreateCarModelTests : BaseIntegrationTest
     public async Task Should_ReturnFailure_WhenBrandDoesNotExist()
     {
         // Arrange
-        await CleanDatabaseAsync();
         var command = new CreateCarModelCommand(
             Guid.NewGuid(),
-            "X5",
+            "Test Model",
             2020,
             BodyType.Sedan,
             new EngineSpec(6, FuelType.Diesel)
             );
 
         // Act
-        Result<Guid> result = await Sender.Send(command);
+        ICommandHandler<CreateCarModelCommand, Guid> handler = ServiceProvider.GetRequiredService<ICommandHandler<CreateCarModelCommand, Guid>>();
+        Result<Guid> result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsFailure.ShouldBeTrue();
@@ -60,18 +63,18 @@ public class CreateCarModelTests : BaseIntegrationTest
     public async Task Should_ReturnFailure_WhenCommandIsNotValid()
     {
         // Arrange
-        await CleanDatabaseAsync();
-        Guid brandId = await Sender.CreateCarBrandAsync("TestBrand2");
+        Guid brandId = await ServiceProvider.CreateCarBrandAsync("Test Brand");
         var command = new CreateCarModelCommand(
             brandId,
-            "X5",
-            0,
+            "Test Model",
+            0, // Invalid start year
             BodyType.Sedan,
             new EngineSpec(6, FuelType.Diesel)
             );
 
         // Act
-        Result<Guid> result = await Sender.Send(command);
+        ICommandHandler<CreateCarModelCommand, Guid> handler = ServiceProvider.GetRequiredService<ICommandHandler<CreateCarModelCommand, Guid>>();
+        Result<Guid> result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsFailure.ShouldBeTrue();

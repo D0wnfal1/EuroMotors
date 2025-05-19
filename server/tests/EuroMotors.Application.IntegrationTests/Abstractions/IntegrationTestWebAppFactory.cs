@@ -3,6 +3,7 @@ using System.Security.Cryptography.X509Certificates;
 using EuroMotors.Api;
 using EuroMotors.Application.Abstractions.Data;
 using EuroMotors.Infrastructure.Database;
+using EuroMotors.Infrastructure.DomainEvents;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
@@ -50,15 +51,17 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsy
 
         builder.ConfigureTestServices(services =>
         {
-            services.RemoveAll<DbContextOptions<ApplicationDbContext>>();
+            // Register domain events dispatcher first
+            services.AddScoped<IDomainEventsDispatcher, DomainEventsDispatcher>();
 
+            // Then remove and register DbContext
+            services.RemoveAll<DbContextOptions<ApplicationDbContext>>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options
                     .UseNpgsql(_dbContainer.GetConnectionString())
                     .UseSnakeCaseNamingConvention());
 
             services.RemoveAll<IDbConnectionFactory>();
-
             services.AddSingleton<IDbConnectionFactory>(_ =>
                 new DbConnectionFactory(_dbContainer.GetConnectionString()));
 

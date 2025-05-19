@@ -1,4 +1,5 @@
 using EuroMotors.Api.Controllers.ProductImages;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.ProductImages.DeleteProductImage;
 using EuroMotors.Application.ProductImages.UpdateProductImage;
 using EuroMotors.Application.ProductImages.UploadProductImage;
@@ -8,13 +9,18 @@ namespace EuroMotors.Api.UnitTests.Controllers.ProductImages;
 
 public class ProductImageControllerTests
 {
-    private readonly ISender _sender;
     private readonly ProductImageController _controller;
+    private readonly ICommandHandler<UploadProductImageCommand, Guid> _uploadProductImageHandler;
+    private readonly ICommandHandler<UpdateProductImageCommand> _updateProductImageHandler;
+    private readonly ICommandHandler<DeleteProductImageCommand> _deleteProductImageHandler;
 
     public ProductImageControllerTests()
     {
-        _sender = Substitute.For<ISender>();
-        _controller = new ProductImageController(_sender)
+        _uploadProductImageHandler = Substitute.For<ICommandHandler<UploadProductImageCommand, Guid>>();
+        _updateProductImageHandler = Substitute.For<ICommandHandler<UpdateProductImageCommand>>();
+        _deleteProductImageHandler = Substitute.For<ICommandHandler<DeleteProductImageCommand>>();
+
+        _controller = new ProductImageController()
         {
             ControllerContext = new ControllerContext
             {
@@ -36,18 +42,18 @@ public class ProductImageControllerTests
         };
 
         var imageId = Guid.NewGuid();
-        _sender.Send(Arg.Any<UploadProductImageCommand>(), Arg.Any<CancellationToken>())
+        _uploadProductImageHandler.Handle(Arg.Any<UploadProductImageCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(imageId));
 
         // Act
-        IActionResult result = await _controller.UploadProductImage(request, CancellationToken.None);
+        IActionResult result = await _controller.UploadProductImage(request, _uploadProductImageHandler, CancellationToken.None);
 
         // Assert
         CreatedAtActionResult createdResult = result.ShouldBeOfType<CreatedAtActionResult>();
         createdResult.ActionName.ShouldBe(nameof(ProductImageController.UploadProductImage));
         createdResult.RouteValues?["id"].ShouldBe(imageId);
 
-        await _sender.Received(1).Send(
+        await _uploadProductImageHandler.Received(1).Handle(
             Arg.Is<UploadProductImageCommand>(cmd =>
                 cmd.File == request.File &&
                 cmd.ProductId == request.ProductId),
@@ -67,11 +73,11 @@ public class ProductImageControllerTests
         };
 
         var error = Error.Failure("ProductImage.UploadFailed", "Failed to upload product image");
-        _sender.Send(Arg.Any<UploadProductImageCommand>(), Arg.Any<CancellationToken>())
+        _uploadProductImageHandler.Handle(Arg.Any<UploadProductImageCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<Guid>(error));
 
         // Act
-        IActionResult result = await _controller.UploadProductImage(request, CancellationToken.None);
+        IActionResult result = await _controller.UploadProductImage(request, _uploadProductImageHandler, CancellationToken.None);
 
         // Assert
         BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();
@@ -91,16 +97,16 @@ public class ProductImageControllerTests
             ProductId = productId
         };
 
-        _sender.Send(Arg.Any<UpdateProductImageCommand>(), Arg.Any<CancellationToken>())
+        _updateProductImageHandler.Handle(Arg.Any<UpdateProductImageCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
         // Act
-        IActionResult result = await _controller.UpdateProductImage(imageId, request, CancellationToken.None);
+        IActionResult result = await _controller.UpdateProductImage(imageId, request, _updateProductImageHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
 
-        await _sender.Received(1).Send(
+        await _updateProductImageHandler.Received(1).Handle(
             Arg.Is<UpdateProductImageCommand>(cmd =>
                 cmd.Id == imageId &&
                 cmd.File == request.File &&
@@ -122,11 +128,11 @@ public class ProductImageControllerTests
         };
 
         var error = Error.NotFound("ProductImage.NotFound", "Product image not found");
-        _sender.Send(Arg.Any<UpdateProductImageCommand>(), Arg.Any<CancellationToken>())
+        _updateProductImageHandler.Handle(Arg.Any<UpdateProductImageCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure(error));
 
         // Act
-        IActionResult result = await _controller.UpdateProductImage(imageId, request, CancellationToken.None);
+        IActionResult result = await _controller.UpdateProductImage(imageId, request, _updateProductImageHandler, CancellationToken.None);
 
         // Assert
         BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();
@@ -139,16 +145,16 @@ public class ProductImageControllerTests
         // Arrange
         var imageId = Guid.NewGuid();
 
-        _sender.Send(Arg.Any<DeleteProductImageCommand>(), Arg.Any<CancellationToken>())
+        _deleteProductImageHandler.Handle(Arg.Any<DeleteProductImageCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
         // Act
-        IActionResult result = await _controller.DeleteProductImage(imageId, CancellationToken.None);
+        IActionResult result = await _controller.DeleteProductImage(imageId, _deleteProductImageHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
 
-        await _sender.Received(1).Send(
+        await _deleteProductImageHandler.Received(1).Handle(
             Arg.Is<DeleteProductImageCommand>(cmd => cmd.Id == imageId),
             Arg.Any<CancellationToken>());
     }
@@ -160,11 +166,11 @@ public class ProductImageControllerTests
         var imageId = Guid.NewGuid();
 
         var error = Error.NotFound("ProductImage.NotFound", "Product image not found");
-        _sender.Send(Arg.Any<DeleteProductImageCommand>(), Arg.Any<CancellationToken>())
+        _deleteProductImageHandler.Handle(Arg.Any<DeleteProductImageCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure(error));
 
         // Act
-        IActionResult result = await _controller.DeleteProductImage(imageId, CancellationToken.None);
+        IActionResult result = await _controller.DeleteProductImage(imageId, _deleteProductImageHandler, CancellationToken.None);
 
         // Assert
         BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();

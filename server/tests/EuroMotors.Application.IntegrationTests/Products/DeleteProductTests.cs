@@ -1,9 +1,11 @@
 ﻿using Bogus;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Application.Products.DeleteProduct;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
 using EuroMotors.Domain.Products;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.Products;
@@ -26,7 +28,8 @@ public class DeleteProductTests : BaseIntegrationTest
         var command = new DeleteProductCommand(productId);
 
         // Act
-        Result result = await Sender.Send(command);
+        ICommandHandler<DeleteProductCommand> handler = ServiceProvider.GetRequiredService<ICommandHandler<DeleteProductCommand>>();
+        Result result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Error.ShouldBe(ProductErrors.NotFound(productId));
@@ -35,9 +38,9 @@ public class DeleteProductTests : BaseIntegrationTest
     [Fact]
     public async Task Should_ReturnSuccess_WhenProductIsDeleted()
     {
-        Guid categoryId = await Sender.CreateCategoryAsync("Category Cateory9");
-        Guid brandId = await Sender.CreateCarBrandAsync("Brand brand9");
-        Guid carModelId = await Sender.CreateCarModelAsync(
+        Guid categoryId = await ServiceProvider.CreateCategoryAsync("Category Cateory9");
+        Guid brandId = await ServiceProvider.CreateCarBrandAsync("Brand brand9");
+        Guid carModelId = await ServiceProvider.CreateCarModelAsync(
             brandId,
             _faker.Vehicle.Model(),
             2020,
@@ -52,7 +55,7 @@ public class DeleteProductTests : BaseIntegrationTest
         };
 
         // Arrange
-        Guid productId = await Sender.CreateProductAsync(
+        Guid productId = await ServiceProvider.CreateProductAsync(
             "Product Name",
             "VendorCode123",
             categoryId,
@@ -66,7 +69,8 @@ public class DeleteProductTests : BaseIntegrationTest
         var command = new DeleteProductCommand(productId);
 
         // Act
-        Result result = await Sender.Send(command);
+        ICommandHandler<DeleteProductCommand> handler = ServiceProvider.GetRequiredService<ICommandHandler<DeleteProductCommand>>();
+        Result result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();

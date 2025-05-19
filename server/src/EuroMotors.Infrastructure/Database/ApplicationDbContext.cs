@@ -1,6 +1,5 @@
 ﻿using System.Data.Common;
 using EuroMotors.Application.Abstractions.Data;
-using EuroMotors.Application.Abstractions.Exceptions;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarBrands;
 using EuroMotors.Domain.CarModels;
@@ -11,13 +10,13 @@ using EuroMotors.Domain.ProductImages;
 using EuroMotors.Domain.Products;
 using EuroMotors.Domain.Users;
 using EuroMotors.Infrastructure.Configurations;
-using MediatR;
+using EuroMotors.Infrastructure.DomainEvents;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EuroMotors.Infrastructure.Database;
 
-public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IPublisher publisher)
+public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IDomainEventsDispatcher domainEventsDispatcher)
     : DbContext(options), IApplicationDbContext, IUnitOfWork
 {
     public DbSet<User> Users { get; set; }
@@ -57,20 +56,23 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        try
-        {
-            int result = await base.SaveChangesAsync(cancellationToken);
+        // When should you publish domain events?
+        //
+        // 1. BEFORE calling SaveChangesAsync
+        //     - domain events are part of the same transaction
+        //     - immediate consistency
+        // 2. AFTER calling SaveChangesAsync
+        //     - domain events are a separate transaction
+        //     - eventual consistency
+        //     - handlers can fail
 
-            await PublishDomainEventsAsync();
+        int result = await base.SaveChangesAsync(cancellationToken);
 
-            return result;
-        }
-        catch (DbUpdateConcurrencyException ex)
-        {
-            throw new ConcurrencyException("Concurrency exception occurred.", ex);
-        }
+        await PublishDomainEventsAsync();
 
+        return result;
     }
+
     public async Task<DbTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
         if (Database.CurrentTransaction is not null)
@@ -96,9 +98,6 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
             })
             .ToList();
 
-        foreach (IDomainEvent domainEvent in domainEvents)
-        {
-            await publisher.Publish(domainEvent);
-        }
+        await domainEventsDispatcher.DispatchAsync(domainEvents);
     }
 }

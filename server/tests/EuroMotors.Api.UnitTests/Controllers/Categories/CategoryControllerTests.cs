@@ -1,4 +1,5 @@
 using EuroMotors.Api.Controllers.Categories;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Categories.CreateCategory;
 using EuroMotors.Application.Categories.DeleteCategory;
 using EuroMotors.Application.Categories.GetByIdCategory;
@@ -10,13 +11,22 @@ namespace EuroMotors.Api.UnitTests.Controllers.Categories;
 
 public class CategoryControllerTests
 {
-    private readonly ISender _sender;
     private readonly CategoryController _controller;
+    private readonly IQueryHandler<GetCategoriesQuery, List<CategoryResponse>> _getCategoriesHandler;
+    private readonly IQueryHandler<GetCategoryByIdQuery, CategoryResponse> _getCategoryByIdHandler;
+    private readonly ICommandHandler<CreateCategoryCommand, Guid> _createCategoryHandler;
+    private readonly ICommandHandler<UpdateCategoryCommand> _updateCategoryHandler;
+    private readonly ICommandHandler<DeleteCategoryCommand> _deleteCategoryHandler;
 
     public CategoryControllerTests()
     {
-        _sender = Substitute.For<ISender>();
-        _controller = new CategoryController(_sender)
+        _getCategoriesHandler = Substitute.For<IQueryHandler<GetCategoriesQuery, List<CategoryResponse>>>();
+        _getCategoryByIdHandler = Substitute.For<IQueryHandler<GetCategoryByIdQuery, CategoryResponse>>();
+        _createCategoryHandler = Substitute.For<ICommandHandler<CreateCategoryCommand, Guid>>();
+        _updateCategoryHandler = Substitute.For<ICommandHandler<UpdateCategoryCommand>>();
+        _deleteCategoryHandler = Substitute.For<ICommandHandler<DeleteCategoryCommand>>();
+
+        _controller = new CategoryController()
         {
             ControllerContext = new ControllerContext
             {
@@ -34,17 +44,17 @@ public class CategoryControllerTests
             new(Guid.NewGuid(), "Test Category", null, null,"test-category")
         };
 
-        _sender.Send(Arg.Any<GetCategoriesQuery>(), Arg.Any<CancellationToken>())
+        _getCategoriesHandler.Handle(Arg.Any<GetCategoriesQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(categories));
 
         // Act
-        IActionResult result = await _controller.GetCategories(CancellationToken.None);
+        IActionResult result = await _controller.GetCategories(_getCategoriesHandler, CancellationToken.None);
 
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(categories);
 
-        await _sender.Received(1).Send(
+        await _getCategoriesHandler.Received(1).Handle(
             Arg.Any<GetCategoriesQuery>(),
             Arg.Any<CancellationToken>());
     }
@@ -53,11 +63,11 @@ public class CategoryControllerTests
     public async Task GetCategories_ShouldReturnNotFound_WhenCategoriesNotFound()
     {
         // Arrange
-        _sender.Send(Arg.Any<GetCategoriesQuery>(), Arg.Any<CancellationToken>())
+        _getCategoriesHandler.Handle(Arg.Any<GetCategoriesQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<List<CategoryResponse>>(Error.NotFound("Categories.NotFound", "Categories not found")));
 
         // Act
-        IActionResult result = await _controller.GetCategories(CancellationToken.None);
+        IActionResult result = await _controller.GetCategories(_getCategoriesHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NotFoundResult>();
@@ -70,17 +80,17 @@ public class CategoryControllerTests
         var id = Guid.NewGuid();
         var category = new CategoryResponse(Guid.NewGuid(), "Test Category", null, null, "test-category");
 
-        _sender.Send(Arg.Any<GetCategoryByIdQuery>(), Arg.Any<CancellationToken>())
+        _getCategoryByIdHandler.Handle(Arg.Any<GetCategoryByIdQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(category));
 
         // Act
-        IActionResult result = await _controller.GetCategoryById(id, CancellationToken.None);
+        IActionResult result = await _controller.GetCategoryById(_getCategoryByIdHandler, id, CancellationToken.None);
 
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(category);
 
-        await _sender.Received(1).Send(
+        await _getCategoryByIdHandler.Received(1).Handle(
             Arg.Is<GetCategoryByIdQuery>(query => query.CategoryId == id),
             Arg.Any<CancellationToken>());
     }
@@ -92,11 +102,11 @@ public class CategoryControllerTests
         var id = Guid.NewGuid();
         var error = Error.NotFound("Category.NotFound", "Category not found");
 
-        _sender.Send(Arg.Any<GetCategoryByIdQuery>(), Arg.Any<CancellationToken>())
+        _getCategoryByIdHandler.Handle(Arg.Any<GetCategoryByIdQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<CategoryResponse>(error));
 
         // Act
-        IActionResult result = await _controller.GetCategoryById(id, CancellationToken.None);
+        IActionResult result = await _controller.GetCategoryById(_getCategoryByIdHandler, id, CancellationToken.None);
 
         // Assert
         NotFoundObjectResult notFoundResult = result.ShouldBeOfType<NotFoundObjectResult>();
@@ -115,11 +125,11 @@ public class CategoryControllerTests
 
         var categoryId = Guid.NewGuid();
 
-        _sender.Send(Arg.Any<CreateCategoryCommand>(), Arg.Any<CancellationToken>())
+        _createCategoryHandler.Handle(Arg.Any<CreateCategoryCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(categoryId));
 
         // Act
-        IActionResult result = await _controller.CreateCategory(request, CancellationToken.None);
+        IActionResult result = await _controller.CreateCategory(request, _createCategoryHandler, CancellationToken.None);
 
         // Assert
         CreatedAtActionResult createdResult = result.ShouldBeOfType<CreatedAtActionResult>();
@@ -127,7 +137,7 @@ public class CategoryControllerTests
         createdResult.RouteValues?["id"].ShouldBe(categoryId);
         createdResult.Value.ShouldBe(categoryId);
 
-        await _sender.Received(1).Send(
+        await _createCategoryHandler.Received(1).Handle(
             Arg.Is<CreateCategoryCommand>(cmd =>
                 cmd.Name == request.Name &&
                 cmd.ParentCategoryId == request.ParentCategoryId &&
@@ -147,11 +157,11 @@ public class CategoryControllerTests
 
         var error = Error.Failure("Category.InvalidData", "Invalid category data");
 
-        _sender.Send(Arg.Any<CreateCategoryCommand>(), Arg.Any<CancellationToken>())
+        _createCategoryHandler.Handle(Arg.Any<CreateCategoryCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<Guid>(error));
 
         // Act
-        IActionResult result = await _controller.CreateCategory(request, CancellationToken.None);
+        IActionResult result = await _controller.CreateCategory(request, _createCategoryHandler, CancellationToken.None);
 
         // Assert
         BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();
@@ -168,16 +178,16 @@ public class CategoryControllerTests
             null,
             null);
 
-        _sender.Send(Arg.Any<UpdateCategoryCommand>(), Arg.Any<CancellationToken>())
+        _updateCategoryHandler.Handle(Arg.Any<UpdateCategoryCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
         // Act
-        IActionResult result = await _controller.UpdateCategory(id, request, CancellationToken.None);
+        IActionResult result = await _controller.UpdateCategory(id, request, _updateCategoryHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
 
-        await _sender.Received(1).Send(
+        await _updateCategoryHandler.Received(1).Handle(
             Arg.Is<UpdateCategoryCommand>(cmd =>
                 cmd.CategoryId == id &&
                 cmd.Name == request.Name &&
@@ -197,17 +207,16 @@ public class CategoryControllerTests
 
         var error = Error.NotFound("Category.NotFound", "Category not found");
 
-        _sender.Send(Arg.Any<UpdateCategoryCommand>(), Arg.Any<CancellationToken>())
+        _updateCategoryHandler.Handle(Arg.Any<UpdateCategoryCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure(error));
 
         // Act
-        IActionResult result = await _controller.UpdateCategory(id, request, CancellationToken.None);
+        IActionResult result = await _controller.UpdateCategory(id, request, _updateCategoryHandler, CancellationToken.None);
 
         // Assert
         BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();
         badRequestResult.Value.ShouldBe(error);
     }
-
 
     [Fact]
     public async Task DeleteCategory_ShouldReturnNoContent_WhenDeletionSucceeds()
@@ -215,16 +224,16 @@ public class CategoryControllerTests
         // Arrange
         var id = Guid.NewGuid();
 
-        _sender.Send(Arg.Any<DeleteCategoryCommand>(), Arg.Any<CancellationToken>())
+        _deleteCategoryHandler.Handle(Arg.Any<DeleteCategoryCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
         // Act
-        IActionResult result = await _controller.DeleteCategory(id, CancellationToken.None);
+        IActionResult result = await _controller.DeleteCategory(id, _deleteCategoryHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
 
-        await _sender.Received(1).Send(
+        await _deleteCategoryHandler.Received(1).Handle(
             Arg.Is<DeleteCategoryCommand>(cmd => cmd.CategoryId == id),
             Arg.Any<CancellationToken>());
     }
@@ -237,11 +246,11 @@ public class CategoryControllerTests
 
         var error = Error.NotFound("Category.NotFound", "Category not found");
 
-        _sender.Send(Arg.Any<DeleteCategoryCommand>(), Arg.Any<CancellationToken>())
+        _deleteCategoryHandler.Handle(Arg.Any<DeleteCategoryCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure(error));
 
         // Act
-        IActionResult result = await _controller.DeleteCategory(id, CancellationToken.None);
+        IActionResult result = await _controller.DeleteCategory(id, _deleteCategoryHandler, CancellationToken.None);
 
         // Assert
         NotFoundObjectResult notFoundResult = result.ShouldBeOfType<NotFoundObjectResult>();

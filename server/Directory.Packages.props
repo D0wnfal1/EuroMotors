@@ -13,13 +13,12 @@
     <PackageVersion Include="prometheus-net" Version="8.2.1" />
     <PackageVersion Include="prometheus-net.AspNetCore" Version="8.2.1" />
     <PackageVersion Include="prometheus-net.AspNetCore.HealthChecks" Version="8.2.1" />
+    <PackageVersion Include="Scrutor" Version="6.0.1" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.9.0.115408" />
     <!-- Domain -->
-    <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
     <!-- Application -->
     <PackageVersion Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
-    <PackageVersion Include="MediatR" Version="12.5.0" />
     <PackageVersion Include="Dapper" Version="2.1.66" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.4" />

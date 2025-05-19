@@ -1,7 +1,9 @@
 ﻿using Bogus;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.CarModels.GetCarModelById;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Domain.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.CarModels;
@@ -9,10 +11,12 @@ namespace EuroMotors.Application.IntegrationTests.CarModels;
 public class GetCarModelTests : BaseIntegrationTest
 {
     private readonly Faker _faker = new();
+    private readonly IQueryHandler<GetCarModelByIdQuery, CarModelResponse> _getCarModelByIdHandler;
 
     public GetCarModelTests(IntegrationTestWebAppFactory factory)
         : base(factory)
     {
+        _getCarModelByIdHandler = factory.Services.GetRequiredService<IQueryHandler<GetCarModelByIdQuery, CarModelResponse>>();
     }
 
     [Fact]
@@ -22,7 +26,7 @@ public class GetCarModelTests : BaseIntegrationTest
         var query = new GetCarModelByIdQuery(Guid.NewGuid());
 
         // Act
-        Result<CarModelResponse> result = await Sender.Send(query);
+        Result<CarModelResponse> result = await _getCarModelByIdHandler.Handle(query, CancellationToken.None);
 
         // Assert
         result.IsFailure.ShouldBeTrue();
@@ -33,8 +37,8 @@ public class GetCarModelTests : BaseIntegrationTest
     public async Task Should_ReturnCarModel_WhenCarModelExists()
     {
         // Arrange
-        Guid brandId = await Sender.CreateCarBrandAsync("Test Brand11111");
-        Guid carModelId = await Sender.CreateCarModelAsync(
+        Guid brandId = await ServiceProvider.CreateCarBrandAsync("Test Brand11111");
+        Guid carModelId = await ServiceProvider.CreateCarModelAsync(
             brandId,
             _faker.Vehicle.Model(),
             _faker.Random.Int(2000, 2023),
@@ -47,7 +51,7 @@ public class GetCarModelTests : BaseIntegrationTest
         var query = new GetCarModelByIdQuery(carModelId);
 
         // Act
-        Result<CarModelResponse> result = await Sender.Send(query);
+        Result<CarModelResponse> result = await _getCarModelByIdHandler.Handle(query, CancellationToken.None);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();

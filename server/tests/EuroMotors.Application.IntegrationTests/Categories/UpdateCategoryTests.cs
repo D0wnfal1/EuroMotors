@@ -1,8 +1,10 @@
 ﻿using Bogus;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Categories.UpdateCategory;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.Categories;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
 namespace EuroMotors.Application.IntegrationTests.Categories;
@@ -29,7 +31,8 @@ public class UpdateCategoryTests : BaseIntegrationTest
         var command = new UpdateCategoryCommand(Guid.NewGuid(), faker.Music.Genre(), null, null);
 
         // Act
-        Result result = await Sender.Send(command);
+        ICommandHandler<UpdateCategoryCommand> handler = ServiceProvider.GetRequiredService<ICommandHandler<UpdateCategoryCommand>>();
+        Result result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Error.ShouldBe(CategoryErrors.NotFound(command.CategoryId));
@@ -40,12 +43,13 @@ public class UpdateCategoryTests : BaseIntegrationTest
     {
         // Arrange
         var faker = new Faker();
-        Guid CategoryId = await Sender.CreateCategoryAsync(faker.Music.Genre());
+        Guid CategoryId = await ServiceProvider.CreateCategoryAsync(faker.Music.Genre());
 
         var command = new UpdateCategoryCommand(CategoryId, faker.Music.Genre(), null, null);
 
         // Act
-        Result result = await Sender.Send(command);
+        ICommandHandler<UpdateCategoryCommand> handler = ServiceProvider.GetRequiredService<ICommandHandler<UpdateCategoryCommand>>();
+        Result result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();

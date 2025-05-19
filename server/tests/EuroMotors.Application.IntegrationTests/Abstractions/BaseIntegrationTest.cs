@@ -1,5 +1,4 @@
 ﻿using EuroMotors.Infrastructure.Database;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,7 +8,7 @@ namespace EuroMotors.Application.IntegrationTests.Abstractions;
 public abstract class BaseIntegrationTest
 {
     private readonly IServiceScope _scope;
-    protected readonly ISender Sender;
+    protected readonly IServiceProvider ServiceProvider;
     protected readonly IntegrationTestWebAppFactory Factory;
     protected readonly ApplicationDbContext DbContext;
 
@@ -17,7 +16,7 @@ public abstract class BaseIntegrationTest
     {
         _scope = factory.Services.CreateScope();
         Factory = factory;
-        Sender = _scope.ServiceProvider.GetRequiredService<ISender>();
+        ServiceProvider = _scope.ServiceProvider;
         DbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     }
 

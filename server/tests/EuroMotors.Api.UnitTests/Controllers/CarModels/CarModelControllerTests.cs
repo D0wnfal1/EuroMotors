@@ -1,4 +1,5 @@
 using EuroMotors.Api.Controllers.CarModels;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Abstractions.Pagination;
 using EuroMotors.Application.CarBrands.GetCarBrands;
 using EuroMotors.Application.CarModels.CreateCarModel;
@@ -15,13 +16,26 @@ namespace EuroMotors.Api.UnitTests.Controllers.CarModels;
 
 public class CarModelControllerTests
 {
-    private readonly ISender _sender;
     private readonly CarModelController _controller;
+    private readonly IQueryHandler<GetCarModelsQuery, Pagination<CarModelResponse>> _getCarModelsHandler;
+    private readonly IQueryHandler<GetCarModelByIdQuery, CarModelResponse> _getCarModelByIdHandler;
+    private readonly IQueryHandler<GetAllCarModelBrandsQuery, List<CarBrandResponse>> _getAllBrandsHandler;
+    private readonly IQueryHandler<GetCarModelSelectionQuery, CarModelSelectionResponse> _getCarSelectionHandler;
+    private readonly ICommandHandler<CreateCarModelCommand, Guid> _createCarModelHandler;
+    private readonly ICommandHandler<UpdateCarModelCommand> _updateCarModelHandler;
+    private readonly ICommandHandler<DeleteCarModelCommand> _deleteCarModelHandler;
 
     public CarModelControllerTests()
     {
-        _sender = Substitute.For<ISender>();
-        _controller = new CarModelController(_sender)
+        _getCarModelsHandler = Substitute.For<IQueryHandler<GetCarModelsQuery, Pagination<CarModelResponse>>>();
+        _getCarModelByIdHandler = Substitute.For<IQueryHandler<GetCarModelByIdQuery, CarModelResponse>>();
+        _getAllBrandsHandler = Substitute.For<IQueryHandler<GetAllCarModelBrandsQuery, List<CarBrandResponse>>>();
+        _getCarSelectionHandler = Substitute.For<IQueryHandler<GetCarModelSelectionQuery, CarModelSelectionResponse>>();
+        _createCarModelHandler = Substitute.For<ICommandHandler<CreateCarModelCommand, Guid>>();
+        _updateCarModelHandler = Substitute.For<ICommandHandler<UpdateCarModelCommand>>();
+        _deleteCarModelHandler = Substitute.For<ICommandHandler<DeleteCarModelCommand>>();
+
+        _controller = new CarModelController()
         {
             ControllerContext = new ControllerContext
             {
@@ -54,17 +68,17 @@ public class CarModelControllerTests
             Data = carModels
         };
 
-        _sender.Send(Arg.Any<GetCarModelsQuery>(), Arg.Any<CancellationToken>())
+        _getCarModelsHandler.Handle(Arg.Any<GetCarModelsQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(pagination));
 
         // Act
-        IActionResult result = await _controller.GetCarModels(CancellationToken.None);
+        IActionResult result = await _controller.GetCarModels(_getCarModelsHandler, CancellationToken.None);
 
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(pagination);
 
-        await _sender.Received(1).Send(
+        await _getCarModelsHandler.Received(1).Handle(
             Arg.Is<GetCarModelsQuery>(query =>
                 query.PageNumber == 1 &&
                 query.PageSize == 10),
@@ -75,11 +89,11 @@ public class CarModelControllerTests
     public async Task GetCarModels_ShouldReturnNotFound_WhenModelsNotFound()
     {
         // Arrange
-        _sender.Send(Arg.Any<GetCarModelsQuery>(), Arg.Any<CancellationToken>())
+        _getCarModelsHandler.Handle(Arg.Any<GetCarModelsQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<Pagination<CarModelResponse>>(Error.NotFound("CarModels.NotFound", "Car models not found")));
 
         // Act
-        IActionResult result = await _controller.GetCarModels(CancellationToken.None);
+        IActionResult result = await _controller.GetCarModels(_getCarModelsHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NotFoundResult>();
@@ -98,17 +112,17 @@ public class CarModelControllerTests
             BodyType = "SUV"
         };
 
-        _sender.Send(Arg.Any<GetCarModelByIdQuery>(), Arg.Any<CancellationToken>())
+        _getCarModelByIdHandler.Handle(Arg.Any<GetCarModelByIdQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(carModel));
 
         // Act
-        IActionResult result = await _controller.GetCarModelById(id, CancellationToken.None);
+        IActionResult result = await _controller.GetCarModelById(_getCarModelByIdHandler, id, CancellationToken.None);
 
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(carModel);
 
-        await _sender.Received(1).Send(
+        await _getCarModelByIdHandler.Received(1).Handle(
             Arg.Is<GetCarModelByIdQuery>(query => query.CarModelId == id),
             Arg.Any<CancellationToken>());
     }
@@ -119,11 +133,11 @@ public class CarModelControllerTests
         // Arrange
         var id = Guid.NewGuid();
 
-        _sender.Send(Arg.Any<GetCarModelByIdQuery>(), Arg.Any<CancellationToken>())
+        _getCarModelByIdHandler.Handle(Arg.Any<GetCarModelByIdQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<CarModelResponse>(Error.NotFound("CarModel.NotFound", "Car model not found")));
 
         // Act
-        IActionResult result = await _controller.GetCarModelById(id, CancellationToken.None);
+        IActionResult result = await _controller.GetCarModelById(_getCarModelByIdHandler, id, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NotFoundResult>();
@@ -140,17 +154,17 @@ public class CarModelControllerTests
             new CarBrandResponse { Id = Guid.NewGuid(), Name = "Mercedes", Slug = "mercedes", LogoPath = null }
         };
 
-        _sender.Send(Arg.Any<GetAllCarModelBrandsQuery>(), Arg.Any<CancellationToken>())
+        _getAllBrandsHandler.Handle(Arg.Any<GetAllCarModelBrandsQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(brands));
 
         // Act
-        IActionResult result = await _controller.GetAllBrands();
+        IActionResult result = await _controller.GetAllBrands(_getAllBrandsHandler, CancellationToken.None);
 
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(brands);
 
-        await _sender.Received(1).Send(
+        await _getAllBrandsHandler.Received(1).Handle(
             Arg.Any<GetAllCarModelBrandsQuery>(),
             Arg.Any<CancellationToken>());
     }
@@ -159,11 +173,11 @@ public class CarModelControllerTests
     public async Task GetAllBrands_ShouldReturnNotFound_WhenBrandsNotFound()
     {
         // Arrange
-        _sender.Send(Arg.Any<GetAllCarModelBrandsQuery>(), Arg.Any<CancellationToken>())
+        _getAllBrandsHandler.Handle(Arg.Any<GetAllCarModelBrandsQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<List<CarBrandResponse>>(Error.NotFound("Brands.NotFound", "Brands not found")));
 
         // Act
-        IActionResult result = await _controller.GetAllBrands();
+        IActionResult result = await _controller.GetAllBrands(_getAllBrandsHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NotFoundResult>();
@@ -192,17 +206,17 @@ public class CarModelControllerTests
             EngineSpecs = new List<string> { "2.0L Diesel" }
         };
 
-        _sender.Send(Arg.Any<GetCarModelSelectionQuery>(), Arg.Any<CancellationToken>())
+        _getCarSelectionHandler.Handle(Arg.Any<GetCarModelSelectionQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(response));
 
         // Act
-        IActionResult result = await _controller.GetCarSelection(request, CancellationToken.None);
+        IActionResult result = await _controller.GetCarSelection(request, _getCarSelectionHandler, CancellationToken.None);
 
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(response);
 
-        await _sender.Received(1).Send(
+        await _getCarSelectionHandler.Received(1).Handle(
             Arg.Is<GetCarModelSelectionQuery>(query =>
                 query.BrandId == request.BrandId &&
                 query.ModelName == request.Model &&
@@ -223,11 +237,11 @@ public class CarModelControllerTests
             BodyType = "Unknown"
         };
 
-        _sender.Send(Arg.Any<GetCarModelSelectionQuery>(), Arg.Any<CancellationToken>())
+        _getCarSelectionHandler.Handle(Arg.Any<GetCarModelSelectionQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<CarModelSelectionResponse>(Error.NotFound("Selection.NotFound", "Car selection not found")));
 
         // Act
-        IActionResult result = await _controller.GetCarSelection(request, CancellationToken.None);
+        IActionResult result = await _controller.GetCarSelection(request, _getCarSelectionHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NotFoundResult>();
@@ -250,11 +264,11 @@ public class CarModelControllerTests
 
         var carModelId = Guid.NewGuid();
 
-        _sender.Send(Arg.Any<CreateCarModelCommand>(), Arg.Any<CancellationToken>())
+        _createCarModelHandler.Handle(Arg.Any<CreateCarModelCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(carModelId));
 
         // Act
-        IActionResult result = await _controller.CreateCarModel(request, CancellationToken.None);
+        IActionResult result = await _controller.CreateCarModel(request, _createCarModelHandler, CancellationToken.None);
 
         // Assert
         CreatedAtActionResult createdResult = result.ShouldBeOfType<CreatedAtActionResult>();
@@ -262,7 +276,7 @@ public class CarModelControllerTests
         createdResult.RouteValues?["id"].ShouldBe(carModelId);
         createdResult.Value.ShouldBe(carModelId);
 
-        await _sender.Received(1).Send(
+        await _createCarModelHandler.Received(1).Handle(
             Arg.Is<CreateCarModelCommand>(cmd =>
                 cmd.CarBrandId == request.CarBrandId &&
                 cmd.ModelName == request.ModelName &&
@@ -288,11 +302,11 @@ public class CarModelControllerTests
 
         var error = Error.Failure("CarModel.InvalidData", "Invalid car model data");
 
-        _sender.Send(Arg.Any<CreateCarModelCommand>(), Arg.Any<CancellationToken>())
+        _createCarModelHandler.Handle(Arg.Any<CreateCarModelCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<Guid>(error));
 
         // Act
-        IActionResult result = await _controller.CreateCarModel(request, CancellationToken.None);
+        IActionResult result = await _controller.CreateCarModel(request, _createCarModelHandler, CancellationToken.None);
 
         // Assert
         BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();
@@ -313,16 +327,16 @@ public class CarModelControllerTests
             FuelType = FuelType.Diesel
         };
 
-        _sender.Send(Arg.Any<UpdateCarModelCommand>(), Arg.Any<CancellationToken>())
+        _updateCarModelHandler.Handle(Arg.Any<UpdateCarModelCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
         // Act
-        IActionResult result = await _controller.UpdateCarModel(id, request, CancellationToken.None);
+        IActionResult result = await _controller.UpdateCarModel(id, request, _updateCarModelHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
 
-        await _sender.Received(1).Send(
+        await _updateCarModelHandler.Received(1).Handle(
             Arg.Is<UpdateCarModelCommand>(cmd =>
                 cmd.Id == id &&
                 cmd.ModelName == request.Model &&
@@ -349,11 +363,11 @@ public class CarModelControllerTests
 
         var error = Error.NotFound("CarModel.NotFound", "Car model not found");
 
-        _sender.Send(Arg.Any<UpdateCarModelCommand>(), Arg.Any<CancellationToken>())
+        _updateCarModelHandler.Handle(Arg.Any<UpdateCarModelCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure(error));
 
         // Act
-        IActionResult result = await _controller.UpdateCarModel(id, request, CancellationToken.None);
+        IActionResult result = await _controller.UpdateCarModel(id, request, _updateCarModelHandler, CancellationToken.None);
 
         // Assert
         BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();
@@ -366,16 +380,16 @@ public class CarModelControllerTests
         // Arrange
         var id = Guid.NewGuid();
 
-        _sender.Send(Arg.Any<DeleteCarModelCommand>(), Arg.Any<CancellationToken>())
+        _deleteCarModelHandler.Handle(Arg.Any<DeleteCarModelCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
         // Act
-        IActionResult result = await _controller.DeleteCarModel(id, CancellationToken.None);
+        IActionResult result = await _controller.DeleteCarModel(id, _deleteCarModelHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
 
-        await _sender.Received(1).Send(
+        await _deleteCarModelHandler.Received(1).Handle(
             Arg.Is<DeleteCarModelCommand>(cmd => cmd.CarModelId == id),
             Arg.Any<CancellationToken>());
     }
@@ -388,11 +402,11 @@ public class CarModelControllerTests
 
         var error = Error.NotFound("CarModel.NotFound", "Car model not found");
 
-        _sender.Send(Arg.Any<DeleteCarModelCommand>(), Arg.Any<CancellationToken>())
+        _deleteCarModelHandler.Handle(Arg.Any<DeleteCarModelCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure(error));
 
         // Act
-        IActionResult result = await _controller.DeleteCarModel(id, CancellationToken.None);
+        IActionResult result = await _controller.DeleteCarModel(id, _deleteCarModelHandler, CancellationToken.None);
 
         // Assert
         BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();

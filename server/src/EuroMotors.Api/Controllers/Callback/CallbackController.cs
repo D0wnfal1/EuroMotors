@@ -1,6 +1,6 @@
-﻿using EuroMotors.Application.Callback.RequestCallback;
+﻿using EuroMotors.Application.Abstractions.Messaging;
+using EuroMotors.Application.Callback.RequestCallback;
 using EuroMotors.Domain.Abstractions;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EuroMotors.Api.Controllers.Callback;
@@ -8,19 +8,12 @@ namespace EuroMotors.Api.Controllers.Callback;
 [ApiController]
 public class CallbackController : ControllerBase
 {
-    private readonly ISender _sender;
-
-    public CallbackController(ISender sender)
-    {
-        _sender = sender;
-    }
-
     [HttpPost]
     [Route("request")]
-    public async Task<IActionResult> RequestCallback([FromBody] CallbackRequest request)
+    public async Task<IActionResult> RequestCallback([FromBody] CallbackRequest request, ICommandHandler<RequestCallbackCommand> handler, CancellationToken cancellationToken)
     {
         var command = new RequestCallbackCommand(request.Name, request.Phone);
-        Result result = await _sender.Send(command);
+        Result result = await handler.Handle(command, cancellationToken);
         return result.IsSuccess ? Ok(result) : NotFound();
     }
 }

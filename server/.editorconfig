@@ -75,6 +75,9 @@ csharp_style_conditional_delegate_call = true:error
 csharp_style_pattern_matching_over_is_with_cast_check = true:error
 dotnet_diagnostic.S3776.severity = suggestion
 dotnet_diagnostic.S107.severity = suggestion
+csharp_style_prefer_tuple_swap = true:suggestion
+csharp_style_prefer_switch_expression = true:error
+dotnet_diagnostic.S2326.severity = suggestion
 
 [*.{cs,vb}]
 dotnet_style_prefer_simplified_boolean_expressions = true:suggestion

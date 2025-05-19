@@ -1,10 +1,10 @@
 ﻿using System.Security.Claims;
 using System.Security.Principal;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Users.GetByEmail;
 using EuroMotors.Application.Users.Login;
 using EuroMotors.Application.Users.RefreshToken;
 using EuroMotors.Domain.Abstractions;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,17 +14,10 @@ namespace EuroMotors.Api.Controllers.Users;
 [ApiController]
 public sealed class AuthController : ControllerBase
 {
-    private readonly ISender _sender;
-
-    public AuthController(ISender sender)
-    {
-        _sender = sender;
-    }
-
     [HttpPost("refresh")]
     [ProducesResponseType(typeof(AuthenticationResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> RefreshToken(CancellationToken cancellationToken)
+    public async Task<IActionResult> RefreshToken(ICommandHandler<RefreshTokenCommand, AuthenticationResponse> handler, CancellationToken cancellationToken)
     {
         string? refreshToken = Request.Cookies["RefreshToken"];
 
@@ -35,7 +28,7 @@ public sealed class AuthController : ControllerBase
 
         var query = new RefreshTokenCommand(refreshToken);
 
-        Result<AuthenticationResponse> result = await _sender.Send(query, cancellationToken);
+        Result<AuthenticationResponse> result = await handler.Handle(query, cancellationToken);
 
         if (!result.IsSuccess)
         {
@@ -51,7 +44,7 @@ public sealed class AuthController : ControllerBase
     [HttpGet("status")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(AuthState), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAuthState(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAuthState(IQueryHandler<GetUserByEmailQuery, UserResponse> handler, CancellationToken cancellationToken)
     {
         IIdentity? identity = User.Identity;
 
@@ -76,7 +69,7 @@ public sealed class AuthController : ControllerBase
         }
 
         var query = new GetUserByEmailQuery(email);
-        Result<UserResponse> result = await _sender.Send(query, cancellationToken);
+        Result<UserResponse> result = await handler.Handle(query, cancellationToken);
 
         return Ok(new AuthState
         {

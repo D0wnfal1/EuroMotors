@@ -1,4 +1,5 @@
 using EuroMotors.Api.Controllers.Products;
+using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Abstractions.Pagination;
 using EuroMotors.Application.Products.CreateProduct;
 using EuroMotors.Application.Products.DeleteProduct;
@@ -13,13 +14,24 @@ namespace EuroMotors.Api.UnitTests.Controllers.Products;
 
 public class ProductControllerTests
 {
-    private readonly ISender _sender;
     private readonly ProductController _controller;
+    private readonly IQueryHandler<GetProductsQuery, Pagination<ProductResponse>> _getProductsHandler;
+    private readonly IQueryHandler<GetProductByIdQuery, ProductResponse> _getProductByIdHandler;
+    private readonly ICommandHandler<CreateProductCommand, Guid> _createProductHandler;
+    private readonly ICommandHandler<UpdateProductCommand> _updateProductHandler;
+    private readonly ICommandHandler<SetProductAvailabilityCommand> _setProductAvailabilityHandler;
+    private readonly ICommandHandler<DeleteProductCommand> _deleteProductHandler;
 
     public ProductControllerTests()
     {
-        _sender = Substitute.For<ISender>();
-        _controller = new ProductController(_sender)
+        _getProductsHandler = Substitute.For<IQueryHandler<GetProductsQuery, Pagination<ProductResponse>>>();
+        _getProductByIdHandler = Substitute.For<IQueryHandler<GetProductByIdQuery, ProductResponse>>();
+        _createProductHandler = Substitute.For<ICommandHandler<CreateProductCommand, Guid>>();
+        _updateProductHandler = Substitute.For<ICommandHandler<UpdateProductCommand>>();
+        _setProductAvailabilityHandler = Substitute.For<ICommandHandler<SetProductAvailabilityCommand>>();
+        _deleteProductHandler = Substitute.For<ICommandHandler<DeleteProductCommand>>();
+
+        _controller = new ProductController()
         {
             ControllerContext = new ControllerContext
             {
@@ -51,18 +63,18 @@ public class ProductControllerTests
             Data = products
         };
 
-        _sender.Send(Arg.Any<GetProductsQuery>(), Arg.Any<CancellationToken>())
+        _getProductsHandler.Handle(Arg.Any<GetProductsQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(pagination));
 
         // Act
         IActionResult result = await _controller.GetProducts(
-            null, null, null, null, false, false, false, CancellationToken.None);
+            _getProductsHandler, null, null, null, null, false, false, false, CancellationToken.None);
 
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(pagination);
 
-        await _sender.Received(1).Send(
+        await _getProductsHandler.Received(1).Handle(
             Arg.Is<GetProductsQuery>(query =>
                 query.PageNumber == 1 &&
                 query.PageSize == 10),
@@ -89,16 +101,17 @@ public class ProductControllerTests
             Count = 0
         };
 
-        _sender.Send(Arg.Any<GetProductsQuery>(), Arg.Any<CancellationToken>())
+        _getProductsHandler.Handle(Arg.Any<GetProductsQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(pagination));
 
         // Act
         await _controller.GetProducts(
+            _getProductsHandler,
             categoryIds, carModelIds, sortOrder, searchTerm, false, false, false,
             CancellationToken.None, pageNumber, pageSize);
 
         // Assert
-        await _sender.Received(1).Send(
+        await _getProductsHandler.Received(1).Handle(
             Arg.Is<GetProductsQuery>(query =>
                 query.CategoryIds == categoryIds &&
                 query.CarModelIds == carModelIds &&
@@ -122,17 +135,17 @@ public class ProductControllerTests
             Discount = 10
         };
 
-        _sender.Send(Arg.Any<GetProductByIdQuery>(), Arg.Any<CancellationToken>())
+        _getProductByIdHandler.Handle(Arg.Any<GetProductByIdQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(product));
 
         // Act
-        IActionResult result = await _controller.GetProductById(id, CancellationToken.None);
+        IActionResult result = await _controller.GetProductById(_getProductByIdHandler, id, CancellationToken.None);
 
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(product);
 
-        await _sender.Received(1).Send(
+        await _getProductByIdHandler.Received(1).Handle(
             Arg.Is<GetProductByIdQuery>(query => query.ProductId == id),
             Arg.Any<CancellationToken>());
     }
@@ -142,11 +155,11 @@ public class ProductControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        _sender.Send(Arg.Any<GetProductByIdQuery>(), Arg.Any<CancellationToken>())
+        _getProductByIdHandler.Handle(Arg.Any<GetProductByIdQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<ProductResponse>(Error.NotFound("Product.NotFound", "Product not found")));
 
         // Act
-        IActionResult result = await _controller.GetProductById(id, CancellationToken.None);
+        IActionResult result = await _controller.GetProductById(_getProductByIdHandler, id, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NotFoundResult>();
@@ -172,11 +185,11 @@ public class ProductControllerTests
         };
 
         var productId = Guid.NewGuid();
-        _sender.Send(Arg.Any<CreateProductCommand>(), Arg.Any<CancellationToken>())
+        _createProductHandler.Handle(Arg.Any<CreateProductCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(productId));
 
         // Act
-        IActionResult result = await _controller.CreateProduct(request, CancellationToken.None);
+        IActionResult result = await _controller.CreateProduct(request, _createProductHandler, CancellationToken.None);
 
         // Assert
         CreatedAtActionResult createdResult = result.ShouldBeOfType<CreatedAtActionResult>();
@@ -185,7 +198,7 @@ public class ProductControllerTests
 
         createdResult.Value.ShouldBe(productId);
 
-        await _sender.Received(1).Send(
+        await _createProductHandler.Received(1).Handle(
             Arg.Is<CreateProductCommand>(cmd =>
                 cmd.Name == request.Name &&
                 cmd.VendorCode == request.VendorCode &&
@@ -214,11 +227,11 @@ public class ProductControllerTests
         };
 
         var error = Error.Failure("Product.InvalidData", "Invalid product data");
-        _sender.Send(Arg.Any<CreateProductCommand>(), Arg.Any<CancellationToken>())
+        _createProductHandler.Handle(Arg.Any<CreateProductCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure<Guid>(error));
 
         // Act
-        IActionResult result = await _controller.CreateProduct(request, CancellationToken.None);
+        IActionResult result = await _controller.CreateProduct(request, _createProductHandler, CancellationToken.None);
 
         // Assert
         BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();
@@ -245,16 +258,16 @@ public class ProductControllerTests
             }
         };
 
-        _sender.Send(Arg.Any<UpdateProductCommand>(), Arg.Any<CancellationToken>())
+        _updateProductHandler.Handle(Arg.Any<UpdateProductCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
         // Act
-        IActionResult result = await _controller.UpdateProduct(id, request, CancellationToken.None);
+        IActionResult result = await _controller.UpdateProduct(id, request, _updateProductHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
 
-        await _sender.Received(1).Send(
+        await _updateProductHandler.Received(1).Handle(
             Arg.Is<UpdateProductCommand>(cmd =>
                 cmd.Name == request.Name &&
                 cmd.VendorCode == request.VendorCode &&
@@ -282,11 +295,11 @@ public class ProductControllerTests
         };
 
         var error = Error.NotFound("Product.NotFound", "Product not found");
-        _sender.Send(Arg.Any<UpdateProductCommand>(), Arg.Any<CancellationToken>())
+        _updateProductHandler.Handle(Arg.Any<UpdateProductCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure(error));
 
         // Act
-        IActionResult result = await _controller.UpdateProduct(id, request, CancellationToken.None);
+        IActionResult result = await _controller.UpdateProduct(id, request, _updateProductHandler, CancellationToken.None);
 
         // Assert
         BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();
@@ -303,16 +316,16 @@ public class ProductControllerTests
             IsAvailable = true
         };
 
-        _sender.Send(Arg.Any<SetProductAvailabilityCommand>(), Arg.Any<CancellationToken>())
+        _setProductAvailabilityHandler.Handle(Arg.Any<SetProductAvailabilityCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
         // Act
-        IActionResult result = await _controller.SetProductAvailability(id, request, CancellationToken.None);
+        IActionResult result = await _controller.SetProductAvailability(id, request, _setProductAvailabilityHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
 
-        await _sender.Received(1).Send(
+        await _setProductAvailabilityHandler.Received(1).Handle(
             Arg.Is<SetProductAvailabilityCommand>(cmd =>
                 cmd.ProductId == id &&
                 cmd.IsAvailable == request.IsAvailable),
@@ -330,11 +343,11 @@ public class ProductControllerTests
         };
 
         var error = Error.NotFound("Product.NotFound", "Product not found");
-        _sender.Send(Arg.Any<SetProductAvailabilityCommand>(), Arg.Any<CancellationToken>())
+        _setProductAvailabilityHandler.Handle(Arg.Any<SetProductAvailabilityCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure(error));
 
         // Act
-        IActionResult result = await _controller.SetProductAvailability(id, request, CancellationToken.None);
+        IActionResult result = await _controller.SetProductAvailability(id, request, _setProductAvailabilityHandler, CancellationToken.None);
 
         // Assert
         BadRequestObjectResult badRequestResult = result.ShouldBeOfType<BadRequestObjectResult>();
@@ -347,16 +360,16 @@ public class ProductControllerTests
         // Arrange
         var id = Guid.NewGuid();
 
-        _sender.Send(Arg.Any<DeleteProductCommand>(), Arg.Any<CancellationToken>())
+        _deleteProductHandler.Handle(Arg.Any<DeleteProductCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
         // Act
-        IActionResult result = await _controller.DeleteProduct(id, CancellationToken.None);
+        IActionResult result = await _controller.DeleteProduct(id, _deleteProductHandler, CancellationToken.None);
 
         // Assert
         result.ShouldBeOfType<NoContentResult>();
 
-        await _sender.Received(1).Send(
+        await _deleteProductHandler.Received(1).Handle(
             Arg.Is<DeleteProductCommand>(cmd => cmd.ProductId == id),
             Arg.Any<CancellationToken>());
     }
@@ -368,11 +381,11 @@ public class ProductControllerTests
         var id = Guid.NewGuid();
 
         var error = Error.NotFound("Product.NotFound", "Product not found");
-        _sender.Send(Arg.Any<DeleteProductCommand>(), Arg.Any<CancellationToken>())
+        _deleteProductHandler.Handle(Arg.Any<DeleteProductCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Failure(error));
 
         // Act
-        IActionResult result = await _controller.DeleteProduct(id, CancellationToken.None);
+        IActionResult result = await _controller.DeleteProduct(id, _deleteProductHandler, CancellationToken.None);
 
         // Assert
         NotFoundObjectResult notFoundResult = result.ShouldBeOfType<NotFoundObjectResult>();
