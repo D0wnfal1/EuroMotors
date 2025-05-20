@@ -27,7 +27,6 @@ public class AddItemToCartTests : BaseIntegrationTest
         // Arrange
         await CleanDatabaseAsync();
 
-        // Create a product
         Guid categoryId = await ServiceProvider.CreateCategoryAsync(_faker.Commerce.Categories(1)[0]);
         Guid brandId = await ServiceProvider.CreateCarBrandAsync(_faker.Vehicle.Manufacturer());
         Guid carModelId = await ServiceProvider.CreateCarModelAsync(
@@ -77,7 +76,7 @@ public class AddItemToCartTests : BaseIntegrationTest
         cartResult.Value.CartItems.ShouldNotBeEmpty();
         cartResult.Value.CartItems.Count.ShouldBe(1);
         
-        CartItem cartItem = cartResult.Value.CartItems.First();
+        CartItem cartItem = cartResult.Value.CartItems[0];
         cartItem.ProductId.ShouldBe(productId);
         cartItem.Quantity.ShouldBe(quantity);
         cartItem.UnitPrice.ShouldBe(100m); // Price from the created product
@@ -212,6 +211,6 @@ public class AddItemToCartTests : BaseIntegrationTest
         
         cartResult.IsSuccess.ShouldBeTrue();
         cartResult.Value.CartItems.Count.ShouldBe(1);
-        cartResult.Value.CartItems.First().Quantity.ShouldBe(5); // 2 + 3
+        cartResult.Value.CartItems[0].Quantity.ShouldBe(5); // 2 + 3
     }
 } 

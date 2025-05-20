@@ -51,10 +51,8 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsy
 
         builder.ConfigureTestServices(services =>
         {
-            // Register domain events dispatcher first
             services.AddScoped<IDomainEventsDispatcher, DomainEventsDispatcher>();
 
-            // Then remove and register DbContext
             services.RemoveAll<DbContextOptions<ApplicationDbContext>>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options

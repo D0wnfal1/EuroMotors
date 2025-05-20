@@ -3,10 +3,12 @@ using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.CarBrands.CreateCarBrand;
 using EuroMotors.Application.CarModels.CreateCarModel;
 using EuroMotors.Application.Categories.CreateCategory;
+using EuroMotors.Application.Orders.CreateOrder;
 using EuroMotors.Application.Products.CreateProduct;
 using EuroMotors.Application.Users.Register;
 using EuroMotors.Domain.Abstractions;
 using EuroMotors.Domain.CarModels;
+using EuroMotors.Domain.Orders;
 using EuroMotors.Domain.Products;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +21,7 @@ internal static class CommandHelpers
     internal static async Task<Guid> CreateUserAsync(this IServiceProvider serviceProvider)
     {
         var faker = new Faker();
-        var handler = serviceProvider.GetRequiredService<ICommandHandler<RegisterUserCommand, Guid>>();
+        ICommandHandler<RegisterUserCommand, Guid> handler = serviceProvider.GetRequiredService<ICommandHandler<RegisterUserCommand, Guid>>();
         Result<Guid> result = await handler.Handle(
             new RegisterUserCommand(
                 faker.Internet.Email(),
@@ -35,7 +37,7 @@ internal static class CommandHelpers
 
     public static async Task<Guid> CreateCategoryAsync(this IServiceProvider serviceProvider, string CategoryName)
     {
-        var handler = serviceProvider.GetRequiredService<ICommandHandler<CreateCategoryCommand, Guid>>();
+        ICommandHandler<CreateCategoryCommand, Guid> handler = serviceProvider.GetRequiredService<ICommandHandler<CreateCategoryCommand, Guid>>();
         var createCategoryCommand = new CreateCategoryCommand(CategoryName, null, null, null);
         Result<Guid> result = await handler.Handle(createCategoryCommand, CancellationToken.None);
         result.IsSuccess.ShouldBeTrue();
@@ -44,7 +46,7 @@ internal static class CommandHelpers
 
     public static async Task<Guid> CreateCarBrandAsync(this IServiceProvider serviceProvider, string brandName, IFormFile? logo = null)
     {
-        var handler = serviceProvider.GetRequiredService<ICommandHandler<CreateCarBrandCommand, Guid>>();
+        ICommandHandler<CreateCarBrandCommand, Guid> handler = serviceProvider.GetRequiredService<ICommandHandler<CreateCarBrandCommand, Guid>>();
         var createCarBrandCommand = new CreateCarBrandCommand(brandName, logo);
         Result<Guid> result = await handler.Handle(createCarBrandCommand, CancellationToken.None);
         result.IsSuccess.ShouldBeTrue();
@@ -53,7 +55,7 @@ internal static class CommandHelpers
 
     public static async Task<Guid> CreateCarModelAsync(this IServiceProvider serviceProvider, Guid brandId, string modelName, int startYear, BodyType bodyType, EngineSpec engineSpec)
     {
-        var handler = serviceProvider.GetRequiredService<ICommandHandler<CreateCarModelCommand, Guid>>();
+        ICommandHandler<CreateCarModelCommand, Guid> handler = serviceProvider.GetRequiredService<ICommandHandler<CreateCarModelCommand, Guid>>();
         var createCarModelCommand = new CreateCarModelCommand(brandId, modelName, startYear, bodyType, engineSpec);
         Result<Guid> result = await handler.Handle(createCarModelCommand, CancellationToken.None);
         result.IsSuccess.ShouldBeTrue();
@@ -71,7 +73,7 @@ internal static class CommandHelpers
         int quantity,
         List<Specification> specifications)
     {
-        var handler = serviceProvider.GetRequiredService<ICommandHandler<CreateProductCommand, Guid>>();
+        ICommandHandler<CreateProductCommand, Guid> handler = serviceProvider.GetRequiredService<ICommandHandler<CreateProductCommand, Guid>>();
         var createProductCommand = new CreateProductCommand(
             productName,
             specifications,
@@ -87,6 +89,34 @@ internal static class CommandHelpers
 
         result.IsSuccess.ShouldBeTrue();
 
+        return result.Value;
+    }
+
+    public static async Task<Guid> CreateOrderAsync(
+        this IServiceProvider serviceProvider,
+        Guid cartId,
+        Guid? userId,
+        string buyerName,
+        string buyerPhoneNumber,
+        string? buyerEmail,
+        DeliveryMethod deliveryMethod,
+        string? shippingAddress,
+        PaymentMethod paymentMethod)
+    {
+        ICommandHandler<CreateOrderCommand, Guid> handler = serviceProvider.GetRequiredService<ICommandHandler<CreateOrderCommand, Guid>>();
+        var createOrderCommand = new CreateOrderCommand(
+            cartId,
+            userId,
+            buyerName,
+            buyerPhoneNumber,
+            buyerEmail,
+            deliveryMethod,
+            shippingAddress,
+            paymentMethod
+        );
+
+        Result<Guid> result = await handler.Handle(createOrderCommand, CancellationToken.None);
+        result.IsSuccess.ShouldBeTrue();
         return result.Value;
     }
 }
