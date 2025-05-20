@@ -1,3 +1,4 @@
+using System.Text;
 using Bogus;
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.IntegrationTests.Abstractions;
@@ -10,7 +11,6 @@ using EuroMotors.Domain.Products;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using System.Text;
 
 namespace EuroMotors.Application.IntegrationTests.ProductImages;
 
@@ -69,7 +69,7 @@ public class UpdateProductImageTests : BaseIntegrationTest
         var uploadCommand = new UploadProductImageCommand(initialFile, productId);
         ICommandHandler<UploadProductImageCommand, Guid> uploadHandler = ServiceProvider.GetRequiredService<ICommandHandler<UploadProductImageCommand, Guid>>();
         Result<Guid> uploadResult = await uploadHandler.Handle(uploadCommand, CancellationToken.None);
-        
+
         uploadResult.IsSuccess.ShouldBeTrue();
         Guid imageId = uploadResult.Value;
 
@@ -97,7 +97,7 @@ public class UpdateProductImageTests : BaseIntegrationTest
 
         // Assert
         updateResult.IsSuccess.ShouldBeTrue();
-        
+
         // Verify image is updated
         ProductImage? updatedImage = await productImageRepository.GetByIdAsync(imageId, CancellationToken.None);
         updatedImage.ShouldNotBeNull();
@@ -178,7 +178,7 @@ public class UpdateProductImageTests : BaseIntegrationTest
         var uploadCommand = new UploadProductImageCommand(initialFile, productId);
         ICommandHandler<UploadProductImageCommand, Guid> uploadHandler = ServiceProvider.GetRequiredService<ICommandHandler<UploadProductImageCommand, Guid>>();
         Result<Guid> uploadResult = await uploadHandler.Handle(uploadCommand, CancellationToken.None);
-        
+
         uploadResult.IsSuccess.ShouldBeTrue();
         Guid imageId = uploadResult.Value;
 
@@ -202,4 +202,4 @@ public class UpdateProductImageTests : BaseIntegrationTest
         updateResult.Error.ShouldNotBeNull();
         updateResult.Error.ShouldBe(ProductImageErrors.InvalidFile(emptyFile));
     }
-} 
+}

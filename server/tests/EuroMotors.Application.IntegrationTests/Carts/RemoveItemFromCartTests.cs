@@ -70,11 +70,11 @@ public class RemoveItemFromCartTests : BaseIntegrationTest
         // Create cart and add both products
         var cartId = Guid.NewGuid();
         ICommandHandler<AddItemToCartCommand> addItemHandler = ServiceProvider.GetRequiredService<ICommandHandler<AddItemToCartCommand>>();
-        
+
         // Add both products to cart
         await addItemHandler.Handle(new AddItemToCartCommand(cartId, product1Id, 2), CancellationToken.None);
         await addItemHandler.Handle(new AddItemToCartCommand(cartId, product2Id, 1), CancellationToken.None);
-        
+
         // Verify both items are in the cart
         IQueryHandler<GetCartByIdQuery, Cart> cartQueryHandler = ServiceProvider.GetRequiredService<IQueryHandler<GetCartByIdQuery, Cart>>();
         Result<Cart> initialCartResult = await cartQueryHandler.Handle(new GetCartByIdQuery(cartId), CancellationToken.None);
@@ -89,7 +89,7 @@ public class RemoveItemFromCartTests : BaseIntegrationTest
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
-        
+
         // Verify item was removed
         Result<Cart> updatedCartResult = await cartQueryHandler.Handle(new GetCartByIdQuery(cartId), CancellationToken.None);
         updatedCartResult.Value.CartItems.Count.ShouldBe(1);
@@ -151,7 +151,7 @@ public class RemoveItemFromCartTests : BaseIntegrationTest
 
         // Create empty cart
         var cartId = Guid.NewGuid();
-        
+
         // Create remove command for product not in cart
         var command = new RemoveItemFromCartCommand(cartId, productId);
 
@@ -161,10 +161,10 @@ public class RemoveItemFromCartTests : BaseIntegrationTest
 
         // Assert - operation should succeed even though item wasn't in cart
         result.IsSuccess.ShouldBeTrue();
-        
+
         // Verify cart is still empty
         IQueryHandler<GetCartByIdQuery, Cart> cartQueryHandler = ServiceProvider.GetRequiredService<IQueryHandler<GetCartByIdQuery, Cart>>();
         Result<Cart> cartResult = await cartQueryHandler.Handle(new GetCartByIdQuery(cartId), CancellationToken.None);
         cartResult.Value.CartItems.ShouldBeEmpty();
     }
-} 
+}

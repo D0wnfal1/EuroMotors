@@ -1,3 +1,4 @@
+using System.Text;
 using Bogus;
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.IntegrationTests.Abstractions;
@@ -9,7 +10,6 @@ using EuroMotors.Domain.Products;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using System.Text;
 
 namespace EuroMotors.Application.IntegrationTests.ProductImages;
 
@@ -77,7 +77,7 @@ public class UploadProductImageTests : BaseIntegrationTest
         // Verify the image was saved in the repository
         IProductImageRepository productImageRepository = ServiceProvider.GetRequiredService<IProductImageRepository>();
         ProductImage? savedImage = await productImageRepository.GetByIdAsync(result.Value, CancellationToken.None);
-        
+
         savedImage.ShouldNotBeNull();
         savedImage.Path.ShouldNotBeNullOrEmpty();
         savedImage.ProductId.ShouldBe(productId);
@@ -103,9 +103,9 @@ public class UploadProductImageTests : BaseIntegrationTest
 
         // Act
         ICommandHandler<UploadProductImageCommand, Guid> handler = ServiceProvider.GetRequiredService<ICommandHandler<UploadProductImageCommand, Guid>>();
-        
+
         // Assert
-        await Should.ThrowAsync<Exception>(async () => 
+        await Should.ThrowAsync<Exception>(async () =>
         {
             await handler.Handle(command, CancellationToken.None);
         });
@@ -164,4 +164,4 @@ public class UploadProductImageTests : BaseIntegrationTest
         result.Error.ShouldNotBeNull();
         result.Error.ShouldBe(ProductImageErrors.InvalidFile(formFile));
     }
-} 
+}

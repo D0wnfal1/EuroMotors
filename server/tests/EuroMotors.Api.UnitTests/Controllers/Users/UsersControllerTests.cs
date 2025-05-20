@@ -6,7 +6,6 @@ using EuroMotors.Application.Users.Logout;
 using EuroMotors.Application.Users.Register;
 using EuroMotors.Application.Users.Update;
 using Microsoft.AspNetCore.Http;
-using System.Text.Json;
 
 namespace EuroMotors.Api.UnitTests.Controllers.Users;
 
@@ -56,8 +55,8 @@ public sealed class UsersControllerTests
         okResult.Value.ShouldBe(authResponse);
 
         await _loginHandler.Received(1).Handle(
-            Arg.Is<LoginUserCommand>(cmd => 
-                cmd.Email == request.Email && 
+            Arg.Is<LoginUserCommand>(cmd =>
+                cmd.Email == request.Email &&
                 cmd.Password == request.Password),
             Arg.Any<CancellationToken>());
     }
@@ -80,8 +79,8 @@ public sealed class UsersControllerTests
         badRequestResult.Value.ShouldBe(error);
 
         await _loginHandler.Received(1).Handle(
-            Arg.Is<LoginUserCommand>(cmd => 
-                cmd.Email == request.Email && 
+            Arg.Is<LoginUserCommand>(cmd =>
+                cmd.Email == request.Email &&
                 cmd.Password == request.Password),
             Arg.Any<CancellationToken>());
     }
@@ -91,9 +90,9 @@ public sealed class UsersControllerTests
     {
         // Arrange
         var request = new RegisterRequest(
-            "test@example.com", 
-            "John", 
-            "Doe", 
+            "test@example.com",
+            "John",
+            "Doe",
             "password123"
         );
         var userId = Guid.NewGuid();
@@ -109,10 +108,10 @@ public sealed class UsersControllerTests
         okResult.Value.ShouldBe(userId);
 
         await _registerHandler.Received(1).Handle(
-            Arg.Is<RegisterUserCommand>(cmd => 
-                cmd.Email == request.Email && 
-                cmd.FirstName == request.FirstName && 
-                cmd.LastName == request.LastName && 
+            Arg.Is<RegisterUserCommand>(cmd =>
+                cmd.Email == request.Email &&
+                cmd.FirstName == request.FirstName &&
+                cmd.LastName == request.LastName &&
                 cmd.Password == request.Password),
             Arg.Any<CancellationToken>());
     }
@@ -122,9 +121,9 @@ public sealed class UsersControllerTests
     {
         // Arrange
         var request = new RegisterRequest(
-            "test@example.com", 
-            "John", 
-            "Doe", 
+            "test@example.com",
+            "John",
+            "Doe",
             "password123"
         );
         var error = Error.Conflict("User.EmailExists", "Email already exists");
@@ -140,10 +139,10 @@ public sealed class UsersControllerTests
         badRequestResult.Value.ShouldBe(error);
 
         await _registerHandler.Received(1).Handle(
-            Arg.Is<RegisterUserCommand>(cmd => 
-                cmd.Email == request.Email && 
-                cmd.FirstName == request.FirstName && 
-                cmd.LastName == request.LastName && 
+            Arg.Is<RegisterUserCommand>(cmd =>
+                cmd.Email == request.Email &&
+                cmd.FirstName == request.FirstName &&
+                cmd.LastName == request.LastName &&
                 cmd.Password == request.Password),
             Arg.Any<CancellationToken>());
     }
@@ -191,9 +190,9 @@ public sealed class UsersControllerTests
     {
         // Arrange
         var request = new UpdateUserInformationRequest(
-            "John", 
-            "Doe", 
-            "1234567890", 
+            "John",
+            "Doe",
+            "1234567890",
             "New York"
         );
         string email = "test@example.com";
@@ -219,11 +218,11 @@ public sealed class UsersControllerTests
         result.ShouldBeOfType<NoContentResult>();
 
         await _updateHandler.Received(1).Handle(
-            Arg.Is<UpdateUserInformationCommand>(cmd => 
-                cmd.Email == email && 
-                cmd.FirstName == request.Firstname && 
-                cmd.LastName == request.LastName && 
-                cmd.PhoneNumber == request.PhoneNumber && 
+            Arg.Is<UpdateUserInformationCommand>(cmd =>
+                cmd.Email == email &&
+                cmd.FirstName == request.Firstname &&
+                cmd.LastName == request.LastName &&
+                cmd.PhoneNumber == request.PhoneNumber &&
                 cmd.City == request.City),
             Arg.Any<CancellationToken>());
     }
@@ -233,9 +232,9 @@ public sealed class UsersControllerTests
     {
         // Arrange
         var request = new UpdateUserInformationRequest(
-            "John", 
-            "Doe", 
-            "1234567890", 
+            "John",
+            "Doe",
+            "1234567890",
             "New York"
         );
 
@@ -249,7 +248,7 @@ public sealed class UsersControllerTests
 
         // Assert
         UnauthorizedObjectResult unauthorizedResult = result.ShouldBeOfType<UnauthorizedObjectResult>();
-        
+
         // Convert the anonymous object to a comparable type
         var expectedObj = new { error = "Email not found in token" };
         string resultJson = System.Text.Json.JsonSerializer.Serialize(unauthorizedResult.Value);
@@ -266,9 +265,9 @@ public sealed class UsersControllerTests
     {
         // Arrange
         var request = new UpdateUserInformationRequest(
-            "John", 
-            "Doe", 
-            "1234567890", 
+            "John",
+            "Doe",
+            "1234567890",
             "New York"
         );
         string email = "test@example.com";
@@ -296,12 +295,12 @@ public sealed class UsersControllerTests
         badRequestResult.Value.ShouldBe(error);
 
         await _updateHandler.Received(1).Handle(
-            Arg.Is<UpdateUserInformationCommand>(cmd => 
-                cmd.Email == email && 
-                cmd.FirstName == request.Firstname && 
-                cmd.LastName == request.LastName && 
-                cmd.PhoneNumber == request.PhoneNumber && 
+            Arg.Is<UpdateUserInformationCommand>(cmd =>
+                cmd.Email == email &&
+                cmd.FirstName == request.Firstname &&
+                cmd.LastName == request.LastName &&
+                cmd.PhoneNumber == request.PhoneNumber &&
                 cmd.City == request.City),
             Arg.Any<CancellationToken>());
     }
-} 
+}

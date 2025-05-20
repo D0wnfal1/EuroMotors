@@ -1,7 +1,6 @@
 ﻿using EuroMotors.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
 
 namespace EuroMotors.Application.IntegrationTests.Abstractions;
 
@@ -26,25 +25,19 @@ public abstract class BaseIntegrationTest
         var tableNames = new List<string>
         {
             "orders",
-            "carts", 
+            "carts",
             "users",
             "products",
             "categories",
             "car_models",
             "car_brands"
         };
-        
+
         foreach (string tableName in tableNames)
         {
-            try
-            {
-                #pragma warning disable EF1002 
-                await DbContext.Database.ExecuteSqlRawAsync($"DELETE FROM \"{tableName}\";");
-                #pragma warning restore EF1002
-            }
-            catch
-            {
-            }
+#pragma warning disable EF1002
+            await DbContext.Database.ExecuteSqlRawAsync($"DELETE FROM \"{tableName}\";");
+#pragma warning restore EF1002
         }
     }
 }

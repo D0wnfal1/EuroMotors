@@ -23,7 +23,7 @@ public class RegisterUserTests : BaseIntegrationTest
     {
         // Arrange
         await CleanDatabaseAsync();
-        
+
         var command = new RegisterUserCommand(
             _faker.Internet.Email(),
             _faker.Person.FirstName,
@@ -37,7 +37,7 @@ public class RegisterUserTests : BaseIntegrationTest
         // Assert
         result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldNotBe(Guid.Empty);
-        
+
         User? user = await DbContext.Users.FindAsync(result.Value);
         user.ShouldNotBeNull();
         user.Email.ShouldBe(command.Email);
@@ -50,18 +50,18 @@ public class RegisterUserTests : BaseIntegrationTest
     {
         // Arrange
         await CleanDatabaseAsync();
-        
+
         string email = _faker.Internet.Email();
-        
+
         var command1 = new RegisterUserCommand(
             email,
             _faker.Person.FirstName,
             _faker.Person.LastName,
             "Password123!");
-            
+
         ICommandHandler<RegisterUserCommand, Guid> handler = ServiceProvider.GetRequiredService<ICommandHandler<RegisterUserCommand, Guid>>();
         await handler.Handle(command1, CancellationToken.None);
-        
+
         var command2 = new RegisterUserCommand(
             email,
             _faker.Person.FirstName,
@@ -75,4 +75,4 @@ public class RegisterUserTests : BaseIntegrationTest
         result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe(UserErrors.EmailNotUnique);
     }
-} 
+}

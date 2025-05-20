@@ -57,7 +57,7 @@ public class AddItemToCartTests : BaseIntegrationTest
         // Create a cart ID
         var cartId = Guid.NewGuid();
         int quantity = 2;
-        
+
         var command = new AddItemToCartCommand(cartId, productId, quantity);
 
         // Act
@@ -70,12 +70,12 @@ public class AddItemToCartTests : BaseIntegrationTest
         // Verify item was added to cart
         IQueryHandler<GetCartByIdQuery, Cart> cartQueryHandler = ServiceProvider.GetRequiredService<IQueryHandler<GetCartByIdQuery, Cart>>();
         Result<Cart> cartResult = await cartQueryHandler.Handle(new GetCartByIdQuery(cartId), CancellationToken.None);
-        
+
         cartResult.IsSuccess.ShouldBeTrue();
         cartResult.Value.Id.ShouldBe(cartId);
         cartResult.Value.CartItems.ShouldNotBeEmpty();
         cartResult.Value.CartItems.Count.ShouldBe(1);
-        
+
         CartItem cartItem = cartResult.Value.CartItems[0];
         cartItem.ProductId.ShouldBe(productId);
         cartItem.Quantity.ShouldBe(quantity);
@@ -87,11 +87,11 @@ public class AddItemToCartTests : BaseIntegrationTest
     {
         // Arrange
         await CleanDatabaseAsync();
-        
+
         var cartId = Guid.NewGuid();
         var nonExistentProductId = Guid.NewGuid();
         int quantity = 1;
-        
+
         var command = new AddItemToCartCommand(cartId, nonExistentProductId, quantity);
 
         // Act
@@ -142,7 +142,7 @@ public class AddItemToCartTests : BaseIntegrationTest
         // Create a cart and try to add more than available stock
         var cartId = Guid.NewGuid();
         int quantity = availableStock + 1; // Exceeds available stock
-        
+
         var command = new AddItemToCartCommand(cartId, productId, quantity);
 
         // Act
@@ -191,26 +191,26 @@ public class AddItemToCartTests : BaseIntegrationTest
 
         // Create a cart ID
         var cartId = Guid.NewGuid();
-        
+
         // Add product to cart first time
         var firstCommand = new AddItemToCartCommand(cartId, productId, 2);
         ICommandHandler<AddItemToCartCommand> handler = ServiceProvider.GetRequiredService<ICommandHandler<AddItemToCartCommand>>();
         Result firstResult = await handler.Handle(firstCommand, CancellationToken.None);
         firstResult.IsSuccess.ShouldBeTrue();
-        
+
         // Add the same product to cart second time
         var secondCommand = new AddItemToCartCommand(cartId, productId, 3);
         Result secondResult = await handler.Handle(secondCommand, CancellationToken.None);
-        
+
         // Assert
         secondResult.IsSuccess.ShouldBeTrue();
 
         // Verify cart has updated quantity
         IQueryHandler<GetCartByIdQuery, Cart> cartQueryHandler = ServiceProvider.GetRequiredService<IQueryHandler<GetCartByIdQuery, Cart>>();
         Result<Cart> cartResult = await cartQueryHandler.Handle(new GetCartByIdQuery(cartId), CancellationToken.None);
-        
+
         cartResult.IsSuccess.ShouldBeTrue();
         cartResult.Value.CartItems.Count.ShouldBe(1);
         cartResult.Value.CartItems[0].Quantity.ShouldBe(5); // 2 + 3
     }
-} 
+}

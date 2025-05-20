@@ -27,19 +27,19 @@ public class ChangeOrderStatusTests : BaseIntegrationTest
     public async Task Should_ChangeOrderStatus_Successfully(OrderStatus newStatus)
     {
         await CleanDatabaseAsync();
-        
+
         var order = Order.Create(
-            null, 
+            null,
             _faker.Person.FullName,
             _faker.Phone.PhoneNumber(),
             _faker.Internet.Email(),
             DeliveryMethod.Delivery,
             _faker.Address.FullAddress(),
             PaymentMethod.Prepaid);
-            
+
         DbContext.Orders.Add(order);
         await DbContext.SaveChangesAsync();
-        
+
         var command = new ChangeOrderStatusCommand(order.Id, newStatus);
 
         // Act
@@ -48,7 +48,7 @@ public class ChangeOrderStatusTests : BaseIntegrationTest
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
-        
+
         Order? updatedOrder = await DbContext.Orders.FindAsync(order.Id);
         updatedOrder.ShouldNotBeNull();
         updatedOrder.Status.ShouldBe(newStatus);
@@ -72,10 +72,10 @@ public class ChangeOrderStatusTests : BaseIntegrationTest
     public void Should_ReturnFailure_WhenStatusChangeIsInvalid()
     {
         var invalidStatusTransitionError = Error.Failure(
-            "Order.InvalidStatusTransition", 
+            "Order.InvalidStatusTransition",
             "Cannot change order status from Canceled to Pending"
         );
 
         invalidStatusTransitionError.Code.ShouldBe("Order.InvalidStatusTransition");
     }
-} 
+}

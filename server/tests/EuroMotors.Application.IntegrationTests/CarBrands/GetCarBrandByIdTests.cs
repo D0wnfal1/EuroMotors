@@ -22,15 +22,15 @@ public class GetCarBrandByIdTests : BaseIntegrationTest
     {
         // Arrange
         await CleanDatabaseAsync();
-        
+
         var brand = CarBrand.Create("Test Brand");
         await DbContext.CarBrands.AddAsync(brand);
         await DbContext.SaveChangesAsync();
-        
+
         var query = new GetCarBrandByIdQuery(brand.Id);
 
         // Act
-        IQueryHandler<GetCarBrandByIdQuery, CarBrandResponse> handler = 
+        IQueryHandler<GetCarBrandByIdQuery, CarBrandResponse> handler =
             ServiceProvider.GetRequiredService<IQueryHandler<GetCarBrandByIdQuery, CarBrandResponse>>();
         Result<CarBrandResponse> result = await handler.Handle(query, CancellationToken.None);
 
@@ -46,12 +46,12 @@ public class GetCarBrandByIdTests : BaseIntegrationTest
     {
         // Arrange
         await CleanDatabaseAsync();
-        
+
         var nonExistentId = Guid.NewGuid();
         var query = new GetCarBrandByIdQuery(nonExistentId);
 
         // Act
-        IQueryHandler<GetCarBrandByIdQuery, CarBrandResponse> handler = 
+        IQueryHandler<GetCarBrandByIdQuery, CarBrandResponse> handler =
             ServiceProvider.GetRequiredService<IQueryHandler<GetCarBrandByIdQuery, CarBrandResponse>>();
         Result<CarBrandResponse> result = await handler.Handle(query, CancellationToken.None);
 
@@ -65,25 +65,25 @@ public class GetCarBrandByIdTests : BaseIntegrationTest
     {
         // Arrange
         await CleanDatabaseAsync();
-        
+
         var brand = CarBrand.Create("Test Brand");
         await DbContext.CarBrands.AddAsync(brand);
         await DbContext.SaveChangesAsync();
-        
+
         var query = new GetCarBrandByIdQuery(brand.Id);
 
         // Act - First call
-        IQueryHandler<GetCarBrandByIdQuery, CarBrandResponse> handler = 
+        IQueryHandler<GetCarBrandByIdQuery, CarBrandResponse> handler =
             ServiceProvider.GetRequiredService<IQueryHandler<GetCarBrandByIdQuery, CarBrandResponse>>();
         Result<CarBrandResponse> firstResult = await handler.Handle(query, CancellationToken.None);
-        
+
         brand.Update("Updated Brand Name");
         await DbContext.SaveChangesAsync();
-        
+
         Result<CarBrandResponse> secondResult = await handler.Handle(query, CancellationToken.None);
 
         // Assert
         secondResult.IsSuccess.ShouldBeTrue();
         secondResult.Value.Name.ShouldBe("Test Brand");
     }
-} 
+}

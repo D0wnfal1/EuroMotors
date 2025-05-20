@@ -3,8 +3,6 @@ using EuroMotors.Application.CarBrands.GetCarBrands;
 using EuroMotors.Application.CarModels.GetAllCarModelBrands;
 using EuroMotors.Application.IntegrationTests.Abstractions;
 using EuroMotors.Domain.Abstractions;
-using EuroMotors.Domain.CarBrands;
-using EuroMotors.Domain.CarModels;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
@@ -22,11 +20,11 @@ public class GetAllCarModelBrandsTests : BaseIntegrationTest
     {
         // Arrange
         await CleanDatabaseAsync();
-        
+
         var query = new GetAllCarModelBrandsQuery();
 
         // Act
-        IQueryHandler<GetAllCarModelBrandsQuery, List<CarBrandResponse>> handler = 
+        IQueryHandler<GetAllCarModelBrandsQuery, List<CarBrandResponse>> handler =
             ServiceProvider.GetRequiredService<IQueryHandler<GetAllCarModelBrandsQuery, List<CarBrandResponse>>>();
         Result<List<CarBrandResponse>> result = await handler.Handle(query, CancellationToken.None);
 
@@ -35,4 +33,4 @@ public class GetAllCarModelBrandsTests : BaseIntegrationTest
         result.Value.Count.ShouldBe(0);
     }
 
-} 
+}

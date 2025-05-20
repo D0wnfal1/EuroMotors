@@ -117,7 +117,7 @@ public class OrderControllerTests
 
         // Act
         IActionResult result = await _controller.GetUserOrders(_getUserOrdersHandler, userId, CancellationToken.None);
-        
+
         // Assert
         OkObjectResult okResult = result.ShouldBeOfType<OkObjectResult>();
         okResult.Value.ShouldBe(orders);

@@ -24,14 +24,14 @@ public class GetOrdersTests : BaseIntegrationTest
     {
         // Arrange
         await CleanDatabaseAsync();
-        
+
         var query = new GetOrdersQuery(
             PageNumber: 1,
             PageSize: 10,
             Status: null);
 
         // Act
-        IQueryHandler<GetOrdersQuery, Pagination<OrdersResponse>> handler = 
+        IQueryHandler<GetOrdersQuery, Pagination<OrdersResponse>> handler =
             ServiceProvider.GetRequiredService<IQueryHandler<GetOrdersQuery, Pagination<OrdersResponse>>>();
         Result<Pagination<OrdersResponse>> result = await handler.Handle(query, CancellationToken.None);
 
@@ -46,30 +46,30 @@ public class GetOrdersTests : BaseIntegrationTest
     {
         // Arrange
         await CleanDatabaseAsync();
-        
+
         for (int i = 0; i < 5; i++)
         {
             var order = Order.Create(
-                null, 
+                null,
                 _faker.Person.FullName,
                 _faker.Phone.PhoneNumber(),
                 _faker.Internet.Email(),
                 DeliveryMethod.Delivery,
                 _faker.Address.FullAddress(),
                 PaymentMethod.Prepaid);
-                
+
             DbContext.Orders.Add(order);
         }
-        
+
         await DbContext.SaveChangesAsync();
-        
+
         var query = new GetOrdersQuery(
             PageNumber: 1,
             PageSize: 10,
             Status: null);
 
         // Act
-        IQueryHandler<GetOrdersQuery, Pagination<OrdersResponse>> handler = 
+        IQueryHandler<GetOrdersQuery, Pagination<OrdersResponse>> handler =
             ServiceProvider.GetRequiredService<IQueryHandler<GetOrdersQuery, Pagination<OrdersResponse>>>();
         Result<Pagination<OrdersResponse>> result = await handler.Handle(query, CancellationToken.None);
 
@@ -84,30 +84,30 @@ public class GetOrdersTests : BaseIntegrationTest
     {
         // Arrange
         await CleanDatabaseAsync();
-        
+
         for (int i = 0; i < 5; i++)
         {
             var order = Order.Create(
-                null, 
+                null,
                 _faker.Person.FullName,
                 _faker.Phone.PhoneNumber(),
                 _faker.Internet.Email(),
                 DeliveryMethod.Delivery,
                 _faker.Address.FullAddress(),
                 PaymentMethod.Prepaid);
-                
+
             DbContext.Orders.Add(order);
         }
-        
+
         await DbContext.SaveChangesAsync();
-        
+
         var query = new GetOrdersQuery(
             PageNumber: 1,
             PageSize: 10,
             Status: OrderStatus.Pending);
 
         // Act
-        IQueryHandler<GetOrdersQuery, Pagination<OrdersResponse>> handler = 
+        IQueryHandler<GetOrdersQuery, Pagination<OrdersResponse>> handler =
             ServiceProvider.GetRequiredService<IQueryHandler<GetOrdersQuery, Pagination<OrdersResponse>>>();
         Result<Pagination<OrdersResponse>> result = await handler.Handle(query, CancellationToken.None);
 
@@ -115,7 +115,7 @@ public class GetOrdersTests : BaseIntegrationTest
         result.IsSuccess.ShouldBeTrue();
         result.Value.Data.Count.ShouldBe(5);
         result.Value.Count.ShouldBe(5);
-        
+
         foreach (OrdersResponse order in result.Value.Data)
         {
             order.Status.ShouldBe(OrderStatus.Pending);
@@ -127,38 +127,38 @@ public class GetOrdersTests : BaseIntegrationTest
     {
         // Arrange
         await CleanDatabaseAsync();
-        
+
         for (int i = 0; i < 15; i++)
         {
             var order = Order.Create(
-                null, 
+                null,
                 _faker.Person.FullName,
                 _faker.Phone.PhoneNumber(),
                 _faker.Internet.Email(),
                 DeliveryMethod.Delivery,
                 _faker.Address.FullAddress(),
                 PaymentMethod.Postpaid);
-                
+
             DbContext.Orders.Add(order);
         }
-        
+
         await DbContext.SaveChangesAsync();
-        
+
         var query = new GetOrdersQuery(
             PageNumber: 2,
             PageSize: 10,
             Status: null);
 
         // Act
-        IQueryHandler<GetOrdersQuery, Pagination<OrdersResponse>> handler = 
+        IQueryHandler<GetOrdersQuery, Pagination<OrdersResponse>> handler =
             ServiceProvider.GetRequiredService<IQueryHandler<GetOrdersQuery, Pagination<OrdersResponse>>>();
         Result<Pagination<OrdersResponse>> result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
-        result.Value.Data.Count.ShouldBe(5); 
-        result.Value.Count.ShouldBe(15); 
+        result.Value.Data.Count.ShouldBe(5);
+        result.Value.Count.ShouldBe(15);
         result.Value.PageIndex.ShouldBe(2);
         result.Value.PageSize.ShouldBe(10);
     }
-} 
+}

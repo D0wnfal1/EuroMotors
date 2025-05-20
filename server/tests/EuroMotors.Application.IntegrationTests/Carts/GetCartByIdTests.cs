@@ -87,14 +87,14 @@ public class GetCartByIdTests : BaseIntegrationTest
 
         // Create a cart and add items
         var cartId = Guid.NewGuid();
-        
+
         // Add first product
         ICommandHandler<AddItemToCartCommand> addFirstItemHandler = ServiceProvider.GetRequiredService<ICommandHandler<AddItemToCartCommand>>();
         await addFirstItemHandler.Handle(new AddItemToCartCommand(cartId, productId, 2), CancellationToken.None);
-        
+
         // Add second product
         await addFirstItemHandler.Handle(new AddItemToCartCommand(cartId, secondProductId, 1), CancellationToken.None);
-        
+
         // Create the query
         var query = new GetCartByIdQuery(cartId);
 
@@ -106,15 +106,15 @@ public class GetCartByIdTests : BaseIntegrationTest
         result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldNotBeNull();
         result.Value.Id.ShouldBe(cartId);
-        
+
         // Check items
         result.Value.CartItems.Count.ShouldBe(2);
-        
+
         CartItem? firstItem = result.Value.CartItems.FirstOrDefault(i => i.ProductId == productId);
         firstItem.ShouldNotBeNull();
         firstItem.Quantity.ShouldBe(2);
         firstItem.UnitPrice.ShouldBe(100m);
-        
+
         CartItem? secondItem = result.Value.CartItems.FirstOrDefault(i => i.ProductId == secondProductId);
         secondItem.ShouldNotBeNull();
         secondItem.Quantity.ShouldBe(1);
@@ -179,9 +179,9 @@ public class GetCartByIdTests : BaseIntegrationTest
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
-        
+
         // Total should be $300 + $100 = $400
         decimal expectedTotal = 400m;
         result.Value.TotalPrice.ShouldBe(expectedTotal);
     }
-} 
+}

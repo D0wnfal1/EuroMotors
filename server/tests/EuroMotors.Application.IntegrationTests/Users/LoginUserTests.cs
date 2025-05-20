@@ -25,23 +25,23 @@ public class LoginUserTests : BaseIntegrationTest
     {
         // Arrange
         await CleanDatabaseAsync();
-        
+
         string email = _faker.Internet.Email();
-        
+
         var registerCommand = new RegisterUserCommand(
             email,
             _faker.Person.FirstName,
             _faker.Person.LastName,
             Password);
-            
+
         ICommandHandler<RegisterUserCommand, Guid> registerHandler = ServiceProvider.GetRequiredService<ICommandHandler<RegisterUserCommand, Guid>>();
         await registerHandler.Handle(registerCommand, CancellationToken.None);
-        
+
         using IServiceScope scope = Factory.Services.CreateScope();
         var loginCommand = new LoginUserCommand(email, Password);
 
         // Act
-        ICommandHandler<LoginUserCommand, AuthenticationResponse> loginHandler = 
+        ICommandHandler<LoginUserCommand, AuthenticationResponse> loginHandler =
             scope.ServiceProvider.GetRequiredService<ICommandHandler<LoginUserCommand, AuthenticationResponse>>();
         Result<AuthenticationResponse> result = await loginHandler.Handle(loginCommand, CancellationToken.None);
 
@@ -57,12 +57,12 @@ public class LoginUserTests : BaseIntegrationTest
     {
         // Arrange
         await CleanDatabaseAsync();
-        
+
         using IServiceScope scope = Factory.Services.CreateScope();
         var loginCommand = new LoginUserCommand("nonexistent@example.com", Password);
 
         // Act
-        ICommandHandler<LoginUserCommand, AuthenticationResponse> loginHandler = 
+        ICommandHandler<LoginUserCommand, AuthenticationResponse> loginHandler =
             scope.ServiceProvider.GetRequiredService<ICommandHandler<LoginUserCommand, AuthenticationResponse>>();
         Result<AuthenticationResponse> result = await loginHandler.Handle(loginCommand, CancellationToken.None);
 
@@ -76,23 +76,23 @@ public class LoginUserTests : BaseIntegrationTest
     {
         // Arrange
         await CleanDatabaseAsync();
-        
+
         string email = _faker.Internet.Email();
-        
+
         var registerCommand = new RegisterUserCommand(
             email,
             _faker.Person.FirstName,
             _faker.Person.LastName,
             Password);
-            
+
         ICommandHandler<RegisterUserCommand, Guid> registerHandler = ServiceProvider.GetRequiredService<ICommandHandler<RegisterUserCommand, Guid>>();
         await registerHandler.Handle(registerCommand, CancellationToken.None);
-        
+
         using IServiceScope scope = Factory.Services.CreateScope();
         var loginCommand = new LoginUserCommand(email, "WrongPassword123!");
 
         // Act
-        ICommandHandler<LoginUserCommand, AuthenticationResponse> loginHandler = 
+        ICommandHandler<LoginUserCommand, AuthenticationResponse> loginHandler =
             scope.ServiceProvider.GetRequiredService<ICommandHandler<LoginUserCommand, AuthenticationResponse>>();
         Result<AuthenticationResponse> result = await loginHandler.Handle(loginCommand, CancellationToken.None);
 
@@ -100,4 +100,4 @@ public class LoginUserTests : BaseIntegrationTest
         result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe(UserErrors.InvalidCredentials);
     }
-} 
+}

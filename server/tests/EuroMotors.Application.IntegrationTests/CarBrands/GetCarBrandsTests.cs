@@ -21,11 +21,11 @@ public class GetCarBrandsTests : BaseIntegrationTest
     {
         // Arrange
         await CleanDatabaseAsync();
-        
+
         var query = new GetCarBrandsQuery(1, 10);
 
         // Act
-        IQueryHandler<GetCarBrandsQuery, Pagination<CarBrandResponse>> handler = 
+        IQueryHandler<GetCarBrandsQuery, Pagination<CarBrandResponse>> handler =
             ServiceProvider.GetRequiredService<IQueryHandler<GetCarBrandsQuery, Pagination<CarBrandResponse>>>();
         Result<Pagination<CarBrandResponse>> result = await handler.Handle(query, CancellationToken.None);
 
@@ -40,7 +40,7 @@ public class GetCarBrandsTests : BaseIntegrationTest
     {
         // Arrange
         await CleanDatabaseAsync();
-        
+
         string[] brandNames = new[] { "Audi", "BMW", "Chevrolet", "Dodge", "Ferrari" };
         foreach (string name in brandNames)
         {
@@ -48,11 +48,11 @@ public class GetCarBrandsTests : BaseIntegrationTest
             await DbContext.CarBrands.AddAsync(brand);
         }
         await DbContext.SaveChangesAsync();
-        
+
         var query1 = new GetCarBrandsQuery(1, 2);
 
         // Act - First page
-        IQueryHandler<GetCarBrandsQuery, Pagination<CarBrandResponse>> handler = 
+        IQueryHandler<GetCarBrandsQuery, Pagination<CarBrandResponse>> handler =
             ServiceProvider.GetRequiredService<IQueryHandler<GetCarBrandsQuery, Pagination<CarBrandResponse>>>();
         Result<Pagination<CarBrandResponse>> result1 = await handler.Handle(query1, CancellationToken.None);
 
@@ -62,17 +62,17 @@ public class GetCarBrandsTests : BaseIntegrationTest
         result1.Value.Count.ShouldBe(5);
         result1.Value.PageIndex.ShouldBe(1);
         result1.Value.PageSize.ShouldBe(2);
-        
+
         var query2 = new GetCarBrandsQuery(2, 2);
         Result<Pagination<CarBrandResponse>> result2 = await handler.Handle(query2, CancellationToken.None);
-        
+
         result2.IsSuccess.ShouldBeTrue();
         result2.Value.Data.Count.ShouldBe(2);
         result2.Value.Count.ShouldBe(5);
         result2.Value.PageIndex.ShouldBe(2);
-        
+
         IEnumerable<Guid> page1Ids = result1.Value.Data.Select(b => b.Id);
         IEnumerable<Guid> page2Ids = result2.Value.Data.Select(b => b.Id);
         page1Ids.Intersect(page2Ids).ShouldBeEmpty();
     }
-} 
+}

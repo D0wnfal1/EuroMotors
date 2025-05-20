@@ -1,12 +1,12 @@
 using System.Collections;
 using System.Security.Claims;
+using System.Text.Json;
 using EuroMotors.Api.Controllers.Users;
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Users.GetByEmail;
 using EuroMotors.Application.Users.Login;
 using EuroMotors.Application.Users.RefreshToken;
 using Microsoft.AspNetCore.Http;
-using System.Text.Json;
 
 namespace EuroMotors.Api.UnitTests.Controllers.Users;
 
@@ -43,7 +43,7 @@ public sealed class AuthControllerTests
 
         _refreshTokenHandler.Handle(Arg.Any<RefreshTokenCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(authResponse));
-        
+
         // Setup cookie in request
         var httpContext = new DefaultHttpContext();
         httpContext.Request.Headers["Cookie"] = $"RefreshToken={refreshToken}";
@@ -109,11 +109,11 @@ public sealed class AuthControllerTests
 
         // Assert
         UnauthorizedObjectResult unauthorizedResult = result.ShouldBeOfType<UnauthorizedObjectResult>();
-        
+
         var expectedObj = new { error };
         string resultJson = JsonSerializer.Serialize(unauthorizedResult.Value);
         string expectedJson = JsonSerializer.Serialize(expectedObj);
-        
+
         resultJson.ShouldContain(error.Code);
         resultJson.ShouldContain(error.Description);
         resultJson.ShouldContain("\"Type\":0");
@@ -269,10 +269,10 @@ internal sealed class TestRequestCookieCollection : Dictionary<string, string>, 
 {
     public new ICollection<string> Keys => base.Keys;
 
-    public new string this[string key] => 
+    public new string this[string key] =>
         key != null && TryGetValue(key, out string value) ? value : string.Empty;
 
-    public new bool ContainsKey(string key) => 
+    public new bool ContainsKey(string key) =>
         key != null && base.ContainsKey(key);
 
     public new IEnumerator<KeyValuePair<string, string>> GetEnumerator() => base.GetEnumerator();
@@ -285,9 +285,9 @@ internal sealed class TestRequestCookieCollection : Dictionary<string, string>, 
             return true;
         }
 
-        value = string.Empty; 
+        value = string.Empty;
         return false;
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-} 
+}

@@ -23,9 +23,9 @@ public class CreateOrderTests : BaseIntegrationTest
     {
         // Arrange
         await CleanDatabaseAsync();
-        
-        var cartId = Guid.NewGuid(); 
-        
+
+        var cartId = Guid.NewGuid();
+
         var command = new CreateOrderCommand(
             cartId,
             null,
@@ -45,7 +45,7 @@ public class CreateOrderTests : BaseIntegrationTest
             // Assert
             result.IsSuccess.ShouldBeTrue();
             result.Value.ShouldNotBe(Guid.Empty);
-            
+
             Order? order = await DbContext.Orders.FindAsync(result.Value);
             order.ShouldNotBeNull();
             order.UserId.ShouldBeNull();
@@ -55,4 +55,4 @@ public class CreateOrderTests : BaseIntegrationTest
             true.ShouldBeTrue();
         }
     }
-} 
+}

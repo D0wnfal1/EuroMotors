@@ -1,3 +1,4 @@
+using System.Text;
 using Bogus;
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.IntegrationTests.Abstractions;
@@ -10,7 +11,6 @@ using EuroMotors.Domain.Products;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using System.Text;
 
 namespace EuroMotors.Application.IntegrationTests.ProductImages;
 
@@ -69,7 +69,7 @@ public class DeleteProductImageTests : BaseIntegrationTest
         var uploadCommand = new UploadProductImageCommand(formFile, productId);
         ICommandHandler<UploadProductImageCommand, Guid> uploadHandler = ServiceProvider.GetRequiredService<ICommandHandler<UploadProductImageCommand, Guid>>();
         Result<Guid> uploadResult = await uploadHandler.Handle(uploadCommand, CancellationToken.None);
-        
+
         uploadResult.IsSuccess.ShouldBeTrue();
         Guid imageId = uploadResult.Value;
 
@@ -87,7 +87,7 @@ public class DeleteProductImageTests : BaseIntegrationTest
 
         // Assert
         deleteResult.IsSuccess.ShouldBeTrue();
-        
+
         // Verify image is deleted
         ProductImage? deletedImage = await productImageRepository.GetByIdAsync(imageId, CancellationToken.None);
         deletedImage.ShouldBeNull();
@@ -109,4 +109,4 @@ public class DeleteProductImageTests : BaseIntegrationTest
         result.Error.ShouldNotBeNull();
         result.Error.ShouldBe(ProductImageErrors.ProductImageNotFound(nonExistentImageId));
     }
-} 
+}

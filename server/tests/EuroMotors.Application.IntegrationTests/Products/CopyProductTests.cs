@@ -24,19 +24,19 @@ public class CopyProductTests : BaseIntegrationTest
     {
         // Arrange
         await CleanDatabaseAsync();
-        
+
         // Create category
         var category = Category.Create("Test Category");
         await DbContext.Categories.AddAsync(category);
-        
+
         var brand = CarBrand.Create("Test Brand");
         await DbContext.CarBrands.AddAsync(brand);
-        var carModel = CarModel.Create(brand,"Test Model", 2012, BodyType.Convertible, new EngineSpec(1, FuelType.Diesel));
+        var carModel = CarModel.Create(brand, "Test Model", 2012, BodyType.Convertible, new EngineSpec(1, FuelType.Diesel));
         await DbContext.CarModels.AddAsync(carModel);
-        
-        var specifications = new List<(string, string)> 
+
+        var specifications = new List<(string, string)>
         {
-            ("Color", "Red"), 
+            ("Color", "Red"),
             ("Size", "Large")
         };
         var product = Product.Create(
@@ -48,36 +48,36 @@ public class CopyProductTests : BaseIntegrationTest
             100.00m,
             0,
             10);
-        
+
         await DbContext.Products.AddAsync(product);
         await DbContext.SaveChangesAsync();
-        
+
         var command = new CopyProductCommand(product.Id);
 
         // Act
-        ICommandHandler<CopyProductCommand, Guid> handler = 
+        ICommandHandler<CopyProductCommand, Guid> handler =
             ServiceProvider.GetRequiredService<ICommandHandler<CopyProductCommand, Guid>>();
         Result<Guid> result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldNotBe(Guid.Empty);
-        result.Value.ShouldNotBe(product.Id); 
-        
+        result.Value.ShouldNotBe(product.Id);
+
         Product? copiedProduct = await DbContext.Products
             .Include(p => p.Specifications)
             .Include(p => p.CarModels)
             .FirstOrDefaultAsync(p => p.Id == result.Value);
-            
+
         copiedProduct.ShouldNotBeNull();
         copiedProduct.Name.ShouldBe("Original Product (Copy)");
         copiedProduct.VendorCode.ShouldBe(product.VendorCode);
         copiedProduct.VendorCode.ShouldContain("ORI-001");
         copiedProduct.CategoryId.ShouldBe(product.CategoryId);
         copiedProduct.Price.ShouldBe(product.Price);
-        
+
         copiedProduct.Specifications.Count.ShouldBe(2);
-        
+
         copiedProduct.CarModels.Count.ShouldBe(1);
     }
 
@@ -86,12 +86,12 @@ public class CopyProductTests : BaseIntegrationTest
     {
         // Arrange
         await CleanDatabaseAsync();
-        
+
         var nonExistentProductId = Guid.NewGuid();
         var command = new CopyProductCommand(nonExistentProductId);
 
         // Act
-        ICommandHandler<CopyProductCommand, Guid> handler = 
+        ICommandHandler<CopyProductCommand, Guid> handler =
             ServiceProvider.GetRequiredService<ICommandHandler<CopyProductCommand, Guid>>();
         Result<Guid> result = await handler.Handle(command, CancellationToken.None);
 
@@ -99,4 +99,4 @@ public class CopyProductTests : BaseIntegrationTest
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(ProductErrors.NotFound(nonExistentProductId));
     }
-} 
+}
