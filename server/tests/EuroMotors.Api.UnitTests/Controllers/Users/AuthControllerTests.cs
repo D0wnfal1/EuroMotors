@@ -110,7 +110,6 @@ public sealed class AuthControllerTests
         // Assert
         UnauthorizedObjectResult unauthorizedResult = result.ShouldBeOfType<UnauthorizedObjectResult>();
 
-        var expectedObj = new { error };
         string resultJson = JsonSerializer.Serialize(unauthorizedResult.Value);
 
         resultJson.ShouldContain(error.Code);

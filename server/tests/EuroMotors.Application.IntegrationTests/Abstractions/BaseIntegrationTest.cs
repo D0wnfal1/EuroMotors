@@ -24,20 +24,30 @@ public abstract class BaseIntegrationTest
     {
         var tableNames = new List<string>
         {
+            "payments",
+            "order_items",
             "orders",
-            "carts",
-            "users",
+            "product_images",
+            "product_car_models",
             "products",
             "categories",
             "car_models",
-            "car_brands"
+            "car_brands",
+            "users"
         };
-
+        
         foreach (string tableName in tableNames)
         {
-#pragma warning disable EF1002
-            await DbContext.Database.ExecuteSqlRawAsync($"DELETE FROM \"{tableName}\";");
-#pragma warning restore EF1002
+            try
+            {
+                #pragma warning disable EF1002
+                await DbContext.Database.ExecuteSqlRawAsync($"DELETE FROM \"{tableName}\";");
+                #pragma warning restore EF1002
+            }
+            catch
+            {
+                return;
+            }
         }
     }
 }
