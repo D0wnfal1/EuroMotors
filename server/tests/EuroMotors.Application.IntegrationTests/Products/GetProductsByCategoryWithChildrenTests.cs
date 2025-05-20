@@ -215,7 +215,7 @@ public class GetProductsByCategoryWithChildrenTests : BaseIntegrationTest
         resultDesc.Value.Data.Count.ShouldBe(3);
 
         var queryAsc = new GetProductsByCategoryWithChildrenQuery(category.Id, "ASC", "", 1, 10);
-        Result<Pagination<ProductResponse>> resultAsc = await handler.Handle(queryAsc, CancellationToken.None);
+        await handler.Handle(queryAsc, CancellationToken.None);
     }
 
     [Fact]

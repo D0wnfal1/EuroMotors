@@ -112,7 +112,6 @@ public sealed class AuthControllerTests
 
         var expectedObj = new { error };
         string resultJson = JsonSerializer.Serialize(unauthorizedResult.Value);
-        string expectedJson = JsonSerializer.Serialize(expectedObj);
 
         resultJson.ShouldContain(error.Code);
         resultJson.ShouldContain(error.Description);

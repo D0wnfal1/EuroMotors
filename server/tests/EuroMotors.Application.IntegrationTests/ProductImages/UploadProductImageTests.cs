@@ -105,10 +105,7 @@ public class UploadProductImageTests : BaseIntegrationTest
         ICommandHandler<UploadProductImageCommand, Guid> handler = ServiceProvider.GetRequiredService<ICommandHandler<UploadProductImageCommand, Guid>>();
 
         // Assert
-        await Should.ThrowAsync<Exception>(async () =>
-        {
-            await handler.Handle(command, CancellationToken.None);
-        });
+        await Should.ThrowAsync<Exception>(async () => await handler.Handle(command, CancellationToken.None));
     }
 
     [Fact]

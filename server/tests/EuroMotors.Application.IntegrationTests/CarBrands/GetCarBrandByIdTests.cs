@@ -75,7 +75,8 @@ public class GetCarBrandByIdTests : BaseIntegrationTest
         // Act - First call
         IQueryHandler<GetCarBrandByIdQuery, CarBrandResponse> handler =
             ServiceProvider.GetRequiredService<IQueryHandler<GetCarBrandByIdQuery, CarBrandResponse>>();
-        Result<CarBrandResponse> firstResult = await handler.Handle(query, CancellationToken.None);
+        // Execute the first call but don't store its result
+        await handler.Handle(query, CancellationToken.None);
 
         brand.Update("Updated Brand Name");
         await DbContext.SaveChangesAsync();
