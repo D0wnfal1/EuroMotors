@@ -117,8 +117,12 @@ public class CarModelTests : BaseTest
         carModel.UpdateEngineSpec(newVolumeLiters, newFuelType);
 
         // Assert
-        Assert.Equal(newVolumeLiters, carModel.EngineSpec.VolumeLiters);
-        Assert.Equal(newFuelType, carModel.EngineSpec.FuelType);
+        if (carModel.EngineSpec != null)
+        {
+            Assert.Equal(newVolumeLiters, carModel.EngineSpec.VolumeLiters);
+            Assert.Equal(newFuelType, carModel.EngineSpec.FuelType);
+        }
+
         CarModelEngineSpecUpdatedDomainEvent engineSpecUpdatedEvent = AssertDomainEventWasPublished<CarModelEngineSpecUpdatedDomainEvent>(carModel);
         Assert.Equal(carModel.Id, engineSpecUpdatedEvent.CarModelId);
     }

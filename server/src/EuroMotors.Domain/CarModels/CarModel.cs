@@ -17,11 +17,11 @@ public sealed class CarModel : Entity
 
     public string ModelName { get; private set; } = null!;
 
-    public int StartYear { get; private set; }
+    public int? StartYear { get; private set; }
 
-    public BodyType BodyType { get; private set; }
+    public BodyType? BodyType { get; private set; }
 
-    public EngineSpec EngineSpec { get; private set; }
+    public EngineSpec? EngineSpec { get; private set; }
 
     public Slug Slug { get; private set; }
 
@@ -30,9 +30,9 @@ public sealed class CarModel : Entity
     public static CarModel Create(
         CarBrand carBrand,
         string modelName,
-        int startYear,
-        BodyType bodyType,
-        EngineSpec engineSpec)
+        int? startYear,
+        BodyType? bodyType,
+        EngineSpec? engineSpec)
     {
         var car = new CarModel
         {
@@ -66,13 +66,13 @@ public sealed class CarModel : Entity
         if (startYear.HasValue && startYear != StartYear)
         {
             StartYear = startYear.Value;
-            RaiseDomainEvent(new CarModelStartYearChangedDomainEvent(Id, StartYear));
+            RaiseDomainEvent(new CarModelStartYearChangedDomainEvent(Id, StartYear.Value));
         }
 
         if (bodyType.HasValue && bodyType != BodyType)
         {
             BodyType = bodyType.Value;
-            RaiseDomainEvent(new CarModelBodyTypeChangedDomainEvent(Id, BodyType));
+            RaiseDomainEvent(new CarModelBodyTypeChangedDomainEvent(Id, BodyType.Value));
         }
     }
 
@@ -80,27 +80,30 @@ public sealed class CarModel : Entity
     {
         bool shouldUpdate = false;
 
-        float newVolume = EngineSpec.VolumeLiters;
-        FuelType newFuel = EngineSpec.FuelType;
-
-        const float tolerance = 0.0001f;
-
-        if (volumeLiters.HasValue && Math.Abs(volumeLiters.Value - EngineSpec.VolumeLiters) > tolerance)
+        if (EngineSpec != null)
         {
-            newVolume = volumeLiters.Value;
-            shouldUpdate = true;
-        }
+            float newVolume = EngineSpec.VolumeLiters;
+            FuelType newFuel = EngineSpec.FuelType;
 
-        if (fuelType.HasValue && fuelType.Value != EngineSpec.FuelType)
-        {
-            newFuel = fuelType.Value;
-            shouldUpdate = true;
-        }
+            const float tolerance = 0.0001f;
 
-        if (shouldUpdate)
-        {
-            EngineSpec = new EngineSpec(newVolume, newFuel);
-            RaiseDomainEvent(new CarModelEngineSpecUpdatedDomainEvent(Id));
+            if (volumeLiters.HasValue && Math.Abs(volumeLiters.Value - EngineSpec.VolumeLiters) > tolerance)
+            {
+                newVolume = volumeLiters.Value;
+                shouldUpdate = true;
+            }
+
+            if (fuelType.HasValue && fuelType.Value != EngineSpec.FuelType)
+            {
+                newFuel = fuelType.Value;
+                shouldUpdate = true;
+            }
+
+            if (shouldUpdate)
+            {
+                EngineSpec = new EngineSpec(newVolume, newFuel);
+                RaiseDomainEvent(new CarModelEngineSpecUpdatedDomainEvent(Id));
+            }
         }
     }
 }

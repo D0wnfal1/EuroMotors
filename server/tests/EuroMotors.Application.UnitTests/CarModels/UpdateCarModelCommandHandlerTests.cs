@@ -82,8 +82,8 @@ public class UpdateCarModelCommandHandlerTests
         carModel.ModelName.ShouldBe("Updated X5");
         carModel.StartYear.ShouldBe(2021);
         carModel.BodyType.ShouldBe(BodyType.Sedan);
-        carModel.EngineSpec.VolumeLiters.ShouldBe(3.0f);
-        carModel.EngineSpec.FuelType.ShouldBe(FuelType.Diesel);
+        carModel.EngineSpec?.VolumeLiters.ShouldBe(3.0f);
+        carModel.EngineSpec?.FuelType.ShouldBe(FuelType.Diesel);
 
         await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);
     }
@@ -111,8 +111,8 @@ public class UpdateCarModelCommandHandlerTests
         carModel.ModelName.ShouldBe("Updated X5");
         carModel.StartYear.ShouldBe(2020);
         carModel.BodyType.ShouldBe(BodyType.SUV);
-        carModel.EngineSpec.VolumeLiters.ShouldBe(2.0f);
-        carModel.EngineSpec.FuelType.ShouldBe(FuelType.Petrol);
+        carModel.EngineSpec?.VolumeLiters.ShouldBe(2.0f);
+        carModel.EngineSpec?.FuelType.ShouldBe(FuelType.Petrol);
 
         await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);
     }
@@ -144,8 +144,8 @@ public class UpdateCarModelCommandHandlerTests
         carModel.ModelName.ShouldBe("X5");
         carModel.StartYear.ShouldBe(2020);
         carModel.BodyType.ShouldBe(BodyType.SUV);
-        carModel.EngineSpec.VolumeLiters.ShouldBe(3.5f);
-        carModel.EngineSpec.FuelType.ShouldBe(FuelType.Diesel);
+        carModel.EngineSpec?.VolumeLiters.ShouldBe(3.5f);
+        carModel.EngineSpec?.FuelType.ShouldBe(FuelType.Diesel);
 
         await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);
     }

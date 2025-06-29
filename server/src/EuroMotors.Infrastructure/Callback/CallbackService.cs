@@ -24,4 +24,27 @@ internal sealed class CallbackService(IOptions<CallbackOptions> callbackOptions,
             await httpClient.PostAsync(url, content);
         }
     }
+
+    public async Task SendOrderNotificationAsync(Guid orderId, string buyerName, string buyerPhone, string? buyerEmail, decimal orderTotal)
+    {
+        string message = $"🛒 Нове замовлення #{orderId}:\n" +
+                         $"Покупець: {buyerName}\n" +
+                         $"Телефон: {buyerPhone}\n" +
+                         $"Email: {buyerEmail ?? "не вказано"}\n" +
+                         $"Сума: {orderTotal} грн.";
+
+        string url = $"https://api.telegram.org/bot{_options.BotToken}/sendMessage";
+
+        foreach (string chatId in _options.ChatIds)
+        {
+            var payload = new Dictionary<string, string>
+            {
+                { "chat_id", chatId },
+                { "text", message }
+            };
+
+            using var content = new FormUrlEncodedContent(payload);
+            await httpClient.PostAsync(url, content);
+        }
+    }
 }

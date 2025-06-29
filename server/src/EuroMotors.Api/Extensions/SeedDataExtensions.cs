@@ -135,9 +135,9 @@ public static class SeedDataExtensions
             c.CarBrandId,
             c.ModelName,
             c.StartYear,
-            BodyType = c.BodyType.ToString(),
-            c.EngineSpec.VolumeLiters,
-            FuelType = c.EngineSpec.FuelType.ToString(),
+            BodyType = c.BodyType?.ToString(),
+            VolumeLiters = c.EngineSpec?.VolumeLiters ?? 0,
+            FuelType = c.EngineSpec?.FuelType.ToString() ?? string.Empty,
             Slug = c.Slug.Value
         }));
     }

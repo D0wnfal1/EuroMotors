@@ -42,6 +42,7 @@ services:
     container_name: Euromotors.Seq
     environment:
       - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_ADMINPASSWORD=seqadmin
     ports:
       - 5341:5341
       - 8081:80

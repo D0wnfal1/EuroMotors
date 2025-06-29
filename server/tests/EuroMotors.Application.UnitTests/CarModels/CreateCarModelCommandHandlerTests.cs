@@ -113,6 +113,7 @@ public class CreateCarModelCommandHandlerTests
         _carModelRepository.Received(1).Insert(Arg.Is<CarModel>(c =>
             c.CarBrandId == _brandId &&
             c.ModelName == "7 Series" &&
+            c.EngineSpec != null &&
             Math.Abs(c.EngineSpec.VolumeLiters - 8) < 0.001 &&
             c.EngineSpec.FuelType == FuelType.Petrol));
         await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);

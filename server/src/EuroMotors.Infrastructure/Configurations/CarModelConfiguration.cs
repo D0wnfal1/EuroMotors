@@ -24,17 +24,15 @@ internal sealed class CarModelConfiguration : IEntityTypeConfiguration<CarModel>
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.Property(cm => cm.StartYear)
-            .IsRequired();
+        builder.Property(cm => cm.StartYear);
 
         builder.Property(cm => cm.BodyType)
-            .HasConversion<string>()
-            .IsRequired();
+            .HasConversion<string>();
 
         builder.OwnsOne(cm => cm.EngineSpec, engineSpec =>
         {
-            engineSpec.Property(es => es.VolumeLiters).IsRequired();
-            engineSpec.Property(es => es.FuelType).HasConversion<string>().IsRequired();
+            engineSpec.Property(es => es.VolumeLiters);
+            engineSpec.Property(es => es.FuelType).HasConversion<string>();
         });
 
         builder.Property(c => c.Slug)

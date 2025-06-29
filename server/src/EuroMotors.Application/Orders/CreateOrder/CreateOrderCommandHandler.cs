@@ -1,4 +1,5 @@
 ﻿using System.Data.Common;
+using EuroMotors.Application.Abstractions.Callback;
 using EuroMotors.Application.Abstractions.Messaging;
 using EuroMotors.Application.Carts;
 using EuroMotors.Domain.Abstractions;
@@ -13,7 +14,8 @@ internal sealed class CreateOrderCommandHandler(
     IOrderRepository orderRepository,
     IProductRepository productRepository,
     CartService cartService,
-    IUnitOfWork unitOfWork) : ICommandHandler<CreateOrderCommand, Guid>
+    IUnitOfWork unitOfWork,
+    ICallbackService callbackService) : ICommandHandler<CreateOrderCommand, Guid>
 {
     public async Task<Result<Guid>> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
     {
@@ -62,6 +64,14 @@ internal sealed class CreateOrderCommandHandler(
         await transaction.CommitAsync(cancellationToken);
 
         await cartService.ClearAsync(request.CartId, cancellationToken);
+
+        
+        await callbackService.SendOrderNotificationAsync(
+            order.Id,
+            request.BuyerName,
+            request.BuyerPhoneNumber,
+            request.BuyerEmail,
+            order.TotalPrice);
 
         return Result.Success(order.Id);
     }

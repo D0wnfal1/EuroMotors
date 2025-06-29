@@ -122,10 +122,10 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     car_brand_id = table.Column<Guid>(type: "uuid", nullable: false),
                     model_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    start_year = table.Column<int>(type: "integer", nullable: false),
-                    body_type = table.Column<string>(type: "text", nullable: false),
-                    engine_spec_volume_liters = table.Column<float>(type: "real", nullable: false),
-                    engine_spec_fuel_type = table.Column<string>(type: "text", nullable: false),
+                    start_year = table.Column<int>(type: "integer", nullable: true),
+                    body_type = table.Column<string>(type: "text", nullable: true),
+                    engine_spec_volume_liters = table.Column<float>(type: "real", nullable: true),
+                    engine_spec_fuel_type = table.Column<string>(type: "text", nullable: true),
                     slug = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>

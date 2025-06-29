@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EuroMotors.Infrastructure.Database.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250508123409_Create_Database")]
+    [Migration("20250629163657_Create_Database")]
     partial class Create_Database
     {
         /// <inheritdoc />
@@ -66,7 +66,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnName("id");
 
                     b.Property<string>("BodyType")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("body_type");
 
@@ -85,7 +84,7 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnType("text")
                         .HasColumnName("slug");
 
-                    b.Property<int>("StartYear")
+                    b.Property<int?>("StartYear")
                         .HasColumnType("integer")
                         .HasColumnName("start_year");
 
@@ -538,8 +537,7 @@ namespace EuroMotors.Infrastructure.Database.Migration
 
                     b.Navigation("CarBrand");
 
-                    b.Navigation("EngineSpec")
-                        .IsRequired();
+                    b.Navigation("EngineSpec");
                 });
 
             modelBuilder.Entity("EuroMotors.Domain.Categories.Category", b =>

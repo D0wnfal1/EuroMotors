@@ -63,7 +63,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnName("id");
 
                     b.Property<string>("BodyType")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("body_type");
 
@@ -82,7 +81,7 @@ namespace EuroMotors.Infrastructure.Database.Migration
                         .HasColumnType("text")
                         .HasColumnName("slug");
 
-                    b.Property<int>("StartYear")
+                    b.Property<int?>("StartYear")
                         .HasColumnType("integer")
                         .HasColumnName("start_year");
 
@@ -535,8 +534,7 @@ namespace EuroMotors.Infrastructure.Database.Migration
 
                     b.Navigation("CarBrand");
 
-                    b.Navigation("EngineSpec")
-                        .IsRequired();
+                    b.Navigation("EngineSpec");
                 });
 
             modelBuilder.Entity("EuroMotors.Domain.Categories.Category", b =>
