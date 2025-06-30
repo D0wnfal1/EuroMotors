@@ -9,17 +9,7 @@
   <div
     class="flex gap-1 md:gap-2 justify-center mb-3 md:mb-4 lg:mb-6 flex-wrap"
   >
-    <button
-      mat-raised-button
-      color="primary"
-      [class.mat-accent]="activeFilter === 'зі знижкою'"
-      (click)="setFilter('зі знижкою')"
-      [disabled]="loading"
-      class="text-xs md:text-sm"
-    >
-      <mat-icon class="text-xs md:text-sm lg:text-base">local_offer</mat-icon>
-      Знижки
-    </button>
+
     <button
       mat-raised-button
       color="primary"
@@ -42,6 +32,17 @@
       <mat-icon class="text-xs md:text-sm lg:text-base">trending_up</mat-icon>
       Популярні
     </button>
+    <button
+    mat-raised-button
+    color="primary"
+    [class.mat-accent]="activeFilter === 'зі знижкою'"
+    (click)="setFilter('зі знижкою')"
+    [disabled]="loading"
+    class="text-xs md:text-sm"
+  >
+    <mat-icon class="text-xs md:text-sm lg:text-base">local_offer</mat-icon>
+    Знижки
+  </button>
   </div>
 
   <div

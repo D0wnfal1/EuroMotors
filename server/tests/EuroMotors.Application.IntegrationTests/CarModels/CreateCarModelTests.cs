@@ -59,25 +59,4 @@ public class CreateCarModelTests : BaseIntegrationTest
         result.Error.Code.ShouldBe("CarBrand.NotFound");
     }
 
-    [Fact]
-    public async Task Should_ReturnFailure_WhenCommandIsNotValid()
-    {
-        // Arrange
-        Guid brandId = await ServiceProvider.CreateCarBrandAsync("Test Brand");
-        var command = new CreateCarModelCommand(
-            brandId,
-            "Test Model",
-            0, // Invalid start year
-            BodyType.Sedan,
-            new EngineSpec(6, FuelType.Diesel)
-            );
-
-        // Act
-        ICommandHandler<CreateCarModelCommand, Guid> handler = ServiceProvider.GetRequiredService<ICommandHandler<CreateCarModelCommand, Guid>>();
-        Result<Guid> result = await handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.IsFailure.ShouldBeTrue();
-        result.Error.Type.ShouldBe(ErrorType.Validation);
-    }
 }

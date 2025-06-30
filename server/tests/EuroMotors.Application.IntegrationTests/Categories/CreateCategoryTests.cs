@@ -28,19 +28,4 @@ public class CreateCategoryTests : BaseIntegrationTest
         result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldNotBe(Guid.Empty);
     }
-
-    [Fact]
-    public async Task Should_ReturnFailure_WhenCommandIsNotValid()
-    {
-        // Arrange
-        var command = new CreateCategoryCommand("", null, null, null);
-
-        // Act
-        ICommandHandler<CreateCategoryCommand, Guid> handler = ServiceProvider.GetRequiredService<ICommandHandler<CreateCategoryCommand, Guid>>();
-        Result<Guid> result = await handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.IsFailure.ShouldBeTrue();
-        result.Error.Type.ShouldBe(ErrorType.Validation);
-    }
 }

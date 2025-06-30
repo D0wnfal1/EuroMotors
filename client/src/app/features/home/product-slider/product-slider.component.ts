@@ -32,7 +32,7 @@ export class ProductSliderComponent implements OnInit, OnDestroy {
   private breakpointSubscription?: Subscription;
   private readonly autoSlideInterval = 10000;
 
-  activeFilter: 'популярні' | 'нові' | 'зі знижкою' = 'зі знижкою';
+  activeFilter: 'популярні' | 'нові' | 'зі знижкою' = 'нові';
   loading = false;
 
   constructor(
