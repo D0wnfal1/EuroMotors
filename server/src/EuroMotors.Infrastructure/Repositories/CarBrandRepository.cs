@@ -10,6 +10,11 @@ internal sealed class CarBrandRepository : Repository<CarBrand>, ICarBrandReposi
     {
     }
 
+    public IQueryable<CarBrand> GetAll()
+    {
+        return _dbContext.Set<CarBrand>();
+    }
+
     public async Task<CarBrand?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Set<CarBrand>()

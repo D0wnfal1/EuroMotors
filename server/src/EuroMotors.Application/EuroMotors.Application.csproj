@@ -3,6 +3,7 @@
 	<ItemGroup>
 		<PackageReference Include="CsvHelper" />
 		<PackageReference Include="Dapper" />
+		<PackageReference Include="EPPlus" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
 		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" />
 		<PackageReference Include="Microsoft.AspNetCore.Http.Features" />

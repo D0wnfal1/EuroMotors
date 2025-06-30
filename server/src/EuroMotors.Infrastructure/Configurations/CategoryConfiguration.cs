@@ -29,9 +29,6 @@ internal sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.HasIndex(c => c.Slug)
-            .IsUnique();
-
         builder.Property(c => c.ImagePath);
 
         builder.HasMany(c => c.Products)

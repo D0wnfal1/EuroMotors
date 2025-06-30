@@ -1,0 +1,6 @@
+/* Use only minimal styles as needed for Angular Material overrides */
+
+/* Override mat-card-header padding */
+:host ::ng-deep .mat-mdc-card-header {
+  padding: 0;
+}

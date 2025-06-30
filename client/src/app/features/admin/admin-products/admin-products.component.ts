@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProductService } from '../../../core/services/product.service';
-import { ImportProductsResult, Product } from '../../../shared/models/product';
+import { Product } from '../../../shared/models/product';
 import { RouterLink } from '@angular/router';
 import { CommonModule, CurrencyPipe, NgFor } from '@angular/common';
 import { Pagination } from '../../../shared/models/pagination';
@@ -111,20 +111,19 @@ export class AdminProductsComponent implements OnInit {
   }
 
   getCategoryName(categoryId: string): string {
-    const category = this.categories.find((cm) => cm.id === categoryId);
-    return category ? `${category.name}` : '—';
+    const category = this.categories.find((c) => c.id === categoryId);
+    return category ? category.name : 'Не вказано';
   }
 
   getCarModelNames(carModelIds: string[]): string {
-    if (!carModelIds || carModelIds.length === 0) return '—';
-
-    return carModelIds
+    if (!carModelIds || carModelIds.length === 0) return 'Не вказано';
+    const models = carModelIds
       .map((id) => {
-        const model = this.carModels.find((cm) => cm.id === id);
-        return model ? `${model.brandName || ''} ${model.modelName}` : '';
+        const model = this.carModels.find((m) => m.id === id);
+        return model ? model.modelName : '';
       })
-      .filter((name) => name !== '')
-      .join(', ');
+      .filter((name) => name !== '');
+    return models.length > 0 ? models.join(', ') : 'Не вказано';
   }
 
   deleteProduct(productId: string): void {
@@ -148,25 +147,36 @@ export class AdminProductsComponent implements OnInit {
     this.getProducts();
   }
 
-  onSortChange(event: MatSelectionListChange) {
+  onSortChange(event: MatSelectionListChange): void {
     const selectedOption = event.options[0];
     if (selectedOption) {
       this.shopParams.sortOrder = selectedOption.value;
-      this.shopParams.pageNumber = 1;
       this.getProducts();
     }
   }
 
-  toggleAvailability(product: Product) {
-    const newAvailability = !product.isAvailable;
-    this.productService
-      .setProductAvailability(product.id, newAvailability)
+  toggleAvailability(product: Product): void {
+    product.isAvailable = !product.isAvailable;
+
+    this.productService.setProductAvailability(product.id, product.isAvailable)
       .subscribe({
         next: () => {
-          product.isAvailable = newAvailability;
+          this.snackBar.open(
+            `Доступність товару "${product.name}" змінено на ${
+              product.isAvailable ? 'доступний' : 'недоступний'
+            }`,
+            'OK',
+            { duration: 3000 }
+          );
         },
-        error: (err) => {
-          console.error(err);
+        error: (error: any) => {
+          console.error('Error updating product availability:', error);
+          product.isAvailable = !product.isAvailable; // Revert the change
+          this.snackBar.open(
+            'Помилка при зміні доступності товару',
+            'OK',
+            { duration: 3000 }
+          );
         },
       });
   }
@@ -181,53 +191,5 @@ export class AdminProductsComponent implements OnInit {
         console.error(error);
       },
     });
-  }
-
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files?.length) {
-      const file = input.files[0];
-
-      if (file.type !== 'text/csv') {
-        this.snackBar.open('Виберіть файл CSV', 'Close', {
-          duration: 3000,
-        });
-        return;
-      }
-
-      this.productService.importProducts(file).subscribe({
-        next: (result: ImportProductsResult) => {
-          this.snackBar.open(
-            `Імпорт завершено. Успішно імпортовано ${result.successfullyImported} з ${result.totalProcessed} товарів.`,
-            'Close',
-            { duration: 5000 }
-          );
-
-          if (result.errors.length > 0) {
-            this.snackBar.open(
-              `Сталася помилка під час імпорту: ${result.errors.join(', ')}`,
-              'Close',
-              { duration: 7000 }
-            );
-          }
-
-          this.productService.clearCache();
-          this.getProducts();
-
-          input.value = '';
-        },
-        error: (error) => {
-          console.error('Import failed:', error);
-          this.snackBar.open(
-            'Імпорт не вдався. Будь ласка, спробуйте ще раз.',
-            'Close',
-            {
-              duration: 3000,
-            }
-          );
-          input.value = '';
-        },
-      });
-    }
   }
 }

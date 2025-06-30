@@ -21,9 +21,6 @@ internal sealed class CarBrandConfiguration : IEntityTypeConfiguration<CarBrand>
                 value => Slug.GenerateSlug(value))
             .IsRequired();
 
-        builder.HasIndex(cb => cb.Slug)
-            .IsUnique();
-
         builder.Property(cb => cb.LogoPath);
     }
 }

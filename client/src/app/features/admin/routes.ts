@@ -11,6 +11,7 @@ import { AdminCarmodelsComponent } from './admin-carmodels/admin-carmodels.compo
 import { CarmodelFormComponent } from './admin-carmodels/carmodel-form/carmodel-form.component';
 import { AdminCarbrandsComponent } from './admin-carbrands/admin-carbrands.component';
 import { CarbrandFormComponent } from './admin-carbrands/carbrand-form/carbrand-form.component';
+import { ProductImportComponent } from './product-import/product-import.component';
 
 export const adminRourtes: Route[] = [
   {
@@ -36,6 +37,11 @@ export const adminRourtes: Route[] = [
   {
     path: 'products/edit/:id',
     component: ProductFormComponent,
+    canActivate: [authGuard, adminGuard],
+  },
+  {
+    path: 'product-import',
+    component: ProductImportComponent,
     canActivate: [authGuard, adminGuard],
   },
   {

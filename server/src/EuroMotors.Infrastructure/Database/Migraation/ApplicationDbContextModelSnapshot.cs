@@ -3,20 +3,17 @@ using System;
 using EuroMotors.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace EuroMotors.Infrastructure.Database.Migration
+namespace EuroMotors.Infrastructure.Database.Migraation
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250629163657_Create_Database")]
-    partial class Create_Database
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,10 +47,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
 
                     b.HasKey("Id")
                         .HasName("pk_car_brands");
-
-                    b.HasIndex("Slug")
-                        .IsUnique()
-                        .HasDatabaseName("ix_car_brands_slug");
 
                     b.ToTable("car_brands", "public");
                 });
@@ -94,10 +87,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
                     b.HasIndex("CarBrandId")
                         .HasDatabaseName("ix_car_models_car_brand_id");
 
-                    b.HasIndex("Slug")
-                        .IsUnique()
-                        .HasDatabaseName("ix_car_models_slug");
-
                     b.ToTable("car_models", "public");
                 });
 
@@ -133,10 +122,6 @@ namespace EuroMotors.Infrastructure.Database.Migration
 
                     b.HasIndex("ParentCategoryId")
                         .HasDatabaseName("ix_categories_parent_category_id");
-
-                    b.HasIndex("Slug")
-                        .IsUnique()
-                        .HasDatabaseName("ix_categories_slug");
 
                     b.ToTable("categories", "public");
                 });

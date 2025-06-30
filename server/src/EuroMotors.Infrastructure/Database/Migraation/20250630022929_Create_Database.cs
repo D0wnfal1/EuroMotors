@@ -7,10 +7,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace EuroMotors.Infrastructure.Database.Migration
+namespace EuroMotors.Infrastructure.Database.Migraation
 {
     /// <inheritdoc />
-    public partial class Create_Database : Microsoft.EntityFrameworkCore.Migrations.Migration
+    public partial class Create_Database : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -326,37 +326,16 @@ namespace EuroMotors.Infrastructure.Database.Migration
                 });
 
             migrationBuilder.CreateIndex(
-                name: "ix_car_brands_slug",
-                schema: "public",
-                table: "car_brands",
-                column: "slug",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "ix_car_models_car_brand_id",
                 schema: "public",
                 table: "car_models",
                 column: "car_brand_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_car_models_slug",
-                schema: "public",
-                table: "car_models",
-                column: "slug",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "ix_categories_parent_category_id",
                 schema: "public",
                 table: "categories",
                 column: "parent_category_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_categories_slug",
-                schema: "public",
-                table: "categories",
-                column: "slug",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_order_items_order_id",

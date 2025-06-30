@@ -26,15 +26,26 @@
     >
       Адміністрування товарів
     </h2>
-    <button
-      mat-raised-button
-      color="accent"
-      [routerLink]="['/admin/products/create']"
-      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm w-full md:w-auto"
-    >
-      <mat-icon>add</mat-icon>
-      Створити новий товар
-    </button>
+    <div class="flex flex-col sm:flex-row gap-2">
+      <button
+        mat-raised-button
+        color="primary"
+        [routerLink]="['/admin/product-import']"
+        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-sm w-full md:w-auto"
+      >
+        <mat-icon>upload_file</mat-icon>
+        Імпорт товарів
+      </button>
+      <button
+        mat-raised-button
+        color="accent"
+        [routerLink]="['/admin/products/create']"
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm w-full md:w-auto"
+      >
+        <mat-icon>add</mat-icon>
+        Створити новий товар
+      </button>
+    </div>
   </div>
 
   <div
@@ -63,20 +74,6 @@
         Сортування
       </button>
     </div>
-  </div>
-
-  <div class="actions-container">
-    <button mat-button color="primary" (click)="fileInput.click()">
-      <mat-icon>upload_file</mat-icon>
-      Імпорт товарів
-    </button>
-    <input
-      #fileInput
-      type="file"
-      accept=".csv"
-      style="display: none"
-      (change)="onFileSelected($event)"
-    />
   </div>
 
   <div class="overflow-x-auto mt-4 responsive-table">

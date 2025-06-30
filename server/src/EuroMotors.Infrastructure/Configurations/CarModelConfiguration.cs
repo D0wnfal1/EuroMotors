@@ -43,9 +43,6 @@ internal sealed class CarModelConfiguration : IEntityTypeConfiguration<CarModel>
         builder.Property(cm => cm.Slug)
             .IsRequired();
 
-        builder.HasIndex(c => c.Slug)
-            .IsUnique();
-
         builder.HasMany(cm => cm.Products)
             .WithMany(p => p.CarModels)
             .UsingEntity<Dictionary<string, object>>(

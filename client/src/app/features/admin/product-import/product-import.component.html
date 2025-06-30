@@ -1,0 +1,147 @@
+<div class="max-w-7xl mx-auto p-6">
+  <h1 class="text-2xl font-bold mb-6">Імпорт товарів з Excel</h1>
+
+  <mat-card class="mb-6 bg-blue-50">
+    <mat-card-content>
+      <p class="font-medium mb-2">Інструкції:</p>
+      <ul class="list-disc ml-6">
+        <li>Файл прайсу обов'язковий і повинен бути у форматі Excel (.xlsx)</li>
+        <li>Файл відповідності необов'язковий, але рекомендований для додаткових даних</li>
+        <li>Файл прайсу повинен містити стовпці: Код, Назва, Бренд, OE, Наявність, Ціна в грн</li>
+        <li>Файл відповідності повинен містити стовпці: Складський номер, Виробник, Призначення деталі, Марка авто, Модель авто</li>
+      </ul>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <!-- Price File Card -->
+    <mat-card class="h-full">
+      <div class="bg-gray-600 text-white py-3 px-4">
+        <h2 class="text-lg font-medium">Файл прайсу (Обов'язково)</h2>
+      </div>
+      
+      <div class="p-4">
+        <div class="mb-4">
+          <label for="priceFile" class="block mb-2 font-medium">Виберіть файл прайсу Excel</label>
+          <input 
+            type="file" 
+            class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500"
+            id="priceFile" 
+            accept=".xlsx" 
+            (change)="onPriceFileSelected($event)"
+          >
+        </div>
+        
+        <div *ngIf="priceFile" class="bg-green-100 border border-green-400 text-green-800 p-3 rounded flex justify-between items-center">
+          <div>
+            <span class="font-bold">Вибраний файл: </span> {{ priceFile.name }}
+          </div>
+          <button mat-icon-button color="warn" (click)="clearPriceFile()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Mapping File Card -->
+    <mat-card class="h-full">
+      <div class="bg-gray-600 text-white py-3 px-4">
+        <h2 class="text-lg font-medium">Файл відповідності (Необов'язково)</h2>
+      </div>
+      
+      <div class="p-4">
+        <div class="mb-4">
+          <label for="mappingFile" class="block mb-2 font-medium">Виберіть файл відповідності Excel</label>
+          <input 
+            type="file" 
+            class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500"
+            id="mappingFile" 
+            accept=".xlsx" 
+            (change)="onMappingFileSelected($event)"
+          >
+        </div>
+        
+        <div *ngIf="mappingFile" class="bg-green-100 border border-green-400 text-green-800 p-3 rounded flex justify-between items-center">
+          <div>
+            <span class="font-bold">Вибраний файл: </span> {{ mappingFile.name }}
+          </div>
+          <button mat-icon-button color="warn" (click)="clearMappingFile()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <div class="flex justify-center mb-8">
+    <button 
+      mat-raised-button
+      color="primary"
+      class="px-8 py-2 text-lg"
+      [disabled]="!priceFile || isImporting"
+      (click)="importProducts()"
+    >
+      <mat-spinner *ngIf="isImporting" diameter="20" class="inline-block mr-2"></mat-spinner>
+      {{ isImporting ? 'Імпортування...' : 'Почати імпорт' }}
+    </button>
+  </div>
+
+  <div *ngIf="errorMessage" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-8">
+    {{ errorMessage }}
+  </div>
+
+  <mat-card *ngIf="result" class="mb-6">
+    <div class="bg-blue-600 text-white py-3 px-4">
+      <h2 class="text-lg font-medium">Результати імпорту</h2>
+    </div>
+    
+    <div class="p-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <!-- Total Processed -->
+        <mat-card class="text-center">
+          <div class="py-2">
+            <h3 class="text-gray-700 font-medium">Всього оброблено</h3>
+          </div>
+          <div class="py-4">
+            <span class="text-3xl font-bold">{{ result.totalProcessed }}</span>
+          </div>
+        </mat-card>
+
+        <!-- Successfully Imported -->
+        <mat-card class="text-center">
+          <div class="bg-green-600 text-white py-2">
+            <h3 class="font-medium">Успішно імпортовано</h3>
+          </div>
+          <div class="py-4">
+            <span class="text-3xl font-bold text-green-600">{{ result.successfullyImported }}</span>
+          </div>
+        </mat-card>
+
+        <!-- Failed -->
+        <mat-card class="text-center">
+          <div class="bg-red-600 text-white py-2">
+            <h3 class="font-medium">Не вдалося</h3>
+          </div>
+          <div class="py-4">
+            <span class="text-3xl font-bold text-red-600">{{ result.failed }}</span>
+          </div>
+        </mat-card>
+      </div>
+
+      <div *ngIf="result.errors && result.errors.length > 0" class="mt-6">
+        <h3 class="text-lg font-medium mb-2">Помилки ({{ result.errors.length }})</h3>
+        <mat-card class="bg-red-50 border border-red-200">
+          <mat-card-content>
+            <div class="max-h-96 overflow-y-auto">
+              <mat-list>
+                <mat-list-item *ngFor="let error of result.errors" class="text-red-700">
+                  {{ error }}
+                </mat-list-item>
+              </mat-list>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </mat-card>
+</div> 
