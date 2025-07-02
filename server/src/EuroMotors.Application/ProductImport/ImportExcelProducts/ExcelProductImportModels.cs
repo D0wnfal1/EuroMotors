@@ -29,4 +29,5 @@ public sealed class MergedProductData
     public string? PartPurpose { get; set; }
     public string? CarMake { get; set; }
     public string? CarModel { get; set; }
+    public string? Manufacturer { get; set; }
 } 

@@ -10,6 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatListModule } from '@angular/material/list';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @Component({
   selector: 'app-product-import',
@@ -23,7 +24,8 @@ import { MatListModule } from '@angular/material/list';
     MatProgressSpinnerModule,
     MatDividerModule,
     MatChipsModule,
-    MatListModule
+    MatListModule,
+    MatExpansionModule
   ],
   templateUrl: './product-import.component.html',
   styleUrls: ['./product-import.component.scss']

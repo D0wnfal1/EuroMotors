@@ -17,7 +17,6 @@ public sealed class ImportExcelProductsCommandHandler : ICommandHandler<ImportEx
     private readonly ICarModelRepository _carModelRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    // Default category name if one isn't specified
     private const string DefaultCategoryName = "Auto Parts";
 
     public ImportExcelProductsCommandHandler(
@@ -250,6 +249,7 @@ public sealed class ImportExcelProductsCommandHandler : ICommandHandler<ImportEx
                 merged.PartPurpose = match.PartPurpose;
                 merged.CarMake = match.CarMake;
                 merged.CarModel = match.CarModel;
+                merged.Manufacturer = match.Manufacturer;
             }
 
             result.Add(merged);
@@ -311,32 +311,6 @@ public sealed class ImportExcelProductsCommandHandler : ICommandHandler<ImportEx
         {
             try
             {
-                CarBrand? brand = null;
-                if (!string.IsNullOrWhiteSpace(data.Brand))
-                {
-#pragma warning disable S1066
-                    if (!brandCache.TryGetValue(data.Brand, out brand))
-#pragma warning restore S1066
-                    {
-                        try
-                        {
-                            brand = await _carBrandRepository.GetByNameAsync(data.Brand, cancellationToken);
-                            
-                            if (brand == null)
-                            {
-                                brand = CarBrand.Create(data.Brand);
-                                _carBrandRepository.Insert(brand);
-                            }
-                            
-                            brandCache[data.Brand] = brand;
-                        }
-                        catch (Exception ex)
-                        {
-                            errors.Add($"Error creating car brand '{data.Brand}': {ex.Message}");
-                        }
-                    }
-                }
-
                 var carModels = new List<CarModel>();
                 
                 if (!string.IsNullOrEmpty(data.CarMake) && !string.IsNullOrEmpty(data.CarModel))
@@ -426,6 +400,20 @@ public sealed class ImportExcelProductsCommandHandler : ICommandHandler<ImportEx
                 {
                     string oeValue = data.OE.Length > 500 ? data.OE[..500] : data.OE;
                     specifications.Add(("OE", oeValue));
+                }
+                
+                if (!string.IsNullOrWhiteSpace(data.Manufacturer))
+                {
+                    string manufacturerValue = data.Manufacturer.Length > 500 ? data.Manufacturer[..500] : data.Manufacturer;
+                    specifications.Add(("Manufacturer", manufacturerValue));
+                }
+                
+                if (!string.IsNullOrWhiteSpace(data.Brand) && 
+                    (string.IsNullOrWhiteSpace(data.Manufacturer) || 
+                     !data.Brand.Equals(data.Manufacturer, StringComparison.OrdinalIgnoreCase)))
+                {
+                    string brandValue = data.Brand.Length > 500 ? data.Brand[..500] : data.Brand;
+                    specifications.Add(("Brand", brandValue));
                 }
                 
                 try
